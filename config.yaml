@@ -1,7 +1,7 @@
 baseurl: https://blog.yuanpei.me
 languageCode: zh-cn
 theme: stack
-paginate: 5
+paginate: 10
 title: 飞鸿踏雪
 ignoreErrors:
  - error-remote-getjson

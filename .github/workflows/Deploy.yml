@@ -1,0 +1,44 @@
+name: Deploy
+
+on:
+  push:
+    branches:    
+      - blog
+
+jobs:
+  build_static_pages:
+    name: Build Static Pages
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout 
+      uses: actions/checkout@v1
+
+    - name: Setup Hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: latest
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.7'
+        architecture: 'x64'
+
+    - name: Setup Dependency
+      run: |
+       sudo apt-get install python-dev libxml2-dev libxslt1-dev zlib1g-dev
+       python -m pip install pip -U
+       python -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
+       python -m pip config set install.trusted-host mirrors.aliyun.com
+       python -m pip install -r requirements.txt 
+
+    - name: Build Site
+      run: hugo
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ secrets.CI_TOKEN }} 
+        PUBLISH_BRANCH: gh-pages 
+        PUBLISH_DIR: ./public  
+        commit_message: ${{ github.event.head_commit.message }}

@@ -1,4 +1,4 @@
-toggleMenu:
+﻿toggleMenu:
     other: 切换菜单
 
 darkMode:
@@ -47,3 +47,17 @@ search:
 
     resultTitle:
         other: "#PAGES_COUNT 个结果 （用时 #TIME_SECONDS 秒）"
+
+pagination:
+    firstPage:
+        other: 首页
+
+    lastPage:
+        other: 尾页
+
+    prevPage:
+        other: 上一页
+        
+    nextPage:
+        other: 下一页
+    

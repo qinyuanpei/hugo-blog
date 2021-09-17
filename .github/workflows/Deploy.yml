@@ -33,7 +33,10 @@ jobs:
        python -m pip config set install.trusted-host mirrors.aliyun.com
 
     - name: Build Site
-      run: hugo --minify
+      run: |
+        sudo rm -f config.yaml
+        sudo cp config_gh_pages.yaml config.yaml
+        hugo --minify
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3

@@ -1,4 +1,4 @@
-﻿baseurl: https://qinyuanpei.github.io/hugo-blog/
+﻿baseurl: /hugo-blog/
 languageCode: zh-cn
 theme: stack
 paginate: 10

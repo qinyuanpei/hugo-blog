@@ -39,9 +39,9 @@ params:
         emoji: 🍥
         subtitle: 纵有疾风起，人生不言弃.
         avatar:
-            enabled: true
-            local: true
-            src: img/avatar.jpg
+            enabled:  true
+            local:  true
+            src:  /images/avatar.png
 
     article:
         math: false
@@ -120,10 +120,10 @@ params:
             - tag-cloud-3d
 
         archives:
-            limit: 10
+            limit: 5
 
         tagCloud:
-            limit: 100
+            limit: 150
 
     opengraph:
         twitter:

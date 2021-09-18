@@ -1,0 +1,389 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="这里，我们给出的是WebSocketChat中间件中最为关键的部分，详细的代码我已经放在[Github](https://github.com/qinyuanpei/dotnetcore-pritices)上啦，大家可以参考[WebSocketChat](https://github.com/qinyuanpei/dotnetcore-pritices/blob/master/hello-webapi-1/Middlewares/WebSocketChat.cs)类，其基本原理是：使用一个字典来存储每一个聊天室中的会话(Socket)，当用户打开或者关闭一个WebSocket连接时，会向服务器端发送一个事件(Event)，这样客户端中持有的用户列表将被更新，而根据发送的消息，可以决定这条消息是被发给指定联系人还是群发：; 发送给：;var webSocket = await context.WebSockets.AcceptWebSocketAsync()"><title>使用.NET Core和Vue搭建WebSocket聊天室</title>
+<link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8.net-core%E5%92%8Cvue%E6%90%AD%E5%BB%BAwebsocket%E8%81%8A%E5%A4%A9%E5%AE%A4/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="使用.NET Core和Vue搭建WebSocket聊天室">
+<meta property="og:description" content="这里，我们给出的是WebSocketChat中间件中最为关键的部分，详细的代码我已经放在[Github](https://github.com/qinyuanpei/dotnetcore-pritices)上啦，大家可以参考[WebSocketChat](https://github.com/qinyuanpei/dotnetcore-pritices/blob/master/hello-webapi-1/Middlewares/WebSocketChat.cs)类，其基本原理是：使用一个字典来存储每一个聊天室中的会话(Socket)，当用户打开或者关闭一个WebSocket连接时，会向服务器端发送一个事件(Event)，这样客户端中持有的用户列表将被更新，而根据发送的消息，可以决定这条消息是被发给指定联系人还是群发：; 发送给：;var webSocket = await context.WebSockets.AcceptWebSocketAsync()">
+<meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8.net-core%E5%92%8Cvue%E6%90%AD%E5%BB%BAwebsocket%E8%81%8A%E5%A4%A9%E5%AE%A4/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="WebSocket"><meta property="article:tag" content=".NET Core"><meta property="article:tag" content="Vue"><meta property="article:published_time" content="2018-08-01T15:42:23+00:00"><meta property="article:modified_time" content="2018-08-01T15:42:23+00:00">
+<meta name=twitter:title content="使用.NET Core和Vue搭建WebSocket聊天室">
+<meta name=twitter:description content="这里，我们给出的是WebSocketChat中间件中最为关键的部分，详细的代码我已经放在[Github](https://github.com/qinyuanpei/dotnetcore-pritices)上啦，大家可以参考[WebSocketChat](https://github.com/qinyuanpei/dotnetcore-pritices/blob/master/hello-webapi-1/Middlewares/WebSocketChat.cs)类，其基本原理是：使用一个字典来存储每一个聊天室中的会话(Socket)，当用户打开或者关闭一个WebSocket连接时，会向服务器端发送一个事件(Event)，这样客户端中持有的用户列表将被更新，而根据发送的消息，可以决定这条消息是被发给指定联系人还是群发：; 发送给：;var webSocket = await context.WebSockets.AcceptWebSocketAsync()">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<img src=/images/avatar_hu9b977ab3a4b8472c7b4f807105204943_11692_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>飞鸿踏雪</a></h1>
+<h2 class=site-description>纵有疾风起，人生不言弃.</h2>
+</header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/ target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/movies/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>影单</span>
+</a>
+</li>
+<li>
+<a href=/books/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>书单</span>
+</a>
+</li>
+<li>
+<a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E4%BD%BF%E7%94%A8.net-core%E5%92%8Cvue%E6%90%AD%E5%BB%BAwebsocket%E8%81%8A%E5%A4%A9%E5%AE%A4/>使用.NET Core和Vue搭建WebSocket聊天室</a>
+</h2>
+<h3 class=article-subtitle>
+这里，我们给出的是WebSocketChat中间件中最为关键的部分，详细的代码我已经放在[Github](https://github.com/qinyuanpei/dotnetcore-pritices)上啦，大家可以参考[WebSocketChat](https://github.com/qinyuanpei/dotnetcore-pritices/blob/master/hello-webapi-1/Middlewares/WebSocketChat.cs)类，其基本原理是：使用一个字典来存储每一个聊天室中的会话(Socket)，当用户打开或者关闭一个WebSocket连接时，会向服务器端发送一个事件(Event)，这样客户端中持有的用户列表将被更新，而根据发送的消息，可以决定这条消息是被发给指定联系人还是群发：;&lt;hr/> 发送给：;var webSocket = await context.WebSockets.AcceptWebSocketAsync()
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Aug 01, 2018</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>  Hi，大家好，我是Payne，欢迎大家关注我的博客，我的博客地址是：<a class=link href=https://qinyuanpei.github.io target=_blank rel=noopener>https://qinyuanpei.github.io</a>。今天这篇博客，我们来说说WebSocket。各位可能会疑惑，为什么我会突然间对WebSocket感兴趣，这是因为最近接触到了部分“实时”的业务场景，譬如：用户希望在远程视频通话过程中，实时地监控接入方的通话状态，实时地将接入方的响应时间、通话时长以及接通率等信息推送到后台。与此同时，用户可以通过监控平台看到实时变化着的图表。坦白地讲，这种业务场景陌生吗？不，每一年的双11，都能见到小伙伴们实时地“剁手”。所以，在今天这篇文章中，我们会以WebSocket聊天室为例，来讲解如何基于WebSocket构建实时应用。</p>
+<h1 id=websocket概述>WebSocket概述</h1>
+<p>  WebSocket是HTML5标准中的一部分，从Socket这个字眼我们就可以知道，这是一种网络通信协议。WebSocket是为了弥补HTTP协议的不足而产生的，我们知道，HTTP协议有一个重要的缺陷，即：请求只能由客户端发起。这是因为HTTP协议采用了经典的请求-响应模型，这就限制了服务端主动向客户端推送消息的可能。与此同时，HTTP协议是无状态的，这意味着连接在请求得到响应以后就关闭了，所以，每次请求都是独立的、上下文无关的请求。这种单向请求的特点，注定了客户端无法实时地获取服务端的状态变化，如果服务端的状态发生连续地变化，客户端就不得不通过“轮询”的方式来获知这种变化。毫无疑问，轮询的方式不仅效率低下，而且浪费网络资源，在这种背景下，WebSocket应运而生。</p>
+<p>  WebSocket协议最早于2008年被提出，并于2011年成为国际标准。目前，主流的浏览器都已经提供了对WebSocket的支持。在WebSocket协议中，客户端和服务器之间只需要做一次握手操作，就可以在客户端和服务器之间实现双向通信，所以，WebSocket可以作为**<a class=link href=https://en.wikipedia.org/wiki/Push_technology target=_blank rel=noopener>服务器推送</a>**的实现技术之一。因为它本身以HTTP协议为基础，所以对HTTP协议有着更好的兼容性，无论是通信效率还是传输的安全性都能得到保证。WebSocket没有同源限制，客户端可以和任意服务器端进行通信，因此具备通过一个单一连接来支持上下游通信的能力。从本质上来讲，WebSocket是一个在握手阶段使用HTTP协议的TCP/IP协议，换句话说，一旦握手成功，WebSocket就和HTTP协议再无瓜葛，下图展示了它与HTTP协议的区别：</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziy4vzaqgj20hg0e7q3d.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy4vzaqgj20hg0e7q3d.jpg loading=lazy alt=HTTP与WebSocket的区别>
+</a>
+<figcaption>HTTP与WebSocket的区别</figcaption>
+</figure></p>
+<h1 id=构建一个聊天室>构建一个聊天室</h1>
+<p>  OK，在对WebSocket有了一个基本的认识以后，接下来，我们以一个最简单的场景来体验下WebSocket。这个场景是什么呢？你已经知道了，答案就是网络聊天室。这是一个非常典型的实时场景。这里我们分为服务端实现和客户端实现，其中：服务端实现自豪地采用.NET Core，而客户端实现采用Vue的双向绑定特性。现在是公元2018年了，当jQuery已成往事，操作DOM这种事情交给框架去做就好，而且我本人很喜欢MVVM这种模式，Vue的渐进式框架，非常适合我这种不会写ES6的伪前端。</p>
+<h2 id=net-core与中间件>.NET Core与中间件</h2>
+<p>  关于.NET Core中对WebSocket的支持，这里主要参考了<a class=link href="https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/websockets?view=aspnetcore-2.1" target=_blank rel=noopener>官方文档</a>，在这篇文档中，演示了一个最基本的Echo示例，即服务端如何接收客户端消息并返回消息给客户端。这里，我们首先需要安装<strong>Microsoft.AspNetCore.WebSockets</strong>这个库，直接通过Visual Studio Code内置的终端安装即可。接下来，我们需要在<strong>Startup</strong>类的<strong>Configure</strong>方法中添加WebSocket中间件：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=n>app</span><span class=p>.</span><span class=n>UseWebSockets</span><span class=p>()</span>
+</code></pre></div><p>更一般地，我们可以配置以下两个配置，其中，KeepAliveInterval表示向客户端发送Ping帧的时间间隔；ReceiveBufferSize表示接收数据的缓冲区大小：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=kt>var</span> <span class=n>webSocketOptions</span> <span class=p>=</span> <span class=k>new</span> <span class=n>WebSocketOptions</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>KeepAliveInterval</span> <span class=p>=</span> <span class=n>TimeSpan</span><span class=p>.</span><span class=n>FromSeconds</span><span class=p>(</span><span class=m>120</span><span class=p>),</span>
+    <span class=n>ReceiveBufferSize</span> <span class=p>=</span> <span class=m>4</span> <span class=p>*</span> <span class=m>1024</span>
+<span class=p>};</span>
+<span class=n>app</span><span class=p>.</span><span class=n>UseWebSockets</span><span class=p>(</span><span class=n>webSocketOptions</span><span class=p>);</span>
+</code></pre></div><p>  好了，那么怎么接收一个来自客户端的请求呢？这里以官方文档中的示例代码为例来说明。首先，我们需要判断下请求的地址，这是客户端和服务端约定好的地址，默认为**/**，这里我们以**/ws**为例；接下来，我们需要判断当前的请求上下文是否为WebSocket请求，通过**context.WebSockets.IsWebSocketRequest**来判断。当这两个条件同时满足时，我们就可以通过**context.WebSockets.AcceptWebSocketAsync()**方法来得到WebSocket对象，这样就表示“握手”完成，这样我们就可以开始接收或者发送消息啦。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>if</span> <span class=p>(</span><span class=n>context</span><span class=p>.</span><span class=n>Request</span><span class=p>.</span><span class=n>Path</span> <span class=p>==</span> <span class=s>&#34;/ws&#34;</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>context</span><span class=p>.</span><span class=n>WebSockets</span><span class=p>.</span><span class=n>IsWebSocketRequest</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>WebSocket</span> <span class=n>webSocket</span> <span class=p>=</span> <span class=k>await</span> <span class=n>context</span><span class=p>.</span><span class=n>WebSockets</span><span class=p>.</span><span class=n>AcceptWebSocketAsync</span><span class=p>();</span>
+        <span class=c1>//TODO
+</span><span class=c1></span>    <span class=p>}</span>
+<span class=p>});</span>
+</code></pre></div><p>  一旦建立了Socket连接，客户端和服务端之间就可以开始通信，这是我们从Socket中收获的经验，这个经验同样适用于WebSocket。这里分别给出WebSocket发送和接收消息的实现，并针对代码做简单的分析。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>private</span> <span class=k>async</span> <span class=n>Task</span> <span class=n>SendMessage</span><span class=p>&lt;</span><span class=n>TEntity</span><span class=p>&gt;(</span><span class=n>WebSocket</span> <span class=n>webSocket</span><span class=p>,</span> <span class=n>TEntity</span> <span class=n>entity</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=kt>var</span> <span class=n>Json</span> <span class=p>=</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>SerializeObject</span><span class=p>(</span><span class=n>entity</span><span class=p>);</span>
+    <span class=kt>var</span> <span class=n>bytes</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>Json</span><span class=p>);</span>
+
+    <span class=k>await</span> <span class=n>webSocket</span><span class=p>.</span><span class=n>SendAsync</span><span class=p>(</span>
+        <span class=k>new</span> <span class=n>ArraySegment</span><span class=p>&lt;</span><span class=kt>byte</span><span class=p>&gt;(</span><span class=n>bytes</span><span class=p>),</span>
+        <span class=n>WebSocketMessageType</span><span class=p>.</span><span class=n>Text</span><span class=p>,</span>
+        <span class=k>true</span><span class=p>,</span>
+        <span class=n>CancellationToken</span><span class=p>.</span><span class=n>None</span>
+    <span class=p>);</span>
+<span class=p>}</span>
+</code></pre></div><p>  这里我们提供一个泛型方法，它负责对消息进行序列化并转化为byte[]，最终调用**SendAsync()<strong>方法发送消息。与之相对应地，客户端会在</strong>onmessage()**回调中就会接受到消息，这一点我们放在后面再说。WebSocket接收消息的方式，和传统的Socket非常相似，我们需要将字节流循环读取到一个缓存区里，直至所有数据都被接收完。下面给出基本的代码示例：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=kt>var</span> <span class=n>buffer</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ArraySegment</span><span class=p>&lt;</span><span class=kt>byte</span><span class=p>&gt;(</span><span class=k>new</span> <span class=kt>byte</span><span class=p>[</span><span class=n>bufferSize</span><span class=p>]);</span>
+<span class=kt>var</span> <span class=n>result</span> <span class=p>=</span> <span class=k>await</span> <span class=n>webSocket</span><span class=p>.</span><span class=n>ReceiveAsync</span><span class=p>(</span><span class=n>buffer</span><span class=p>,</span> <span class=n>CancellationToken</span><span class=p>.</span><span class=n>None</span><span class=p>);</span>
+<span class=k>while</span> <span class=p>(!</span><span class=n>result</span><span class=p>.</span><span class=n>EndOfMessage</span><span class=p>)</span>
+<span class=p>{</span>
+	<span class=n>result</span> <span class=p>=</span> <span class=k>await</span> <span class=n>webSocket</span><span class=p>.</span><span class=n>ReceiveAsync</span><span class=p>(</span><span class=n>buffer</span><span class=p>,</span> <span class=k>default</span><span class=p>(</span><span class=n>CancellationToken</span><span class=p>));</span>
+<span class=p>}</span>
+
+<span class=kt>var</span> <span class=n>json</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>buffer</span><span class=p>.</span><span class=n>Array</span><span class=p>);</span>
+<span class=n>json</span> <span class=p>=</span> <span class=n>json</span><span class=p>.</span><span class=n>Replace</span><span class=p>(</span><span class=s>&#34;\0&#34;</span><span class=p>,</span> <span class=s>&#34;&#34;</span><span class=p>).</span><span class=n>Trim</span><span class=p>();</span>
+<span class=k>return</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>DeserializeObject</span><span class=p>&lt;</span><span class=n>TEntity</span><span class=p>&gt;(</span><span class=n>json</span><span class=p>,</span> <span class=k>new</span> <span class=n>JsonSerializerSettings</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>DateTimeZoneHandling</span> <span class=p>=</span> <span class=n>DateTimeZoneHandling</span><span class=p>.</span><span class=n>Local</span>
+<span class=p>});</span>
+</code></pre></div><p>  虽然不大清楚，为什么这里反序列化后的内容中会有大量的**\0**，以及这个全新的类型ArraySegment到底是个什么鬼，不过程序员的一生无非都在纠结这样两个问题，“it works” 和 “it doesn&rsquo;t works"，就像人生里会让你纠结的无非是”她喜欢你“和”她不喜欢我“这样的问题。有时候，这样的问题简直就是玄学，五柳先生好读书而不求甚解，我想这个道理在这里同样适用，截止到我写这篇博客前，这个代码一直工作得很好，所以，这两个问题我们可以暂时先放在一边，因为眼下还有比这更为重要的事情。</p>
+<p>  通过这篇<a class=link href="https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/websockets?view=aspnetcore-2.1" target=_blank rel=noopener>文档</a>，我们可以非常容易地构建出一个”实时应用“，可是它离我们这篇文章中的目标依然有点距离，如果各位足够细心的话，就会发现这样一个问题，即示例中的代码都是写在<strong>app.Use()<strong>方法中的，这样会使我们的Startup类显得臃肿，而熟悉OWIN或者ASP.NET Core的朋友，就会知道Startup类是一个非常重要的东西，我们通常会在这里配置相关的组件。在ASP.NET Core中，我们可以通过</strong>Configure()<strong>方法来为</strong>IApplicationBuilder</strong>增加相关组件，这种组件通常被称为中间件。那么，什么是中间件呢？</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixy9ja6ij20go0ao3z9.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixy9ja6ij20go0ao3z9.jpg loading=lazy alt=中间件示意图>
+</a>
+<figcaption>中间件示意图</figcaption>
+</figure></p>
+<p>  从这张图中可以看出，中间件实际上是指在HTTP请求管道中处理请求和响应的组件，每个组件都可以决定是否要将请求传递给下一个组件，比如身份认证、日志记录就是最为常见的中间件。在ASP.NET Core中，我们通过app.Use()方法来定义一个Func&lt;RequestDelegate,RequestDelegate>类型的参数，所以，我们可以简单地认为，在ASP.NET Core中，Func&lt;RequestDelegate,RequestDelegate>就是一个中间件，而通过app.Use()方法，这些中间件会根据注册的先后顺序组成一个链表，每一个中间件的输入是上一个中间件的输出，每一个中间件的输出则会成为下一个中间件的输入。简而言之，每一个RequestDelegate对象不仅包含了自身对请求的处理，而且包含了后续中间件对请求的处理，我们来看一个简单的例子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=n>app</span><span class=p>.</span><span class=n>Use</span><span class=p>(</span><span class=k>async</span> <span class=p>(</span><span class=n>context</span><span class=p>,</span><span class=n>next</span><span class=p>)=&gt;</span>
+<span class=p>{</span>
+    <span class=k>await</span> <span class=n>context</span><span class=p>.</span><span class=n>Response</span><span class=p>.</span><span class=n>WriteAsync</span><span class=p>(</span><span class=s>&#34;这是第一个中间件\r\n&#34;</span><span class=p>);</span>
+    <span class=k>await</span> <span class=n>next</span><span class=p>();</span>
+<span class=p>});</span>
+
+<span class=n>app</span><span class=p>.</span><span class=n>Use</span><span class=p>(</span><span class=k>async</span> <span class=p>(</span><span class=n>context</span><span class=p>,</span><span class=n>next</span><span class=p>)=&gt;</span>
+<span class=p>{</span>
+    <span class=k>await</span> <span class=n>context</span><span class=p>.</span><span class=n>Response</span><span class=p>.</span><span class=n>WriteAsync</span><span class=p>(</span><span class=s>&#34;这是第二个中间件\r\n&#34;</span><span class=p>);</span>
+    <span class=k>await</span> <span class=n>next</span><span class=p>();</span>
+<span class=p>});</span>
+
+<span class=n>app</span><span class=p>.</span><span class=n>Use</span><span class=p>(</span><span class=k>async</span> <span class=p>(</span><span class=n>context</span><span class=p>,</span><span class=n>next</span><span class=p>)=&gt;</span>
+<span class=p>{</span>
+    <span class=k>await</span> <span class=n>context</span><span class=p>.</span><span class=n>Response</span><span class=p>.</span><span class=n>WriteAsync</span><span class=p>(</span><span class=s>&#34;这是第三个中间件\r\n&#34;</span><span class=p>);</span>
+    <span class=k>await</span> <span class=n>next</span><span class=p>();</span>
+<span class=p>});</span>
+</code></pre></div><p>  通过Postman或者任意客户端发起请求，我们就可以得到下面的结果，现在想象一下，如果我们在第一种中间件中不调用next()会怎么样呢？答案是中间件之间的链路会被打断，这意味着后续的第二个、第三个中间件都不会被执行。什么时候我们会遇到这种场景呢？当我们的认证中间件认为一个请求非法的时候，此时我们不应该让用户访问后续的资源，所以直接返回403对该请求进行拦截。在大多数情况下，我们需要让请求随着中间件的链路传播下去，所以，对于每一个中间件来说，除了完成自身的处理逻辑以外，还至少需要调用一次next()，以保证下一个中间件会被调用，这其实和职责链模式非常相近，可以让数据在不同的处理管道中进行传播。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05nfs2htj213t078mxj.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05nfs2htj213t078mxj.jpg loading=lazy alt="ASP.NET Core中间件示例">
+</a>
+<figcaption>ASP.NET Core中间件示例</figcaption>
+</figure></p>
+<p>  OK，这里我们继续遵从这个约定，将整个聊天室相关的逻辑写到一个中间件里，这样做的好处是，我们可以将不同的WebSocket互相隔离开，同时可以为我们的Startup类”减负“。事实证明，这是一个正确的决定，在开发基于WebSocket的弹幕功能时，我们就是用这种方式开发了新的中间件。这里，我们给出的是WebSocketChat中间件中最为关键的部分，详细的代码我已经放在<a class=link href=https://github.com/qinyuanpei/dotnetcore-pritices target=_blank rel=noopener>Github</a>上啦，大家可以参考<a class=link href=https://github.com/qinyuanpei/dotnetcore-pritices/blob/master/hello-webapi-1/Middlewares/WebSocketChat.cs target=_blank rel=noopener>WebSocketChat</a>类，其基本原理是：使用一个字典来存储每一个聊天室中的会话(Socket)，当用户打开或者关闭一个WebSocket连接时，会向服务器端发送一个事件(Event)，这样客户端中持有的用户列表将被更新，而根据发送的消息，可以决定这条消息是被发给指定联系人还是群发：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>public</span> <span class=k>async</span> <span class=n>Task</span> <span class=n>Invoke</span><span class=p>(</span><span class=n>HttpContext</span> <span class=n>context</span><span class=p>)</span>
+<span class=p>{</span>
+	<span class=k>if</span> <span class=p>(!</span><span class=n>IsWebSocket</span><span class=p>(</span><span class=n>context</span><span class=p>))</span>
+    <span class=p>{</span>
+    	<span class=k>await</span> <span class=m>_</span><span class=n>next</span><span class=p>.</span><span class=n>Invoke</span><span class=p>(</span><span class=n>context</span><span class=p>);</span>
+        <span class=k>return</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>var</span> <span class=n>userName</span> <span class=p>=</span> <span class=n>context</span><span class=p>.</span><span class=n>Request</span><span class=p>.</span><span class=n>Query</span><span class=p>[</span><span class=s>&#34;username&#34;</span><span class=p>].</span><span class=n>ToArray</span><span class=p>()[</span><span class=m>0</span><span class=p>];</span>
+    <span class=kt>var</span> <span class=n>webSocket</span> <span class=p>=</span> <span class=k>await</span> <span class=n>context</span><span class=p>.</span><span class=n>WebSockets</span><span class=p>.</span><span class=n>AcceptWebSocketAsync</span><span class=p>();</span>
+    <span class=k>while</span> <span class=p>(</span><span class=n>webSocket</span><span class=p>.</span><span class=n>State</span> <span class=p>==</span> <span class=n>WebSocketState</span><span class=p>.</span><span class=n>Open</span><span class=p>)</span>
+    <span class=p>{</span>
+         <span class=kt>var</span> <span class=n>entity</span> <span class=p>=</span> <span class=k>await</span> <span class=n>Receiveentity</span><span class=p>&lt;</span><span class=n>MessageEntity</span><span class=p>&gt;(</span><span class=n>webSocket</span><span class=p>);</span>
+         <span class=k>switch</span> <span class=p>(</span><span class=n>entity</span><span class=p>.</span><span class=n>Type</span><span class=p>)</span>
+         <span class=p>{</span>
+             <span class=k>case</span> <span class=n>MessageType</span><span class=p>.</span><span class=n>Chat</span><span class=p>:</span>
+                  <span class=k>await</span> <span class=n>HandleChat</span><span class=p>(</span><span class=n>webSocket</span><span class=p>,</span> <span class=n>entity</span><span class=p>);</span>
+                  <span class=k>break</span><span class=p>;</span>
+             <span class=k>case</span> <span class=n>MessageType</span><span class=p>.</span><span class=n>Event</span><span class=p>:</span>
+                  <span class=k>await</span> <span class=n>HandleEvent</span><span class=p>(</span><span class=n>webSocket</span><span class=p>,</span> <span class=n>entity</span><span class=p>);</span>
+                  <span class=k>break</span><span class=p>;</span>
+         <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>await</span> <span class=n>webSocket</span><span class=p>.</span><span class=n>CloseAsync</span><span class=p>(</span><span class=n>WebSocketCloseStatus</span><span class=p>.</span><span class=n>NormalClosure</span><span class=p>,</span> <span class=s>&#34;Close&#34;</span><span class=p>,</span> <span class=k>default</span><span class=p>(</span><span class=n>CancellationToken</span><span class=p>));</span>
+<span class=p>}</span>
+</code></pre></div><p>  其中，HandleEvent负责对事件进行处理，HandleChat负责对消息进行处理。当有用户加入聊天室的时候，首先会向所有客户端广播一条消息，告诉大家有新用户加入了聊天室，与此同时，为了让大家可以和新用户进行通信，必须将新的用户列表推送到客户端。同理，当有用户离开聊天室的时候，服务器端会有类似的事件推送到客户端。事件同样是基于消息来实现的，不过这两种采用的数据结构不同，具体大家可以通过源代码来了解。发送消息就非常简单啦，给指定用户发送消息是通过用户名来找WebSocket对象，而群发消息就是遍历字典中的所有WebSocket对象，这一点我们不再详细说啦！</p>
+<h2 id=vue驱动的客户端>Vue驱动的客户端</h2>
+<p>  在实现服务端的WebSocket以后，我们就可以着手客户端的开发啦！这里我们采用原生的WebSocket API来开发相关功能。具体来讲，我们只需要实例化一个WebSocket类，并设置相应地回调函数就可以了，我们一起来看下面的例子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=kd>var</span> <span class=nx>username</span> <span class=o>=</span> <span class=s2>&#34;PayneQin&#34;</span>
+<span class=kd>var</span> <span class=nx>websocket</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>WebSocket</span><span class=p>(</span><span class=s2>&#34;ws://localhost:8002/ws?username=&#34;</span> <span class=o>+</span> <span class=nx>username</span><span class=p>);</span>
+</code></pre></div><p>  这里我们使用**/s**这个路由来访问WebSocket，相应地，在服务端代码中我们需要判断**context.Request.Path**，WebSocket在握手阶段是基于HTTP协议的，所以我们可以以QueryString的形式给后端传递一个参数，这里我们需要一个用户名，它将作为服务端存储WebSocket时的一个键。一旦建立了WebSocket，我们就可以通过回调函数来监听服务器端的响应，或者是发送消息给服务器端。主要的回调函数有onopen、onmessage、onerror和onclose四个，基本使用方法如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=nx>websocket</span><span class=p>.</span><span class=nx>onopen</span> <span class=o>=</span> <span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
+	<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;WebSocket连接成功&#34;</span><span class=p>);</span>
+<span class=p>};</span>
+
+<span class=nx>websocket</span><span class=p>.</span><span class=nx>onmessage</span> <span class=o>=</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>event</span><span class=p>)</span> <span class=p>{</span>
+	<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;接收到服务端消息：&#34;</span> <span class=o>+</span> <span class=nx>event</span><span class=p>.</span><span class=nx>data</span><span class=p>)</span>
+<span class=p>};</span>
+
+<span class=nx>websocket</span><span class=p>.</span><span class=nx>onerror</span> <span class=o>=</span> <span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
+	<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;WebSocket连接发生错误&#34;</span><span class=p>);</span>
+<span class=p>};</span>
+
+<span class=nx>websocket</span><span class=p>.</span><span class=nx>onclose</span> <span class=o>=</span> <span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
+<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;WebSocket连接关闭&#34;</span><span class=p>);</span>
+<span class=p>};</span>
+</code></pre></div><p>  原生的WebSocket API只有两个方法，即send()和close()，这两个方法非常的简单，我们这里不再说明。需要说明的是，客户端使用了Vue来做界面相关的绑定，作为一个不会写CSS、不会写ES6的伪前端，我做了一个相当简洁(简陋)的前端页面，下面给出主要的页面结构，ViewModel层的代码比较多，大家可以参考<a class=link href=https://github.com/qinyuanpei/dotnetcore-pritices/blob/master/client/websocket/index.html target=_blank rel=noopener>这里</a>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-HTML data-lang=HTML><span class=p>&lt;</span><span class=nt>div</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;app&#34;</span><span class=p>&gt;</span>
+    Hi，{{ username }}。欢迎来到WebSocket聊天室！
+    <span class=p>&lt;</span><span class=nt>hr</span><span class=p>/&gt;</span> 发送给：
+    <span class=p>&lt;</span><span class=nt>select</span> <span class=na>v-model</span><span class=o>=</span><span class=s>&#34;sendTo&#34;</span><span class=p>&gt;</span>
+        <span class=p>&lt;</span><span class=nt>option</span> <span class=na>value</span><span class=o>=</span><span class=s>&#34;All&#34;</span><span class=p>&gt;</span>全部<span class=p>&lt;/</span><span class=nt>option</span><span class=p>&gt;</span>
+        <span class=p>&lt;</span><span class=nt>option</span> <span class=na>v-for</span><span class=o>=</span><span class=s>&#34;user in userList&#34;</span> <span class=na>:value</span><span class=o>=</span><span class=s>&#34;user&#34;</span><span class=p>&gt;</span>{{user}}<span class=p>&lt;/</span><span class=nt>option</span><span class=p>&gt;</span>
+    <span class=p>&lt;/</span><span class=nt>select</span><span class=p>&gt;</span>
+    <span class=p>&lt;</span><span class=nt>hr</span><span class=p>/&gt;</span>
+    <span class=p>&lt;</span><span class=nt>input</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;text&#34;</span> <span class=na>type</span><span class=o>=</span><span class=s>&#34;text&#34;</span> <span class=na>v-model</span><span class=o>=</span><span class=s>&#34;message&#34;</span> <span class=p>/&gt;</span>
+    <span class=p>&lt;</span><span class=nt>button</span> <span class=na>v-on:click</span><span class=o>=</span><span class=s>&#34;sendMessage&#34;</span><span class=p>&gt;</span>发送消息<span class=p>&lt;/</span><span class=nt>button</span><span class=p>&gt;</span>
+    <span class=p>&lt;</span><span class=nt>hr</span><span class=p>/&gt;</span>
+    <span class=p>&lt;</span><span class=nt>button</span> <span class=na>v-on:click</span><span class=o>=</span><span class=s>&#34;openWebSocket&#34;</span><span class=p>&gt;</span>打开WebSocket连接<span class=p>&lt;/</span><span class=nt>button</span><span class=p>&gt;</span>
+    <span class=p>&lt;</span><span class=nt>button</span> <span class=na>v-on:click</span><span class=o>=</span><span class=s>&#34;closeWebSocket&#34;</span><span class=p>&gt;</span>关闭WebSocket连接<span class=p>&lt;/</span><span class=nt>button</span><span class=p>&gt;</span>
+    <span class=p>&lt;</span><span class=nt>button</span> <span class=na>v-on:click</span><span class=o>=</span><span class=s>&#34;clearMessageList&#34;</span><span class=p>&gt;</span>清空聊天记录<span class=p>&lt;/</span><span class=nt>button</span><span class=p>&gt;</span>
+    <span class=p>&lt;</span><span class=nt>hr</span><span class=p>/&gt;</span>
+    <span class=p>&lt;</span><span class=nt>div</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;messageList&#34;</span> <span class=na>v-html</span><span class=o>=</span><span class=s>&#34;messageList&#34;</span><span class=p>&gt;</span>
+        {{ messageList }}
+    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+<span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</code></pre></div><p>  下面是实际的运行效果，果然是非常简洁呢，哈哈:laughing:</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05jy4qvpj20wa0flq50.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05jy4qvpj20wa0flq50.jpg loading=lazy alt=WebSocket聊天室展示>
+</a>
+<figcaption>WebSocket聊天室展示</figcaption>
+</figure></p>
+<h2 id=再看websocket>再看Websocket</h2>
+<p>  好了，我们花了如此大的篇幅来讲WebSocket，那么你对WebSocket了解了多少呢？或许通过这个聊天室的实例，我们对WebSocket有了一个相对直观的认识，可你是否想过换一个角度来认识它呢？我们说过，WebSocket是以HTTP协议为基础的，那么至少可以在握手阶段捕获到相关请求吧！果断在Chrome中打开”开发者工具“，在面板上选择监听”WebSocket"，然后我们就会得到下面的内容。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05docrh3j219i0cydgl.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05docrh3j219i0cydgl.jpg loading=lazy alt=WebSocket的秘密-请求>
+</a>
+<figcaption>WebSocket的秘密-请求</figcaption>
+</figure></p>
+<p>  相比HTTP协议，WebSocket在握手阶段的请求有所变化，主要体现在Upgrade、Connection这两个字段，以及Sec-WebSocket系列的这些字段。下面来分别解释下这些字段的含义，Upgrade和Connection这两个字段，是最为关键的两个字段，它的目的是告诉Apache、Nginx这些服务器，这是一个WebSocket请求。接下来，是Sec-WebSocket-Key、Sec-WebSocket-Protocol和Sec-WebSocket-Version这三个字段，其中Sec-WebSocket-Key是一个由浏览器采用Base64算法随机生成的字符串，目的是验证服务器是否真的支持WebSocket；Sec-WebSocket-Protocol则是一个由用户指定的字符串，目的是区分同一URL下，不同服务所需要的协议；Sec-WebSocket-Version是告诉服务器浏览器支持的WebSocket版本，标准规定9-12的版本号是保留字段，所以在这里我们看到的版本号是13.</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz01z8ty8kj211l05xmx6.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz01z8ty8kj211l05xmx6.jpg loading=lazy alt=WebSocket的秘密-响应>
+</a>
+<figcaption>WebSocket的秘密-响应</figcaption>
+</figure></p>
+<p>  那么，对于这个浏览器发起的这个请求，服务端是如何做出响应的呢？这就要来看看服务端返回的内容。 和客户端发起的请求类似，服务端返回的内容中依然会有Upgrade和Connection这两个字段，它们和请求中的含义是完全一致的。这里需要说明的是Sec-WebSocket-Accept这个字段，我们前面提到，浏览器会通过WebSocket-Key检验服务器是否真的支持WebSocket，具体怎么检验呢？是通过下面的算法。除此之外，一个特殊的地方是这个Response的状态码是101，这表示服务端说：下面我们就按照WebSocket协议来通信吧！当然，一个更为残酷的现实是，从这里开始，就不再是HTTP协议的势力范围了啊：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell>sec-websocket-accept <span class=o>=</span> base64<span class=o>(</span>hsa1<span class=o>(</span>sec-websocket-key + 258EAFA5-E914-47DA-95CA-C5AB0DC85B11<span class=o>))</span>
+</code></pre></div><h1 id=本文小结>本文小结</h1>
+<p>  这篇文章选取了“实时应用”这样一个业务场景作为切入点，引出了本文的主题——WebSocket。WebSocket是一种建立在HTTP协议基础上的双向通信协议，它弥补了以“请求-响应”模型为基础的HTTP协议先天上的不足，客户端无需再通过“轮询”这种方式来获取服务端的状态变化。WebSocket在完成“握手”后，即可以长连接的方式在客户端和服务端间构建双向通道，因而WebSocket可以在实时应用场景下，作为服务器推送技术的一种方案选择。本文以一个WebSocket聊天室的案例，来讲解WebSocket在实际项目中的应用，在这里我们使用ASP.NET Core来完成服务端WebSocket的实现，而客户端选用原生WebSocket API和Vue来实现，在此基础上，我们讲解了ASP.NET Core下中间件的概念，并将服务器端WebSocket以中间件的形式实现。在下一篇文章中，我们将偏重于服务器端的数据推送，客户端将作为数据展现层而存在。好了，以上就是这篇文章的全部内容啦，谢谢大家，让我们一起期待下一篇文章吧！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/websocket/>WebSocket</a>
+<a href=/tags/.net-core/>.NET Core</a>
+<a href=/tags/vue/>Vue</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8Ewebsocket%E5%92%8Credis%E5%AE%9E%E7%8E%B0bilibili%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/>
+<div class=article-details>
+<h2 class=article-title>基于WebSocket和Redis实现Bilibili弹幕效果</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/abp-vnext-%E5%AF%B9%E6%8E%A5-ant-design-vue-%E5%AE%9E%E7%8E%B0%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2/>
+<div class=article-details>
+<h2 class=article-title>ABP vNext 对接 Ant Design Vue 实现分页查询</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E9%99%90%E6%B5%81%E4%B8%AD%E9%97%B4%E4%BB%B6-aspnetcoreratelimit/>
+<div class=article-details>
+<h2 class=article-title>源代码探案系列之 .NET Core 限流中间件 AspNetCoreRateLimit</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E5%B9%B6%E5%8F%91%E9%99%90%E5%88%B6%E4%B8%AD%E9%97%B4%E4%BB%B6-concurrencylimiter/>
+<div class=article-details>
+<h2 class=article-title>源代码探案系列之 .NET Core 并发限制中间件 ConcurrencyLimiter</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E9%80%9A%E8%BF%87-embededfileprovider-%E5%AE%9E%E7%8E%B0-blazor-%E7%9A%84%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE/>
+<div class=article-details>
+<h2 class=article-title>通过 EmbededFileProvider 实现 Blazor 的静态文件访问</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

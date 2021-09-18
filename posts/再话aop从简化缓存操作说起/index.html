@@ -1,0 +1,361 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="AOP，即：面向切面编程，关于这个概念，博主其实写过好几篇博客啦！从这个概念，我们可以引申出诸如代理模式、动态代理、装饰器模式、过滤器、拦截器等等相互关联的概念。从实现方式上而言，微软官方的 .NET Remoting 提供了真实代理和透明代理的支持，我们熟悉的 WebService 和 WCF 均和这项技术息息相关，作为最早的分布式 RPC 解决方案，其本身更是与客户端的动态代理密不可分。或许，各位曾经接触过 Unity、Castle、AspectCore、PostSharp 等等这些支持 AOP 特性的库，那么，我们是否已经抵达了 AOP 的边界呢？事实上，如果你仔细研究过 Stub 和 Mock 这样两个术语，你就发现 AOP 的应用范围远比我们想象的宽广。今天这篇文章，我不打算再介绍一遍这些第三方库的“奇技淫巧”，我更想聊聊，如何通过 AOP 来简化一个缓存操作。
+缓存，一个面试时命中率100%的话题，曾记否？来自面试官的灵魂发问三连：缓存击穿、缓存穿透、缓存雪崩。与此同时，缓存是一个令人爱恨交加的东西，其一致性、持久化、高可用等等，均是实际应用中需要去考虑的东西。狭义的缓存主要指 Redis、Memcached 等分布式缓存系统，而广义的缓存则可以是 HTTP 响应缓存、EF/EF Core 查询缓存、二级缓存等等。我们都知道，使用缓存可以显著地提升软件性能，而究其本质，则是因为减少了和数据库交互的频次。于是，我们注意到，大多数的缓存代码，都是下面这样的风格：
+var cacheKey = &amp;#34;GetAllStudents&amp;#34;; var students = new List&amp;lt;Student&amp;gt;(); var cacheValue = distributedCache.GetString(cacheKey); if (string.IsNullOrEmpty(cacheValue)) { // 未命中缓存：从数据库查询数据 + 写缓存  students = repository.GetAll().ToList(); var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(students)); distributedCache.Set(cacheKey, bytes); } else { // 命中缓存：读缓存  students = JsonConvert.DeserializeObject&amp;lt;List&amp;lt;Student&amp;gt;&amp;gt;(cacheValue); } return students; 正所谓：大道至简，“高端的食材，往往只需要最朴素的烹饪方式”。故而，最朴素的思想就是，首先从缓存中查询数据，如果数据存在则直接返回，否则从数据库中查询数据，并执行一次写缓存操作。这的确是个朴实无华的方案，因为我们每一次都要写这样的代码，其程度丝毫不亚于永远不会缺席的 xxx !"><title>再话AOP，从简化缓存操作说起</title>
+<link rel=canonical href=/posts/%E5%86%8D%E8%AF%9Daop%E4%BB%8E%E7%AE%80%E5%8C%96%E7%BC%93%E5%AD%98%E6%93%8D%E4%BD%9C%E8%AF%B4%E8%B5%B7/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="再话AOP，从简化缓存操作说起">
+<meta property="og:description" content="AOP，即：面向切面编程，关于这个概念，博主其实写过好几篇博客啦！从这个概念，我们可以引申出诸如代理模式、动态代理、装饰器模式、过滤器、拦截器等等相互关联的概念。从实现方式上而言，微软官方的 .NET Remoting 提供了真实代理和透明代理的支持，我们熟悉的 WebService 和 WCF 均和这项技术息息相关，作为最早的分布式 RPC 解决方案，其本身更是与客户端的动态代理密不可分。或许，各位曾经接触过 Unity、Castle、AspectCore、PostSharp 等等这些支持 AOP 特性的库，那么，我们是否已经抵达了 AOP 的边界呢？事实上，如果你仔细研究过 Stub 和 Mock 这样两个术语，你就发现 AOP 的应用范围远比我们想象的宽广。今天这篇文章，我不打算再介绍一遍这些第三方库的“奇技淫巧”，我更想聊聊，如何通过 AOP 来简化一个缓存操作。
+缓存，一个面试时命中率100%的话题，曾记否？来自面试官的灵魂发问三连：缓存击穿、缓存穿透、缓存雪崩。与此同时，缓存是一个令人爱恨交加的东西，其一致性、持久化、高可用等等，均是实际应用中需要去考虑的东西。狭义的缓存主要指 Redis、Memcached 等分布式缓存系统，而广义的缓存则可以是 HTTP 响应缓存、EF/EF Core 查询缓存、二级缓存等等。我们都知道，使用缓存可以显著地提升软件性能，而究其本质，则是因为减少了和数据库交互的频次。于是，我们注意到，大多数的缓存代码，都是下面这样的风格：
+var cacheKey = &amp;#34;GetAllStudents&amp;#34;; var students = new List&amp;lt;Student&amp;gt;(); var cacheValue = distributedCache.GetString(cacheKey); if (string.IsNullOrEmpty(cacheValue)) { // 未命中缓存：从数据库查询数据 + 写缓存  students = repository.GetAll().ToList(); var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(students)); distributedCache.Set(cacheKey, bytes); } else { // 命中缓存：读缓存  students = JsonConvert.DeserializeObject&amp;lt;List&amp;lt;Student&amp;gt;&amp;gt;(cacheValue); } return students; 正所谓：大道至简，“高端的食材，往往只需要最朴素的烹饪方式”。故而，最朴素的思想就是，首先从缓存中查询数据，如果数据存在则直接返回，否则从数据库中查询数据，并执行一次写缓存操作。这的确是个朴实无华的方案，因为我们每一次都要写这样的代码，其程度丝毫不亚于永远不会缺席的 xxx !">
+<meta property="og:url" content="/posts/%E5%86%8D%E8%AF%9Daop%E4%BB%8E%E7%AE%80%E5%8C%96%E7%BC%93%E5%AD%98%E6%93%8D%E4%BD%9C%E8%AF%B4%E8%B5%B7/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="缓存"><meta property="article:tag" content="AOP"><meta property="article:tag" content="动态代理"><meta property="article:tag" content="Redis"><meta property="article:published_time" content="2021-08-04T20:49:47+00:00"><meta property="article:modified_time" content="2021-08-04T20:49:47+00:00">
+<meta name=twitter:title content="再话AOP，从简化缓存操作说起">
+<meta name=twitter:description content="AOP，即：面向切面编程，关于这个概念，博主其实写过好几篇博客啦！从这个概念，我们可以引申出诸如代理模式、动态代理、装饰器模式、过滤器、拦截器等等相互关联的概念。从实现方式上而言，微软官方的 .NET Remoting 提供了真实代理和透明代理的支持，我们熟悉的 WebService 和 WCF 均和这项技术息息相关，作为最早的分布式 RPC 解决方案，其本身更是与客户端的动态代理密不可分。或许，各位曾经接触过 Unity、Castle、AspectCore、PostSharp 等等这些支持 AOP 特性的库，那么，我们是否已经抵达了 AOP 的边界呢？事实上，如果你仔细研究过 Stub 和 Mock 这样两个术语，你就发现 AOP 的应用范围远比我们想象的宽广。今天这篇文章，我不打算再介绍一遍这些第三方库的“奇技淫巧”，我更想聊聊，如何通过 AOP 来简化一个缓存操作。
+缓存，一个面试时命中率100%的话题，曾记否？来自面试官的灵魂发问三连：缓存击穿、缓存穿透、缓存雪崩。与此同时，缓存是一个令人爱恨交加的东西，其一致性、持久化、高可用等等，均是实际应用中需要去考虑的东西。狭义的缓存主要指 Redis、Memcached 等分布式缓存系统，而广义的缓存则可以是 HTTP 响应缓存、EF/EF Core 查询缓存、二级缓存等等。我们都知道，使用缓存可以显著地提升软件性能，而究其本质，则是因为减少了和数据库交互的频次。于是，我们注意到，大多数的缓存代码，都是下面这样的风格：
+var cacheKey = &amp;#34;GetAllStudents&amp;#34;; var students = new List&amp;lt;Student&amp;gt;(); var cacheValue = distributedCache.GetString(cacheKey); if (string.IsNullOrEmpty(cacheValue)) { // 未命中缓存：从数据库查询数据 + 写缓存  students = repository.GetAll().ToList(); var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(students)); distributedCache.Set(cacheKey, bytes); } else { // 命中缓存：读缓存  students = JsonConvert.DeserializeObject&amp;lt;List&amp;lt;Student&amp;gt;&amp;gt;(cacheValue); } return students; 正所谓：大道至简，“高端的食材，往往只需要最朴素的烹饪方式”。故而，最朴素的思想就是，首先从缓存中查询数据，如果数据存在则直接返回，否则从数据库中查询数据，并执行一次写缓存操作。这的确是个朴实无华的方案，因为我们每一次都要写这样的代码，其程度丝毫不亚于永远不会缺席的 xxx !">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<img src=/images/avatar_hu9b977ab3a4b8472c7b4f807105204943_11692_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>飞鸿踏雪</a></h1>
+<h2 class=site-description>纵有疾风起，人生不言弃.</h2>
+</header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/ target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/movies/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>影单</span>
+</a>
+</li>
+<li>
+<a href=/books/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>书单</span>
+</a>
+</li>
+<li>
+<a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E5%86%8D%E8%AF%9Daop%E4%BB%8E%E7%AE%80%E5%8C%96%E7%BC%93%E5%AD%98%E6%93%8D%E4%BD%9C%E8%AF%B4%E8%B5%B7/>再话AOP，从简化缓存操作说起</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Aug 04, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>AOP，即：<strong>面向切面编程</strong>，关于这个概念，博主其实写过好几篇<a class=link href=https://blog.yuanpei.me/tags/AOP/ target=_blank rel=noopener>博客</a>啦！从这个概念，我们可以引申出诸如代理模式、动态代理、装饰器模式、过滤器、拦截器等等相互关联的概念。从实现方式上而言，微软官方的 <a class=link href="https://docs.microsoft.com/zh-cn/previous-versions/dotnet/articles/ms973857%28v=msdn.10%29?redirectedfrom=MSDN" target=_blank rel=noopener>.NET Remoting</a> 提供了真实代理和透明代理的支持，我们熟悉的 <code>WebService</code> 和 <code>WCF</code> 均和这项技术息息相关，作为最早的分布式 RPC 解决方案，其本身更是与客户端的动态代理密不可分。或许，各位曾经接触过 <code>Unity</code>、<code>Castle</code>、<code>AspectCore</code>、<a class=link href=https://www.postsharp.net target=_blank rel=noopener>PostSharp</a> 等等这些支持 AOP 特性的库，那么，我们是否已经抵达了 AOP 的边界呢？事实上，如果你仔细研究过 <code>Stub</code> 和 <code>Mock</code> 这样两个术语，你就发现 AOP 的应用范围远比我们想象的宽广。今天这篇文章，我不打算再介绍一遍这些第三方库的“<strong>奇技淫巧</strong>”，我更想聊聊，如何通过 AOP 来简化一个缓存操作。</p>
+<p>缓存，一个面试时命中率100%的话题，曾记否？来自面试官的灵魂发问三连：<strong>缓存击穿</strong>、<strong>缓存穿透</strong>、<strong>缓存雪崩</strong>。与此同时，缓存是一个令人爱恨交加的东西，其一致性、持久化、高可用等等，均是实际应用中需要去考虑的东西。狭义的缓存主要指 <a class=link href=https://redis.io/ target=_blank rel=noopener>Redis</a>、<a class=link href=https://www.memcached.org target=_blank rel=noopener>Memcached</a> 等分布式缓存系统，而广义的缓存则可以是 <a class=link href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/response?view=aspnetcore-5.0" target=_blank rel=noopener>HTTP 响应缓存</a>、EF/EF Core 查询缓存、二级缓存等等。我们都知道，使用缓存可以显著地提升软件性能，而究其本质，则是因为减少了和数据库交互的频次。于是，我们注意到，大多数的缓存代码，都是下面这样的风格：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=kt>var</span> <span class=n>cacheKey</span> <span class=p>=</span> <span class=s>&#34;GetAllStudents&#34;</span><span class=p>;</span>
+<span class=kt>var</span> <span class=n>students</span> <span class=p>=</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Student</span><span class=p>&gt;();</span>
+<span class=kt>var</span> <span class=n>cacheValue</span> <span class=p>=</span> <span class=n>distributedCache</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>cacheKey</span><span class=p>);</span>
+<span class=k>if</span> <span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span><span class=p>(</span><span class=n>cacheValue</span><span class=p>))</span>
+<span class=p>{</span>
+    <span class=c1>// 未命中缓存：从数据库查询数据 + 写缓存
+</span><span class=c1></span>    <span class=n>students</span> <span class=p>=</span> <span class=n>repository</span><span class=p>.</span><span class=n>GetAll</span><span class=p>().</span><span class=n>ToList</span><span class=p>();</span>
+    <span class=kt>var</span> <span class=n>bytes</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>JsonConvert</span><span class=p>.</span><span class=n>SerializeObject</span><span class=p>(</span><span class=n>students</span><span class=p>));</span>
+    <span class=n>distributedCache</span><span class=p>.</span><span class=n>Set</span><span class=p>(</span><span class=n>cacheKey</span><span class=p>,</span> <span class=n>bytes</span><span class=p>);</span>
+<span class=p>}</span> 
+<span class=k>else</span>
+<span class=p>{</span>
+    <span class=c1>// 命中缓存：读缓存
+</span><span class=c1></span>    <span class=n>students</span> <span class=p>=</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>DeserializeObject</span><span class=p>&lt;</span><span class=n>List</span><span class=p>&lt;</span><span class=n>Student</span><span class=p>&gt;&gt;(</span><span class=n>cacheValue</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=k>return</span> <span class=n>students</span><span class=p>;</span>
+</code></pre></div><p>正所谓：大道至简，“<strong>高端的食材，往往只需要最朴素的烹饪方式</strong>”。故而，最朴素的思想就是，首先从缓存中查询数据，如果数据存在则直接返回，否则从数据库中查询数据，并执行一次写缓存操作。这的确是个朴实无华的方案，因为我们每一次都要写这样的代码，其程度丝毫不亚于永远不会缺席的 <code>xxx != null</code>。写到这里，博主不由得陷入了沉思：难道真的没有更简单点的方案了吗？后来的故事大家都知道了，我们可以在方法的参数上附加 <code>[NotNull]</code> 特性。所以，接下来，我们会用类似的方案来解决缓存的问题，换言之，我们可以把我们经常写、写到不愿意再写的代码交给代理类来做，既然缓存本质上是为了查询数据，那我们就只需要关心查询数据这个行为本身。具体怎么实现的呢？我们一起来看下面的代码。</p>
+<p>此时此刻，假设我们有这样一个接口：<code>IFakeService</code>，它通过<code>GetColors()</code>方法返回一组颜色：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>interface</span> <span class=n>IFakeService</span>
+<span class=p>{</span>
+<span class=na>    [Cacheable(CacheKeyPrefix = &#34;Fake&#34;, Expiration = 180)]</span>
+    <span class=n>List</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;</span> <span class=n>GetColors</span><span class=p>();</span>
+<span class=p>}</span>
+</code></pre></div><p>我们希望，在调用这个方法的时候，可以对其返回值进行缓存，所以，可以注意到，这里添加了一个<code>[Cacheable]</code>的特性。其定义如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=na>[AttributeUsage(AttributeTargets.Method)]</span>
+<span class=k>public</span> <span class=k>class</span> <span class=nc>CacheableAttribute</span> <span class=p>:</span> <span class=n>Attribute</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=kt>string</span> <span class=n>CacheKeyPrefix</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>public</span> <span class=kt>int</span> <span class=n>Expiration</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>其中，<code>CacheKeyPrefix</code>用于指定缓存键名前缀，<code>Expiration</code>用于指定缓存过期时间，单位为秒。接下来，博主通过<code>DispatchProxy</code>来实现动态代理，它可以视为<code>RealProxy</code>在后.NET时代的替代品：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>CacheInterceptor</span><span class=p>&lt;</span><span class=n>TCacheService</span><span class=p>&gt;</span> <span class=p>:</span> <span class=n>DispatchProxy</span>
+<span class=p>{</span>
+    <span class=k>private</span> <span class=n>TCacheService</span> <span class=m>_</span><span class=n>realObject</span> <span class=p>=&gt;</span> <span class=n>ServiceProvider</span><span class=p>.</span><span class=n>GetRequiredService</span><span class=p>&lt;</span><span class=n>TCacheService</span><span class=p>&gt;();</span>
+    <span class=k>private</span> <span class=n>ICacheSerializer</span> <span class=m>_</span><span class=n>cacheSerializer</span> <span class=p>=&gt;</span> <span class=n>ServiceProvider</span><span class=p>.</span><span class=n>GetRequiredService</span><span class=p>&lt;</span><span class=n>ICacheSerializer</span><span class=p>&gt;();</span>
+    <span class=k>private</span> <span class=n>IDistributedCache</span> <span class=m>_d</span><span class=n>istributedCache</span> <span class=p>=&gt;</span> <span class=n>ServiceProvider</span><span class=p>.</span><span class=n>GetRequiredService</span><span class=p>&lt;</span><span class=n>IDistributedCache</span><span class=p>&gt;();</span>
+
+    <span class=k>public</span> <span class=n>IServiceProvider</span> <span class=n>ServiceProvider</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+
+    <span class=k>protected</span> <span class=k>override</span> <span class=kt>object</span> <span class=n>Invoke</span><span class=p>(</span><span class=n>MethodInfo</span> <span class=n>targetMethod</span><span class=p>,</span> <span class=kt>object</span><span class=p>[]</span> <span class=n>args</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>byte</span><span class=p>[]</span> <span class=n>cacheValue</span><span class=p>;</span>
+        <span class=kt>var</span> <span class=n>returnType</span> <span class=p>=</span> <span class=n>targetMethod</span><span class=p>.</span><span class=n>ReturnType</span><span class=p>;</span>
+
+        <span class=c1>// void &amp;&amp; Task
+</span><span class=c1></span>        <span class=k>if</span> <span class=p>(</span><span class=n>returnType</span> <span class=p>==</span> <span class=k>typeof</span><span class=p>(</span><span class=k>void</span><span class=p>)</span> <span class=p>||</span> <span class=n>returnType</span> <span class=p>==</span> <span class=k>typeof</span><span class=p>(</span><span class=n>Task</span><span class=p>))</span>
+            <span class=k>return</span> <span class=n>targetMethod</span><span class=p>.</span><span class=n>Invoke</span><span class=p>(</span><span class=m>_</span><span class=n>realObject</span><span class=p>,</span> <span class=n>args</span><span class=p>);</span>
+
+        <span class=k>if</span> <span class=p>(</span><span class=n>IsAsyncReturnValue</span><span class=p>(</span><span class=n>targetMethod</span><span class=p>))</span>
+            <span class=n>returnType</span> <span class=p>=</span> <span class=n>targetMethod</span><span class=p>.</span><span class=n>ReturnType</span><span class=p>.</span><span class=n>GetGenericArguments</span><span class=p>()[</span><span class=m>0</span><span class=p>];</span>
+
+        <span class=kt>var</span> <span class=n>cacheableAttribute</span> <span class=p>=</span> <span class=n>targetMethod</span><span class=p>.</span><span class=n>GetCustomAttribute</span><span class=p>&lt;</span><span class=n>CacheableAttribute</span><span class=p>&gt;();</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>cacheableAttribute</span> <span class=p>!=</span> <span class=k>null</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=kt>var</span> <span class=n>cacheKey</span> <span class=p>=</span> <span class=n>GetCacheKey</span><span class=p>(</span><span class=n>cacheableAttribute</span><span class=p>,</span> <span class=n>targetMethod</span><span class=p>);</span>
+            <span class=n>cacheValue</span> <span class=p>=</span> <span class=m>_d</span><span class=n>istributedCache</span><span class=p>.</span><span class=n>Get</span><span class=p>(</span><span class=n>cacheKey</span><span class=p>);</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>cacheValue</span> <span class=p>!=</span> <span class=k>null</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=c1>// Task&lt;T&gt;
+</span><span class=c1></span>                <span class=k>if</span> <span class=p>(</span><span class=n>IsAsyncReturnValue</span><span class=p>(</span><span class=n>targetMethod</span><span class=p>))</span>
+                    <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>FromResult</span><span class=p>(</span><span class=m>_</span><span class=n>cacheSerializer</span><span class=p>.</span><span class=n>Deserialize</span><span class=p>(</span><span class=n>cacheValue</span><span class=p>,</span> <span class=n>returnType</span><span class=p>));</span>
+
+                <span class=k>return</span> <span class=m>_</span><span class=n>cacheSerializer</span><span class=p>.</span><span class=n>Deserialize</span><span class=p>(</span><span class=n>cacheValue</span><span class=p>,</span> <span class=n>returnType</span><span class=p>);</span>
+            <span class=p>}</span>
+
+            <span class=kt>dynamic</span> <span class=n>returnValue</span> <span class=p>=</span> <span class=n>targetMethod</span><span class=p>.</span><span class=n>Invoke</span><span class=p>(</span><span class=m>_</span><span class=n>realObject</span><span class=p>,</span> <span class=n>args</span><span class=p>);</span>
+            <span class=n>cacheValue</span> <span class=p>=</span> <span class=m>_</span><span class=n>cacheSerializer</span><span class=p>.</span><span class=n>Serialize</span><span class=p>(</span><span class=n>returnValue</span><span class=p>);</span>
+
+            <span class=c1>// Task&lt;T&gt;
+</span><span class=c1></span>            <span class=k>if</span> <span class=p>(</span><span class=n>IsAsyncReturnValue</span><span class=p>(</span><span class=n>targetMethod</span><span class=p>))</span>
+                <span class=n>cacheValue</span> <span class=p>=</span> <span class=m>_</span><span class=n>cacheSerializer</span><span class=p>.</span><span class=n>Serialize</span><span class=p>(</span><span class=n>returnValue</span><span class=p>.</span><span class=n>Result</span><span class=p>);</span>
+
+            <span class=kt>var</span> <span class=n>cacheOptions</span> <span class=p>=</span> <span class=k>new</span> <span class=n>DistributedCacheEntryOptions</span><span class=p>()</span> <span class=p>{</span> 
+              <span class=n>AbsoluteExpirationRelativeToNow</span> <span class=p>=</span> <span class=n>TimeSpan</span><span class=p>.</span><span class=n>FromSeconds</span><span class=p>(</span><span class=n>cacheableAttribute</span><span class=p>.</span><span class=n>Expiration</span><span class=p>)</span> 
+            <span class=p>};</span>
+            <span class=m>_d</span><span class=n>istributedCache</span><span class=p>.</span><span class=n>Set</span><span class=p>(</span><span class=n>cacheKey</span><span class=p>,</span> <span class=n>cacheValue</span><span class=p>,</span> <span class=n>cacheOptions</span><span class=p>);</span>
+            <span class=k>return</span> <span class=n>returnValue</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=n>targetMethod</span><span class=p>.</span><span class=n>Invoke</span><span class=p>(</span><span class=m>_</span><span class=n>realObject</span><span class=p>,</span> <span class=n>args</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>这里，最为关键的地方是<code>Invoke()</code>方法，它负责对被代理对象的方法进行拦截，这里的被代理对象，其实就是<code>_realObject</code>，即真实对象，因为，我们最终调用的，实际上是真实对象上对应的方法。因为<code>DispatchProxy</code>在创建代理对象时，要求这个代理基类，即这里的拦截器，必须要有一个无参的构造函数。所以，我们这里用属性注入的方式来注入<code>IServiceProvider</code>。说回这个方法，首先，我们会判断它的返回值类型是不是<code>void</code>或者<code>Task</code>，因为无返回值的方法本身就不需要缓存。接下来，我们会检查当前方法上是否附加了<code>[Cacheable]</code>特性，因为我们只需要处理有这个特性的方法。接下来，通过<code>GetCacheKey()</code>方法来生成一个唯一的键名，通过这个键名我们就可以在缓存中查询数据啦，该方法的实现细节如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>private</span> <span class=kt>string</span> <span class=n>GetCacheKey</span><span class=p>(</span><span class=n>CacheableAttribute</span> <span class=n>cacheableAttribute</span><span class=p>,</span> <span class=n>MethodInfo</span> <span class=n>methodInfo</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=kt>var</span> <span class=n>segments</span> <span class=p>=</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;();</span>
+
+    <span class=k>if</span> <span class=p>(!</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span><span class=p>(</span><span class=n>cacheableAttribute</span><span class=p>.</span><span class=n>CacheKeyPrefix</span><span class=p>))</span>
+        <span class=n>segments</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>cacheableAttribute</span><span class=p>.</span><span class=n>CacheKeyPrefix</span><span class=p>);</span>
+
+    <span class=n>segments</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>methodInfo</span><span class=p>.</span><span class=n>DeclaringType</span><span class=p>.</span><span class=n>FullName</span><span class=p>.</span><span class=n>Replace</span><span class=p>(</span><span class=s>&#34;.&#34;</span><span class=p>,</span> <span class=s>&#34;_&#34;</span><span class=p>));</span>
+
+    <span class=n>segments</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>methodInfo</span><span class=p>.</span><span class=n>Name</span><span class=p>);</span>
+
+    <span class=n>methodInfo</span><span class=p>.</span><span class=n>GetParameters</span><span class=p>().</span><span class=n>ToList</span><span class=p>().</span><span class=n>ForEach</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>segments</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>x</span><span class=p>.</span><span class=n>Name</span><span class=p>));</span>
+
+    <span class=k>return</span> <span class=kt>string</span><span class=p>.</span><span class=n>Join</span><span class=p>(</span><span class=s>&#34;_&#34;</span><span class=p>,</span> <span class=n>segments</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></div><p>对于分布式缓存，博主这里使用的是微软提供的<code>IDistributedCache</code>这个接口，接下来的事情就变得朴实无华起来，因为它和我们一开始写的代码一脉相承，唯一的不同是，这里考虑了<code>Task&lt;T></code>这种异步的返回值类型，同时对序列化/反序列化进行了抽象，即这里注入的<code>ICacheSerializer</code>接口，注意到<code>IDistributedCache</code>接口的<code>Set()</code>方法需要传入一个<code>byte[]</code>，显然二进制的序列化方案如 <a class=link href="https://developers.google.cn/protocol-buffers?hl=zh-cn" target=_blank rel=noopener>Protobuf</a> 、<a class=link href=https://msgpack.org/ target=_blank rel=noopener>MessagePack</a> 会更加得心应手一点。所以，我们将这一层单独抽象出来。至此，我们已经完成了最核心的部分。</p>
+<p>对于一开始的<code>IFakeService</code>，我们提供一个简单的实现，并通过让线程阻塞的方式来模拟一个耗时操作：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>FakeService</span> <span class=p>:</span> <span class=n>IFakeService</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=n>List</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;</span> <span class=n>GetColors</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>Thread</span><span class=p>.</span><span class=n>Sleep</span><span class=p>(</span><span class=m>500</span><span class=p>);</span>
+        <span class=k>return</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;</span> <span class=p>{</span> <span class=s>&#34;Red&#34;</span><span class=p>,</span> <span class=s>&#34;Yellow&#34;</span><span class=p>,</span> <span class=s>&#34;Green&#34;</span> <span class=p>};</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>下面是一个简单的示例：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>// 注入IFakeService、ICacheSerializer、IDistributedCache
+</span><span class=c1></span><span class=kt>var</span> <span class=n>services</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ServiceCollection</span><span class=p>();</span>
+<span class=n>services</span><span class=p>.</span><span class=n>AddTransient</span><span class=p>&lt;</span><span class=n>IFakeService</span><span class=p>,</span> <span class=n>FakeService</span><span class=p>&gt;();</span>
+<span class=n>services</span><span class=p>.</span><span class=n>AddTransient</span><span class=p>&lt;</span><span class=n>ICacheSerializer</span><span class=p>,</span> <span class=n>JsonCacheSerializer</span><span class=p>&gt;();</span>
+<span class=n>services</span><span class=p>.</span><span class=n>AddStackExchangeRedisCache</span><span class=p>(</span><span class=n>options</span> <span class=p>=&gt;</span>
+<span class=p>{</span>
+    <span class=n>options</span><span class=p>.</span><span class=n>Configuration</span> <span class=p>=</span> <span class=s>&#34;localhost:6379&#34;</span><span class=p>;</span>
+    <span class=n>options</span><span class=p>.</span><span class=n>InstanceName</span> <span class=p>=</span> <span class=s>&#34;Caching.AOP.Test&#34;</span><span class=p>;</span>
+<span class=p>});</span>
+
+<span class=c1>// 生成代理对象
+</span><span class=c1></span><span class=kt>var</span> <span class=n>serviceProvider</span> <span class=p>=</span> <span class=n>services</span><span class=p>.</span><span class=n>BuildServiceProvider</span><span class=p>();</span>
+<span class=kt>var</span> <span class=n>fakeServiceProxy</span> <span class=p>=</span> <span class=n>DispatchProxy</span><span class=p>.</span><span class=n>Create</span><span class=p>&lt;</span><span class=n>IFakeService</span><span class=p>,</span> <span class=n>CacheInterceptor</span><span class=p>&lt;</span><span class=n>IFakeService</span><span class=p>&gt;&gt;();</span>
+<span class=p>(</span><span class=n>fakeServiceProxy</span> <span class=k>as</span> <span class=n>CacheInterceptor</span><span class=p>&lt;</span><span class=n>IFakeService</span><span class=p>&gt;).</span><span class=n>ServiceProvider</span> <span class=p>=</span> <span class=n>serviceProvider</span><span class=p>;</span>
+
+<span class=c1>// 调用代理对象
+</span><span class=c1></span><span class=k>for</span> <span class=p>(</span><span class=kt>var</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=m>5</span><span class=p>;</span> <span class=n>i</span><span class=p>++)</span>
+<span class=p>{</span>
+    <span class=kt>var</span> <span class=n>stopWatch</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Stopwatch</span><span class=p>();</span>
+    <span class=n>stopWatch</span><span class=p>.</span><span class=n>Start</span><span class=p>();</span>
+    <span class=kt>var</span> <span class=n>colors</span> <span class=p>=</span> <span class=n>fakeServiceProxy</span><span class=p>.</span><span class=n>GetColors</span><span class=p>();</span>
+    <span class=n>stopWatch</span><span class=p>.</span><span class=n>Stop</span><span class=p>();</span>
+    <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34; {i} - Invoke GetColors used {stopWatch.Elapsed.TotalMilliseconds} ms&#34;</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></div><p>此时，我们可以得到下面的结果，可以注意到，第一次调用的时候，因为缓存不存在，调用的时间相对更长一点，而当缓存存在的时候，调用的时间会明显缩短。</p>
+<p><figure>
+<a href=https://i.loli.net/2021/08/04/FdafGyS7zrl53W1.png>
+<img src=https://i.loli.net/2021/08/04/FdafGyS7zrl53W1.png loading=lazy alt=有无缓存对调用时长的影响>
+</a>
+<figcaption>有无缓存对调用时长的影响</figcaption>
+</figure></p>
+<p>虽然这个性能提升与缓存不无关系，可对于调用者来说，它完全不用关心缓存里有没有数据这件事情，它只需要像往常一样调用接口方法即可，这就是 AOP 之于缓存的意义所在，为了证明我没有说谎，我们可以看到 Redis 中对应的数据：</p>
+<p><figure>
+<a href=https://i.loli.net/2021/08/04/wkAQGMRKr8xuol3.png>
+<img src=https://i.loli.net/2021/08/04/wkAQGMRKr8xuol3.png loading=lazy alt=Redis中对应的缓存数据>
+</a>
+<figcaption>Redis中对应的缓存数据</figcaption>
+</figure></p>
+<p>需要说明的是，这个思路同样可以扩展到<code>Unity</code>、<code>Castle</code>、<code>AspectCore</code>、<a class=link href=https://www.postsharp.net target=_blank rel=noopener>PostSharp</a> 这些第三方库，实现方式上大同小异，大家可以结合自己的业务场景做相应的调整。其实，从业务上抽离出通用组件、功能作为公共库或者下沉到框架中，是及其自然而然的一件事情。这里面最关键的问题是，基础组件或者框架相对于业务方的职责范围，因为如果基础组件或者框架做得太多，业务上往往难以定制或者扩展；而如果基础组件或者框架做得太少，业务上就要写大量的辅助代码。写这篇文章的原因是，我对于一个缓存方案设计上的疑问，业务上想要缓存一张表中的数据，至少需要写 20 行代码，在下觉得这简直太离谱了，更不用说，业务方还要关心这个缓存是否可用。有人说，一个合格的前任就应该像死了一样，那么，我是不是可以说，一个合格的中间件，就应该像它从来没有来过一样，你甚至都感觉不到它的存在，可事实上它总是无所不在。也许，这听起来有点科幻的色彩，可这的确是我期待的某种自洽的、优雅的设计思路。</p>
+<h1 id=本文小结>本文小结</h1>
+<p>本文分享了通过 AOP 来简化缓存操作的一种思路，考虑到常规的缓存代码写法，读/写缓存与业务代码严重耦合在一起，而博主心目中的缓存应该像水、电、煤气一样普普通通，你只需要告诉我哪些数据需要缓存，而无需关心这些数据怎么缓存。基于这样一种考虑，博主基于<code>DispatchProxy</code>实现了一个针对缓存的 AOP 方案，我们只需要在接口上打上<code>[Cachable]</code>标签，它会自动对方法的返回值进行缓存，从而简化我们平时使用缓存的流程。<a class=link href=https://www.cnblogs.com/catcher1994 target=_blank rel=noopener>Catcher Wong</a> 大佬在其缓存框架 <a class=link href=https://www.cnblogs.com/catcher1994/p/10806607.html target=_blank rel=noopener>EasyCaching</a> 同样集成了这一特性，如果大家有类似的使用场景，可以直接使用这个<a class=link href=https://github.com/dotnetcore/EasyCaching target=_blank rel=noopener>框架</a>。如果大家对此有更好的想法或者思路，欢迎大家在评论区留言，本文示例已上传至 <a class=link href=https://hub.fastgit.org/Regularly-Archive/2021/tree/master/src/Caching.AOP target=_blank rel=noopener>Github</a>，供大家学习或者参考。好了，以上就是这篇博客的全部内容啦，谢谢大家！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E7%BC%93%E5%AD%98/>缓存</a>
+<a href=/tags/aop/>AOP</a>
+<a href=/tags/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/>动态代理</a>
+<a href=/tags/redis/>Redis</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/asp.net-core-grpc-%E6%8B%A6%E6%88%AA%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 拦截器的使用技巧分享</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E9%80%9A%E8%BF%87%E5%8A%A8%E6%80%81controller%E5%AE%9E%E7%8E%B0%E4%BB%8Ewcf%E5%88%B0web-api%E7%9A%84%E8%BF%81%E7%A7%BB./>
+<div class=article-details>
+<h2 class=article-title>通过动态Controller实现从WCF到Web API的迁移.</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%8F%88%E8%A7%81aop%E4%B9%8B%E5%9F%BA%E4%BA%8Erealproxy%E5%AE%9E%E7%8E%B0wcf%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>又见AOP之基于RealProxy实现WCF动态代理</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8Ewebsocket%E5%92%8Credis%E5%AE%9E%E7%8E%B0bilibili%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/>
+<div class=article-details>
+<h2 class=article-title>基于WebSocket和Redis实现Bilibili弹幕效果</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E9%82%82%E9%80%85aop%E8%AF%B4%E8%AF%B4javascript%E4%B8%AD%E7%9A%84%E4%BF%AE%E9%A5%B0%E5%99%A8/>
+<div class=article-details>
+<h2 class=article-title>邂逅AOP：说说JavaScript中的修饰器</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

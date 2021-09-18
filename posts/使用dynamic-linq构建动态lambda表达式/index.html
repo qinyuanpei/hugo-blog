@@ -1,0 +1,478 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="var propertyParam = Expression.Property (parameter, condition.Field);searchParameters.Query.Add(new Condition() { Field = &#34;StringValue&#34;, Op = Operation.Contains, Value = &#34;山&#34;, OrGroup = &#34;StringValue&#34; });searchParameters.Query.Add(new Condition() { Field = x = x.StringValue, Op = Operation.Contains, Value = &#34;有朋&#34;, OrGroup = &#34;StringValue&#34; })"><title>使用Dynamic Linq构建动态Lambda表达式</title>
+<link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8dynamic-linq%E6%9E%84%E5%BB%BA%E5%8A%A8%E6%80%81lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="使用Dynamic Linq构建动态Lambda表达式">
+<meta property="og:description" content="var propertyParam = Expression.Property (parameter, condition.Field);searchParameters.Query.Add(new Condition() { Field = &#34;StringValue&#34;, Op = Operation.Contains, Value = &#34;山&#34;, OrGroup = &#34;StringValue&#34; });searchParameters.Query.Add(new Condition() { Field = x = x.StringValue, Op = Operation.Contains, Value = &#34;有朋&#34;, OrGroup = &#34;StringValue&#34; })">
+<meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8dynamic-linq%E6%9E%84%E5%BB%BA%E5%8A%A8%E6%80%81lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Linq"><meta property="article:tag" content="Lambda"><meta property="article:tag" content="表达式树"><meta property="article:published_time" content="2020-05-08T12:27:11+00:00"><meta property="article:modified_time" content="2020-05-08T12:27:11+00:00">
+<meta name=twitter:title content="使用Dynamic Linq构建动态Lambda表达式">
+<meta name=twitter:description content="var propertyParam = Expression.Property (parameter, condition.Field);searchParameters.Query.Add(new Condition() { Field = &#34;StringValue&#34;, Op = Operation.Contains, Value = &#34;山&#34;, OrGroup = &#34;StringValue&#34; });searchParameters.Query.Add(new Condition() { Field = x = x.StringValue, Op = Operation.Contains, Value = &#34;有朋&#34;, OrGroup = &#34;StringValue&#34; })">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<img src=/images/avatar_hu9b977ab3a4b8472c7b4f807105204943_11692_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>飞鸿踏雪</a></h1>
+<h2 class=site-description>纵有疾风起，人生不言弃.</h2>
+</header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/ target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/movies/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>影单</span>
+</a>
+</li>
+<li>
+<a href=/books/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>书单</span>
+</a>
+</li>
+<li>
+<a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E4%BD%BF%E7%94%A8dynamic-linq%E6%9E%84%E5%BB%BA%E5%8A%A8%E6%80%81lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/>使用Dynamic Linq构建动态Lambda表达式</a>
+</h2>
+<h3 class=article-subtitle>
+var propertyParam = Expression.Property (parameter, condition.Field);searchParameters.Query.Add(new Condition() { Field = "StringValue", Op = Operation.Contains, Value = "山", OrGroup = "StringValue" });searchParameters.Query.Add(new Condition&lt;Foo>() { Field = x => x.StringValue, Op = Operation.Contains, Value = "有朋", OrGroup = "StringValue" })
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>May 08, 2020</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 6 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>相信大家都有这样一种感觉，<code>Linq</code>和<code>Lambda</code>是.NET中一以贯之的存在，从最早的Linq to Object到Linq to SQL，再到EF/EF Core甚至如今的.NET Core，我们可以看到<code>Lambda</code>表达式的身影出现地越来越频繁。虽然Linq to Object和Linq to SQL，分别是以<code>IEnumerable&lt;T></code>和<code>IQueryable &lt;T></code>为基础来实现的。我个人以为，<code>Lambda</code>呢，其实就是匿名委托的“变种”，而<code>Linq</code>则是对<code>Lambda</code>的进一步封装。在<code>System.Linq.Expressions</code>命名空间下，提供大量关于表达式树的API，而我们都知道，这些表达式树最终都会被编译为委托。所以，动态创建Lambda表达式，实际上就是指从一个字符串生成对应委托的过程，而一旦这个委托被生成，可以直接传递给Where()方法作为参数，显然，它可以对源数据进行过滤，这正是我们想要的结果。</p>
+<h1 id=事出有因>事出有因</h1>
+<p>在今天这篇博客中，我们主要介绍<code>System.Linq.Dynamic.Core</code>这个库，即我所说的Dynamic Linq。本着“艺术源于生活的态度”，在介绍它的用法之前，不妨随博主一起看看，一个“简单“的查询是如何随着业务演进而变得越来越复杂。从某种意义上来说，正是它让博主想起了Dynamic Linq。我们为客户编写了一个生成订单的接口，它从一张数据表中“消费”订单数据。最开始，它只需要过滤状态为“未处理”的记录，对应的CRUD可以表示为这样：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=kt>var</span> <span class=n>orderInfos</span> <span class=p>=</span> <span class=n>repository</span><span class=p>.</span><span class=n>GetByQuery</span><span class=p>&lt;</span><span class=n>tt_wg_order</span><span class=p>&gt;(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>STATUS</span> <span class=p>==</span> <span class=m>10</span><span class=p>);</span>
+</code></pre></div><p>后来，因为业务方存在重复/错误下单的情况，业务数据有了“软删除”的状态，相应地查询条件再次发生变化，这看起来还行对吧：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=kt>var</span> <span class=n>orderInfos</span> <span class=p>=</span> <span class=n>repository</span><span class=p>.</span><span class=n>GetByQuery</span><span class=p>&lt;</span><span class=n>tt_wg_order</span><span class=p>&gt;(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>STATUS</span> <span class=p>==</span> <span class=m>10</span> <span class=p>&amp;&amp;</span> <span class=n>x</span><span class=p>.</span><span class=n>Isdelete</span> <span class=p>==</span> <span class=m>0</span><span class=p>);</span>
+</code></pre></div><p>再后来，因为接口处理速度不理想，无法满足客户的使用场景，公司大佬们建议“加机器”，而为了让每台服务器上消费的订单数据不同(据说是为了避免发生并发)，大佬们要求博主开放所有字段作为查询条件，这样，每台服务器上可以配置不同查询条件。自此，又双叒叕改：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=kt>var</span> <span class=n>repository</span> <span class=p>=</span> <span class=n>container</span><span class=p>.</span><span class=n>Resolve</span><span class=p>&lt;</span><span class=n>CrudRepositoryBase</span><span class=p>&gt;();</span>
+<span class=kt>var</span> <span class=n>searchParameters</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SearchParameters</span><span class=p>()</span> <span class=p>{</span> <span class=n>PageInfo</span> <span class=p>=</span> <span class=k>new</span> <span class=n>PageInfo</span><span class=p>()</span> <span class=p>{</span> <span class=n>PageSize</span> <span class=p>=</span> <span class=n>parameters</span><span class=p>.</span><span class=n>PAGE_SIZE</span><span class=p>.</span><span class=n>Value</span> <span class=p>}};</span>
+<span class=n>searchParameters</span><span class=p>.</span><span class=n>QueryModel</span><span class=p>.</span><span class=n>Items</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>ConditionItem</span> <span class=p>{</span> <span class=n>Field</span> <span class=p>=</span> <span class=s>&#34;STATUS&#34;</span><span class=p>,</span> <span class=n>Method</span> <span class=p>=</span> <span class=n>QueryMethod</span><span class=p>.</span><span class=n>Equal</span><span class=p>,</span> <span class=n>Value</span> <span class=p>=</span> <span class=m>10</span> <span class=p>});</span>
+<span class=n>searchParameters</span><span class=p>.</span><span class=n>QueryModel</span><span class=p>.</span><span class=n>Items</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>ConditionItem</span> <span class=p>{</span> <span class=n>Field</span> <span class=p>=</span> <span class=s>&#34;Isdelete&#34;</span><span class=p>,</span> <span class=n>Method</span> <span class=p>=</span> <span class=n>QueryMethod</span><span class=p>.</span><span class=n>Equal</span><span class=p>,</span> <span class=n>Value</span> <span class=p>=</span> <span class=m>0</span> <span class=p>});</span>
+<span class=c1>//此处省略更多的查询条件:)
+</span><span class=c1></span><span class=kt>var</span> <span class=n>orderInfos</span> <span class=p>=</span> <span class=n>repository</span><span class=p>.</span><span class=n>GetByPage</span><span class=p>&lt;</span><span class=n>tt_wg_order</span><span class=p>&gt;(</span><span class=n>searchParameters</span><span class=p>);</span>
+</code></pre></div><p>可以想象得出，终极终终极的查询会变成下面这张图。这种方式看起来很美好对不对？可谁能想到，就在五一放假前的某一天里，博主还在替某个“刁钻”客户排查一组同样“刁钻”的过滤条件为什么没有生效。显然，我需要有一种更友好的方式，它可以从一个字符串变成一个委托，就像JavaScript里"邪恶"的Eval()函数一样，说它邪恶，是因为它的输入是不可控的，&ldquo;机智"的人类习惯把事件万物都当成SQL语句，其实，RESTful接口里传SQL、调存储过程难道不可以吗？同样，是因为这种做法太"邪恶&rdquo;。</p>
+<p>![过滤条件在风中凌乱]](<a class=link href=https://i.loli.net/2020/05/11/QEDHwA9bZUTInJY.png target=_blank rel=noopener>https://i.loli.net/2020/05/11/QEDHwA9bZUTInJY.png</a>)</p>
+<h1 id=parselambda>ParseLambda</h1>
+<p>首先，通过<code>nuget</code>安装：<code>System.Linq.Dynamic.Core</code>。这里主要介绍的是介绍的是其中的ParseLambda()方法，顾名思义，它可以把一个字符串转换为指定类型的委托，一起来看下面的例子。首先，我们定义一个通用方法BuildLambda：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=n>Func</span><span class=p>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=kt>bool</span><span class=p>&gt;</span> <span class=n>BuildLambda</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=kt>string</span> <span class=n>exps</span><span class=p>)</span>
+<span class=p>{</span>
+  <span class=kt>var</span> <span class=n>sourceType</span> <span class=p>=</span> <span class=k>typeof</span><span class=p>(</span><span class=n>T</span><span class=p>);</span>
+  <span class=kt>var</span> <span class=n>sourceParameter</span> <span class=p>=</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Parameter</span><span class=p>(</span><span class=n>sourceType</span><span class=p>);</span>
+  <span class=kt>var</span> <span class=n>lambdaExps</span> <span class=p>=</span> <span class=n>DynamicExpressionParser</span><span class=p>.</span><span class=n>ParseLambda</span><span class=p>(</span>
+    <span class=k>new</span><span class=p>[]</span> <span class=p>{</span> <span class=n>sourceParameter</span> <span class=p>},</span> 
+    <span class=k>typeof</span><span class=p>(</span><span class=kt>bool</span><span class=p>),</span> 
+    <span class=n>exps</span>
+  <span class=p>);</span>
+  <span class=k>return</span> <span class=n>lambdaExps</span><span class=p>.</span><span class=n>Compile</span><span class=p>()</span> <span class=k>as</span> <span class=n>Func</span><span class=p>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=kt>bool</span><span class=p>&gt;;</span>
+<span class=p>}</span>
+
+<span class=kt>var</span> <span class=n>students</span> <span class=p>=</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Student</span><span class=p>&gt;()</span>
+<span class=p>{</span>
+  <span class=k>new</span> <span class=n>Student</span><span class=p>()</span> <span class=p>{</span> 
+    <span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;长安书小妆&#34;</span><span class=p>,</span> <span class=n>Age</span> <span class=p>=</span> <span class=m>25</span><span class=p>,</span> <span class=n>Address</span> <span class=p>=</span> <span class=s>&#34;洛阳市洛龙区&#34;</span><span class=p>,</span> 
+    <span class=n>Teacher</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Teacher</span><span class=p>()</span> <span class=p>{</span> <span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;孔子&#34;</span> <span class=p>}</span> <span class=p>},</span>
+  <span class=k>new</span> <span class=n>Student</span><span class=p>()</span> <span class=p>{</span> 
+    <span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;飞鸿踏雪&#34;</span><span class=p>,</span> <span class=n>Age</span> <span class=p>=</span> <span class=m>28</span><span class=p>,</span> <span class=n>Address</span> <span class=p>=</span> <span class=s>&#34;宁夏中卫市&#34;</span><span class=p>,</span> 
+    <span class=n>Teacher</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Teacher</span><span class=p>()</span> <span class=p>{</span> <span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;孔子&#34;</span> <span class=p>}</span> <span class=p>},</span>
+<span class=p>};</span>
+
+<span class=kt>var</span> <span class=n>exps</span> <span class=p>=</span> <span class=s>&#34;Age&lt;=25 &amp;&amp; Address.Contains(\&#34;洛阳市\&#34;) &amp;&amp; Teacher.Name=\&#34;孟子\&#34;&#34;</span><span class=p>;</span>
+<span class=kt>var</span> <span class=n>lambda</span> <span class=p>=</span> <span class=n>BuildLambda</span><span class=p>&lt;</span><span class=n>Student</span><span class=p>&gt;(</span><span class=n>exps</span><span class=p>);</span>
+<span class=kt>var</span> <span class=n>results</span> <span class=p>=</span> <span class=n>students</span><span class=p>.</span><span class=n>Where</span><span class=p>(</span><span class=n>lambda</span><span class=p>);</span>
+</code></pre></div><p>注意到，核心的代码其实只有<code>DynamicExpressionParser.ParseLambda()</code>这一句，这充分暴露了博主“调包侠”的本质。按照示例代码中的过滤条件，我们知道给定数据中是没有符合条件的数据的。假如你真的运行了这段代码，你就会得到真正的结果：我说的是对的(逃</p>
+<h1 id=one-more-thing>One More Thing</h1>
+<p>其实，我们今天所说这一切，从本质上来讲，还是属于表达式树的范畴，因为上面的例子，我们同样可以使用表达式树来编写，无非是这个第三方库帮我们隐藏了这部分细节。对于上面这个例子，如果用表达式树来写，会是什么样子的呢？相信熟悉表达式树的朋友，可以非常容易地写出下面的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=c1>//x
+</span><span class=c1></span><span class=kt>var</span> <span class=n>parameter</span> <span class=p>=</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Parameter</span><span class=p>(</span><span class=k>typeof</span><span class=p>(</span><span class=n>tt_wg_order</span><span class=p>),</span> <span class=s>&#34;x&#34;</span><span class=p>);</span>
+<span class=c1>//x.STATUS == 10
+</span><span class=c1></span><span class=kt>var</span> <span class=n>condStatus</span> <span class=p>=</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Equal</span><span class=p>(</span><span class=n>Expression</span><span class=p>.</span><span class=n>Property</span><span class=p>(</span><span class=n>parameter</span><span class=p>,</span> <span class=s>&#34;STATUS&#34;</span><span class=p>),</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Constant</span><span class=p>(</span><span class=m>10</span><span class=p>));</span>
+<span class=c1>//x.Isdelete == 0
+</span><span class=c1></span><span class=kt>var</span> <span class=n>condIsDelete</span> <span class=p>=</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Equal</span><span class=p>(</span><span class=n>Expression</span><span class=p>.</span><span class=n>Property</span><span class=p>(</span><span class=n>parameter</span><span class=p>,</span> <span class=s>&#34;Isdelete&#34;</span><span class=p>),</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Constant</span><span class=p>(</span><span class=m>0</span><span class=p>));</span>
+<span class=c1>//x.STATUS == 10 &amp;&amp; x.Isdelete == 0
+</span><span class=c1></span><span class=kt>var</span> <span class=n>condAndAlso</span> <span class=p>=</span> <span class=n>Expression</span><span class=p>.</span><span class=n>AndAlso</span><span class=p>(</span><span class=n>condStatus</span><span class=p>,</span> <span class=n>condIsDelete</span><span class=p>);</span>
+<span class=c1>//x =&gt; x.STATUS == 10 &amp;&amp; x.Isdelete == 0
+</span><span class=c1></span><span class=kt>var</span> <span class=n>lambda</span> <span class=p>=</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Lambda</span><span class=p>&lt;</span><span class=n>Func</span><span class=p>&lt;</span><span class=n>tt_wg_order</span><span class=p>,</span><span class=kt>bool</span><span class=p>&gt;&gt;(</span><span class=n>condAndAlso</span><span class=p>,</span> <span class=n>parameter</span><span class=p>);</span>
+</code></pre></div><p>我们可以注意到，一个Lmabda表达式，可以抽象为:参数(<code>Parameter</code>)和函数体(<code>Body</code>)两部分，而<code>Body</code>实际上是由一个<code>操作符</code>和一个<code>值</code>组成。譬如这里的第一个条件：<code>x.STATUS == 10</code>。在这里基础上，我们可以定义一个类型：SearchParameters，它将每个条件抽象为字段(Field)、查询方法(QueryMethod)、值(Value)和或分组(OrGroup)。所以，它的处理逻辑就是，将相同OrGroup的条件放在一起用Or连接，然后再和其它条件放在一起用And连接。故而，它可以通过表达式构造出一个Predict类型的委托，而我们的数据持久层是使用EF来实现的，所以，它可以顺利成章地和IQueryable搭配使用，这就是我们这个SearchParameters的实现原理，它唯一让我觉得不好的地方是，字段(Field)不能通过一个Lambda表达式去构造，而必须传入一个字符串，这给了使用者写错字段名称的机会(逃：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp> <span class=k>public</span> <span class=k>static</span> <span class=k>class</span> <span class=nc>LambdaExpressionBuilder</span> 
+ <span class=p>{</span>
+     <span class=k>private</span> <span class=k>static</span> <span class=n>Expression</span> <span class=n>GetExpression</span> <span class=p>(</span><span class=n>ParameterExpression</span> <span class=n>parameter</span><span class=p>,</span> <span class=n>Condition</span> <span class=n>condition</span><span class=p>)</span> 
+     <span class=p>{</span>
+         <span class=kt>var</span> <span class=n>propertyParam</span> <span class=p>=</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Property</span> <span class=p>(</span><span class=n>parameter</span><span class=p>,</span> <span class=n>condition</span><span class=p>.</span><span class=n>Field</span><span class=p>);</span>
+         <span class=kt>var</span> <span class=n>propertyInfo</span> <span class=p>=</span> <span class=n>propertyParam</span><span class=p>.</span><span class=n>Member</span> <span class=k>as</span> <span class=n>PropertyInfo</span><span class=p>;</span>
+         <span class=k>if</span> <span class=p>(</span><span class=n>propertyInfo</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span> <span class=k>throw</span> <span class=k>new</span> <span class=n>ArgumentException</span> <span class=p>(</span><span class=s>$&#34;Invalid field \&#34;</span><span class=p>{</span><span class=n>condition</span><span class=p>.</span><span class=n>Field</span><span class=p>}</span><span class=err>\</span><span class=s>&#34;&#34;</span><span class=p>);</span>
+         <span class=kt>var</span> <span class=n>realPropertyType</span> <span class=p>=</span> <span class=n>Nullable</span><span class=p>.</span><span class=n>GetUnderlyingType</span> <span class=p>(</span><span class=n>propertyInfo</span><span class=p>.</span><span class=n>PropertyType</span><span class=p>)</span> <span class=p>??</span> <span class=n>propertyInfo</span><span class=p>.</span><span class=n>PropertyType</span><span class=p>;</span>
+         <span class=k>if</span> <span class=p>(</span><span class=n>condition</span><span class=p>.</span><span class=n>Op</span> <span class=p>!=</span> <span class=n>Operation</span><span class=p>.</span><span class=n>StdIn</span> <span class=p>&amp;&amp;</span> <span class=n>condition</span><span class=p>.</span><span class=n>Op</span> <span class=p>!=</span> <span class=n>Operation</span><span class=p>.</span><span class=n>StdNotIn</span><span class=p>)</span>
+             <span class=n>condition</span><span class=p>.</span><span class=n>Value</span> <span class=p>=</span> <span class=n>Convert</span><span class=p>.</span><span class=n>ChangeType</span> <span class=p>(</span><span class=n>condition</span><span class=p>.</span><span class=n>Value</span><span class=p>,</span> <span class=n>realPropertyType</span><span class=p>);</span>
+         <span class=kt>var</span> <span class=n>constantParam</span> <span class=p>=</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Constant</span> <span class=p>(</span><span class=n>condition</span><span class=p>.</span><span class=n>Value</span><span class=p>);</span>
+         <span class=k>switch</span> <span class=p>(</span><span class=n>condition</span><span class=p>.</span><span class=n>Op</span><span class=p>)</span> <span class=p>{</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>Equals</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Equal</span> <span class=p>(</span><span class=n>propertyParam</span><span class=p>,</span> <span class=n>constantParam</span><span class=p>);</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>NotEquals</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>NotEqual</span> <span class=p>(</span><span class=n>propertyParam</span><span class=p>,</span> <span class=n>constantParam</span><span class=p>);</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>Contains</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Call</span> <span class=p>(</span><span class=n>propertyParam</span><span class=p>,</span> <span class=s>&#34;Contains&#34;</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span> <span class=n>constantParam</span><span class=p>);;</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>NotContains</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Not</span> <span class=p>(</span><span class=n>Expression</span><span class=p>.</span><span class=n>Call</span> <span class=p>(</span><span class=n>propertyParam</span><span class=p>,</span> <span class=s>&#34;Contains&#34;</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span> <span class=n>constantParam</span><span class=p>));</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>StartsWith</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Call</span> <span class=p>(</span><span class=n>propertyParam</span><span class=p>,</span> <span class=s>&#34;StartsWith&#34;</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span> <span class=n>constantParam</span><span class=p>);</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>EndsWith</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Call</span> <span class=p>(</span><span class=n>propertyParam</span><span class=p>,</span> <span class=s>&#34;EndsWith&#34;</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span> <span class=n>constantParam</span><span class=p>);</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>GreaterThen</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>GreaterThan</span> <span class=p>(</span><span class=n>propertyParam</span><span class=p>,</span> <span class=n>constantParam</span><span class=p>);</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>GreaterThenOrEquals</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>GreaterThanOrEqual</span> <span class=p>(</span><span class=n>propertyParam</span><span class=p>,</span> <span class=n>constantParam</span><span class=p>);</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>LessThan</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>LessThan</span> <span class=p>(</span><span class=n>propertyParam</span><span class=p>,</span> <span class=n>constantParam</span><span class=p>);</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>LessThanOrEquals</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>LessThanOrEqual</span> <span class=p>(</span><span class=n>propertyParam</span><span class=p>,</span> <span class=n>constantParam</span><span class=p>);</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>StdIn</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Call</span> <span class=p>(</span><span class=k>typeof</span> <span class=p>(</span><span class=n>Enumerable</span><span class=p>),</span> <span class=s>&#34;Contains&#34;</span><span class=p>,</span> <span class=k>new</span> <span class=n>Type</span><span class=p>[]</span> <span class=p>{</span> <span class=n>realPropertyType</span> <span class=p>},</span> <span class=k>new</span> <span class=n>Expression</span><span class=p>[]</span> <span class=p>{</span> <span class=n>constantParam</span><span class=p>,</span> <span class=n>propertyParam</span> <span class=p>});</span>
+             <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>StdNotIn</span><span class=p>:</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Not</span> <span class=p>(</span><span class=n>Expression</span><span class=p>.</span><span class=n>Call</span> <span class=p>(</span><span class=k>typeof</span> <span class=p>(</span><span class=n>Enumerable</span><span class=p>),</span> <span class=s>&#34;Contains&#34;</span><span class=p>,</span> <span class=k>new</span> <span class=n>Type</span><span class=p>[]</span> <span class=p>{</span> <span class=n>realPropertyType</span> <span class=p>},</span> <span class=k>new</span> <span class=n>Expression</span><span class=p>[]</span> <span class=p>{</span> <span class=n>constantParam</span><span class=p>,</span> <span class=n>propertyParam</span> <span class=p>}));</span>
+         <span class=p>}</span>
+
+         <span class=k>return</span> <span class=k>null</span><span class=p>;</span>
+     <span class=p>}</span>
+
+     <span class=k>private</span> <span class=k>static</span> <span class=n>Expression</span> <span class=n>GetGroupExpression</span> <span class=p>(</span><span class=n>ParameterExpression</span> <span class=n>parameter</span><span class=p>,</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Condition</span><span class=p>&gt;</span> <span class=n>orConditions</span><span class=p>)</span> 
+     <span class=p>{</span>
+         <span class=k>if</span> <span class=p>(</span><span class=n>orConditions</span><span class=p>.</span><span class=n>Count</span> <span class=p>==</span> <span class=m>0</span><span class=p>)</span>
+             <span class=k>return</span> <span class=k>null</span><span class=p>;</span>
+
+         <span class=kt>var</span> <span class=n>exps</span> <span class=p>=</span> <span class=n>orConditions</span><span class=p>.</span><span class=n>Select</span> <span class=p>(</span><span class=n>c</span> <span class=p>=&gt;</span> <span class=n>GetExpression</span> <span class=p>(</span><span class=n>parameter</span><span class=p>,</span> <span class=n>c</span><span class=p>)).</span><span class=n>ToList</span> <span class=p>();</span>
+         <span class=k>return</span> <span class=n>exps</span><span class=p>.</span><span class=n>Aggregate</span><span class=p>&lt;</span><span class=n>Expression</span><span class=p>,</span> <span class=n>Expression</span><span class=p>&gt;</span> <span class=p>(</span><span class=k>null</span><span class=p>,</span> <span class=p>(</span><span class=n>left</span><span class=p>,</span> <span class=n>right</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+             <span class=k>if</span> <span class=p>(</span><span class=n>left</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span>
+                 <span class=k>return</span> <span class=n>right</span><span class=p>;</span>
+             <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>OrElse</span> <span class=p>(</span><span class=n>left</span><span class=p>,</span> <span class=n>right</span><span class=p>);</span>
+         <span class=p>});</span>
+     <span class=p>}</span>
+
+     <span class=k>public</span> <span class=k>static</span> <span class=n>Expression</span><span class=p>&lt;</span><span class=n>Func</span><span class=p>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=kt>bool</span><span class=p>&gt;&gt;</span> <span class=n>BuildLambda</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=p>(</span><span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>Condition</span><span class=p>&gt;</span> <span class=n>conditions</span><span class=p>)</span> 
+     <span class=p>{</span>
+         <span class=k>if</span> <span class=p>(</span><span class=n>conditions</span> <span class=p>==</span> <span class=k>null</span> <span class=p>||</span> <span class=p>!</span><span class=n>conditions</span><span class=p>.</span><span class=n>Any</span> <span class=p>())</span> <span class=k>return</span> <span class=n>x</span> <span class=p>=&gt;</span> <span class=k>true</span><span class=p>;</span>
+         <span class=kt>var</span> <span class=n>parameter</span> <span class=p>=</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Parameter</span> <span class=p>(</span><span class=k>typeof</span> <span class=p>(</span><span class=n>T</span><span class=p>),</span> <span class=s>&#34;x&#34;</span><span class=p>);</span>
+
+         <span class=c1>//简单条件
+</span><span class=c1></span>         <span class=kt>var</span> <span class=n>simpleExps</span> <span class=p>=</span> <span class=n>conditions</span><span class=p>.</span><span class=n>ToList</span> <span class=p>().</span><span class=n>FindAll</span> <span class=p>(</span><span class=n>c</span> <span class=p>=&gt;</span> <span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span> <span class=p>(</span><span class=n>c</span><span class=p>.</span><span class=n>OrGroup</span><span class=p>))</span>
+             <span class=p>.</span><span class=n>Select</span> <span class=p>(</span><span class=n>c</span> <span class=p>=&gt;</span> <span class=n>GetExpression</span> <span class=p>(</span><span class=n>parameter</span><span class=p>,</span> <span class=n>c</span><span class=p>))</span>
+             <span class=p>.</span><span class=n>ToList</span> <span class=p>();</span>
+
+         <span class=c1>//复杂条件
+</span><span class=c1></span>         <span class=kt>var</span> <span class=n>complexExps</span> <span class=p>=</span> <span class=n>conditions</span><span class=p>.</span><span class=n>ToList</span> <span class=p>().</span><span class=n>FindAll</span> <span class=p>(</span><span class=n>c</span> <span class=p>=&gt;</span> <span class=p>!</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span> <span class=p>(</span><span class=n>c</span><span class=p>.</span><span class=n>OrGroup</span><span class=p>))</span>
+             <span class=p>.</span><span class=n>GroupBy</span> <span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>OrGroup</span><span class=p>)</span>
+             <span class=p>.</span><span class=n>Select</span> <span class=p>(</span><span class=n>g</span> <span class=p>=&gt;</span> <span class=n>GetGroupExpression</span> <span class=p>(</span><span class=n>parameter</span><span class=p>,</span> <span class=n>g</span><span class=p>.</span><span class=n>ToList</span> <span class=p>()))</span>
+             <span class=p>.</span><span class=n>ToList</span> <span class=p>();</span>
+
+         <span class=kt>var</span> <span class=n>exp</span> <span class=p>=</span> <span class=n>simpleExps</span><span class=p>.</span><span class=n>Concat</span> <span class=p>(</span><span class=n>complexExps</span><span class=p>).</span><span class=n>Aggregate</span><span class=p>&lt;</span><span class=n>Expression</span><span class=p>,</span> <span class=n>Expression</span><span class=p>&gt;</span> <span class=p>(</span><span class=k>null</span><span class=p>,</span> <span class=p>(</span><span class=n>left</span><span class=p>,</span> <span class=n>right</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+                 <span class=k>if</span> <span class=p>(</span><span class=n>left</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span>
+                     <span class=k>return</span> <span class=n>right</span><span class=p>;</span>
+                 <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>AndAlso</span> <span class=p>(</span><span class=n>left</span><span class=p>,</span> <span class=n>right</span><span class=p>);</span>
+             <span class=p>});;</span>
+         <span class=k>return</span> <span class=n>Expression</span><span class=p>.</span><span class=n>Lambda</span><span class=p>&lt;</span><span class=n>Func</span><span class=p>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=kt>bool</span><span class=p>&gt;&gt;</span> <span class=p>(</span><span class=n>exp</span><span class=p>,</span> <span class=n>parameter</span><span class=p>);</span>
+     <span class=p>}</span>
+ <span class=p>}</span>
+
+</code></pre></div><p>接下来，我们就可以以一种优雅的方式来对编写查询条件：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=kt>var</span> <span class=n>searchParameters</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SearchParameters</span><span class=p>();</span>
+<span class=n>searchParameters</span><span class=p>.</span><span class=n>Query</span> <span class=p>=</span> <span class=k>new</span> <span class=n>QueryModel</span><span class=p>();</span>
+<span class=n>searchParameters</span><span class=p>.</span><span class=n>Query</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>Condition</span><span class=p>()</span> <span class=p>{</span> <span class=n>Field</span> <span class=p>=</span> <span class=s>&#34;IntValue&#34;</span><span class=p>,</span> <span class=n>Op</span> <span class=p>=</span> <span class=n>Operation</span><span class=p>.</span><span class=n>LessThan</span><span class=p>,</span> <span class=n>Value</span> <span class=p>=</span> <span class=m>30</span> <span class=p>});</span>
+<span class=n>searchParameters</span><span class=p>.</span><span class=n>Query</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>Condition</span><span class=p>()</span> <span class=p>{</span> <span class=n>Field</span> <span class=p>=</span> <span class=s>&#34;StringValue&#34;</span><span class=p>,</span> <span class=n>Op</span> <span class=p>=</span> <span class=n>Operation</span><span class=p>.</span><span class=n>Contains</span><span class=p>,</span> <span class=n>Value</span> <span class=p>=</span> <span class=s>&#34;山&#34;</span><span class=p>,</span> <span class=n>OrGroup</span> <span class=p>=</span> <span class=s>&#34;StringValue&#34;</span> <span class=p>});</span>
+<span class=n>searchParameters</span><span class=p>.</span><span class=n>Query</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>Condition</span><span class=p>&lt;</span><span class=n>Foo</span><span class=p>&gt;()</span> <span class=p>{</span> <span class=n>Field</span> <span class=p>=</span> <span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>StringValue</span><span class=p>,</span> <span class=n>Op</span> <span class=p>=</span> <span class=n>Operation</span><span class=p>.</span><span class=n>Contains</span><span class=p>,</span> <span class=n>Value</span> <span class=p>=</span> <span class=s>&#34;有朋&#34;</span><span class=p>,</span> <span class=n>OrGroup</span> <span class=p>=</span> <span class=s>&#34;StringValue&#34;</span> <span class=p>});</span>
+<span class=kt>var</span> <span class=n>lambda</span> <span class=p>=</span> <span class=n>LambdaExpressionBuilder</span><span class=p>.</span><span class=n>BuildLambda</span><span class=p>&lt;</span><span class=n>Foo</span><span class=p>&gt;(</span><span class=n>searchParameters</span><span class=p>.</span><span class=n>Query</span><span class=p>);</span>
+<span class=kt>var</span> <span class=k>where</span> <span class=p>=</span> <span class=n>lambda</span><span class=p>.</span><span class=n>Compile</span><span class=p>();</span>
+<span class=kt>var</span> <span class=n>result</span> <span class=p>=</span> <span class=n>list</span><span class=p>.</span><span class=n>Where</span><span class=p>(</span><span class=k>where</span><span class=p>);</span>
+</code></pre></div><p>这种实现可以说相当巧妙啦，因为通过有限的条件，我们就可以覆盖到大部分查询的场景，而如果直接去解析一个Lambda表达式，难度显然会增加不少。这里是以一个普通的泛型列表作为示例的，而在实际使用中，常常是结合EntityFramework这类ORM来使用的。相应地，我们只需要为IQueryable接口扩展出支持SearchParameter作为参数进行查询地扩展方法即可，这分别对应了我们在文章一开头所提到的<code>IEnumerable&lt;T></code>和<code>IQueryable &lt;T></code>。</p>
+<p>可如果遇上Dapper这样的轻量级ORM，我们要考虑的问题就变成了怎么通过Lambda表达式生成SQL语句，所以，通过Dapper来扩展功能的时候，最困难的地方，往往在于没法儿像EF/EF Core一样去随心所欲地Where()，像Dapper.Contrib则只能先查询出所有结果再去做进一步的过滤，这种在数据量特别大的时候就会出问题。通过Lambda生成SQL，最难的地方是，你压根不知道，人家会写一个什么样的表达式，而这个表达式，又怎么通过SQL去表达。那么，退而求其次，我们继续用SearchParameters来实现，因为它里面的QueryMethod是有限的，下面给出一个简单的实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>public</span> <span class=k>static</span> <span class=k>class</span> <span class=nc>SearchParametersExtension</span> 
+<span class=p>{</span>
+    <span class=k>public</span> <span class=k>static</span> <span class=p>(</span><span class=kt>string</span><span class=p>,</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;)</span> <span class=n>BuildSqlWhere</span> <span class=p>(</span><span class=k>this</span> <span class=n>SearchParameters</span> <span class=n>searchParameters</span><span class=p>)</span> 
+    <span class=p>{</span>
+        <span class=kt>var</span> <span class=n>conditions</span> <span class=p>=</span> <span class=n>searchParameters</span><span class=p>.</span><span class=n>Query</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>conditions</span> <span class=p>==</span> <span class=k>null</span> <span class=p>||</span> <span class=p>!</span><span class=n>conditions</span><span class=p>.</span><span class=n>Any</span> <span class=p>())</span>
+            <span class=k>return</span> <span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Empty</span><span class=p>,</span> <span class=k>null</span><span class=p>);</span>
+
+        <span class=kt>var</span> <span class=n>sqlExps</span> <span class=p>=</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;</span> <span class=p>();</span>
+        <span class=kt>var</span> <span class=n>sqlParam</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;</span> <span class=p>();</span>
+
+        <span class=c1>//构建简单条件
+</span><span class=c1></span>        <span class=kt>var</span> <span class=n>simpleConditions</span> <span class=p>=</span> <span class=n>conditions</span><span class=p>.</span><span class=n>FindAll</span> <span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span> <span class=p>(</span><span class=n>x</span><span class=p>.</span><span class=n>OrGroup</span><span class=p>));</span>
+        <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=n>simpleConditions</span><span class=p>.</span><span class=n>BuildSqlWhere</span> <span class=p>(</span><span class=k>ref</span> <span class=n>sqlParam</span><span class=p>));</span>
+
+        <span class=c1>//构建复杂条件
+</span><span class=c1></span>        <span class=kt>var</span> <span class=n>complexConditions</span> <span class=p>=</span> <span class=n>conditions</span><span class=p>.</span><span class=n>FindAll</span> <span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=p>!</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span> <span class=p>(</span><span class=n>x</span><span class=p>.</span><span class=n>OrGroup</span><span class=p>));</span>
+        <span class=n>sqlExps</span><span class=p>.</span><span class=n>AddRange</span> <span class=p>(</span><span class=n>complexConditions</span><span class=p>.</span><span class=n>GroupBy</span> <span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>OrGroup</span><span class=p>).</span><span class=n>ToList</span> <span class=p>().</span><span class=n>Select</span> <span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=s>&#34;( &#34;</span> <span class=p>+</span> <span class=n>x</span><span class=p>.</span><span class=n>BuildSqlWhere</span> <span class=p>(</span><span class=k>ref</span> <span class=n>sqlParam</span><span class=p>,</span> <span class=s>&#34; OR &#34;</span><span class=p>)</span> <span class=p>+</span> <span class=s>&#34; )&#34;</span><span class=p>));</span>
+
+        <span class=kt>var</span> <span class=n>sqlWhwere</span> <span class=p>=</span> <span class=n>sqlExps</span><span class=p>.</span><span class=n>Count</span> <span class=p>&gt;</span> <span class=m>1</span> <span class=p>?</span> <span class=kt>string</span><span class=p>.</span><span class=n>Join</span> <span class=p>(</span><span class=s>&#34; AND &#34;</span><span class=p>,</span> <span class=n>sqlExps</span><span class=p>)</span> <span class=p>:</span> <span class=n>sqlExps</span><span class=p>[</span><span class=m>0</span><span class=p>];</span>
+        <span class=k>return</span> <span class=p>(</span><span class=s>$&#34; WHERE {sqlWhwere} &#34;</span><span class=p>,</span> <span class=n>sqlParam</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>public</span> <span class=k>static</span> <span class=kt>string</span> <span class=n>BuildSqlWhere</span> <span class=p>(</span><span class=k>this</span> <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>Condition</span><span class=p>&gt;</span> <span class=n>conditions</span><span class=p>,</span> <span class=k>ref</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;</span> <span class=n>sqlParams</span><span class=p>,</span> <span class=kt>string</span> <span class=n>keywords</span> <span class=p>=</span> <span class=s>&#34; AND &#34;</span><span class=p>)</span> 
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>conditions</span> <span class=p>==</span> <span class=k>null</span> <span class=p>||</span> <span class=p>!</span><span class=n>conditions</span><span class=p>.</span><span class=n>Any</span> <span class=p>())</span>
+            <span class=k>return</span> <span class=kt>string</span><span class=p>.</span><span class=n>Empty</span><span class=p>;</span>
+
+        <span class=kt>var</span> <span class=n>sqlParamIndex</span> <span class=p>=</span> <span class=m>1</span><span class=p>;</span>
+        <span class=kt>var</span> <span class=n>sqlExps</span> <span class=p>=</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;</span> <span class=p>();</span>
+        <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>condition</span> <span class=k>in</span> <span class=n>conditions</span><span class=p>)</span> <span class=p>{</span>
+            <span class=kt>var</span> <span class=n>index</span> <span class=p>=</span> <span class=n>sqlParams</span><span class=p>.</span><span class=n>Count</span> <span class=p>+</span> <span class=n>sqlParamIndex</span><span class=p>;</span>
+            <span class=k>switch</span> <span class=p>(</span><span class=n>condition</span><span class=p>.</span><span class=n>Op</span><span class=p>)</span> <span class=p>{</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>Equals</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} = @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=n>condition</span><span class=p>.</span><span class=n>Value</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>NotEquals</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} &lt;&gt; @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=n>condition</span><span class=p>.</span><span class=n>Value</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>Contains</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} LIKE @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>$&#34;%{condition.Value}%&#34;</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>NotContains</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} NOT LIKE @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>$&#34;%{condition.Value}%&#34;</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>StartsWith</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} LIKE @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>$&#34;%{condition.Value}&#34;</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>EndsWith</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} LIKE @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>$&#34;{condition.Value}%&#34;</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>GreaterThen</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} &gt; @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>$&#34;{condition.Value}&#34;</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>GreaterThenOrEquals</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} &gt;= @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>$&#34;{condition.Value}&#34;</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>LessThan</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} &lt; @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>$&#34;{condition.Value}&#34;</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>LessThanOrEquals</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} &lt;= @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>$&#34;{condition.Value}&#34;</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>StdIn</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} IN @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>$&#34;{condition.Value}&#34;</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=k>case</span> <span class=n>Operation</span><span class=p>.</span><span class=n>StdNotIn</span><span class=p>:</span>
+                    <span class=n>sqlExps</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=s>$&#34;{condition.Field} NOT IN @Param{index}&#34;</span><span class=p>);</span>
+                    <span class=n>sqlParams</span><span class=p>[</span><span class=s>$&#34;Param{index}&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>$&#34;{condition.Value}&#34;</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+            <span class=p>}</span>
+
+            <span class=n>sqlParamIndex</span> <span class=p>+=</span> <span class=m>1</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=n>sqlExps</span><span class=p>.</span><span class=n>Count</span> <span class=p>&gt;</span> <span class=m>1</span> <span class=p>?</span> <span class=kt>string</span><span class=p>.</span><span class=n>Join</span> <span class=p>(</span><span class=n>keywords</span><span class=p>,</span> <span class=n>sqlExps</span><span class=p>)</span> <span class=p>:</span> <span class=n>sqlExps</span><span class=p>[</span><span class=m>0</span><span class=p>];</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>现在，我们可以换一种方式来查Dapper，果然是因为手写SQL没有安全感的缘故啊！</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=kt>var</span> <span class=n>searchParameters</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SearchParameters</span><span class=p>();</span>
+<span class=n>searchParameters</span><span class=p>.</span><span class=n>Page</span> <span class=p>=</span> <span class=k>new</span> <span class=n>PageModel</span><span class=p>()</span> <span class=p>{</span> <span class=n>PageSize</span> <span class=p>=</span> <span class=m>10</span><span class=p>,</span> <span class=n>CurrentPage</span> <span class=p>=</span> <span class=m>1</span> <span class=p>};</span>
+<span class=n>searchParameters</span><span class=p>.</span><span class=n>Query</span> <span class=p>=</span> <span class=k>new</span> <span class=n>QueryModel</span><span class=p>();</span>
+<span class=n>searchParameters</span><span class=p>.</span><span class=n>Query</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>Condition</span><span class=p>()</span> <span class=p>{</span> <span class=n>Field</span> <span class=p>=</span> <span class=s>&#34;OrgCode&#34;</span><span class=p>,</span> <span class=n>Op</span> <span class=p>=</span> <span class=n>Operation</span><span class=p>.</span><span class=n>Contains</span><span class=p>,</span> <span class=n>Value</span> <span class=p>=</span> <span class=s>&#34;飞天御剑流&#34;</span><span class=p>,</span> <span class=n>OrGroup</span> <span class=p>=</span> <span class=s>&#34;OrgCode&#34;</span> <span class=p>});</span>
+<span class=n>searchParameters</span><span class=p>.</span><span class=n>Query</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>Condition</span><span class=p>()</span> <span class=p>{</span> <span class=n>Field</span> <span class=p>=</span> <span class=s>&#34;OrgCode&#34;</span><span class=p>,</span> <span class=n>Op</span> <span class=p>=</span> <span class=n>Operation</span><span class=p>.</span><span class=n>Equals</span><span class=p>,</span> <span class=n>Value</span> <span class=p>=</span> <span class=s>&#34;新选组&#34;</span><span class=p>,</span> <span class=n>OrGroup</span> <span class=p>=</span> <span class=s>&#34;OrgCode&#34;</span> <span class=p>});</span>
+<span class=n>searchParameters</span><span class=p>.</span><span class=n>Query</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>Condition</span><span class=p>()</span> <span class=p>{</span> <span class=n>Field</span> <span class=p>=</span> <span class=s>&#34;CreatedAt&#34;</span><span class=p>,</span> <span class=n>Op</span> <span class=p>=</span> <span class=n>Operation</span><span class=p>.</span><span class=n>GreaterThenOrEquals</span><span class=p>,</span> <span class=n>Value</span> <span class=p>=</span> <span class=k>new</span> <span class=n>DateTime</span><span class=p>(</span><span class=m>2020</span><span class=p>,</span> <span class=m>1</span><span class=p>,</span> <span class=m>1</span><span class=p>)});</span>
+<span class=m>_</span><span class=n>repository</span><span class=p>.</span><span class=n>GetByQuery</span><span class=p>&lt;</span><span class=n>BusinessUnit</span><span class=p>&gt;(</span><span class=n>searchParameters</span><span class=p>);</span>
+</code></pre></div><p>对于定义<code>Condition</code>时，<code>Field</code>属性安全感缺失的问题，我们可以这样来解决：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>public</span> <span class=k>class</span> <span class=nc>Condition</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=p>:</span> <span class=n>Condition</span>
+
+  <span class=k>public</span> <span class=k>new</span> <span class=n>Expression</span><span class=p>&lt;</span><span class=n>Func</span><span class=p>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=kt>dynamic</span><span class=p>&gt;&gt;</span> <span class=n>Field</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+  <span class=k>public</span> <span class=n>Operation</span> <span class=n>Op</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+  <span class=k>public</span> <span class=kt>object</span> <span class=n>Value</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+  <span class=k>public</span> <span class=kt>string</span> <span class=n>OrGroup</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=k>public</span> <span class=k>class</span> <span class=nc>QueryModel</span> <span class=p>:</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Condition</span><span class=p>&gt;</span>
+<span class=p>{</span>
+  <span class=k>public</span> <span class=k>void</span> <span class=n>Add</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=n>Condition</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=n>condition</span><span class=p>)</span> <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=k>class</span>
+  <span class=p>{</span>
+    <span class=kt>var</span> <span class=n>filedName</span> <span class=p>=</span> <span class=kt>string</span><span class=p>.</span><span class=n>Empty</span><span class=p>;</span>
+    <span class=kt>var</span> <span class=n>memberExp</span> <span class=p>=</span> <span class=n>condition</span><span class=p>.</span><span class=n>Field</span><span class=p>.</span><span class=n>Body</span> <span class=k>as</span> <span class=n>MemberExpression</span><span class=p>;</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>memberExp</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span>
+    <span class=p>{</span>
+      <span class=kt>var</span> <span class=n>ubody</span> <span class=p>=</span> <span class=p>(</span><span class=n>UnaryExpression</span><span class=p>)</span><span class=n>condition</span><span class=p>.</span><span class=n>Field</span><span class=p>.</span><span class=n>Body</span><span class=p>;</span>
+      <span class=n>memberExp</span> <span class=p>=</span> <span class=n>ubody</span><span class=p>.</span><span class=n>Operand</span> <span class=k>as</span> <span class=n>MemberExpression</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=n>filedName</span> <span class=p>=</span> <span class=n>memberExp</span><span class=p>.</span><span class=n>Member</span><span class=p>.</span><span class=n>Name</span><span class=p>;</span>
+    <span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>Condition</span><span class=p>()</span> <span class=p>{</span> <span class=n>Field</span> <span class=p>=</span> <span class=n>filedName</span><span class=p>,</span> <span class=n>Op</span> <span class=p>=</span> <span class=n>condition</span><span class=p>.</span><span class=n>Op</span><span class=p>,</span> <span class=n>Value</span> <span class=p>=</span> <span class=n>condition</span><span class=p>.</span><span class=n>Value</span><span class=p>,</span> <span class=n>OrGroup</span> <span class=p>=</span> <span class=n>condition</span><span class=p>.</span><span class=n>OrGroup</span> <span class=p>});</span>
+    <span class=p>}</span>
+  <span class=p>}</span>
+</code></pre></div><p>其实，这还是表达式树的内容，在上面的代码片段中，早已出现过它的身影，回想起多年前用这个东西改造INotifyPropertyChanged的时候，总觉得一切似曾相识：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=n>searchParameters</span><span class=p>.</span><span class=n>Query</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>Condition</span><span class=p>&lt;</span><span class=n>Foo</span><span class=p>&gt;()</span> <span class=p>{</span> <span class=n>Field</span> <span class=p>=</span> <span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>StringValue</span><span class=p>,</span> <span class=n>Op</span> <span class=p>=</span> <span class=n>Operation</span><span class=p>.</span><span class=n>Contains</span><span class=p>,</span> <span class=n>Value</span> <span class=p>=</span> <span class=s>&#34;有朋&#34;</span><span class=p>,</span> <span class=n>OrGroup</span> <span class=p>=</span> <span class=s>&#34;StringValue&#34;</span> <span class=p>});</span>
+</code></pre></div><h1 id=本文小结>本文小结</h1>
+<p>和博主的大多数博客一样，这篇博客是一个“醉翁之意不在酒”的博客。听起来在说如何动态创建Lambda表达式，实际上讲的还是表达式树，至于原因，则还是博客开篇所提到的“一以贯之”。博主想写这篇博客，是源于实际工作中遇到的“查询”问题，而最后解决的还真就是查询的问题。不管是Dynamic Linq中的ParseLambda()还是表达式树中的LambdaExpression，本质上都是同一个东西，最终的命运都是Predict这个委托。SearchParameters则是对前者的一种简化，通过控制Lambda表达式的复杂度来简化问题，相比起直接传一个字符串过来，这种在风险的控制上要更高一点，之所以要传字符串，则是又一个非关技术的无聊的问题了，用Jira里的概念说应该叫做设计如此(By Design)。好了，以上就是这篇博客的内容啦，谢谢大家！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/linq/>Linq</a>
+<a href=/tags/lambda/>Lambda</a>
+<a href=/tags/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A0%91/>表达式树</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E5%BC%82%E6%AD%A5lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E9%97%AE%E9%A2%98%E7%9A%84%E6%8E%A2%E7%B4%A2/>
+<div class=article-details>
+<h2 class=article-title>异步Lambda表达式问题的探索</h2>
+</div>
+</a>
+</article>
+<article class=has-image>
+<a href=/posts/ssl/tls%E5%8A%A0%E5%AF%86%E4%BC%A0%E8%BE%93%E4%B8%8E%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F/>
+<div class=article-image>
+<img src=https://i.vince.pub/p/hexo-codespaces/20210515152919_hud33b16be8696bb53545b2a9beb3e2be3_587727_1600x0_resize_box_2.png loading=lazy data-key data-hash=https://i.vince.pub/p/hexo-codespaces/20210515152919_hud33b16be8696bb53545b2a9beb3e2be3_587727_1600x0_resize_box_2.png>
+</div>
+<div class=article-details>
+<h2 class=article-title>SSL/TLS加密传输与数字证书的前世今生</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-python-%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB%E9%98%B2%E7%96%AB%E5%81%A5%E5%BA%B7%E7%A0%81/>
+<div class=article-details>
+<h2 class=article-title>使用 Python 自动识别防疫健康码</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%A0%E4%B8%8D%E5%8F%AF%E4%B8%8D%E7%9F%A5%E7%9A%84%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92%E8%BF%9B%E9%98%B6%E6%8A%80%E5%B7%A7/>
+<div class=article-details>
+<h2 class=article-title>你不可不知的容器编排进阶技巧</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0-grpc-%E6%9C%8D%E5%8A%A1%E4%BB%A3%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现 gRPC 服务代理</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

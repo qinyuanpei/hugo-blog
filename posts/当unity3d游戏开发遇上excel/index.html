@@ -1,0 +1,295 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="尽管我们可以使用Xml、Json、ini、数据库等存储形式来存储这些数据，可是毫无疑问的是，Excel是Window平台上最好的数据处理软件，因此数值策划更倾向于使用Excel来设计游戏中的数据，面对如此重要的数值策划工作，我们自然希望在解析Excel文件时不会出现错误，可是我们总不能指望着策划把Excel数据转换成我们能处理的数据类型吧，因此就有了博主今天的这篇文章，所以在今天的文章中我们主要的内容就是如何通过程序来解析Excel文件;既然今天的主题是Unity3D游戏开发，所以无论我们在前面提出了什么样的解决方案，最后我们都要落实到游戏开发上，所以最后和大家分享的是一个Unity3D配合ExcelReader实现Excel解析的简单案例;因为平时经常与技术圈子里的朋友聊天，所以在博主印象里Excel的解析在游戏开发中还是较为常见的，而且博主知道对于微软的Office办公软件是可以通过VBA编程来实现某些功能的，可是因为博主一直在用国产的WPS，所以对于Excel的解析基本上是停留在一个概念性的认识上，可是朋友的忙不能不帮不是，所以博主决定借着这个机会好好研究下Excel文件的解析"><title>当Unity3D游戏开发遇上Excel</title>
+<link rel=canonical href=/posts/%E5%BD%93unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E9%81%87%E4%B8%8Aexcel/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="当Unity3D游戏开发遇上Excel">
+<meta property="og:description" content="尽管我们可以使用Xml、Json、ini、数据库等存储形式来存储这些数据，可是毫无疑问的是，Excel是Window平台上最好的数据处理软件，因此数值策划更倾向于使用Excel来设计游戏中的数据，面对如此重要的数值策划工作，我们自然希望在解析Excel文件时不会出现错误，可是我们总不能指望着策划把Excel数据转换成我们能处理的数据类型吧，因此就有了博主今天的这篇文章，所以在今天的文章中我们主要的内容就是如何通过程序来解析Excel文件;既然今天的主题是Unity3D游戏开发，所以无论我们在前面提出了什么样的解决方案，最后我们都要落实到游戏开发上，所以最后和大家分享的是一个Unity3D配合ExcelReader实现Excel解析的简单案例;因为平时经常与技术圈子里的朋友聊天，所以在博主印象里Excel的解析在游戏开发中还是较为常见的，而且博主知道对于微软的Office办公软件是可以通过VBA编程来实现某些功能的，可是因为博主一直在用国产的WPS，所以对于Excel的解析基本上是停留在一个概念性的认识上，可是朋友的忙不能不帮不是，所以博主决定借着这个机会好好研究下Excel文件的解析">
+<meta property="og:url" content="/posts/%E5%BD%93unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E9%81%87%E4%B8%8Aexcel/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Unity3D"><meta property="article:tag" content="游戏"><meta property="article:tag" content="Excel"><meta property="article:published_time" content="2015-01-25T19:41:57+00:00"><meta property="article:modified_time" content="2015-01-25T19:41:57+00:00">
+<meta name=twitter:title content="当Unity3D游戏开发遇上Excel">
+<meta name=twitter:description content="尽管我们可以使用Xml、Json、ini、数据库等存储形式来存储这些数据，可是毫无疑问的是，Excel是Window平台上最好的数据处理软件，因此数值策划更倾向于使用Excel来设计游戏中的数据，面对如此重要的数值策划工作，我们自然希望在解析Excel文件时不会出现错误，可是我们总不能指望着策划把Excel数据转换成我们能处理的数据类型吧，因此就有了博主今天的这篇文章，所以在今天的文章中我们主要的内容就是如何通过程序来解析Excel文件;既然今天的主题是Unity3D游戏开发，所以无论我们在前面提出了什么样的解决方案，最后我们都要落实到游戏开发上，所以最后和大家分享的是一个Unity3D配合ExcelReader实现Excel解析的简单案例;因为平时经常与技术圈子里的朋友聊天，所以在博主印象里Excel的解析在游戏开发中还是较为常见的，而且博主知道对于微软的Office办公软件是可以通过VBA编程来实现某些功能的，可是因为博主一直在用国产的WPS，所以对于Excel的解析基本上是停留在一个概念性的认识上，可是朋友的忙不能不帮不是，所以博主决定借着这个机会好好研究下Excel文件的解析">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<img src=/images/avatar_hu9b977ab3a4b8472c7b4f807105204943_11692_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>飞鸿踏雪</a></h1>
+<h2 class=site-description>纵有疾风起，人生不言弃.</h2>
+</header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/ target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/movies/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>影单</span>
+</a>
+</li>
+<li>
+<a href=/books/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>书单</span>
+</a>
+</li>
+<li>
+<a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/ style=background-color:#2a9d8f;color:#fff>
+游戏开发
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E5%BD%93unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E9%81%87%E4%B8%8Aexcel/>当Unity3D游戏开发遇上Excel</a>
+</h2>
+<h3 class=article-subtitle>
+尽管我们可以使用Xml、Json、ini、数据库等存储形式来存储这些数据，可是毫无疑问的是，Excel是Window平台上最好的数据处理软件，因此数值策划更倾向于使用Excel来设计游戏中的数据，面对如此重要的数值策划工作，我们自然希望在解析Excel文件时不会出现错误，可是我们总不能指望着策划把Excel数据转换成我们能处理的数据类型吧，因此就有了博主今天的这篇文章，所以在今天的文章中我们主要的内容就是如何通过程序来解析Excel文件;既然今天的主题是Unity3D游戏开发，所以无论我们在前面提出了什么样的解决方案，最后我们都要落实到游戏开发上，所以最后和大家分享的是一个Unity3D配合ExcelReader实现Excel解析的简单案例;因为平时经常与技术圈子里的朋友聊天，所以在博主印象里Excel的解析在游戏开发中还是较为常见的，而且博主知道对于微软的Office办公软件是可以通过VBA编程来实现某些功能的，可是因为博主一直在用国产的WPS，所以对于Excel的解析基本上是停留在一个概念性的认识上，可是朋友的忙不能不帮不是，所以博主决定借着这个机会好好研究下Excel文件的解析
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jan 25, 2015</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 1 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>  各位朋友，大家好，我是秦元培，欢迎大家关注我的博客，我的博客地址是<a class=link href=http://blog.csdn.net/qinyuanpei target=_blank rel=noopener>http://blog.csdn.net/qinyuanpei</a>。今天我们来聊聊常用办公软件Excel和游戏开发那不为人知的秘密。今天的内容将涉及到Excel在游戏开发中的应用以及如何利用程序解析Excel中的数据。</p>
+<p>  作为常用的办公软件的Excel相信大家都不陌生啦。可是如果我们认为Excel只是办公软件的话，那么这就不只是天真而是Out了。事实上Excel和游戏开发有着密切的联系，不知道大家还记不记得那款利用Excel开发出来的三国杀，这可能是Excel第一次以游戏开发的身份出现在大家面前吧。我们知道在游戏开发领域有一种工作叫做策划，就像在软件开发领域有一种工作叫做产品经理一样。而在诸多的策划工作中，数值策划是一个可以直接影响游戏进程的工作，因为数值策划体现了一个游戏在整体数值上的平衡，设计者需要维护好这样一个平衡，确保游戏外的玩家和游戏里的敌人面对的是同一个公平的虚拟世界。</p>
+<p>  例如《仙剑奇侠传四》这款游戏中，韩菱纱在游戏后期的速度可以说是完全打破了游戏的平衡性，因为韩菱纱本身的速度就比较快，再加上仙风云体术的加速效果完全对玄霄产生了戏剧性压制，导致在游戏结尾的Boss战中经常是韩菱纱出手N次后才挨到玄霄出手，我们知道韩菱纱的乾坤一掷每次消耗气15，可是因为韩菱纱的速度足够快，所以韩菱纱完全可以通过普通物理攻击快速地积满气进而施展乾坤一掷，这就是游戏的平衡性被打破了呀，更不要说这部游戏里最为经典的千方残光剑Bug了，这同样是游戏平衡性的问题，归根到底是紫英的这个技能在配置数据时出现了错误，这充分说明数据的正确合理与否是会对游戏产生重要影响的。
+尽管我们可以使用Xml、Json、ini、数据库等存储形式来存储这些数据，可是毫无疑问的是，Excel是Window平台上最好的数据处理软件，因此数值策划更倾向于使用Excel来设计游戏中的数据，面对如此重要的数值策划工作，我们自然希望在解析Excel文件时不会出现错误，可是我们总不能指望着策划把Excel数据转换成我们能处理的数据类型吧，因此就有了博主今天的这篇文章，所以在今天的文章中我们主要的内容就是如何通过程序来解析Excel文件。</p>
+<p>###1、项目需求
+  最近博主一个朋友向我抱怨，说手头上有好几百个Excel工作表要处理，大概几十万条数据吧。原因是当时公司分配任务时交待不清，等到了向公司交接数据的时候，朋友忽然发现这些Excel文件的表格格式和公司规定的不一样啊。这可急坏了博主的这位朋友，博主的朋友只好不断地的复制、黏贴，因为这些数据是分布在不同的数据表里，朋友整天都忙得焦头烂额，可是即使这样效率还是得不到保证啊，朋友最后找到了博主这里，问我能不能编写程序帮他解决这个问题。因为平时经常与技术圈子里的朋友聊天，所以在博主印象里Excel的解析在游戏开发中还是较为常见的，而且博主知道对于微软的Office办公软件是可以通过VBA编程来实现某些功能的，可是因为博主一直在用国产的WPS，所以对于Excel的解析基本上是停留在一个概念性的认识上，可是朋友的忙不能不帮不是，所以博主决定借着这个机会好好研究下Excel文件的解析。</p>
+<p>###2、解决方案
+  因为博主在之前并没有过解析Excel文件的经历，所以博主就到Github上淘了些开源项目。和很多人爱逛天猫、淘宝的经历类似，如果你发现有一个人经常喜欢到Github上晃荡、喜欢关注技术类的博客或者资讯、经常再看PDF版的技术文档或书籍，请千万不要怀疑，这个人绝对是程序员。哈哈，好了，玩笑就此打住啊。经过博主对这些开源项目的简单分析和整理，目前，对Excel文件解析的解决方案主要有以下三种：</p>
+<p>####1、Microsoft.Office.Interop.Excel
+  第一种解决方案是基于微软提供的Office API,这组API以COM组件的形式给出，我们可以通过调用该API实现对Excel文件的解析。使用这组API非常简单,博主稍后会为大家给出一个示例代码。微软的Office API特点是使用起来方便，可以使用C#、Visual Basic等语言进行相关开发。可是这种解决方案的的缺点同样很明显，因为COM组件主要依赖于系统，因此使用COM组件需要在系统中注册，这将对代码的可移植性产生影响，而且受制于COM技术，这种解决方案只能运行在Windows平台上，无法实现跨平台，加之解析速度较慢，因此这种方案通常只适合在解析速度要求不高，运行环境为Windows平台的应用场景。</p>
+<p>####2、ExcelReader
+  第二种解决方案得益于OpenOffice标准,OpenOffice标准可以让我们使用一种标准来解析和处理Excel文件而无需关注Excel文件是来自微软的Misrosoft Office、金山的WPS还是其它的办公软件。如果说第一种解决方案是Windows平台上解析Excel文件的选择之一，那么ExcelRead就是跨平台目标下解析Excel文件的首选方案。尤其像Unity3D这样的跨平台解决方案下，选择一个跨平台的类库或者组件能够保证我们的游戏在各种平台下稳定地运行，所以ExcelRead是博主向大家推荐的一个跨平台的Excel解析方案。</p>
+<p>####3、FastExcel
+  第三种解决方案FastExcel是博主在解决博主的这位朋友的问题时所采取的方案。FastExcel是一个在开源世界里比较著名的Excel读写的类库，因此使用这个类库可以得到较为广泛的社区支持，而且在FastExcel这个项目的源代码中，作者为我们提供了使用FastExel进行Excel解析的相关示例，具有较高的参考价值，基本上可以在这个示例的基础上写出可以运行的代码。根据示例代码的运行结果使用FastExcel单独读写100000行数据基本上维持在3~4秒，读写速度还是蛮快的。不过FastExcel使用的是迭代器和Linq to Xml来读取Excel文件的，所以当数据表中存在空白单元格时，读写的时候会比较诡异，这一点希望大家注意。</p>
+<p>###3、工程案例
+  既然今天的主题是Unity3D游戏开发，所以无论我们在前面提出了什么样的解决方案，最后我们都要落实到游戏开发上，所以最后和大家分享的是一个Unity3D配合ExcelReader实现Excel解析的简单案例。为什么要选择ExcelReader呢？因为ExcelReader是一个跨平台的解决方案。好了，下面我们一起来学习这个案例：</p>
+<pre tabindex=0><code>using UnityEngine;
+using System.Collections;
+using System.IO;
+using Excel;
+using System.Data;
+
+
+public class ExcelScripts : MonoBehaviour 
+{
+
+	void Start () 
+	{
+		FileStream m_Stream=File.Open(Application.dataPath + 
+			&quot;\\Excel\\UserLevel.xlsx&quot;,FileMode.Open,FileAccess.Read);
+		//使用OpenXml读取Excel文件
+		IExcelDataReader mExcelReader=ExcelReaderFactory.CreateOpenXmlReader(m_Stream);
+		//将Excel数据转化为DataSet
+		DataSet mResultSets=mExcelReader.AsDataSet();
+		//读取行数
+		int rowCount=mResultSets.Tables[0].Rows.Count;
+		//逐行读取,从第一行读以跳过表头
+		for(int i=1;i&lt;rowCount;i++)
+		{
+			//将读取的Excel数据转化成数据实体
+			UserLevel mUser=new UserLevel();
+			mUser.Name=mResultSets.Tables[0].Rows[i][0].ToString();
+			mUser.Level=mResultSets.Tables[0].Rows[i][1].ToString();
+			mUser.Description=mResultSets.Tables[0].Rows[i][2].ToString();
+			mUser.Skill=mResultSets.Tables[0].Rows[i][3].ToString();
+			//输出Debug信息
+			Debug.Log(mUser.ToString());
+			//ADD:更多逻辑
+		}
+	}
+
+	//定义一个数据实体类UserLevel
+	private class UserLevel
+	{
+		private string m_Name;
+		public string Name 
+		{
+		  get { return m_Name;}
+		  set { m_Name = value;}
+		}
+
+		private string m_Level;
+		public string Level 
+		{
+		  get {	return m_Level;}
+		  set {	m_Level = value;}
+		}
+
+		private string m_Description;
+		public string Description 
+		{
+		  get { return m_Description;}
+		  set { m_Description = value;}
+		}
+
+		private string m_Skill;
+		public string Skill 
+		{
+		  get {	return m_Skill;}		
+		  set {	m_Skill = value;}
+		}
+
+		public override string ToString()
+		{
+			return string.Format(&quot;Name={0}&amp;Level={1}&amp;Description={2}&amp;Skill={3}&quot;,
+			               m_Name,m_Level,m_Description,m_Skill);
+		}
+	}
+}
+
+</code></pre><p>  好了，这就是今天这篇文章的全部内容了，希望大家喜欢！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/unity3d/>Unity3D</a>
+<a href=/tags/%E6%B8%B8%E6%88%8F/>游戏</a>
+<a href=/tags/excel/>Excel</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%9C%BA%E6%99%AF%E4%BC%98%E5%8C%96%E7%B3%BB%E5%88%97%E4%B9%8B%E6%89%B9%E5%A4%84%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>Unity3D游戏场景优化系列之批处理</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E6%89%93%E9%80%A0%E6%B5%81%E8%A1%8C%E7%9A%84%E5%85%B3%E5%8D%A1%E7%B3%BB%E7%BB%9F/>
+<div class=article-details>
+<h2 class=article-title>Unity3D游戏开发之快速打造流行的关卡系统</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%89%A9%E5%B1%95unity3d%E7%BC%96%E8%BE%91%E5%99%A8%E7%9A%84%E8%84%9A%E6%9C%AC%E6%A8%A1%E6%9D%BF/>
+<div class=article-details>
+<h2 class=article-title>扩展Unity3D编辑器的脚本模板</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E8%A7%A3%E6%9E%90obj%E6%A8%A1%E5%9E%8B%E5%B9%B6%E5%B0%86%E5%85%B6%E5%8A%A0%E8%BD%BD%E5%88%B0unity3d%E5%9C%BA%E6%99%AF%E4%B8%AD/>
+<div class=article-details>
+<h2 class=article-title>解析OBJ模型并将其加载到Unity3D场景中</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8Bunity3d%E5%9C%BA%E6%99%AF%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91/>
+<div class=article-details>
+<h2 class=article-title>Unity3D游戏开发之Unity3D场景编辑器扩展开发</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

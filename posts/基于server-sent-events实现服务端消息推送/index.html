@@ -1,0 +1,441 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="所谓**万变不离其宗&#34;**，下面我们以.NET为例来快速集成Server-Sent Events，这里需要说明的是，博主下面的例子采用ASP.NET Core 2.0版本编写，首先，我们建一个名为SSEController的控制器，在默认的Index()方法中，按照SSE规范，我们首先组织HTTP响应头，然后发送了一个名为SSE_Start的自定义事件，接下来，我们每隔10秒钟给客户端发送一条消息，请原谅我如此敷衍的Sleep()：;对于SSE而言，它是一个单工通道，客户端不能主动向服务端发送信息，所以，一旦建立了SSE通道，客户端唯一需要关注的地方就是**onmessage**这个回调函数，因为客户端只需要负责处理消息即可，甚至我们可以连**onerror**都不用关注，因为SSE自带断线重连机制，当然你可以选择在发生错误的时候关掉连接，此时你需要**close()**方法;可以看到，完全按照SSE规范来定义的，这里每次生成一个新的GUID来作为消息的ID，客户端断线后重连的间隔为30秒，默认发送的是**&#34;消息&#34;**，当指定eventName参数时，它就表示一个自定义事件，这里我们使用JSON格式来传递信息"><title>基于Server-Sent Events实现服务端消息推送</title>
+<link rel=canonical href=/posts/%E5%9F%BA%E4%BA%8Eserver-sent-events%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="基于Server-Sent Events实现服务端消息推送">
+<meta property="og:description" content="所谓**万变不离其宗&#34;**，下面我们以.NET为例来快速集成Server-Sent Events，这里需要说明的是，博主下面的例子采用ASP.NET Core 2.0版本编写，首先，我们建一个名为SSEController的控制器，在默认的Index()方法中，按照SSE规范，我们首先组织HTTP响应头，然后发送了一个名为SSE_Start的自定义事件，接下来，我们每隔10秒钟给客户端发送一条消息，请原谅我如此敷衍的Sleep()：;对于SSE而言，它是一个单工通道，客户端不能主动向服务端发送信息，所以，一旦建立了SSE通道，客户端唯一需要关注的地方就是**onmessage**这个回调函数，因为客户端只需要负责处理消息即可，甚至我们可以连**onerror**都不用关注，因为SSE自带断线重连机制，当然你可以选择在发生错误的时候关掉连接，此时你需要**close()**方法;可以看到，完全按照SSE规范来定义的，这里每次生成一个新的GUID来作为消息的ID，客户端断线后重连的间隔为30秒，默认发送的是**&#34;消息&#34;**，当指定eventName参数时，它就表示一个自定义事件，这里我们使用JSON格式来传递信息">
+<meta property="og:url" content="/posts/%E5%9F%BA%E4%BA%8Eserver-sent-events%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="WebSocket"><meta property="article:tag" content="SSE"><meta property="article:tag" content="后端"><meta property="article:published_time" content="2019-01-18T13:46:44+00:00"><meta property="article:modified_time" content="2019-01-18T13:46:44+00:00">
+<meta name=twitter:title content="基于Server-Sent Events实现服务端消息推送">
+<meta name=twitter:description content="所谓**万变不离其宗&#34;**，下面我们以.NET为例来快速集成Server-Sent Events，这里需要说明的是，博主下面的例子采用ASP.NET Core 2.0版本编写，首先，我们建一个名为SSEController的控制器，在默认的Index()方法中，按照SSE规范，我们首先组织HTTP响应头，然后发送了一个名为SSE_Start的自定义事件，接下来，我们每隔10秒钟给客户端发送一条消息，请原谅我如此敷衍的Sleep()：;对于SSE而言，它是一个单工通道，客户端不能主动向服务端发送信息，所以，一旦建立了SSE通道，客户端唯一需要关注的地方就是**onmessage**这个回调函数，因为客户端只需要负责处理消息即可，甚至我们可以连**onerror**都不用关注，因为SSE自带断线重连机制，当然你可以选择在发生错误的时候关掉连接，此时你需要**close()**方法;可以看到，完全按照SSE规范来定义的，这里每次生成一个新的GUID来作为消息的ID，客户端断线后重连的间隔为30秒，默认发送的是**&#34;消息&#34;**，当指定eventName参数时，它就表示一个自定义事件，这里我们使用JSON格式来传递信息">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<img src=/images/avatar_hu9b977ab3a4b8472c7b4f807105204943_11692_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>飞鸿踏雪</a></h1>
+<h2 class=site-description>纵有疾风起，人生不言弃.</h2>
+</header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/ target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/movies/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>影单</span>
+</a>
+</li>
+<li>
+<a href=/books/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>书单</span>
+</a>
+</li>
+<li>
+<a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E5%9F%BA%E4%BA%8Eserver-sent-events%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81/>基于Server-Sent Events实现服务端消息推送</a>
+</h2>
+<h3 class=article-subtitle>
+所谓**万变不离其宗"**，下面我们以.NET为例来快速集成Server-Sent Events，这里需要说明的是，博主下面的例子采用ASP.NET Core 2.0版本编写，首先，我们建一个名为SSEController的控制器，在默认的Index()方法中，按照SSE规范，我们首先组织HTTP响应头，然后发送了一个名为SSE_Start的自定义事件，接下来，我们每隔10秒钟给客户端发送一条消息，请原谅我如此敷衍的Sleep()：;对于SSE而言，它是一个单工通道，客户端不能主动向服务端发送信息，所以，一旦建立了SSE通道，客户端唯一需要关注的地方就是**onmessage**这个回调函数，因为客户端只需要负责处理消息即可，甚至我们可以连**onerror**都不用关注，因为SSE自带断线重连机制，当然你可以选择在发生错误的时候关掉连接，此时你需要**close()**方法;可以看到，完全按照SSE规范来定义的，这里每次生成一个新的GUID来作为消息的ID，客户端断线后重连的间隔为30秒，默认发送的是**"消息"**，当指定eventName参数时，它就表示一个自定义事件，这里我们使用JSON格式来传递信息
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jan 18, 2019</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>前段时间，为客户定制了一个类似看板的东西，用户可以通过看板了解任务的处理情况，通过APP扫面页面上的二维码就可以领取任务，而当任务被领取以后需要通知当前页面刷新。原本这是一个相对简单的需求，可是因为APP端和PC端是两个不同的Team在维护，换句话说，两个Team各自有一套自己的API接口，前端页面永远无法知道APP到底什么时候扫描了二维码，为此前端页面不得不通过轮询的方式去判断状态是否发生了变化。这种方式会发送大量无用的HTTP请求，因此在最初的版本里，无论是效率还是性能都不能满足业务要求，最终博主采用一种称为服务器推送事件(<strong>Server-Sent Events</strong>)的技术，所以，在今天这篇文章里，博主相和大家分享下关于服务器推送事件(<strong>Server-Sent Events</strong>)相关的内容。</p>
+<h1 id=什么是server-sent-events>什么是Server-Sent Events</h1>
+<p>我们知道，严格地来讲，HTTP协议是无法做到服务端主动推送消息的，因为HTTP协议是一种<strong>请求-响应</strong>模型，这意味着在服务器返回响应信息以后，本次请求就已经结束了。可是，我们有一种变通的做法，即首先是服务器端向客户端声明，然后接下来发送的是流信息。换句话说，此时发送的不是一个一次性的数据包，而是以数据流的形式不断地发送过来，在这种情况下，客户端不会关闭连接，会一直等着服务器端发送新的数据过来，一个非常相似而直观的例子是视频播放，它其实就是在利用流信息完成一次长时间的下载。那么，<strong>Server-Sent Events</strong>(以下简称<strong>SSE</strong>)，就是利用这种机制，使用流信息像客户端推送信息。</p>
+<p>说到这里，可能大家会感到疑惑：WebSocket不是同样可以实现服务端向客户端推送信息吗？那么这两种技术有什么不一样呢？首先，WebSocket和SSE都是在建立一种浏览器与服务器间的通信通道，然后由服务器向浏览器推送信息。两者最为不同的地方在于，WebSocket建立的是一个全双工通道，而SSE建立的是一个单工通道。所谓单工和双工，是指数据流动的方向上的不同，对WebSocket而言，客户端和服务端都可以发送信息，所以它是双向通信；而对于SSE而言，只有服务端可以发送消息，故而它是单向通信。从下面的图中我们可以看得更为直观，在WebSocket中数据"有来有往"，客户端既可以接受信息亦可发送信息，而在SSE中数据是单向的，客户端只能被动地接收来自服务器的信息。所以，这两者在通信机制上不同到这里已经非常清晰啦！</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzf5w39987j20se0dv77u.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzf5w39987j20se0dv77u.jpg loading=lazy alt=WebSocket与SSE对比>
+</a>
+<figcaption>WebSocket与SSE对比</figcaption>
+</figure></p>
+<h2 id=sse服务端>SSE服务端</h2>
+<p>下面我们来看看SSE是如何通信的，因为它是一个单工通道的协议，所以协议定义的都是在服务端完成的，我们就从服务端开始吧！协议规定，服务器向客户端发送的消息，必须是UTF-8编码的，并且提供如下的HTTP头部信息：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell>Content-Type: text/event-stream
+Cache-Control: no-cache
+Connection: keep-alive
+</code></pre></div><p>这里出现了一个一种新的MIME类型，<strong>text/event-stream</strong>。协议规定，第一行的Content-Type必须是<strong>text/event-stream</strong>，这表示服务端的数据是以信息流的方式返回的，Cache-Control和Connection两个字段和常规的HTTP一致，这里就不再展开说啦！OK，现在客户端知道这是一个SSE信息流啦，那么客户端怎么知道服务端发送了什么消息呢？这就要说到SSE的消息格式，在SSE中消息的基本格式是：</p>
+<pre tabindex=0><code>[field]: value\n
+</code></pre><p>其中，field可以取四个值，它们分别是：<strong>data</strong>、<strong>event</strong>、<strong>id</strong>、<strong>retry</strong>，我们来一起看看它们的用法。</p>
+<p><strong>data</strong>字段表示数据内容，下面的例子展示SSE中的一行和多行数据，可以注意到，当数据有多行时，可以用\n作为每一行的结尾，只要保证最后一行以\n\n结尾即可。</p>
+<pre tabindex=0><code>：这是一行数据内容
+data: SSE给你发了一行消息\n\n
+：这是多行数据内容
+data: {\n
+data: &quot;foo&quot;: &quot;foolish&quot;,\n
+data: &quot;bar&quot;, 2333\n
+data: }\n\n
+</code></pre><p><strong>event</strong>字段表示自定义事件，默认为message，在浏览器中我们可以用**addEventListener()**来监听响应的事件，这正是为什么SSE被称为服务器推送事件，因为我们在这里既可以发送消息，同样可以发送事件。</p>
+<pre tabindex=0><code>: GameStart事件
+event: GameStart\n
+data: 敌军还有30秒到达战场\n\n
+
+data: Double Kill\n\n
+
+: GameOver事件
+event: GaneOver\n
+data: You Win！\n\n
+</code></pre><p>**id **字段是一个数据标识符，相当于我们可以给每一条消息一个编号。</p>
+<pre tabindex=0><code>id: 1\n
+data: 敌军还有30秒到达战场\n\n
+id: 2\n
+data: Double Kill\n\n
+id: 3\n
+data: You Win！\n\n
+</code></pre><p><strong>retry</strong>字段可以指定浏览器重新发起连接的时间间隔，所以，SSE天生就支持断线重连机制。</p>
+<pre tabindex=0><code>retry: 10000\n
+</code></pre><h2 id=sse客户端>SSE客户端</h2>
+<p>SSE目前是HTML5标准之一，所以，目前主流的浏览器(<strong>除了IE和Edge以外</strong>)都天然支持这一特性，这意味着我们不需要依赖<strong>前端娱乐圈</strong>推崇的各种工具链，就可以快速地使用SSE来投入开发。这里需要使用地是<a class=link href=https://developer.mozilla.org/zh-CN/Server-sent_events/EventSource target=_blank rel=noopener>EventSource</a>对象，我们从下面这个例子开始了解：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Javascript data-lang=Javascript><span class=k>if</span> <span class=p>(</span><span class=s1>&#39;EventSource&#39;</span> <span class=k>in</span> <span class=nb>window</span><span class=p>)</span> <span class=p>{</span>
+  <span class=kd>var</span> <span class=nx>source</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>EventSource</span><span class=p>(</span><span class=nx>url</span><span class=p>,</span> <span class=p>{</span> <span class=nx>withCredentials</span><span class=o>:</span> <span class=kc>true</span> <span class=p>});</span>
+  
+  <span class=cm>/* open事件回调函数 */</span>
+  <span class=nx>source</span><span class=p>.</span><span class=nx>onopen</span> <span class=o>=</span> <span class=kd>function</span><span class=p>(){</span> 
+  	<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;SSE通道已建立...&#39;</span><span class=p>);</span>
+  <span class=p>};</span>
+  
+  <span class=cm>/* message事件回调函数 */</span>
+  <span class=nx>source</span><span class=p>.</span><span class=nx>onmessage</span> <span class=o>=</span> <span class=kd>function</span><span class=p>(</span><span class=nx>evt</span><span class=p>){</span>
+  	<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>evt</span><span class=p>.</span><span class=nx>data</span><span class=p>);</span>
+  <span class=p>}</span>
+  
+  <span class=cm>/* error事件回调函数 */</span>
+  <span class=nx>source</span><span class=p>.</span><span class=nx>onerror</span> <span class=o>=</span> <span class=kd>function</span><span class=p>(</span><span class=nx>evt</span><span class=p>){</span>
+  	<span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;SSE通道发生错误&#39;</span><span class=p>);</span>
+  <span class=p>}</span>
+  
+  <span class=cm>/* 自定义事件回调 */</span>
+  <span class=nx>source</span><span class=p>.</span><span class=nx>addEventListener</span><span class=p>(</span><span class=s1>&#39;foo&#39;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>event</span><span class=p>)</span> <span class=p>{</span>
+  	<span class=kd>var</span> <span class=nx>data</span> <span class=o>=</span> <span class=nx>event</span><span class=p>.</span><span class=nx>data</span><span class=p>;</span>
+  	<span class=c1>// handle message
+</span><span class=c1></span>  <span class=p>},</span><span class=kc>false</span><span class=p>);</span>
+	
+  <span class=cm>/* 关闭SSE */</span>
+  <span class=nx>source</span><span class=p>.</span><span class=nx>close</span><span class=p>()</span>
+<span class=p>}</span>
+</code></pre></div><p>和各种各样的HTML5接口一样，我们需要判断当前的浏览器环境是否支持SSE。建立SSE只需要后端提供一个Url即可，当存在跨域时，我们可以打开第二个参数：<strong>withCredentials</strong>，这样SSE会在建立通道时携带Cookie。我们通过实例化后的source对象来判断通道是否建立，该对象有一个重要的属性：<strong>readyState</strong>。当它的取值为0时，表示连接还未建立，或者断线正在重连；当它的取值为1时，表示连接已经建立，可以接受数据；当它的取值为2时，表示连接已断，且不会重连。</p>
+<p>好了，当SSE被成功建立以后，首先会触发open事件。这里介绍下SSE中的关键事件，即open、message和error，我们可以分别通过<strong>onopen</strong>、<strong>onmessage</strong>和<strong>onerror</strong>这三个回调函数来监听相应的事件。对于SSE而言，它是一个单工通道，客户端不能主动向服务端发送信息，所以，一旦建立了SSE通道，客户端唯一需要关注的地方就是<strong>onmessage</strong>这个回调函数，因为客户端只需要负责处理消息即可，甚至我们可以连<strong>onerror</strong>都不用关注，因为SSE自带断线重连机制，当然你可以选择在发生错误的时候关掉连接，此时你需要**close()**方法。</p>
+<p>我们在上面提到，SSE在服务端可以定义自定义事件，那么，在浏览器中我们该如何接收这些自定义事件呢？这当然要提到无所不能的<strong>addEventListener</strong>，在人肉操作DOM的jQuery时代，jQuery中提供的大量API在协调不同浏览器间差异的同时，让我们离这些底层的知识越来越远，时至今日，当<strong>erySelector/querySelectorAll</strong>完全可以替换jQuery的选择器的时候，我们是不是可以考虑重新把某些东西捡起来呢？言归正传，在SSE中，我们只需要像注册普通事件一样，就可以完成对自定义事件的监听，只要客户端和服务端定好消息的协议即可。</p>
+<h1 id=在net中集成server-sent-events>在.NET中集成Server-Sent Events</h1>
+<p>OK，说了这么多，大家一定感觉有一个鲜活的例子会比较好一点，奈何<a class=link href=https://developer.mozilla.org/zh-CN/docs/Server-sent_events/Using_server-sent_events target=_blank rel=noopener>官方</a>提供的示例都是PHP的，难道官方默认PHP是世界上最好的编程语言了吗？所谓<strong>万变不离其宗"</strong>，下面我们以.NET为例来快速集成Server-Sent Events，这里需要说明的是，博主下面的例子采用ASP.NET Core 2.0版本编写，首先，我们建一个名为SSEController的控制器，在默认的Index()方法中，按照SSE规范，我们首先组织HTTP响应头，然后发送了一个名为SSE_Start的自定义事件，接下来，我们每隔10秒钟给客户端发送一条消息，请原谅我如此敷衍的Sleep()：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=na>[Route(&#34;api/[controller]</span><span class=s>&#34;)]
+</span><span class=s></span><span class=na>[ApiController]</span>
+<span class=k>public</span> <span class=k>class</span> <span class=nc>SSEController</span> <span class=p>:</span> <span class=n>Controller</span>
+<span class=p>{</span>
+<span class=na>    [HttpGet]</span>
+    <span class=k>public</span> <span class=n>IActionResult</span> <span class=n>Index</span><span class=p>()</span>
+    <span class=p>{</span>
+    	<span class=c1>//组织HTTP响应头
+</span><span class=c1></span>    	<span class=n>Response</span><span class=p>.</span><span class=n>Headers</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=s>&#34;Connection&#34;</span><span class=p>,</span> <span class=s>&#34;keep-alive&#34;</span><span class=p>);</span>
+    	<span class=n>Response</span><span class=p>.</span><span class=n>Headers</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=s>&#34;Cache-Control&#34;</span><span class=p>,</span> <span class=s>&#34;no-cache&#34;</span><span class=p>);</span>
+    	<span class=n>Response</span><span class=p>.</span><span class=n>Headers</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=s>&#34;Content-Type&#34;</span><span class=p>,</span> <span class=s>&#34;text/event-stream&#34;</span><span class=p>);</span>
+
+    	<span class=c1>//发送自定义事件
+</span><span class=c1></span>        <span class=kt>var</span> <span class=n>message</span> <span class=p>=</span> <span class=n>BuildSSE</span><span class=p>(</span><span class=k>new</span> <span class=p>{</span> <span class=n>Content</span> <span class=p>=</span> <span class=s>&#34;SSE开始发送消息&#34;</span><span class=p>,</span> <span class=n>Time</span> <span class=p>=</span> <span class=n>DateTime</span><span class=p>.</span><span class=n>Now</span> <span class=p>},</span> <span class=s>&#34;SSE_Start&#34;</span><span class=p>);</span>
+        <span class=n>Response</span><span class=p>.</span><span class=n>Body</span><span class=p>.</span><span class=n>Write</span><span class=p>(</span><span class=n>message</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>message</span><span class=p>.</span><span class=n>Length</span><span class=p>);</span>
+
+        <span class=c1>//每隔10秒钟向客户端发送一条消息
+</span><span class=c1></span>        <span class=k>while</span> <span class=p>(</span><span class=k>true</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>message</span> <span class=p>=</span> <span class=n>BuildSSE</span><span class=p>(</span><span class=k>new</span> <span class=p>{</span> <span class=n>Content</span> <span class=p>=</span> <span class=s>$&#34;当前时间为{DateTime.Now}&#34;</span> <span class=p>});</span>
+            <span class=n>Response</span><span class=p>.</span><span class=n>Body</span><span class=p>.</span><span class=n>Write</span><span class=p>(</span><span class=n>message</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>message</span><span class=p>.</span><span class=n>Length</span><span class=p>);</span>
+            <span class=n>Thread</span><span class=p>.</span><span class=n>Sleep</span><span class=p>(</span><span class=m>10000</span><span class=p>);</span>
+       <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>我们提到，SSE的数据是按照一定的格式，由id、event、data和retry四个字段构成的，那么，织消息格式的代码我们放在了**BuildSSE()**方法中，我们来一起看看它的实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>private</span> <span class=kt>byte</span><span class=p>[]</span> <span class=n>BuildSSE</span><span class=p>&lt;</span><span class=n>TMessage</span><span class=p>&gt;(</span><span class=n>TMessage</span> <span class=n>message</span><span class=p>,</span> <span class=kt>string</span> <span class=n>eventName</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=kt>int</span> <span class=n>retry</span> <span class=p>=</span> <span class=m>30000</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=kt>var</span> <span class=n>builder</span> <span class=p>=</span> <span class=k>new</span> <span class=n>StringBuilder</span><span class=p>();</span>
+    <span class=n>builder</span><span class=p>.</span><span class=n>Append</span><span class=p>(</span><span class=s>$&#34;id:{Guid.NewGuid().ToString(&#34;</span><span class=n>N</span><span class=s>&#34;)}\n&#34;</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(!</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span><span class=p>(</span><span class=n>eventName</span><span class=p>))</span>
+        <span class=n>builder</span><span class=p>.</span><span class=n>Append</span><span class=p>(</span><span class=s>$&#34;event:{eventName}\n&#34;</span><span class=p>);</span>
+    <span class=n>builder</span><span class=p>.</span><span class=n>Append</span><span class=p>(</span><span class=s>$&#34;retry:{retry}\n&#34;</span><span class=p>);</span>
+    <span class=n>builder</span><span class=p>.</span><span class=n>Append</span><span class=p>(</span><span class=s>$&#34;data:{JsonConvert.SerializeObject(message)}\n\n&#34;</span><span class=p>);</span>
+    <span class=k>return</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>builder</span><span class=p>.</span><span class=n>ToString</span><span class=p>());</span>
+<span class=p>}</span> 
+</code></pre></div><p>可以看到，完全按照SSE规范来定义的，这里每次生成一个新的GUID来作为消息的ID，客户端断线后重连的间隔为30秒，默认发送的是**&ldquo;消息&rdquo;**，当指定eventName参数时，它就表示一个自定义事件，这里我们使用JSON格式来传递信息。好了，这样我们就完成了服务端的开发，怎么样，是不是感觉非常简单呢？我们先让它跑起来，下面着手来编写客户端，这个就非常简单啦！</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=o>&lt;!</span><span class=nx>DOCTYPE</span> <span class=nx>html</span><span class=o>&gt;</span>
+<span class=o>&lt;</span><span class=nx>html</span><span class=o>&gt;</span>
+<span class=o>&lt;</span><span class=nx>body</span><span class=o>&gt;</span>
+<span class=o>&lt;</span><span class=nx>h1</span><span class=o>&gt;</span><span class=nx>DotNet</span><span class=o>-</span><span class=nx>SSE</span><span class=o>&lt;</span><span class=err>/h1&gt;</span>
+<span class=o>&lt;</span><span class=nx>div</span> <span class=nx>id</span><span class=o>=</span><span class=s2>&#34;result&#34;</span><span class=o>&gt;&lt;</span><span class=err>/div&gt;</span>
+<span class=o>&lt;</span><span class=nx>script</span><span class=o>&gt;</span>
+<span class=k>if</span> <span class=p>(</span><span class=s1>&#39;EventSource&#39;</span> <span class=k>in</span> <span class=nb>window</span><span class=p>)</span> <span class=p>{</span>
+  <span class=kd>var</span> <span class=nx>source</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>EventSource</span><span class=p>(</span><span class=s1>&#39;http://localhost:5000/api/SSE/&#39;</span><span class=p>);</span>
+  
+  <span class=cm>/* open事件回调函数 */</span>
+  <span class=nx>source</span><span class=p>.</span><span class=nx>onopen</span> <span class=o>=</span> <span class=kd>function</span><span class=p>(){</span> 
+  	<span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;result&#34;</span><span class=p>).</span><span class=nx>innerHTML</span><span class=o>+=</span> <span class=s2>&#34;SSE通道已建立...&lt;br/&gt;&#34;</span><span class=p>;</span>
+  <span class=p>};</span>
+  
+  <span class=cm>/* message事件回调函数 */</span>
+  <span class=nx>source</span><span class=p>.</span><span class=nx>onmessage</span> <span class=o>=</span> <span class=kd>function</span><span class=p>(</span><span class=nx>evt</span><span class=p>){</span>
+  	<span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;result&#34;</span><span class=p>).</span><span class=nx>innerHTML</span><span class=o>+=</span> <span class=s2>&#34;Message: &#34;</span> <span class=o>+</span> <span class=nx>event</span><span class=p>.</span><span class=nx>data</span> <span class=o>+</span> <span class=s2>&#34;&lt;br/&gt;&#34;</span><span class=p>;</span>
+  <span class=p>}</span>
+  
+  <span class=cm>/* error事件回调函数 */</span>
+  <span class=nx>source</span><span class=p>.</span><span class=nx>onerror</span> <span class=o>=</span> <span class=kd>function</span><span class=p>(</span><span class=nx>evt</span><span class=p>){</span>
+      <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;result&#34;</span><span class=p>).</span><span class=nx>innerHTML</span><span class=o>+=</span> <span class=s2>&#34;SSE通道发生错误&lt;br/&gt;&#34;</span><span class=p>;</span>
+  <span class=p>}</span>
+  
+  <span class=cm>/* SSE_Start事件回调 */</span>
+  <span class=nx>source</span><span class=p>.</span><span class=nx>addEventListener</span><span class=p>(</span><span class=s1>&#39;SSE_Start&#39;</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>event</span><span class=p>)</span> <span class=p>{</span>
+  	<span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;result&#34;</span><span class=p>).</span><span class=nx>innerHTML</span> <span class=o>+=</span> <span class=s2>&#34;SSE_Start: &#34;</span> <span class=o>+</span> <span class=nx>event</span><span class=p>.</span><span class=nx>data</span> <span class=o>+</span> <span class=s2>&#34;&lt;br/&gt;&#34;</span><span class=p>;</span>
+  <span class=p>},</span><span class=kc>false</span><span class=p>);</span>
+<span class=p>}</span>
+<span class=o>&lt;</span><span class=err>/script&gt;</span>
+<span class=o>&lt;</span><span class=err>/body&gt;</span>
+<span class=o>&lt;</span><span class=err>/html&gt;</span>
+</code></pre></div><p>此时，不需要任何<strong>现代前端</strong>方面的技术，我们直接打开浏览器，就可以看到：</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzfbt5m898g20jk06jdfw.gif>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzfbt5m898g20jk06jdfw.gif loading=lazy alt=SSEDemo>
+</a>
+<figcaption>SSEDemo</figcaption>
+</figure></p>
+<p>更为直观的，我们可以通过Chrome开发者工具观察到实际的请求情况，相比普通的HTTP请求，SSE会出现一个名为EventStream的选项卡，这是因为我们在服务端设置的Content-Type为<strong>text/event-stream</strong>的缘故，可以注意到，我们定义的id(GUID)会在这里显示出来：</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzfc3ik2l2j20ww07kgmo.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzfc3ik2l2j20ww07kgmo.jpg loading=lazy alt=有点与众不同的SSE>
+</a>
+<figcaption>有点与众不同的SSE</figcaption>
+</figure></p>
+<h1 id=同类技术优劣对比>同类技术优劣对比</h1>
+<p>OK，这篇文章写到这里，相信大家已经对SSE有了一个比较具体的概念，那么，我们不妨来梳理下相关的同类技术。一路走过来，我们大体上经历了**(短)轮询**、**长轮询/Comet**、**SSE**和**WebSocket**。</p>
+<p><strong>(短)轮询</strong>这个比较容易理解了，它从本质上来讲，就是由客户端定时去发起一个HTTP请求，这种方式是一种相对尴尬的方式，为什么这样说呢？因为时间间隔过长则无法保证数据的时效性，而时间间隔过短则会发送大量无用的请求，尤其是当客户端数量比较多的时候，这种方式很容易耗尽服务器的连接数。</p>
+<p><strong>而长轮询</strong>则是(短)轮询的一个变种，它和(短)轮询最大的不同在于，服务端在接收到请求以后，并非立即进行响应，而是先将这个请求挂起，直到服务器端数据发生变化时再进行响应。所以，一个明显的优势是，它相对地减少了大量不必要的HTTP请求，那么，它是不是就完美无暇了呢？当然不是，因为服务端会将客户端发来的请求挂起，因此在挂起的那些时间里，服务器的资源实际上是被浪费啦！</p>
+<p>严格地说，<strong>SSE</strong>并不是一门新技术，为什么这样说呢？因为它和我们基于HTTP长连接的Push非常相似。这里又提到一个新概念，HTTP长连接，其实，这个说法病逝非常严谨，因为我们知道HTTP最早就是一个请求-响应模型，直到HTTP1.1中增加了持久连接，即Connection:keep-alive的支持。所以，我们这里说的长连接、短链接实际上都是指TCP的长连接还是短连接，换句话说，它和客户端没有关系，只要服务端支持长连接，那么在某个时间段内的TCP连接实际上复用的，进而就能提高HTTP请求性能，曾经我们不是还用iframe做过长连接吗？</p>
+<p><strong>WebSocket</strong>作为构建实时交互应用的首选技术，博主曾经在<a class=link href=https://qinyuanpei.github.io/posts/3269605707/ target=_blank rel=noopener>《基于WebSocket和Redis实现Bilibili弹幕效果》</a>一文中有所提及，WebSocket相比前面这些技术，最大的不同在于它拥有专属的通信通道，一旦这个通道建立，客户端和服务端就可以互相发送消息，它沿用了我们传统的Socket通讯的概念和原理，变被动为主动，无论是客户端还是服务端，都不必再被动地去**&ldquo;拉&rdquo;**或者**&ldquo;推&rdquo;**。在这个过程中，出现了像SignalR/SocketIO等等的库，它们主打的兼容性和降级策略，曾经一度让我们感到亲切，不过随着WebSocket标准化的推进，相信这些最终都会被原生API所替代吧，也许是有生之年呢？谁知道未来是什么样子呢？</p>
+<p>下面给出针对以上内容的**&ldquo;简洁&rdquo;**版本：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>（短)轮询</th>
+<th>长轮询/Comet</th>
+<th>SSE</th>
+<th>WebSocket</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>浏览器支持</td>
+<td>全部</td>
+<td>全部</td>
+<td>除IE/Edge</td>
+<td>现代浏览器</td>
+</tr>
+<tr>
+<td>是否独立协议</td>
+<td>HTTP</td>
+<td>HTTP</td>
+<td>HTTP</td>
+<td>WS</td>
+</tr>
+<tr>
+<td>是否轻量</td>
+<td>是</td>
+<td>否</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td>断线重连</td>
+<td>否</td>
+<td>否</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td>负载压力</td>
+<td>占用内存/请求数</td>
+<td>同（短)轮询</td>
+<td>一般</td>
+<td>同SSE</td>
+</tr>
+<tr>
+<td>数据延迟</td>
+<td>取决于请求间隔</td>
+<td>同（短)轮询</td>
+<td>实时</td>
+<td>实时</td>
+</tr>
+</tbody>
+</table>
+<h1 id=本文小结>本文小结</h1>
+<p>正如本文一开始所写，博主使用SSE是因为业务上的需要，在经历了轮询带来的性能问题以后，博主需要一款类似WebSocket的东西，来实现服务端主动向客户端推送消息，究其原因，是因为浏览器永远都不知道，App到底什么时候会扫描二维码，所以，从一开始我们试图让网页去轮询的做法，本身就是不太合理的。那么，为什么没有用WebSocket呢？因为WebSocket需要一点点<strong>框架</strong>层面的支持，所以，我选择了更为轻量级的SSE，毕竟，这比让其它Team的同事去调整他们的后端接口要简单的多。我之前参与过一部分WebSocket相关的项目，我深切地感受到，除了在浏览器的兼容性问题以外，因为WebSocket使用的是独有的WS协议，所以，我们常规的API网关其实在这方面支持的都不是很好，更不用说鉴权、加密等等一系列的问题啦，而SSE本身是基于HTTP协议的，我们目前针对HTTP的各种基础设施，都可以直接拿过来用，这应该是我最大的一点感悟了吧，好了，这篇文章就是这样啦，谢谢大家，新的一年注定要重新开始的呢&mldr;&mldr;</p>
+<h1 id=参考文章>参考文章</h1>
+<ul>
+<li><a class=link href=https://www.ibm.com/developerworks/cn/web/wa-lo-comet/ target=_blank rel=noopener>IBM - Comet：基于 HTTP 长连接的“服务器推”技术</a></li>
+<li><a class=link href=https://developer.mozilla.org/zh-CN/docs/Server-sent_events/Using_server-sent_events target=_blank rel=noopener>Mozilla - 使用服务器发送事件</a></li>
+<li><a class=link href=http://www.ruanyifeng.com/blog/2017/05/server-sent_events.html target=_blank rel=noopener>阮一峰 - Server-Sent Events 教程</a></li>
+<li><a class=link href=https://blog.csdn.net/baidu_38990811/article/details/79172163 target=_blank rel=noopener>呆呆_小茗 - Ajax轮询，Ajax长轮询和Websocket(详细使用)</a></li>
+<li><a class=link href=https://www.cnblogs.com/hrhguanli/p/3818452.html target=_blank rel=noopener> hrhguanli - HTTP长连接和短连接</a></li>
+</ul>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/websocket/>WebSocket</a>
+<a href=/tags/sse/>SSE</a>
+<a href=/tags/%E5%90%8E%E7%AB%AF/>后端</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8Ewebsocket%E5%92%8Credis%E5%AE%9E%E7%8E%B0bilibili%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/>
+<div class=article-details>
+<h2 class=article-title>基于WebSocket和Redis实现Bilibili弹幕效果</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8.net-core%E5%92%8Cvue%E6%90%AD%E5%BB%BAwebsocket%E8%81%8A%E5%A4%A9%E5%AE%A4/>
+<div class=article-details>
+<h2 class=article-title>使用.NET Core和Vue搭建WebSocket聊天室</h2>
+</div>
+</a>
+</article>
+<article class=has-image>
+<a href=/posts/ssl/tls%E5%8A%A0%E5%AF%86%E4%BC%A0%E8%BE%93%E4%B8%8E%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F/>
+<div class=article-image>
+<img src=https://i.vince.pub/p/hexo-codespaces/20210515152919_hud33b16be8696bb53545b2a9beb3e2be3_587727_1600x0_resize_box_2.png loading=lazy data-key data-hash=https://i.vince.pub/p/hexo-codespaces/20210515152919_hud33b16be8696bb53545b2a9beb3e2be3_587727_1600x0_resize_box_2.png>
+</div>
+<div class=article-details>
+<h2 class=article-title>SSL/TLS加密传输与数字证书的前世今生</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-python-%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB%E9%98%B2%E7%96%AB%E5%81%A5%E5%BA%B7%E7%A0%81/>
+<div class=article-details>
+<h2 class=article-title>使用 Python 自动识别防疫健康码</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%A0%E4%B8%8D%E5%8F%AF%E4%B8%8D%E7%9F%A5%E7%9A%84%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92%E8%BF%9B%E9%98%B6%E6%8A%80%E5%B7%A7/>
+<div class=article-details>
+<h2 class=article-title>你不可不知的容器编排进阶技巧</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

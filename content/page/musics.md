@@ -1,4 +1,0 @@
----
-layout: "musics"
-slug: "musics"
----

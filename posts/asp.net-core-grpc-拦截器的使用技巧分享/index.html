@@ -1,0 +1,436 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="gRPC是微软在.NET Core 及其后续版本中主推的 RPC 框架，它使用 Google 的 Protocol Buffers 作为序列化协议，使用 HTTP/2 作为通信协议，具有跨语言、高性能、双向流式调用等优点。考虑到，接下来要参与的是，一个以gRPC为核心而构建的微服务项目。因此，博主准备调研一下gRPC的相关内容，而首当其冲的，则是从 .NET Core 3.1 开始就有的拦截器，它类似于ASP.NET Core中的过滤器和中间件，体现了一种面向切面编程(AOP)的思想，非常适合在RPC服务调用的时候做某种统一处理，譬如参数校验、身份验证、日志记录等等。在今天这篇博客中，博主主要和大家分享的是，利用 .NET Core gRPC 中的拦截器实现日志记录的简单技巧，希望能给大家带来一点启发。
+ 开源、多语言、高性能的 gRPC 
+关于 Interceptor 类 Interceptor类是 gRPC 服务拦截器的基类，它本身是一个抽象类，其中定义了下面的虚方法：
+public virtual AsyncClientStreamingCall&amp;lt;TRequest, TResponse&amp;gt; AsyncClientStreamingCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual AsyncDuplexStreamingCall&amp;lt;TRequest, TResponse&amp;gt; AsyncDuplexStreamingCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual AsyncUnaryCall&amp;lt;TResponse&amp;gt; AsyncUnaryCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual TResponse BlockingUnaryCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task&amp;lt;TResponse&amp;gt; ClientStreamingServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); public virtual AsyncServerStreamingCall&amp;lt;TResponse&amp;gt; AsyncServerStreamingCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task DuplexStreamingServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task ServerStreamingServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task&amp;lt;TResponse&amp;gt; UnaryServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); 整体而言，如果从通信方式上来划分，可以分为：流式调用 和 普通调用；而如果从使用方来划分，则可以分为：客户端 和 服务端。进一步讲的话，针对流式调用，它还分为：&amp;quot;单向流&amp;quot; 和 &amp;ldquo;双向流&amp;quot;。关于这些细节上的差异，大家可以通过 gRPC 的 官方文档 来了解，这里我们给出的是每一种方法对应的用途："><title>ASP.NET Core gRPC 拦截器的使用技巧分享</title>
+<link rel=canonical href=/posts/asp.net-core-grpc-%E6%8B%A6%E6%88%AA%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="ASP.NET Core gRPC 拦截器的使用技巧分享">
+<meta property="og:description" content="gRPC是微软在.NET Core 及其后续版本中主推的 RPC 框架，它使用 Google 的 Protocol Buffers 作为序列化协议，使用 HTTP/2 作为通信协议，具有跨语言、高性能、双向流式调用等优点。考虑到，接下来要参与的是，一个以gRPC为核心而构建的微服务项目。因此，博主准备调研一下gRPC的相关内容，而首当其冲的，则是从 .NET Core 3.1 开始就有的拦截器，它类似于ASP.NET Core中的过滤器和中间件，体现了一种面向切面编程(AOP)的思想，非常适合在RPC服务调用的时候做某种统一处理，譬如参数校验、身份验证、日志记录等等。在今天这篇博客中，博主主要和大家分享的是，利用 .NET Core gRPC 中的拦截器实现日志记录的简单技巧，希望能给大家带来一点启发。
+ 开源、多语言、高性能的 gRPC 
+关于 Interceptor 类 Interceptor类是 gRPC 服务拦截器的基类，它本身是一个抽象类，其中定义了下面的虚方法：
+public virtual AsyncClientStreamingCall&amp;lt;TRequest, TResponse&amp;gt; AsyncClientStreamingCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual AsyncDuplexStreamingCall&amp;lt;TRequest, TResponse&amp;gt; AsyncDuplexStreamingCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual AsyncUnaryCall&amp;lt;TResponse&amp;gt; AsyncUnaryCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual TResponse BlockingUnaryCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task&amp;lt;TResponse&amp;gt; ClientStreamingServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); public virtual AsyncServerStreamingCall&amp;lt;TResponse&amp;gt; AsyncServerStreamingCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task DuplexStreamingServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task ServerStreamingServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task&amp;lt;TResponse&amp;gt; UnaryServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); 整体而言，如果从通信方式上来划分，可以分为：流式调用 和 普通调用；而如果从使用方来划分，则可以分为：客户端 和 服务端。进一步讲的话，针对流式调用，它还分为：&amp;quot;单向流&amp;quot; 和 &amp;ldquo;双向流&amp;quot;。关于这些细节上的差异，大家可以通过 gRPC 的 官方文档 来了解，这里我们给出的是每一种方法对应的用途：">
+<meta property="og:url" content="/posts/asp.net-core-grpc-%E6%8B%A6%E6%88%AA%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content=".NET"><meta property="article:tag" content="gRPC"><meta property="article:tag" content="AOP"><meta property="article:tag" content="日志"><meta property="article:published_time" content="2021-05-26T09:03:35+00:00"><meta property="article:modified_time" content="2021-05-26T09:03:35+00:00">
+<meta name=twitter:title content="ASP.NET Core gRPC 拦截器的使用技巧分享">
+<meta name=twitter:description content="gRPC是微软在.NET Core 及其后续版本中主推的 RPC 框架，它使用 Google 的 Protocol Buffers 作为序列化协议，使用 HTTP/2 作为通信协议，具有跨语言、高性能、双向流式调用等优点。考虑到，接下来要参与的是，一个以gRPC为核心而构建的微服务项目。因此，博主准备调研一下gRPC的相关内容，而首当其冲的，则是从 .NET Core 3.1 开始就有的拦截器，它类似于ASP.NET Core中的过滤器和中间件，体现了一种面向切面编程(AOP)的思想，非常适合在RPC服务调用的时候做某种统一处理，譬如参数校验、身份验证、日志记录等等。在今天这篇博客中，博主主要和大家分享的是，利用 .NET Core gRPC 中的拦截器实现日志记录的简单技巧，希望能给大家带来一点启发。
+ 开源、多语言、高性能的 gRPC 
+关于 Interceptor 类 Interceptor类是 gRPC 服务拦截器的基类，它本身是一个抽象类，其中定义了下面的虚方法：
+public virtual AsyncClientStreamingCall&amp;lt;TRequest, TResponse&amp;gt; AsyncClientStreamingCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual AsyncDuplexStreamingCall&amp;lt;TRequest, TResponse&amp;gt; AsyncDuplexStreamingCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual AsyncUnaryCall&amp;lt;TResponse&amp;gt; AsyncUnaryCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual TResponse BlockingUnaryCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task&amp;lt;TResponse&amp;gt; ClientStreamingServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); public virtual AsyncServerStreamingCall&amp;lt;TResponse&amp;gt; AsyncServerStreamingCall&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task DuplexStreamingServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task ServerStreamingServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); public virtual Task&amp;lt;TResponse&amp;gt; UnaryServerHandler&amp;lt;TRequest, TResponse&amp;gt;(); 整体而言，如果从通信方式上来划分，可以分为：流式调用 和 普通调用；而如果从使用方来划分，则可以分为：客户端 和 服务端。进一步讲的话，针对流式调用，它还分为：&amp;quot;单向流&amp;quot; 和 &amp;ldquo;双向流&amp;quot;。关于这些细节上的差异，大家可以通过 gRPC 的 官方文档 来了解，这里我们给出的是每一种方法对应的用途：">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<img src=/images/avatar_hu9b977ab3a4b8472c7b4f807105204943_11692_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>飞鸿踏雪</a></h1>
+<h2 class=site-description>纵有疾风起，人生不言弃.</h2>
+</header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/ target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/movies/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>影单</span>
+</a>
+</li>
+<li>
+<a href=/books/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>书单</span>
+</a>
+</li>
+<li>
+<a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/asp.net-core-grpc-%E6%8B%A6%E6%88%AA%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB/>ASP.NET Core gRPC 拦截器的使用技巧分享</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>May 26, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 3 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p><code>gRPC</code>是微软在<code>.NET Core</code> 及其后续版本中主推的 RPC 框架，它使用 <code>Google</code> 的 <code>Protocol Buffers</code> 作为序列化协议，使用 <strong>HTTP/2</strong> 作为通信协议，具有<strong>跨语言</strong>、<strong>高性能</strong>、<strong>双向流式调用</strong>等优点。考虑到，接下来要参与的是，一个以<code>gRPC</code>为核心而构建的微服务项目。因此，博主准备调研一下<code>gRPC</code>的相关内容，而首当其冲的，则是从 .NET Core 3.1 开始就有的拦截器，它类似于<code>ASP.NET Core</code>中的过滤器和中间件，体现了一种面向切面编程(<strong>AOP</strong>)的思想，非常适合在RPC服务调用的时候做某种统一处理，譬如参数校验、身份验证、日志记录等等。在今天这篇博客中，博主主要和大家分享的是，利用 .NET Core gRPC 中的拦截器实现日志记录的简单技巧，希望能给大家带来一点启发。</p>
+<p><figure>
+<a href=https://i.loli.net/2021/05/28/1MgBG2uRHwEqXvt.jpg>
+<img src=https://i.loli.net/2021/05/28/1MgBG2uRHwEqXvt.jpg loading=lazy alt="开源、多语言、高性能的 gRPC">
+</a>
+<figcaption>开源、多语言、高性能的 gRPC</figcaption>
+</figure></p>
+<h1 id=关于-interceptor-类>关于 Interceptor 类</h1>
+<p><code>Interceptor</code>类是 gRPC 服务拦截器的基类，它本身是一个抽象类，其中定义了下面的虚方法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>virtual</span> <span class=n>AsyncClientStreamingCall</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>AsyncClientStreamingCall</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;();</span>
+<span class=k>public</span> <span class=k>virtual</span> <span class=n>AsyncDuplexStreamingCall</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>AsyncDuplexStreamingCall</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;();</span>
+<span class=k>public</span> <span class=k>virtual</span> <span class=n>AsyncUnaryCall</span><span class=p>&lt;</span><span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>AsyncUnaryCall</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;();</span>
+<span class=k>public</span> <span class=k>virtual</span> <span class=n>TResponse</span> <span class=n>BlockingUnaryCall</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;();</span>
+<span class=k>public</span> <span class=k>virtual</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>ClientStreamingServerHandler</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;();</span>
+<span class=k>public</span> <span class=k>virtual</span> <span class=n>AsyncServerStreamingCall</span><span class=p>&lt;</span><span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>AsyncServerStreamingCall</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;();</span>
+<span class=k>public</span> <span class=k>virtual</span> <span class=n>Task</span> <span class=n>DuplexStreamingServerHandler</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;();</span>
+<span class=k>public</span> <span class=k>virtual</span> <span class=n>Task</span> <span class=n>ServerStreamingServerHandler</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;();</span>
+<span class=k>public</span> <span class=k>virtual</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>UnaryServerHandler</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;();</span>
+</code></pre></div><p>整体而言，如果从通信方式上来划分，可以分为：<strong>流式调用</strong> 和 <strong>普通调用</strong>；而如果从使用方来划分，则可以分为：<strong>客户端</strong> 和 <strong>服务端</strong>。进一步讲的话，针对<strong>流式调用</strong>，它还分为："<strong>单向流</strong>" 和 &ldquo;<strong>双向流</strong>"。关于这些细节上的差异，大家可以通过 <code>gRPC</code> 的 <a class=link href=https://www.grpc.io/docs/what-is-grpc/core-concepts/ target=_blank rel=noopener>官方文档</a> 来了解，这里我们给出的是每一种方法对应的用途：</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AsyncClientStreamingCall</td>
+<td>拦截异步客户端流式调用</td>
+</tr>
+<tr>
+<td>AsyncDuplexStreamingCall</td>
+<td>拦截双向流式调用</td>
+</tr>
+<tr>
+<td>AsyncUnaryCall</td>
+<td>拦截异步普通调用</td>
+</tr>
+<tr>
+<td>BlockingUnaryCall</td>
+<td>拦截阻塞普通调用</td>
+</tr>
+<tr>
+<td>AsyncServerStreamingCall</td>
+<td>拦截异步服务端流式调用</td>
+</tr>
+<tr>
+<td>ClientStreamingServerHandler</td>
+<td>拦截客户端流式调用的服务端处理程序</td>
+</tr>
+<tr>
+<td>DuplexStreamingServerHandler</td>
+<td>拦截双向流式调用的服务端处理程序</td>
+</tr>
+<tr>
+<td>ServerStreamingServerHandler</td>
+<td>拦截服务端流式调用的服务端处理程序</td>
+</tr>
+<tr>
+<td>UnaryServerHandler</td>
+<td>拦截普通调用的服务端处理程序</td>
+</tr>
+</tbody>
+</table>
+<h1 id=实现一个拦截器>实现一个拦截器</h1>
+<p>好了，下面我们一起实现一个拦截器。这里，我们使用的是微软官方的例子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>GreeterService</span> <span class=p>:</span> <span class=n>Greeter</span><span class=p>.</span><span class=n>GreeterBase</span>
+<span class=p>{</span>
+    <span class=k>private</span> <span class=k>readonly</span> <span class=n>ILogger</span><span class=p>&lt;</span><span class=n>GreeterService</span><span class=p>&gt;</span> <span class=m>_l</span><span class=n>ogger</span><span class=p>;</span>
+    <span class=k>public</span> <span class=n>GreeterService</span><span class=p>(</span><span class=n>ILogger</span><span class=p>&lt;</span><span class=n>GreeterService</span><span class=p>&gt;</span> <span class=n>logger</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=m>_l</span><span class=n>ogger</span> <span class=p>=</span> <span class=n>logger</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>public</span> <span class=k>override</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>HelloReply</span><span class=p>&gt;</span> <span class=n>SayHello</span><span class=p>(</span><span class=n>HelloRequest</span> <span class=n>request</span><span class=p>,</span> <span class=n>ServerCallContext</span> <span class=n>context</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>FromResult</span><span class=p>(</span><span class=k>new</span> <span class=n>HelloReply</span>
+        <span class=p>{</span>
+            <span class=n>Message</span> <span class=p>=</span> <span class=s>&#34;Hello &#34;</span> <span class=p>+</span> <span class=n>request</span><span class=p>.</span><span class=n>Name</span>
+        <span class=p>});</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><h2 id=服务器端>服务器端</h2>
+<p>实现服务器端的普通调用拦截，我们需要重写的方法是<code>UnaryServerHandler</code>:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>GRPCServerLoggingInterceptor</span> <span class=p>:</span> <span class=n>Interceptor</span>
+<span class=p>{</span>
+    <span class=k>private</span> <span class=k>readonly</span> <span class=n>ILogger</span><span class=p>&lt;</span><span class=n>GRPCServerLoggingInterceptor</span><span class=p>&gt;</span> <span class=m>_l</span><span class=n>ogger</span><span class=p>;</span>
+    <span class=k>public</span> <span class=n>GRPCServerLoggingInterceptor</span><span class=p>(</span><span class=n>ILogger</span><span class=p>&lt;</span><span class=n>GRPCServerLoggingInterceptor</span><span class=p>&gt;</span> <span class=n>logger</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=m>_l</span><span class=n>ogger</span> <span class=p>=</span> <span class=n>logger</span><span class=p>;</span>
+    <span class=p>}</span>
+    
+    <span class=c1>// 重写 UnaryServerHandler() 方法
+</span><span class=c1></span>    <span class=k>public</span> <span class=k>override</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>UnaryServerHandler</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;(</span>
+      <span class=n>TRequest</span> <span class=n>request</span><span class=p>,</span> <span class=n>ServerCallContext</span> <span class=n>context</span><span class=p>,</span> 
+      <span class=n>UnaryServerMethod</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>continuation</span>
+    <span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>var</span> <span class=n>builder</span> <span class=p>=</span> <span class=k>new</span> <span class=n>StringBuilder</span><span class=p>();</span>
+
+        <span class=c1>// Call gRPC begin
+</span><span class=c1></span>        <span class=n>builder</span><span class=p>.</span><span class=n>AppendLine</span><span class=p>(</span><span class=s>$&#34;Call gRPC {context.Host}/{context.Method} begin.&#34;</span><span class=p>);</span>
+
+        <span class=c1>// Logging Request
+</span><span class=c1></span>        <span class=n>builder</span><span class=p>.</span><span class=n>AppendLine</span><span class=p>(</span><span class=n>LogRequest</span><span class=p>(</span><span class=n>request</span><span class=p>));</span>
+
+        <span class=c1>// Logging Response
+</span><span class=c1></span>        <span class=kt>var</span> <span class=n>reply</span> <span class=p>=</span> <span class=n>continuation</span><span class=p>(</span><span class=n>request</span><span class=p>,</span> <span class=n>context</span><span class=p>);</span>
+        <span class=kt>var</span> <span class=n>response</span> <span class=p>=</span> <span class=n>reply</span><span class=p>.</span><span class=n>Result</span><span class=p>;</span>
+        <span class=kt>var</span> <span class=n>exception</span> <span class=p>=</span> <span class=n>reply</span><span class=p>.</span><span class=n>Exception</span><span class=p>;</span>
+        <span class=n>builder</span><span class=p>.</span><span class=n>AppendLine</span><span class=p>(</span><span class=n>LogResponse</span><span class=p>(</span><span class=n>response</span><span class=p>,</span> <span class=n>exception</span><span class=p>));</span>
+
+        <span class=c1>// Call gRPC finish
+</span><span class=c1></span>        <span class=n>builder</span><span class=p>.</span><span class=n>AppendLine</span><span class=p>(</span><span class=s>$&#34;Call gRPC {context.Host}/{context.Method} finish.&#34;</span><span class=p>);</span>
+        <span class=m>_l</span><span class=n>ogger</span><span class=p>.</span><span class=n>LogInformation</span><span class=p>(</span><span class=n>builder</span><span class=p>.</span><span class=n>ToString</span><span class=p>());</span>
+
+        <span class=k>return</span> <span class=n>reply</span><span class=p>;</span>
+    <span class=p>}</span>
+    
+    <span class=c1>// 记录gRPC请求
+</span><span class=c1></span>    <span class=k>private</span> <span class=kt>string</span> <span class=n>LogRequest</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>&gt;(</span><span class=n>TRequest</span> <span class=n>request</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>var</span> <span class=n>payload</span> <span class=p>=</span> <span class=kt>string</span><span class=p>.</span><span class=n>Empty</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>request</span> <span class=k>is</span> <span class=n>IMessage</span><span class=p>)</span>
+            <span class=n>payload</span> <span class=p>=</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>SerializeObject</span><span class=p>(</span>
+                <span class=p>(</span><span class=n>request</span> <span class=k>as</span> <span class=n>IMessage</span><span class=p>)</span>
+                <span class=p>.</span><span class=n>Descriptor</span><span class=p>.</span><span class=n>Fields</span><span class=p>.</span><span class=n>InDeclarationOrder</span><span class=p>()</span>
+                <span class=p>.</span><span class=n>ToDictionary</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Name</span><span class=p>,</span> <span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Accessor</span><span class=p>.</span><span class=n>GetValue</span><span class=p>(</span><span class=n>request</span> <span class=k>as</span> <span class=n>IMessage</span><span class=p>))</span>
+            <span class=p>);</span>
+        <span class=k>return</span> <span class=s>$&#34;Send request of {typeof(TRequest)}:{payload}&#34;</span><span class=p>;</span>
+    <span class=p>}</span>
+    
+    <span class=c1>// 记录gRPC响应
+</span><span class=c1></span>    <span class=k>private</span> <span class=kt>string</span> <span class=n>LogResponse</span><span class=p>&lt;</span><span class=n>TResponse</span><span class=p>&gt;(</span><span class=n>TResponse</span> <span class=n>response</span><span class=p>,</span> <span class=n>AggregateException</span> <span class=n>exception</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>var</span> <span class=n>payload</span> <span class=p>=</span> <span class=kt>string</span><span class=p>.</span><span class=n>Empty</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>exception</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>response</span> <span class=k>is</span> <span class=n>IMessage</span><span class=p>)</span>
+                <span class=n>payload</span> <span class=p>=</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>SerializeObject</span><span class=p>(</span>
+                  <span class=p>(</span><span class=n>response</span> <span class=k>as</span> <span class=n>IMessage</span><span class=p>)</span>
+                  <span class=p>.</span><span class=n>Descriptor</span><span class=p>.</span><span class=n>Fields</span><span class=p>.</span><span class=n>InDeclarationOrder</span><span class=p>()</span>
+                  <span class=p>.</span><span class=n>ToDictionary</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Name</span><span class=p>,</span> <span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Accessor</span><span class=p>.</span><span class=n>GetValue</span><span class=p>(</span><span class=n>response</span> <span class=k>as</span> <span class=n>IMessage</span><span class=p>))</span>
+                <span class=p>);</span>
+            <span class=k>return</span> <span class=s>$&#34;Receive response of {typeof(TResponse)}:{payload}&#34;</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=kt>var</span> <span class=n>errorMsgs</span> <span class=p>=</span> <span class=kt>string</span><span class=p>.</span><span class=n>Join</span><span class=p>(</span><span class=s>&#34;;&#34;</span><span class=p>,</span> <span class=n>exception</span><span class=p>.</span><span class=n>InnerExceptions</span><span class=p>.</span><span class=n>Select</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Message</span><span class=p>));</span>
+            <span class=k>return</span> <span class=s>$&#34;Receive response of {typeof(TResponse)} throws exceptions: {errorMsgs}&#34;</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>对于<code>gRPC</code>而言，每一个由<code>.proto</code>声明文件生成的类，都带有一个叫做<code>Descriptor</code>的属性，我们可以利用这个属性获得<code>gRPC</code>请求和响应的详细信息。所以，在<code>LogRequest()</code>和<code>LogResponse()</code>两个方法中，我们均使用了这一思路来记录<code>gRPC</code>的报文信息，因为传输层的<code>gRPC</code>使用了二进制作为数据载体，这可以说是一种用可读性换取高效率的做法，不过幸运的是，我们在这里实现了这个小目标。</p>
+<p>接下来，为了让这个拦截器真正生效，我们还需要修改一下<code>Startup</code>类中注册<code>gRPC</code>这部分的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=n>services</span><span class=p>.</span><span class=n>AddGrpc</span><span class=p>(</span><span class=n>options</span> <span class=p>=&gt;</span> <span class=n>options</span><span class=p>.</span><span class=n>Interceptors</span><span class=p>.</span><span class=n>Add</span><span class=p>&lt;</span><span class=n>GRPCServerLoggingInterceptor</span><span class=p>&gt;());</span>
+</code></pre></div><p>此时，我们可以得到下面的结果：</p>
+<p><figure>
+<a href=https://i.loli.net/2021/05/27/3nZXelLPVwJ7AjS.png>
+<img src=https://i.loli.net/2021/05/27/3nZXelLPVwJ7AjS.png loading=lazy alt=gRPC服务器端拦截器效果展示>
+</a>
+<figcaption>gRPC服务器端拦截器效果展示</figcaption>
+</figure></p>
+<h2 id=客户端>客户端</h2>
+<p>实现客户端的普通调用拦截，我们需要重写的方法是<code>AsyncUnaryCall()</code>，依样画葫芦即可：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>GRPCClientLoggingInterceptor</span> <span class=p>:</span> <span class=n>Interceptor</span>
+<span class=p>{</span>
+    <span class=c1>// 重写 AsyncUnaryCall() 方法
+</span><span class=c1></span>    <span class=k>public</span> <span class=k>override</span> <span class=n>AsyncUnaryCall</span><span class=p>&lt;</span><span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>AsyncUnaryCall</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;(</span>
+        <span class=n>TRequest</span> <span class=n>request</span><span class=p>,</span>
+        <span class=n>ClientInterceptorContext</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>context</span><span class=p>,</span>
+        <span class=n>AsyncUnaryCallContinuation</span><span class=p>&lt;</span><span class=n>TRequest</span><span class=p>,</span> <span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>continuation</span>
+    <span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>var</span> <span class=n>builder</span> <span class=p>=</span> <span class=k>new</span> <span class=n>StringBuilder</span><span class=p>();</span>
+
+        <span class=c1>// Call gRPC begin
+</span><span class=c1></span>        <span class=n>builder</span><span class=p>.</span><span class=n>AppendLine</span><span class=p>(</span><span class=s>$&#34;Call gRPC {context.Host}/{context.Method} begin.&#34;</span><span class=p>);</span>
+
+        <span class=c1>// Logging Request
+</span><span class=c1></span>        <span class=n>builder</span><span class=p>.</span><span class=n>AppendLine</span><span class=p>(</span><span class=n>LogRequest</span><span class=p>(</span><span class=n>request</span><span class=p>));</span>
+
+        <span class=c1>// Logging Response
+</span><span class=c1></span>        <span class=kt>var</span> <span class=n>reply</span> <span class=p>=</span> <span class=n>continuation</span><span class=p>(</span><span class=n>request</span><span class=p>,</span> <span class=n>context</span><span class=p>);</span>
+        <span class=kt>var</span> <span class=n>response</span> <span class=p>=</span> <span class=n>reply</span><span class=p>.</span><span class=n>ResponseAsync</span><span class=p>.</span><span class=n>Result</span><span class=p>;</span>
+        <span class=kt>var</span> <span class=n>exception</span> <span class=p>=</span> <span class=n>reply</span><span class=p>.</span><span class=n>ResponseAsync</span><span class=p>.</span><span class=n>Exception</span><span class=p>;</span>
+        <span class=n>builder</span><span class=p>.</span><span class=n>AppendLine</span><span class=p>(</span><span class=n>LogResponse</span><span class=p>(</span><span class=n>response</span><span class=p>,</span> <span class=n>exception</span><span class=p>));</span>
+
+        <span class=c1>// Call gRPC finish
+</span><span class=c1></span>        <span class=n>builder</span><span class=p>.</span><span class=n>AppendLine</span><span class=p>(</span><span class=s>$&#34;Call gRPC {context.Host}/{context.Method} finish.&#34;</span><span class=p>);</span>
+        <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=n>builder</span><span class=p>.</span><span class=n>ToString</span><span class=p>());</span>
+
+        <span class=k>return</span> <span class=n>reply</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>类似地，为了让拦截器在客户端生效，我们需要这样：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>using</span> <span class=nn>Grpc.Core.Interceptors</span><span class=p>;</span>
+
+<span class=kt>var</span> <span class=n>channel</span> <span class=p>=</span> <span class=n>GrpcChannel</span><span class=p>.</span><span class=n>ForAddress</span><span class=p>(</span><span class=s>&#34;https://localhost:5001&#34;</span><span class=p>);</span>
+<span class=c1>// 简化写法
+</span><span class=c1></span><span class=n>channel</span><span class=p>.</span><span class=n>Intercept</span><span class=p>(</span><span class=k>new</span> <span class=n>GRPCClientLoggingInterceptor</span><span class=p>());</span>
+<span class=c1>// 完整写法
+</span><span class=c1></span><span class=kt>var</span> <span class=n>invoker</span> <span class=p>=</span> <span class=n>channel</span><span class=p>.</span><span class=n>CreateCallInvoker</span><span class=p>().</span><span class=n>Intercept</span><span class=p>(</span><span class=k>new</span> <span class=n>GRPCClientLoggingInterceptor</span><span class=p>());</span>
+<span class=kt>var</span> <span class=n>client</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Greeter</span><span class=p>.</span><span class=n>GreeterClient</span><span class=p>(</span><span class=n>invoker</span><span class=p>);</span>
+<span class=k>await</span> <span class=n>client</span><span class=p>.</span><span class=n>SayHelloAsync</span><span class=p>(</span><span class=k>new</span> <span class=n>HelloRequest</span><span class=p>()</span> <span class=p>{</span> <span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;长安书小妆&#34;</span> <span class=p>});</span>
+</code></pre></div><p>此时，我们可以得到下面的结果：</p>
+<p><figure>
+<a href=https://i.loli.net/2021/05/28/XcwmOQbzKTJPtUj.png>
+<img src=https://i.loli.net/2021/05/28/XcwmOQbzKTJPtUj.png loading=lazy alt=gRPC客户端拦截器效果展示>
+</a>
+<figcaption>gRPC客户端拦截器效果展示</figcaption>
+</figure></p>
+<p>客户端感觉不太好的一点就是，这个<code>Interceptor</code>传入的必须是一个实例，考虑到拦截器内部可能会依赖类似<code>ILogger</code>等等的组件，建议还是通过<code>IoC</code>容器来取得一个拦截器的实例，然后再传入<code>Intercept()</code>方法中。博主所在的项目中，则是非常“<strong>土豪</strong>”地使用了<code>PostSharp</code>，直接走动态编织的方案，果然，“<strong>这次第，怎一个羡字了得</strong>”。当然，<code>gRPC</code>的客户端，其实提供了日志相关的支持，不过，我个人感觉这个有一点无力：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=kt>var</span> <span class=n>loggerFactory</span> <span class=p>=</span> <span class=n>LoggerFactory</span><span class=p>.</span><span class=n>Create</span><span class=p>(</span><span class=n>logging</span> <span class=p>=&gt;</span>
+<span class=p>{</span>
+    <span class=n>logging</span><span class=p>.</span><span class=n>AddConsole</span><span class=p>();</span>
+    <span class=n>logging</span><span class=p>.</span><span class=n>SetMinimumLevel</span><span class=p>(</span><span class=n>LogLevel</span><span class=p>.</span><span class=n>Debug</span><span class=p>);</span>
+<span class=p>});</span>
+<span class=kt>var</span> <span class=n>channel</span> <span class=p>=</span> <span class=n>GrpcChannel</span><span class=p>.</span><span class=n>ForAddress</span><span class=p>(</span>
+    <span class=s>&#34;https://localhost:5001&#34;</span><span class=p>,</span>
+    <span class=k>new</span> <span class=n>GrpcChannelOptions</span> <span class=p>{</span> <span class=n>LoggerFactory</span> <span class=p>=</span> <span class=n>loggerFactory</span> <span class=p>}</span>
+<span class=p>);</span>
+</code></pre></div><h1 id=本文小结>本文小结</h1>
+<p>本文主要分享了<code>gRPC</code>拦截器的使用技巧，<code>gRPC</code>支持一元调用(<strong>UnaryCall</strong>)、流式调用(<strong>StreamingCall</strong>)、阻塞调用(<strong>BlockingCall</strong>)，因为区分客户端和服务器端，所以，实际上会有各种各样的组合方式。<code>gRPC</code>的拦截器实际上就是选择对应的场景去重写相应的方法，其中，拦截器的基类为<code>Interceptor</code>类，这里我们都是以普通的一元调用为例的，大家可以结合各自的业务场景，去做进一步的调整和优化。这里，我们使用<code>IMessage</code>类的<code>Descriptor</code>属性来“反射”报文中定义的字段，这样就实现了针对<code>gRPC</code>服务请求/响应的日志记录功能。关于<code>gRPC</code>中日志和诊断的更进一步的话题，大家可以参考微软的 <a class=link href="https://docs.microsoft.com/zh-cn/aspnet/core/grpc/diagnostics?view=aspnetcore-5.0" target=_blank rel=noopener>官方文档</a> 。好了，以上就是这篇博客的全部内容啦，谢谢大家！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/.net/>.NET</a>
+<a href=/tags/grpc/>gRPC</a>
+<a href=/tags/aop/>AOP</a>
+<a href=/tags/%E6%97%A5%E5%BF%97/>日志</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/asp.net-core-grpc-%E9%9B%86%E6%88%90-polly-%E5%AE%9E%E7%8E%B0%E4%BC%98%E9%9B%85%E9%87%8D%E8%AF%95/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 集成 Polly 实现优雅重试</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8unity%E6%A1%86%E6%9E%B6%E7%AE%80%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%8F%8A%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%E6%B5%81%E7%A8%8B/>
+<div class=article-details>
+<h2 class=article-title>使用Unity框架简化应用程序异常处理及日志记录流程</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0-grpc-%E6%9C%8D%E5%8A%A1%E4%BB%A3%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现 gRPC 服务代理</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%86%8D%E8%AF%9Daop%E4%BB%8E%E7%AE%80%E5%8C%96%E7%BC%93%E5%AD%98%E6%93%8D%E4%BD%9C%E8%AF%B4%E8%B5%B7/>
+<div class=article-details>
+<h2 class=article-title>再话AOP，从简化缓存操作说起</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-grpc-%E6%89%93%E9%80%9A%E5%89%8D%E7%AB%AF%E4%B8%96%E7%95%8C%E7%9A%84%E5%B0%9D%E8%AF%95/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 打通前端世界的尝试</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

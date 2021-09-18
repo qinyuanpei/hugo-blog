@@ -1,0 +1,277 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="这里暂且抛开它到底是XML、JSON还是EDI这种细节性的问题，我想我们大概会有一个简单的想法，如果把需要传输给对方的接口报文做成模板，然后通过`Liquid`语法完成数据的绑定，那么数据映射这一层的工作就可以减轻不少，毕竟写`A.XXX=B.XXX`这种赋值语句是没什么前途的啦，而`AutoMapper`则需要提前写好Map并注册，经过一番权衡，我们来验证一下我们的想法吧;因为要对接的接口数量多、字段多，我首先根据字段对应关系制作了一份`Liquid`模板，并根据业务上的需要，用主表(Main) + 明细表(Details)的方式来定义数据，这意味着我接下来只需要根据业务实现不同的数据源即可：;为此，我们介绍了`Liquid`模板引擎，它提供的语法可以让我们完成一系列的绑定，顺着这个思路，博主为大家展示了这种想法的可行性"><title>使用Liquid实现简单的数据交换</title>
+<link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8liquid%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="使用Liquid实现简单的数据交换">
+<meta property="og:description" content="这里暂且抛开它到底是XML、JSON还是EDI这种细节性的问题，我想我们大概会有一个简单的想法，如果把需要传输给对方的接口报文做成模板，然后通过`Liquid`语法完成数据的绑定，那么数据映射这一层的工作就可以减轻不少，毕竟写`A.XXX=B.XXX`这种赋值语句是没什么前途的啦，而`AutoMapper`则需要提前写好Map并注册，经过一番权衡，我们来验证一下我们的想法吧;因为要对接的接口数量多、字段多，我首先根据字段对应关系制作了一份`Liquid`模板，并根据业务上的需要，用主表(Main) + 明细表(Details)的方式来定义数据，这意味着我接下来只需要根据业务实现不同的数据源即可：;为此，我们介绍了`Liquid`模板引擎，它提供的语法可以让我们完成一系列的绑定，顺着这个思路，博主为大家展示了这种想法的可行性">
+<meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8liquid%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Liquid"><meta property="article:tag" content="数据交换"><meta property="article:tag" content="模板引擎"><meta property="article:published_time" content="2019-12-22T09:36:42+00:00"><meta property="article:modified_time" content="2019-12-22T09:36:42+00:00">
+<meta name=twitter:title content="使用Liquid实现简单的数据交换">
+<meta name=twitter:description content="这里暂且抛开它到底是XML、JSON还是EDI这种细节性的问题，我想我们大概会有一个简单的想法，如果把需要传输给对方的接口报文做成模板，然后通过`Liquid`语法完成数据的绑定，那么数据映射这一层的工作就可以减轻不少，毕竟写`A.XXX=B.XXX`这种赋值语句是没什么前途的啦，而`AutoMapper`则需要提前写好Map并注册，经过一番权衡，我们来验证一下我们的想法吧;因为要对接的接口数量多、字段多，我首先根据字段对应关系制作了一份`Liquid`模板，并根据业务上的需要，用主表(Main) + 明细表(Details)的方式来定义数据，这意味着我接下来只需要根据业务实现不同的数据源即可：;为此，我们介绍了`Liquid`模板引擎，它提供的语法可以让我们完成一系列的绑定，顺着这个思路，博主为大家展示了这种想法的可行性">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<img src=/images/avatar_hu9b977ab3a4b8472c7b4f807105204943_11692_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>飞鸿踏雪</a></h1>
+<h2 class=site-description>纵有疾风起，人生不言弃.</h2>
+</header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/ target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/movies/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>影单</span>
+</a>
+</li>
+<li>
+<a href=/books/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>书单</span>
+</a>
+</li>
+<li>
+<a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/ style=background-color:#2a9d8f;color:#fff>
+数据存储
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E4%BD%BF%E7%94%A8liquid%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/>使用Liquid实现简单的数据交换</a>
+</h2>
+<h3 class=article-subtitle>
+这里暂且抛开它到底是XML、JSON还是EDI这种细节性的问题，我想我们大概会有一个简单的想法，如果把需要传输给对方的接口报文做成模板，然后通过`Liquid`语法完成数据的绑定，那么数据映射这一层的工作就可以减轻不少，毕竟写`A.XXX=B.XXX`这种赋值语句是没什么前途的啦，而`AutoMapper`则需要提前写好Map并注册，经过一番权衡，我们来验证一下我们的想法吧;因为要对接的接口数量多、字段多，我首先根据字段对应关系制作了一份`Liquid`模板，并根据业务上的需要，用主表(Main) + 明细表(Details)的方式来定义数据，这意味着我接下来只需要根据业务实现不同的数据源即可：;为此，我们介绍了`Liquid`模板引擎，它提供的语法可以让我们完成一系列的绑定，顺着这个思路，博主为大家展示了这种想法的可行性
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Dec 22, 2019</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 1 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>在平时的开发工作中，接口对接是一件无可避免的事情。虽然在“前后端分离”的大趋势下，后端的角色逐渐转换为数据接口的提供者，然而在实际的应用场景中，我们面对的往往是各种不同的“数据”，譬如企业应用中普遍使用的企业服务总线(ESB)，这类服务要求服务接入者必须使用WebService来作为数据交换格式；再譬如电子数据交换(EDI)这种特定行业中使用的数据交换格式，从可读性上甚至还不如基于XML的WebService&mldr;&mldr;而更为普遍的则可能是需要使用Word、Excel、CSV来作为数据交换的媒介。顺着这个思路继续发散下去，进入我们失业的或许还有各种数据库，譬如MySQL和MongoDB；各种大数据平台，譬如Hadoop和Spark；各种消息队列，譬如RabbitMQ和Kafka等等。</p>
+<p>注意到，这里反复提到的一个概念是数据交换(Data Switching)，它是指在多个数据终端设备间，为任意两个终端设备建立数据通信临时互联通路的过程。自从阿里提出“中台”的概念以来，越来越多的公司开始跟风“中台”概念，并随之衍生出譬如组织中台、数据中台、业务中台、内容中台等等的概念。今天这篇博客，我并不打算故弄玄虚地扯这些概念，我的落脚点是接口级别的数据交换，主要通过Liquid这款模板引擎来实现。它对应我在这篇博客开头提到的场景：一个对外提供RESful风格API的系统，如何快速地和一个WebService实现对接。总而言之，希望能对这篇博客对大家有所启发吧！</p>
+<h2 id=关于liquid>关于Liquid</h2>
+<p>首先，我们来介绍<a class=link href=https://shopify.github.io/liquid target=_blank rel=noopener>Liquid</a>，通过它的官方网站，我们应该它是一门模板语言。对于模板语言，我们应该是非常熟悉啦，JavaScript里的<a class=link href=https://handlebarjs.com target=_blank rel=noopener>Handlebars</a>和<a class=link href=https://ejs.bootcss.com target=_blank rel=noopener>Ejs</a>就是非常著名的模板语言。如大家所见，这个博客就是用<code>Ejs</code>模板渲染出来的。而到了三大前端框架并驾齐驱的时代，模版语法依然被保留了下来，比如<code>Vue</code>中<code>{% raw %}{{model.userName}}{% endraw %}</code>标记常常用来做文本插值。所以，如果要认真追溯起来的话，也许这些框架都或多或少的收到了<code>Liquid</code>的影响，因为它的基本语法如下：</p>
+<pre tabindex=0><code>//使用page实例的title属性插值
+{{ page.title}}
+</code></pre><p>假设page是一个对象，它的title属性值为：Introduction，此时，渲染后的结果即为：Introduction。是不是感觉非常简单呢? 我们继续往下看。除了基本的“插值”语法以外，我们可以用<code>{% raw %}{% tag %}{% endraw %}</code>这种结构(Liquid称之为Tag)：</p>
+<pre tabindex=0><code>//声称变量author并赋值
+{% sssign author = '猫先森' %}
+//条件语句
+{% if author == '猫先森' %}
+帅哥，你好
+{% endif %}
+//循环语句
+{% for post in posts %}
+{{post.date}}-{{post.title}}
+{% endfor %}
+</code></pre><p>这里仅仅展示了一部分<code>Liquid</code>的特性，但对于我们了解一门“语言”已经足够了，因为对于一门编程语言来说，只要学会顺序、条件和循环三种结构足矣。言下之意呢，像常规<code>else</code>、<code>elseif</code>、<code>break</code>和<code>continue</code>，<code>Liquid</code>都是支持的，这样子是不是更有编程语言的感觉了呢？除此之外，它还支持像<code>tablerow</code>这样的Tag，主要用来渲染HTML里的表格。</p>
+<p>也许有人想说，这玩意儿有什么用呢？抱歉啊，这玩意儿还真有用。像发送邮件、发送短信这种一般都需要写个字符串模板的，简单的大家可以用<code>String.Format()</code>或者<code>$</code>来搞定，可一旦遇上循环的场景，这种基于字符串替换的方式就有点力不从心了。不开玩笑地说，在代码里用<code>StringBuilder</code>拼接HTML的方式，实在是太傻逼了。如果用<code>Liquid</code>写可能就是：</p>
+<pre tabindex=0><code>亲爱的{{ model.UserID }}:
+   您好！您有以下设备即将超过校验有效期，请及时采取有效行动。
+   {% for equipment in model.Equipments %}
+   {{ equipment.EquipmentID }}
+   {% endfor %}
+   
+{{ model.SendBy }}
+</code></pre><p>显然，这个代码比拼接字符串要优雅很多。博主曾经在一个前端页面看到过大量的HTML拼接操作，果然是jQuery操作DOM一时爽，jQuery操作DOM一直爽，可明明前端就有<a class=link href=https://handlebarjs.com target=_blank rel=noopener>Handlebars</a>和<a class=link href=https://ejs.bootcss.com target=_blank rel=noopener>Ejs</a>这样的模板语言。最近一位同事写前端页面的经历不由得让我感慨，眼睛觉得简单的事情，为什么总是要求手去做呢？直接操作DOM带来的弊端就是，业务逻辑永远和DOM纠缠在一起，那些没有人敢改的JavaScript代码，那些未经模块化全局引入的JavaScript代码，虽然马上就要2020年了，写下这些句子的时候还是感到魔幻，可能这就是所谓的魔幻现实主义吧。</p>
+<p>OK, 我们把思绪拉回到<code>Liquid</code>。除了使用各种Tag实现流程控制以外，<code>Liquid</code>中还提供了过滤器(Filter)的概念，过滤器主要是配合<code>{% raw %}{{ variable | filter }}{% endraw %}</code>语法来使用的。比如说，数据层返回了一个负数，而展示层希望展示正数，在不确定这个数值是否被别人使用的情况下，贸然去修改数据层的返回值是件危险的事情。此时，我们可以：</p>
+<pre tabindex=0><code>//对绑定的变量或者值取绝对值
+{{ -17 | abs}}
+//保留小数位
+{{ 183.357 | round: 2 }}
+//日期/时间格式
+{{ article.created_date | data: %b %d, %Y}}
+</code></pre><p>类似小数点位数、日期/时间格式等问题，均可以在<code>Liquid</code>中找到相应的过滤器。需要说明的是，<code>Liquid</code>使用<code>Ruby</code>进行开发的。也许在读到这篇博客前，大家都没有听说过<code>Liquid</code>，那么至少听说过<code>Jekyll</code>这个著名的静态博客生成器吧。实际上，在我写这篇博客的时候，我刚刚了解到一件事情，<code>Jekyll</code>就是基于<code>Liquid</code>而开发的，想到当初搭建这个博客时被<code>Ruby</code>劝退的回忆，我大概想不到有一天会再次接触它吧，不得不说，人生还真是奇妙啊！</p>
+<h2 id=一个简单的想法>一个简单的想法</h2>
+<p>好了，关于<code>Liquid</code>的介绍我们先了解到这里。写到这里，再回头去看我们一开始的问题，即：怎么把上游的数据(Model)转化为下游的数据(Template)。这里暂且抛开它到底是XML、JSON还是EDI这种细节性的问题，我想我们大概会有一个简单的想法，如果把需要传输给对方的接口报文做成模板，然后通过<code>Liquid</code>语法完成数据的绑定，那么数据映射这一层的工作就可以减轻不少，毕竟写<code>A.XXX=B.XXX</code>这种赋值语句是没什么前途的啦，而<code>AutoMapper</code>则需要提前写好Map并注册，经过一番权衡，我们来验证一下我们的想法吧！</p>
+<p>这段时间一直在和金蝶K3Cloud接口做对接，坦白说我觉得金蝶的接口设计得非常糟糕，从它那个奇葩的<code>FNumber</code>字段就能看出来，而且它试图用一个接口做完所有事情的做法恕我不敢苟同，在我看来它违反了单一职责原则。因为要对接的接口数量多、字段多，我首先根据字段对应关系制作了一份<code>Liquid</code>模板，并根据业务上的需要，用主表(Main) + 明细表(Details)的方式来定义数据，这意味着我接下来只需要根据业务实现不同的数据源即可：</p>
+<p><figure>
+<a href=https://i.loli.net/2019/12/23/HABb1GTJ3NCwedR.png>
+<img src=https://i.loli.net/2019/12/23/HABb1GTJ3NCwedR.png loading=lazy alt=基于Liquid的JSON报文模板>
+</a>
+<figcaption>基于Liquid的JSON报文模板</figcaption>
+</figure></p>
+<p>好了，现在我们使用<code>Liquid</code>的.NET版本<a class=link href=http://dotliquidmarkup.org target=_blank rel=noopener>DotLiquid</a>来负责模板的解析和渲染，这个库可以直接通过<code>Nuget</code>安装，可以注意到这个代码非常的简单：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=kt>string</span> <span class=n>RenderTpl</span><span class=p>(</span><span class=kt>string</span> <span class=n>filePath</span><span class=p>,</span> <span class=kt>dynamic</span> <span class=n>model</span><span class=p>)</span>
+<span class=p>{</span>
+  <span class=kt>var</span> <span class=n>content</span> <span class=p>=</span> <span class=n>File</span><span class=p>.</span><span class=n>ReadAllText</span><span class=p>(</span><span class=n>filePath</span><span class=p>);</span>
+  <span class=kt>var</span> <span class=n>template</span> <span class=p>=</span> <span class=n>Template</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=n>content</span><span class=p>);</span>
+  <span class=kt>var</span> <span class=n>output</span> <span class=p>=</span> <span class=n>template</span><span class=p>.</span><span class=n>Render</span><span class=p>(</span><span class=n>Hash</span><span class=p>.</span><span class=n>FromAnonymousObject</span><span class=p>(</span><span class=n>model</span><span class=p>));</span>
+  <span class=k>return</span> <span class=n>output</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div><p>实际上渲染后的文本就是对方需要的接口报文了，此时，该怎么样就怎么样处理，只需要把这个报文发送给对方就可以了。唯一需要花时间的就是对字段、写绑定，相比写实体类的方式效率要高更多。这种方式的话，我个人觉得更适合分工合作，如果需要数据加字段，那在数据层(Model)里增加就好了，而像改字段映射关系、字段默认值都可以由别人来完成。我一直相信，开发并不是帮别人做越多事情越好，而是可以提供一种能力让别人去做更多的事情，这就是我们常常听到的“赋能”。继续延伸下去的话，传统的MVC其实和<code>Liquid</code>是一个道理，都是根据数据去生成视图，无非是我们这里的"视图"变成了数据报文。</p>
+<h2 id=本文小结>本文小结</h2>
+<p>通过日常工作中的接口对接这一典型场景，我们引出了“数据交换”的概念，而最低层级的数据交换实际上是接口报文的交换。为此，我们介绍了<code>Liquid</code>模板引擎，它提供的语法可以让我们完成一系列的绑定，顺着这个思路，博主为大家展示了这种想法的可行性。<code>Liquid</code>是一个非常成熟的模板引擎，无论是编写邮件、短信的文本模板，还是轻量级的文本表达式实现，都是一个非常不错的选择。即使是做一个ApiCaller，一定要做一个有头脑的ApiCaller。好了，以上就是这篇博客的全部内容啦，欢迎大家留言，谢谢大家。</p>
+<h2 id=2020-01-09-更新>2020-01-09 更新</h2>
+<p>在组织JSON中的数组结构时，需要在各元素间添加<code>,</code>，同时最后一个元素不需要<code>,</code>，此时，可以使用以下语法：</p>
+<pre tabindex=0><code>&quot;FEntity&quot;: [
+  {% for Detail in Details %}
+  {
+    &quot;FCOSTID&quot;: {
+      &quot;FNumber&quot;: &quot;{{Detail.FCOSTID}}&quot;
+    },
+    &quot;FCOSTDEPARTMENTID&quot;: {
+      &quot;FNumber&quot;: &quot;BM000005&quot;
+    },
+    &quot;FINVOICETYPE&quot;: &quot;0&quot;,
+    &quot;FTOTALAMOUNTFOR&quot;: {{Detail.FEE_AMOUNT}},
+  }
+	{% if forloop.last == false %},{% endif %}
+  {% endfor %}
+  ]
+</code></pre>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/liquid/>Liquid</a>
+<a href=/tags/%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/>数据交换</a>
+<a href=/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/>模板引擎</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/efcore-%E5%AE%9E%E4%BD%93%E5%91%BD%E5%90%8D%E7%BA%A6%E5%AE%9A%E5%BA%93efcore.namingconventions/>
+<div class=article-details>
+<h2 class=article-title>EFCore 实体命名约定库：EFCore.NamingConventions</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%B5%85%E8%AE%AE-ef-core-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E5%A4%9A%E7%A7%9F%E6%88%B7%E6%9E%B6%E6%9E%84%E7%9A%84%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>浅议 EF Core 分库分表及多租户架构的实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8E%E9%80%89%E9%A1%B9%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0.net-core%E7%9A%84%E9%85%8D%E7%BD%AE%E7%83%AD%E6%9B%B4%E6%96%B0/>
+<div class=article-details>
+<h2 class=article-title>基于选项模式实现.NET Core的配置热更新</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/dapper.contrib%E5%9C%A8oracle%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BC%95%E5%8F%91ora-00928%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/>
+<div class=article-details>
+<h2 class=article-title>Dapper.Contrib在Oracle环境下引发ORA-00928异常问题的解决</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%88%A9%E7%94%A8mysql%E7%9A%84binlog%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E4%B8%8E%E8%AE%A2%E9%98%85%E4%B8%8Beventbus%E7%AF%87/>
+<div class=article-details>
+<h2 class=article-title>利用MySQL的Binlog实现数据同步与订阅(下)：EventBus篇</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

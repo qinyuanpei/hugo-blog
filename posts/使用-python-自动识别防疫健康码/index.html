@@ -1,0 +1,429 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="这个月月初的时候，朋友兴奋地和我描述着他的计划——准备带孩子到宁夏自驾游。朋友感慨道，“小孩只在书本上见过黄河、见过沙漠，这样的人生多少有一点遗憾”，可正如新冠病毒会变异为德尔塔一样，生活里唯一不变的变化本身，局部地区疫情卷土重来，朋友为了孩子的健康着想，不得不取消这次计划，因为他原本就想去宁夏看看的。回想过去这一年多，口罩和二维码，是每天打交道最多的东西。也许，这会成为未来几年里的常态。在西安，不管是坐公交还是地铁，都会有人去检查防疫二维码，甚至由此而创造了不少的工作岗位。每次看到那些年轻人，我都有种失落感，因为二十九岁高龄的我，已然不那么年轻了，而这些比我更努力读书、学历更高的年轻人，看起来在做着和学历/知识并不相称的工作。也许，自卑的应该是我，因为国家刚刚给程序员群体定性——新生代农民工。可是，我这个农民工，今天想做一点和学历/知识相称的事情，利用 Python 来自动识别防疫二维码。
+原理说明 对于防疫二维码而言，靠肉眼去看的话，其实主要关注两个颜色，即标识健康状态的颜色和标识疫苗注射状态的颜色。与此同时，为了追踪人的地理位置变化，防疫/安检人员还会关注地理位置信息，因此，如果要自动识别防疫二维码，核心就是读出其中的颜色以及文字信息。对于颜色的识别，我们可以利用 OpenCV 中的 inRange() 函数来实现，只要我们定义好对应颜色的 HSV 区间即可；对于文字的识别，我们可以利用 PaddleOCR 库来进行提取。基于以上原理，我们会通过 OpenCV 来处理摄像头的图像，只要我们将手机二维码对准摄像头，即可以完成防疫二维码的自动识别功能。考虑到检测不到二维码或者颜色识别不到这类问题，程序中增加了蜂鸣报警的功能。写作本文的原因，单纯是我觉得这样好玩，我无意借此来让人们失业。可生而为人，说到底不能像机器一样活着，大家不都追求有趣的灵魂吗？下面是本文中使用到的第三方 Python 库的清单：
+ pyzbar == 0.1.8 opencv-contrib-python == 4.4.0.46 opencv-python == 4.5.3.56 paddleocr == 2.2.0.2 paddlepaddle == 2.0.0  图块检测 下面是一张从手机上截取的防疫二维码图片，从这张图片中我们看出，整个防疫二维码，可以分为三个部分，即：上方的定位信息图块，中间的二维码信息图块，以及下方的核酸检验信息图块。
+ “西安一码通” 防疫二维码 
+对于二维码的检测，我们可以直接使用 pyzbar 这个库来解析，可如果直接对整张图进行解析，因为其中的干扰项实在太多，偶尔会出现明明有二维码，结果无法进行解析的情况。所以，我们可以考虑对图片进行切分，而切分的依据就是图中的这三个图块。这里，我们利用二值化函数 threshold() 和 轮廓提取函数 findContours() 来实现图块的检测：
+# 灰度化 &amp;amp; 二值化 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) _, binary = cv2.threshold(gray, 135, 255, cv2.THRESH_BINARY) # 检测轮廓，获得对应的矩形 contours = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2] for i in range(len(contours)): block_rect = cv2."><title>使用 Python 自动识别防疫健康码</title>
+<link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8-python-%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB%E9%98%B2%E7%96%AB%E5%81%A5%E5%BA%B7%E7%A0%81/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="使用 Python 自动识别防疫健康码">
+<meta property="og:description" content="这个月月初的时候，朋友兴奋地和我描述着他的计划——准备带孩子到宁夏自驾游。朋友感慨道，“小孩只在书本上见过黄河、见过沙漠，这样的人生多少有一点遗憾”，可正如新冠病毒会变异为德尔塔一样，生活里唯一不变的变化本身，局部地区疫情卷土重来，朋友为了孩子的健康着想，不得不取消这次计划，因为他原本就想去宁夏看看的。回想过去这一年多，口罩和二维码，是每天打交道最多的东西。也许，这会成为未来几年里的常态。在西安，不管是坐公交还是地铁，都会有人去检查防疫二维码，甚至由此而创造了不少的工作岗位。每次看到那些年轻人，我都有种失落感，因为二十九岁高龄的我，已然不那么年轻了，而这些比我更努力读书、学历更高的年轻人，看起来在做着和学历/知识并不相称的工作。也许，自卑的应该是我，因为国家刚刚给程序员群体定性——新生代农民工。可是，我这个农民工，今天想做一点和学历/知识相称的事情，利用 Python 来自动识别防疫二维码。
+原理说明 对于防疫二维码而言，靠肉眼去看的话，其实主要关注两个颜色，即标识健康状态的颜色和标识疫苗注射状态的颜色。与此同时，为了追踪人的地理位置变化，防疫/安检人员还会关注地理位置信息，因此，如果要自动识别防疫二维码，核心就是读出其中的颜色以及文字信息。对于颜色的识别，我们可以利用 OpenCV 中的 inRange() 函数来实现，只要我们定义好对应颜色的 HSV 区间即可；对于文字的识别，我们可以利用 PaddleOCR 库来进行提取。基于以上原理，我们会通过 OpenCV 来处理摄像头的图像，只要我们将手机二维码对准摄像头，即可以完成防疫二维码的自动识别功能。考虑到检测不到二维码或者颜色识别不到这类问题，程序中增加了蜂鸣报警的功能。写作本文的原因，单纯是我觉得这样好玩，我无意借此来让人们失业。可生而为人，说到底不能像机器一样活着，大家不都追求有趣的灵魂吗？下面是本文中使用到的第三方 Python 库的清单：
+ pyzbar == 0.1.8 opencv-contrib-python == 4.4.0.46 opencv-python == 4.5.3.56 paddleocr == 2.2.0.2 paddlepaddle == 2.0.0  图块检测 下面是一张从手机上截取的防疫二维码图片，从这张图片中我们看出，整个防疫二维码，可以分为三个部分，即：上方的定位信息图块，中间的二维码信息图块，以及下方的核酸检验信息图块。
+ “西安一码通” 防疫二维码 
+对于二维码的检测，我们可以直接使用 pyzbar 这个库来解析，可如果直接对整张图进行解析，因为其中的干扰项实在太多，偶尔会出现明明有二维码，结果无法进行解析的情况。所以，我们可以考虑对图片进行切分，而切分的依据就是图中的这三个图块。这里，我们利用二值化函数 threshold() 和 轮廓提取函数 findContours() 来实现图块的检测：
+# 灰度化 &amp;amp; 二值化 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) _, binary = cv2.threshold(gray, 135, 255, cv2.THRESH_BINARY) # 检测轮廓，获得对应的矩形 contours = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2] for i in range(len(contours)): block_rect = cv2.">
+<meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8-python-%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB%E9%98%B2%E7%96%AB%E5%81%A5%E5%BA%B7%E7%A0%81/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Python"><meta property="article:tag" content="OpenCV"><meta property="article:tag" content="健康码"><meta property="article:tag" content="防疫"><meta property="article:published_time" content="2021-08-19T14:13:32+00:00"><meta property="article:modified_time" content="2021-08-19T14:13:32+00:00">
+<meta name=twitter:title content="使用 Python 自动识别防疫健康码">
+<meta name=twitter:description content="这个月月初的时候，朋友兴奋地和我描述着他的计划——准备带孩子到宁夏自驾游。朋友感慨道，“小孩只在书本上见过黄河、见过沙漠，这样的人生多少有一点遗憾”，可正如新冠病毒会变异为德尔塔一样，生活里唯一不变的变化本身，局部地区疫情卷土重来，朋友为了孩子的健康着想，不得不取消这次计划，因为他原本就想去宁夏看看的。回想过去这一年多，口罩和二维码，是每天打交道最多的东西。也许，这会成为未来几年里的常态。在西安，不管是坐公交还是地铁，都会有人去检查防疫二维码，甚至由此而创造了不少的工作岗位。每次看到那些年轻人，我都有种失落感，因为二十九岁高龄的我，已然不那么年轻了，而这些比我更努力读书、学历更高的年轻人，看起来在做着和学历/知识并不相称的工作。也许，自卑的应该是我，因为国家刚刚给程序员群体定性——新生代农民工。可是，我这个农民工，今天想做一点和学历/知识相称的事情，利用 Python 来自动识别防疫二维码。
+原理说明 对于防疫二维码而言，靠肉眼去看的话，其实主要关注两个颜色，即标识健康状态的颜色和标识疫苗注射状态的颜色。与此同时，为了追踪人的地理位置变化，防疫/安检人员还会关注地理位置信息，因此，如果要自动识别防疫二维码，核心就是读出其中的颜色以及文字信息。对于颜色的识别，我们可以利用 OpenCV 中的 inRange() 函数来实现，只要我们定义好对应颜色的 HSV 区间即可；对于文字的识别，我们可以利用 PaddleOCR 库来进行提取。基于以上原理，我们会通过 OpenCV 来处理摄像头的图像，只要我们将手机二维码对准摄像头，即可以完成防疫二维码的自动识别功能。考虑到检测不到二维码或者颜色识别不到这类问题，程序中增加了蜂鸣报警的功能。写作本文的原因，单纯是我觉得这样好玩，我无意借此来让人们失业。可生而为人，说到底不能像机器一样活着，大家不都追求有趣的灵魂吗？下面是本文中使用到的第三方 Python 库的清单：
+ pyzbar == 0.1.8 opencv-contrib-python == 4.4.0.46 opencv-python == 4.5.3.56 paddleocr == 2.2.0.2 paddlepaddle == 2.0.0  图块检测 下面是一张从手机上截取的防疫二维码图片，从这张图片中我们看出，整个防疫二维码，可以分为三个部分，即：上方的定位信息图块，中间的二维码信息图块，以及下方的核酸检验信息图块。
+ “西安一码通” 防疫二维码 
+对于二维码的检测，我们可以直接使用 pyzbar 这个库来解析，可如果直接对整张图进行解析，因为其中的干扰项实在太多，偶尔会出现明明有二维码，结果无法进行解析的情况。所以，我们可以考虑对图片进行切分，而切分的依据就是图中的这三个图块。这里，我们利用二值化函数 threshold() 和 轮廓提取函数 findContours() 来实现图块的检测：
+# 灰度化 &amp;amp; 二值化 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) _, binary = cv2.threshold(gray, 135, 255, cv2.THRESH_BINARY) # 检测轮廓，获得对应的矩形 contours = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2] for i in range(len(contours)): block_rect = cv2.">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<img src=/images/avatar_hu9b977ab3a4b8472c7b4f807105204943_11692_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>飞鸿踏雪</a></h1>
+<h2 class=site-description>纵有疾风起，人生不言弃.</h2>
+</header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/ target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/movies/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>影单</span>
+</a>
+</li>
+<li>
+<a href=/books/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>书单</span>
+</a>
+</li>
+<li>
+<a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E4%BD%BF%E7%94%A8-python-%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB%E9%98%B2%E7%96%AB%E5%81%A5%E5%BA%B7%E7%A0%81/>使用 Python 自动识别防疫健康码</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Aug 19, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 3 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>这个月月初的时候，朋友兴奋地和我描述着他的计划——准备带孩子到宁夏自驾游。朋友感慨道，“小孩只在书本上见过黄河、见过沙漠，这样的人生多少有一点遗憾”，可正如新冠病毒会变异为德尔塔一样，生活里唯一不变的变化本身，局部地区疫情卷土重来，朋友为了孩子的健康着想，不得不取消这次计划，因为他原本就想去宁夏看看的。回想过去这一年多，口罩和二维码，是每天打交道最多的东西。也许，这会成为未来几年里的常态。在西安，不管是坐公交还是地铁，都会有人去检查防疫二维码，甚至由此而创造了不少的工作岗位。每次看到那些年轻人，我都有种失落感，因为二十九岁高龄的我，已然不那么年轻了，而这些比我更努力读书、学历更高的年轻人，看起来在做着和学历/知识并不相称的工作。也许，自卑的应该是我，因为国家刚刚给程序员群体定性——<a class=link href=http://www.mohrss.gov.cn/SYrlzyhshbzb/jiuye/gzdt/202108/t20210816_420736.html target=_blank rel=noopener>新生代农民工</a>。可是，我这个农民工，今天想做一点和学历/知识相称的事情，利用 Python 来自动识别防疫二维码。</p>
+<h1 id=原理说明>原理说明</h1>
+<p>对于防疫二维码而言，靠肉眼去看的话，其实主要关注两个颜色，即标识健康状态的颜色和标识疫苗注射状态的颜色。与此同时，为了追踪人的地理位置变化，防疫/安检人员还会关注地理位置信息，因此，如果要自动识别防疫二维码，核心就是读出其中的颜色以及文字信息。对于颜色的识别，我们可以利用 <a class=link href=https://opencv.org target=_blank rel=noopener>OpenCV</a> 中的 <a class=link href=https://docs.opencv.org/3.4/da/d97/tutorial_threshold_inRange.html target=_blank rel=noopener>inRange()</a> 函数来实现，只要我们定义好对应颜色的 <a class=link href>HSV</a> 区间即可；对于文字的识别，我们可以利用 <a class=link href=https://github.com/PaddlePaddle/PaddleOCR target=_blank rel=noopener>PaddleOCR</a> 库来进行提取。基于以上原理，我们会通过 <a class=link href=https://opencv.org target=_blank rel=noopener>OpenCV</a> 来处理摄像头的图像，只要我们将手机二维码对准摄像头，即可以完成防疫二维码的自动识别功能。考虑到检测不到二维码或者颜色识别不到这类问题，程序中增加了蜂鸣报警的功能。写作本文的原因，单纯是我觉得这样好玩，我无意借此来让人们失业。可生而为人，说到底不能像机器一样活着，大家不都追求有趣的灵魂吗？下面是本文中使用到的第三方 Python 库的清单：</p>
+<ul>
+<li>pyzbar == 0.1.8</li>
+<li>opencv-contrib-python == 4.4.0.46</li>
+<li>opencv-python == 4.5.3.56</li>
+<li>paddleocr == 2.2.0.2</li>
+<li>paddlepaddle == 2.0.0</li>
+</ul>
+<h1 id=图块检测>图块检测</h1>
+<p>下面是一张从手机上截取的防疫二维码图片，从这张图片中我们看出，整个防疫二维码，可以分为三个部分，即：上方的定位信息图块，中间的二维码信息图块，以及下方的核酸检验信息图块。</p>
+<p><figure>
+<a href=https://i.loli.net/2021/08/19/eqzajLoMHEidy5t.jpg>
+<img src=https://i.loli.net/2021/08/19/eqzajLoMHEidy5t.jpg loading=lazy alt="“西安一码通” 防疫二维码">
+</a>
+<figcaption>“西安一码通” 防疫二维码</figcaption>
+</figure></p>
+<p>对于二维码的检测，我们可以直接使用 <a class=link href=https://github.com/NaturalHistoryMuseum/pyzbar/ target=_blank rel=noopener>pyzbar</a> 这个库来解析，可如果直接对整张图进行解析，因为其中的干扰项实在太多，偶尔会出现明明有二维码，结果无法进行解析的情况。所以，我们可以考虑对图片进行切分，而切分的依据就是图中的这三个图块。这里，我们利用二值化函数 <a class=link href=http://www.opencv.org.cn/opencvdoc/2.3.2/html/doc/tutorials/imgproc/threshold/threshold.html target=_blank rel=noopener>threshold()</a> 和 轮廓提取函数 <a class=link href="http://www.opencv.org.cn/opencvdoc/2.3.2/html/doc/tutorials/imgproc/shapedescriptors/find_contours/find_contours.html?highlight=findcontours" target=_blank rel=noopener>findContours()</a> 来实现图块的检测：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=c1># 灰度化 &amp; 二值化</span>
+<span class=n>gray</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>cvtColor</span><span class=p>(</span><span class=n>image</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>COLOR_BGR2GRAY</span><span class=p>)</span>
+<span class=n>_</span><span class=p>,</span> <span class=n>binary</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>threshold</span><span class=p>(</span><span class=n>gray</span><span class=p>,</span> <span class=mi>135</span><span class=p>,</span> <span class=mi>255</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>THRESH_BINARY</span><span class=p>)</span>
+<span class=c1># 检测轮廓，获得对应的矩形</span>
+<span class=n>contours</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>findContours</span><span class=p>(</span><span class=n>binary</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>RETR_EXTERNAL</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>CHAIN_APPROX_SIMPLE</span><span class=p>)[</span><span class=o>-</span><span class=mi>2</span><span class=p>]</span> 
+<span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>contours</span><span class=p>)):</span>
+    <span class=n>block_rect</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>boundingRect</span><span class=p>(</span><span class=n>contours</span><span class=p>[</span><span class=n>i</span><span class=p>])</span> 
+</code></pre></div><p>这里有一个感触颇深的地方，在检测图块的过程中，博主发现中间和底部这两个图块，其检测要更为简单一点，因为它有明显的边界、属于规则的矩形，而上方的图块，因为带有装饰性的纹理，以及灰色的过渡区，二值化并不能检测到其边缘，如下图所示，地铁上使用的二维码，相比商场里使用的二维码，轮廓线要更为清晰一点。所以，这里选择一个什么样的阈值来做二值化，个人感觉是需要反复去尝试的。考虑到要兼容这种轮廓不规则的图块，实际上我使用了一点小技巧，即：在得到下面两个图块以后，利用高度的换算关系，人为地生成上方图块的矩形范围。</p>
+<p><figure>
+<a href=https://i.loli.net/2021/08/19/6gdQlwoDncJAvLV.jpg>
+<img src=https://i.loli.net/2021/08/19/6gdQlwoDncJAvLV.jpg loading=lazy alt="“西安一码通” 灰度化 & 二值化">
+</a>
+<figcaption>“西安一码通” 灰度化 & 二值化</figcaption>
+</figure></p>
+<p>那么，这是否说明，代表美的设计，在代表绝对理性的算法面前，其实更像是一种噪音。也许，它们各自的领域不同、观点不同，可都一样在为这个世界发光发热，生活不止一种真相，世界不止一种回声，有微小的差异，同样有宏大的统一。</p>
+<h1 id=二维码检测>二维码检测</h1>
+<p>好了，我们可以注意到，一旦完成图块的切分，此时，二维码位于中间这个图块，检测二维码在这里并不是重点，因为检测这个二维码是第一步，按照这个二维码所在的矩形去检测中心的的色彩，这是这里的重点，因为这个二维码解析以后就是一个 URL 地址，本身并没有包含任何信息，我们想要知道一个人是否健康，唯一的办法就是检测中间的色彩。其实，理论上剩余两个图块同样需要检测色彩，可考虑到三者在含义的表达上是一致的，即三者拥有相同的颜色，我们只需要处理其中一个即可。下面是利用 <a class=link href=https://github.com/NaturalHistoryMuseum/pyzbar/ target=_blank rel=noopener>pyzbar</a> 库对二维码区块进行解析，获取二维码信息、二维码所在的矩形等信息的代码片段：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=c1># 检测二维码</span>
+<span class=k>def</span> <span class=nf>detect_qrcode</span><span class=p>(</span><span class=n>image</span><span class=p>,</span> <span class=n>block</span><span class=p>):</span>
+    <span class=n>block_image</span><span class=p>,</span> <span class=n>block_rect</span><span class=p>,</span> <span class=n>_</span> <span class=o>=</span> <span class=n>block</span>
+    <span class=n>block_x</span><span class=p>,</span> <span class=n>block_y</span><span class=p>,</span> <span class=n>_</span><span class=p>,</span> <span class=n>_</span> <span class=o>=</span> <span class=n>block_rect</span>
+    <span class=n>gray</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>cvtColor</span><span class=p>(</span><span class=n>block_image</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>COLOR_BGR2GRAY</span><span class=p>)</span>
+    <span class=n>qrcodes</span> <span class=o>=</span> <span class=n>decode</span><span class=p>(</span><span class=n>gray</span><span class=p>,</span> <span class=p>[</span><span class=n>ZBarSymbol</span><span class=o>.</span><span class=n>QRCODE</span><span class=p>])</span>
+    <span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=n>qrcodes</span><span class=p>)</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>:</span>
+        <span class=n>qrcode</span> <span class=o>=</span> <span class=n>qrcodes</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span>
+        <span class=n>qrcodeData</span> <span class=o>=</span> <span class=n>qrcode</span><span class=o>.</span><span class=n>data</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=s2>&#34;utf-8&#34;</span><span class=p>)</span>
+        <span class=n>x</span><span class=p>,</span> <span class=n>y</span><span class=p>,</span> <span class=n>w</span><span class=p>,</span> <span class=n>h</span> <span class=o>=</span> <span class=n>qrcode</span><span class=o>.</span><span class=n>rect</span>
+        <span class=n>abs_x</span> <span class=o>=</span> <span class=n>block_x</span> <span class=o>+</span> <span class=n>x</span>
+        <span class=n>abs_y</span> <span class=o>=</span> <span class=n>block_y</span> <span class=o>+</span> <span class=n>y</span>
+        <span class=n>cv2</span><span class=o>.</span><span class=n>rectangle</span><span class=p>(</span><span class=n>image</span><span class=p>,</span> <span class=p>(</span><span class=n>abs_x</span><span class=p>,</span> <span class=n>abs_y</span><span class=p>),</span> <span class=p>(</span><span class=n>abs_x</span> <span class=o>+</span> <span class=n>w</span><span class=p>,</span> <span class=n>abs_y</span> <span class=o>+</span> <span class=n>h</span><span class=p>),</span> <span class=n>color_marker</span><span class=p>,</span> <span class=mi>2</span><span class=p>)</span>
+        <span class=k>return</span> <span class=kc>True</span><span class=p>,</span> <span class=n>qrcodeData</span><span class=p>,</span> <span class=p>(</span><span class=n>abs_x</span><span class=p>,</span> <span class=n>abs_y</span><span class=p>,</span> <span class=n>w</span><span class=p>,</span> <span class=n>h</span><span class=p>)</span>
+    <span class=k>else</span><span class=p>:</span>
+        <span class=k>return</span> <span class=kc>False</span><span class=p>,</span> <span class=kc>None</span><span class=p>,</span> <span class=kc>None</span>
+</code></pre></div><p>可以注意到，通过 <a class=link href=https://github.com/NaturalHistoryMuseum/pyzbar/ target=_blank rel=noopener>pyzbar</a> 这个库，我们不单单可以获取到二维码的信息，同时还可以获得二维码在图块中的矩形范围，由此我们可以推算出，二维码在整张图片中的矩形范围，我们会绘制一个矩形来标识二维码的位置，这样使用者就可以清楚的知道，我们的的确确检测到了二维码。</p>
+<h1 id=色彩检测>色彩检测</h1>
+<p>一旦我们确定了二维码的矩形范围，接下来的工作，就是在这个矩形范围里检测颜色啦！譬如一个人如果健康状态，二维码的中间部分会显示为绿色。如果一个人完成了疫苗的注射，二维码边上的区域会显示为金色。所以，基于这样的原理，我们只需要检测对应区域是否有对应的颜色即可，这里主要利用了<code>HSV</code>颜色模型，不同于<code>RGB</code>颜色模型，<code>HSV</code>颜色模型利用色相、饱和度和亮度三个指标来描述颜色，是一种把<code>RGB</code>色彩空间中的点放在倒圆锥体上的表示方法。其中：</p>
+<ul>
+<li>H，即 Hue，表示色相，它通过角度来度量，因此，它的取值范围是0 到 360 度，如下图所示，红色对应 0 度，绿色对应 120 度，蓝色对应 240 度：</li>
+</ul>
+<p><figure>
+<a href=https://i.loli.net/2021/08/19/jGVkTzscKUabeDf.jpg>
+<img src=https://i.loli.net/2021/08/19/jGVkTzscKUabeDf.jpg loading=lazy alt="HSV 颜色模型：色相">
+</a>
+<figcaption>HSV 颜色模型：色相</figcaption>
+</figure></p>
+<ul>
+<li>S，即 Saturation，表示饱和度，用 0 到 100% 之间的数值表示，如果用下面的倒圆锥体来表示，则 S 表示的是色彩点到所在圆形切面圆心的距离与该圆半径的比值：</li>
+</ul>
+<p><figure>
+<a href=https://i.loli.net/2021/08/19/UoSRreKhx2Af39d.jpg>
+<img src=https://i.loli.net/2021/08/19/UoSRreKhx2Af39d.jpg loading=lazy alt="HSV 颜色模型：倒圆锥体">
+</a>
+<figcaption>HSV 颜色模型：倒圆锥体</figcaption>
+</figure></p>
+<ul>
+<li>V，即 Value，表示亮度，同样用 0 到 100% 之间的数值表示，参考上面的倒圆锥体，可以了解到，V 表示的是色彩点所在圆形切面圆心与该圆圆心在垂直距离上的比值：</li>
+</ul>
+<p>此时此刻，你有没有回想起小时候调电视机画面时的经历呢？</p>
+<p><figure>
+<a href=https://i.loli.net/2021/08/20/vHSp6CmZQWnjBVk.jpg>
+<img src=https://i.loli.net/2021/08/20/vHSp6CmZQWnjBVk.jpg loading=lazy alt=找不到合适的图，简单怀旧一下？>
+</a>
+<figcaption>找不到合适的图，简单怀旧一下？</figcaption>
+</figure></p>
+<p>对于<code>HSV</code>颜色模型，我们可以参考下面的取值范围：</p>
+<p><figure>
+<a href=https://i.loli.net/2021/08/19/FfocQAgdOzrhpjm.png>
+<img src=https://i.loli.net/2021/08/19/FfocQAgdOzrhpjm.png loading=lazy alt="HSV 颜色模型：参考范围">
+</a>
+<figcaption>HSV 颜色模型：参考范围</figcaption>
+</figure></p>
+<p>以红色为例，其 H 分量取值范围为：0 到 10；S 分量取值范围为：43 到 255；V 分量取值范围为：46 到 255。<a class=link href=https://opencv.org target=_blank rel=noopener>OpenCV</a> 中的 <a class=link href=https://docs.opencv.org/3.4/da/d97/tutorial_threshold_inRange.html target=_blank rel=noopener>inRange()</a> 函数，可以判断某个 HSV 数组（此时图片使用一个数组来表示）是否在某个给定的区间范围内。于是，我们的思路就是：定义好目标颜色的 HSV 区间，同时提供一份 HSV 格式的图片数据。此时，其实现逻辑如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=c1># 颜色范围定义</span>
+<span class=n>color_dist</span> <span class=o>=</span> <span class=p>{</span>
+    <span class=s1>&#39;red&#39;</span><span class=p>:</span> <span class=p>{</span><span class=s1>&#39;Lower&#39;</span><span class=p>:</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([</span><span class=mi>0</span><span class=p>,</span> <span class=mi>60</span><span class=p>,</span> <span class=mi>60</span><span class=p>]),</span> <span class=s1>&#39;Upper&#39;</span><span class=p>:</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([</span><span class=mi>6</span><span class=p>,</span> <span class=mi>255</span><span class=p>,</span> <span class=mi>255</span><span class=p>])},</span>
+    <span class=s1>&#39;blue&#39;</span><span class=p>:</span> <span class=p>{</span><span class=s1>&#39;Lower&#39;</span><span class=p>:</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([</span><span class=mi>100</span><span class=p>,</span> <span class=mi>80</span><span class=p>,</span> <span class=mi>46</span><span class=p>]),</span> <span class=s1>&#39;Upper&#39;</span><span class=p>:</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([</span><span class=mi>124</span><span class=p>,</span> <span class=mi>255</span><span class=p>,</span> <span class=mi>255</span><span class=p>])},</span>
+    <span class=s1>&#39;green&#39;</span><span class=p>:</span> <span class=p>{</span><span class=s1>&#39;Lower&#39;</span><span class=p>:</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([</span><span class=mi>35</span><span class=p>,</span> <span class=mi>43</span><span class=p>,</span> <span class=mi>35</span><span class=p>]),</span> <span class=s1>&#39;Upper&#39;</span><span class=p>:</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([</span><span class=mi>90</span><span class=p>,</span> <span class=mi>255</span><span class=p>,</span> <span class=mi>255</span><span class=p>])},</span>
+    <span class=s1>&#39;golden&#39;</span><span class=p>:</span> <span class=p>{</span><span class=s1>&#39;Lower&#39;</span><span class=p>:</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([</span><span class=mi>26</span><span class=p>,</span> <span class=mi>43</span><span class=p>,</span> <span class=mi>46</span><span class=p>]),</span> <span class=s1>&#39;Upper&#39;</span><span class=p>:</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([</span><span class=mi>34</span><span class=p>,</span> <span class=mi>255</span><span class=p>,</span> <span class=mi>255</span><span class=p>])},</span>
+<span class=p>}</span>
+
+<span class=c1># 检测颜色</span>
+<span class=k>def</span> <span class=nf>detect_color</span><span class=p>(</span><span class=n>image</span><span class=p>,</span> <span class=n>color</span><span class=p>):</span>
+    <span class=c1># gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # 灰度</span>
+    <span class=n>gs</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>GaussianBlur</span><span class=p>(</span><span class=n>image</span><span class=p>,</span> <span class=p>(</span><span class=mi>5</span><span class=p>,</span> <span class=mi>5</span><span class=p>),</span> <span class=mi>0</span><span class=p>)</span>  <span class=c1># 高斯模糊</span>
+    <span class=n>hsv</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>cvtColor</span><span class=p>(</span><span class=n>gs</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>COLOR_BGR2HSV</span><span class=p>)</span>  <span class=c1># HSV</span>
+    <span class=n>erode_hsv</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>erode</span><span class=p>(</span><span class=n>hsv</span><span class=p>,</span> <span class=kc>None</span><span class=p>,</span> <span class=n>iterations</span><span class=o>=</span><span class=mi>2</span><span class=p>)</span> <span class=c1># 腐蚀</span>
+    <span class=n>inRange_hsv</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>inRange</span><span class=p>(</span><span class=n>erode_hsv</span><span class=p>,</span> <span class=n>color_dist</span><span class=p>[</span><span class=n>color</span><span class=p>][</span><span class=s1>&#39;Lower&#39;</span><span class=p>],</span> <span class=n>color_dist</span><span class=p>[</span><span class=n>color</span><span class=p>][</span><span class=s1>&#39;Upper&#39;</span><span class=p>])</span>
+    <span class=n>contours</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>findContours</span><span class=p>(</span><span class=n>inRange_hsv</span><span class=o>.</span><span class=n>copy</span><span class=p>(),</span> <span class=n>cv2</span><span class=o>.</span><span class=n>RETR_EXTERNAL</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>CHAIN_APPROX_SIMPLE</span><span class=p>)[</span><span class=o>-</span><span class=mi>2</span><span class=p>]</span>
+    <span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=n>contours</span><span class=p>)</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>:</span>
+        <span class=n>draw_color_area</span><span class=p>(</span><span class=n>image</span><span class=p>,</span> <span class=n>contours</span><span class=p>)</span>
+        <span class=k>return</span> <span class=kc>True</span>
+    <span class=k>else</span><span class=p>:</span>
+        <span class=n>winsound</span><span class=o>.</span><span class=n>Beep</span><span class=p>(</span><span class=mi>440</span><span class=p>,</span> <span class=mi>5000</span><span class=p>)</span>
+        <span class=k>return</span> <span class=kc>False</span>
+</code></pre></div><p>这里，我们先对图片做了一次高斯模糊、然后将其转换为 HSV 格式，经过侵蚀以后传给 <code>inRange()</code>函数，这样我们就得到了所有符合这个区间范围的点。接下来，单单找到颜色还不行，我们还需要根据这些点得到一个轮廓，此时，<code>findContours()</code>函数再次登场，为了让使用者更直观地找到对应的颜色区域，我们这里使用下面的方法将其“画”出来：</p>
+<pre tabindex=0><code># 标记颜色区域
+def draw_color_area(image, contours):
+    max, index = 0, -1
+    for i in range(len(contours)):
+        area = cv2.contourArea(contours[i])
+        if area &gt; max:
+            max = area
+            index = i
+    if index &gt;= 0:
+        rect = cv2.minAreaRect(contours[index])
+        cv2.ellipse(image, rect, color_marker, 2, 8)
+        cv2.circle(image, (np.int32(rect[0][0]), np.int32(rect[0][1])), 2, color_marker, 2, 8, 0)
+
+</code></pre><p>以中间部分的二维码图块为例，此时，我们可以得到下面的结果，这是做了两次颜色检测得到的，第一次检测绿色，第二次检测金色：</p>
+<p><figure>
+<a href=https://i.loli.net/2021/08/19/wt6y4gEocnhkM5K.png>
+<img src=https://i.loli.net/2021/08/19/wt6y4gEocnhkM5K.png loading=lazy alt="“西安一码通” 防疫二维码：颜色检测">
+</a>
+<figcaption>“西安一码通” 防疫二维码：颜色检测</figcaption>
+</figure></p>
+<h1 id=ocr-识别>OCR 识别</h1>
+<p><code>OCR</code>识别没有太多悬念，因为我们直接使用 <a class=link href=https://github.com/PaddlePaddle/PaddleOCR target=_blank rel=noopener>PaddleOCR</a> 即可，因为我们已经完成对图块的切分，只需要依次对图片进行检验即可：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>python -m pip install <span class=nv>paddlepaddle</span><span class=o>==</span>2.0.0 -i https://mirror.baidu.com/pypi/simple
+python -m pip install paddleocr
+</code></pre></div><p>在安装的过程中，可能会得到这样的错误信息：<code>Microsoft Visual C++ 14.0 is required</code>。如果你安装了 Visual Studio 依然提示错误，解决方案就是找到 Visual Studio 安装包，然后勾选那些和 Microsoft Visual C++ 14.0 相关的可选的安装项，再安装了这些必要组件以后，重新使用<code>pip</code>安装即可。</p>
+<p><figure>
+<a href=https://i.loli.net/2021/08/20/Iqms8YS6G7l4zrC.png>
+<img src=https://i.loli.net/2021/08/20/Iqms8YS6G7l4zrC.png loading=lazy alt="“Microsoft Visual C++ 14.0 is required” 错误信息">
+</a>
+<figcaption>“Microsoft Visual C++ 14.0 is required” 错误信息</figcaption>
+</figure></p>
+<p>因为 <a class=link href=https://github.com/PaddlePaddle/PaddleOCR target=_blank rel=noopener>PaddleOCR</a> 接受的是<code>PIL</code>库中的<code>Image</code>类型，所以，在拆分图块的时候，实际上是为每个图块生成了一个对应的文件。此时，OCR 识别部分的代码实现如下。首先，我们需要初始化 PaddleOCR ，首次运行会自动下载训练好的模型文件:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=c1># PaddleOCR</span>
+<span class=n>ocr</span> <span class=o>=</span> <span class=n>PaddleOCR</span><span class=p>()</span> 
+</code></pre></div><p>这里，我们通过<code>detect_text</code>来检测每个图块的文字，并在原始图片中标记出文字位置：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=c1># 检测文字</span>
+<span class=k>def</span> <span class=nf>detect_text</span><span class=p>(</span><span class=n>image</span><span class=p>,</span> <span class=n>block</span><span class=p>):</span>
+    <span class=n>_</span><span class=p>,</span> <span class=n>block_rect</span><span class=p>,</span> <span class=n>block_file</span> <span class=o>=</span> <span class=n>block</span>
+    <span class=n>block_x</span><span class=p>,</span> <span class=n>block_y</span><span class=p>,</span> <span class=n>_</span><span class=p>,</span> <span class=n>_</span> <span class=o>=</span> <span class=n>block_rect</span>
+    <span class=n>result</span> <span class=o>=</span> <span class=n>ocr</span><span class=o>.</span><span class=n>ocr</span><span class=p>(</span><span class=n>block_file</span><span class=p>)</span>
+    <span class=k>for</span> <span class=n>line</span> <span class=ow>in</span> <span class=n>result</span><span class=p>:</span>
+        <span class=n>boxes</span> <span class=o>=</span> <span class=n>line</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span>
+        <span class=n>texts</span> <span class=o>=</span> <span class=n>line</span><span class=p>[</span><span class=mi>1</span><span class=p>][</span><span class=mi>0</span><span class=p>]</span>
+        <span class=n>x</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>boxes</span><span class=p>[</span><span class=mi>0</span><span class=p>][</span><span class=mi>0</span><span class=p>])</span>
+        <span class=n>y</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>boxes</span><span class=p>[</span><span class=mi>0</span><span class=p>][</span><span class=mi>1</span><span class=p>])</span>
+        <span class=n>w</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>boxes</span><span class=p>[</span><span class=mi>2</span><span class=p>][</span><span class=mi>0</span><span class=p>])</span> <span class=o>-</span> <span class=n>x</span>
+        <span class=n>h</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>boxes</span><span class=p>[</span><span class=mi>2</span><span class=p>][</span><span class=mi>1</span><span class=p>])</span> <span class=o>-</span> <span class=n>y</span>
+        <span class=n>abs_x</span> <span class=o>=</span> <span class=n>block_x</span> <span class=o>+</span> <span class=n>x</span>
+        <span class=n>abs_y</span> <span class=o>=</span> <span class=n>block_y</span> <span class=o>+</span> <span class=n>y</span>
+        <span class=n>cv2</span><span class=o>.</span><span class=n>rectangle</span><span class=p>(</span><span class=n>image</span><span class=p>,</span> <span class=p>(</span><span class=n>abs_x</span><span class=p>,</span> <span class=n>abs_y</span><span class=p>),</span> <span class=p>(</span><span class=n>abs_x</span> <span class=o>+</span> <span class=n>w</span><span class=p>,</span> <span class=n>abs_y</span> <span class=o>+</span> <span class=n>h</span><span class=p>),</span> <span class=n>color_marker</span><span class=p>,</span> <span class=mi>2</span><span class=p>)</span>
+        <span class=k>yield</span> <span class=n>texts</span>
+</code></pre></div><p>以底部图块的检测结果为例，其文字位置标记及文字识别结果如下图所示：</p>
+<p><figure>
+<a href=https://i.loli.net/2021/08/20/XSTfimvkc2yPOAR.png>
+<img src=https://i.loli.net/2021/08/20/XSTfimvkc2yPOAR.png loading=lazy alt="通过 OCR 识别出来的文字位置">
+</a>
+<figcaption>通过 OCR 识别出来的文字位置</figcaption>
+</figure></p>
+<p><figure>
+<a href=https://i.loli.net/2021/08/20/VP2YouclhKLX58j.png>
+<img src=https://i.loli.net/2021/08/20/VP2YouclhKLX58j.png loading=lazy alt="通过 OCR 识别出来的文字信息">
+</a>
+<figcaption>通过 OCR 识别出来的文字信息</figcaption>
+</figure></p>
+<h1 id=成品展示>成品展示</h1>
+<p>到现在为止，主要的部分我们已经编写完成，接下来，我们只需要接入摄像头，从摄像头捕捉图像即可。这里，请允许在下推荐一个非常好用的软件：<a class=link href=https://ivcam.en.softonic.com/ target=_blank rel=noopener>iVCam</a>，它可以让手机摇身一变成为摄像头，从而可以让我们模拟扫描二维码的场景。使用 OpenCV 捕捉来自摄像头的图片非常简单，大家可以参考我曾经的博客：<a class=link href=https://blog.yuanpei.me/posts/2997581895/ target=_blank rel=noopener>视频是不能P的系列：OpenCV人脸检测</a>，这里我们直接给出代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=k>def</span> <span class=nf>handle_video</span><span class=p>():</span>
+    <span class=n>cap</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>VideoCapture</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span>
+    <span class=k>while</span> <span class=kc>True</span><span class=p>:</span>
+        <span class=n>ret</span><span class=p>,</span> <span class=n>image</span> <span class=o>=</span> <span class=n>cap</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+        <span class=k>if</span> <span class=n>ret</span><span class=p>:</span>
+           <span class=c1># 检测画面中的图块</span>
+            <span class=n>blocks</span> <span class=o>=</span> <span class=nb>list</span><span class=p>(</span><span class=n>detect_blocks</span><span class=p>(</span><span class=n>image</span><span class=p>))</span>
+        
+            <span class=c1># 处理每个图块</span>
+            <span class=k>for</span> <span class=n>block</span> <span class=ow>in</span> <span class=n>blocks</span><span class=p>:</span>
+                <span class=n>image</span> <span class=o>=</span> <span class=n>handle_block</span><span class=p>(</span><span class=n>image</span><span class=p>,</span> <span class=n>block</span><span class=p>)</span>
+        
+            <span class=c1># 展示处理结果</span>
+            <span class=n>cv2</span><span class=o>.</span><span class=n>imshow</span><span class=p>(</span><span class=s1>&#39;QRCode Detecting&#39;</span><span class=p>,</span> <span class=n>image</span><span class=p>)</span>
+
+            <span class=c1># 按 Q 退出</span>
+            <span class=k>if</span> <span class=n>cv2</span><span class=o>.</span><span class=n>waitKey</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span> <span class=o>&amp;</span> <span class=mh>0xFF</span> <span class=o>==</span> <span class=nb>ord</span><span class=p>(</span><span class=s1>&#39;q&#39;</span><span class=p>):</span>
+                <span class=k>break</span>
+        <span class=k>else</span><span class=p>:</span>
+            <span class=k>continue</span>
+
+    <span class=n>cap</span><span class=o>.</span><span class=n>release</span><span class=p>()</span> 
+    <span class=n>cv2</span><span class=o>.</span><span class=n>destroyAllWindows</span><span class=p>()</span>
+</code></pre></div><p>此时，我们就可以看到下面的结果。可以注意到，在实际应用中，通过视频采集的图像会受到环境光照、拍摄角度等因素的影响，受此影响，我们的图块检测在这个环节表现不佳，它甚至把整张图片当成了一个图块，这直接导致最重要的二维码没有检测出来。百度的 <a class=link href=https://github.com/PaddlePaddle/PaddleOCR target=_blank rel=noopener>PaddleOCR</a> 表现倒是可圈可点，识别速度和准确性还是非常出色的。对于视频这种级别的输入，特别是在人流量较大的商场、车站等场所，对于识别准确性、可靠性都有着非比寻常的要求，如果要考虑这个思路的落地，应该在图像采集的预处理、图像检测的算法上去下功夫，特别是在拆分图块这个环节，识别的准确性还会受到二维码样式的影响，而这些显然是这篇博客背后的故事啦！正所谓，”路漫漫其修远兮，吾将上下而求索”，如果大家对这个项目感兴趣的话，可以到 <a class=link href=https://github.com/Regularly-Archive/2021/tree/master/src/GreenQRCode target=_blank rel=noopener>Github</a> 上做进一步的了解。</p>
+<p><figure>
+<a href=https://i.loli.net/2021/08/20/dxtOhKCr8YFLmoW.jpg>
+<img src=https://i.loli.net/2021/08/20/dxtOhKCr8YFLmoW.jpg loading=lazy alt=通过摄像头检测防疫二维码>
+</a>
+<figcaption>通过摄像头检测防疫二维码</figcaption>
+</figure></p>
+<h1 id=本文小结>本文小结</h1>
+<p>写完这篇博客的时候，我不由地会想，也许，屏幕前的某个人会在看完这篇博客以后，一脸鄙夷地说道，就这？可这的确就是基础性研究的现状，即：投入了时间和精力，并不一定能得到满意的结果。我们从小到大接受的关于成功的理念，无非都是“只要功夫深，铁杵磨成针”、“吃得苦中苦，方为人上人”&mldr;&mldr;可不知道为什么，这种理念在被一点一点的打破，某种意义上来讲，国家和个人在这个时代面对的选择是相似的，在选择挣快钱还是挣慢钱这个问题上。多年以前，在实验室里捣腾化学试剂的我，曾经一度认为做实验、分析数据、写报告这些事情是枯燥而无用的，因为在当时看来，这些东西距离实际应用都挺遥远的。可是，此刻我大概不得不承认，这些基础工作的重要性。的确，写算法、做模型，这些事情都是科学家去做的事情，我们普通人只要奉行“拿来主义”就好，可当 OpenCV 就放在你手里，而你依然做不好这件事情的时候，大概还是我输了罢，说“认真你就输了”的人，真的真的真的认真过吗？</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/python/>Python</a>
+<a href=/tags/opencv/>OpenCV</a>
+<a href=/tags/%E5%81%A5%E5%BA%B7%E7%A0%81/>健康码</a>
+<a href=/tags/%E9%98%B2%E7%96%AB/>防疫</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E8%A7%86%E9%A2%91%E6%98%AF%E4%B8%8D%E8%83%BDp%E7%9A%84%E7%B3%BB%E5%88%97opencv%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/>
+<div class=article-details>
+<h2 class=article-title>视频是不能P的系列：OpenCV人脸检测</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%9C%E4%B8%BA%E6%8A%80%E6%9C%AF%E5%AE%85%E7%9A%84%E6%88%91%E6%98%AF%E8%BF%99%E6%A0%B7%E8%BF%BD%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83%E7%9A%84/>
+<div class=article-details>
+<h2 class=article-title>作为技术宅的我，是这样追鬼滅の刃的</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8python%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/>
+<div class=article-details>
+<h2 class=article-title>使用Python开发插件化应用程序</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8Epython%E5%AE%9E%E7%8E%B0windows%E4%B8%8B%E5%A3%81%E7%BA%B8%E5%88%87%E6%8D%A2%E5%8A%9F%E8%83%BD/>
+<div class=article-details>
+<h2 class=article-title>基于Python实现Windows下壁纸切换功能</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%90%86%E8%A7%A3python%E8%A3%85%E9%A5%B0%E5%99%A8/>
+<div class=article-details>
+<h2 class=article-title>深入浅出理解Python装饰器</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

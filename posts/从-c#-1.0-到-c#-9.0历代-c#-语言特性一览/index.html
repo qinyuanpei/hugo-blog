@@ -1,0 +1,491 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="C# 版本历史记录  从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览 
+ 说明：因为Markdown下维护这样复杂的表格有一点麻烦，故，这里以图片形式展示出来，如后续内容有更新，请点击 这里 访问原始笔记链接。为知笔记 的表格渲染在移动端表现不佳，为了获得更好的阅读体验，请在电脑端访问查看。
+ C# 版本特性说明 现在是 2021 年，相信 C# 7.0 以前的版本大家都应该没有什么问题，因为像博主这样的 90 后“中年”男人，接触的都是这个版本的 C#。所以，在这里我们主要讲解大家C# 7.0、8.0 以及 9.0 的语法特性。考虑到文章篇幅有限，这里选取的都是博主个人比较喜欢的语法特性，如果这里没有你喜欢的特性，请参考文章末尾的参考链接。如果这里的特性你都不喜欢，请你马上关掉这个网页，愿这个世界：Love &amp;amp; Peace。可能你会感觉到我说话变得小心翼翼起来，因为这个世界上有种叫做“杠精”的生物，当它从我的只言片语里读出那些挫败感的时候，终于有了嘲笑我们这批步入30岁行列的90后的底气，没错，我在最近的博客评论中被读者“嘲讽”了，让暴风雨来得更猛烈一些吧！
+C# 7.0 在 C# 7.0 中，我个人比较喜欢的特性主要有以下几个：元组和弃元、更多的 expression-bodied 成员、out 变量、异步 Main 方法、模式匹配 和 引发表达式。
+元组和弃元 这个概念乍听起来可能会有一点陌生，其实，按我的理解，这就是增强的元组语法，终于可以摆脱Item1、Item2&amp;hellip;&amp;hellip;啦：
+//示例1 (string Alpha, string Beta) namedLetters = (&amp;#34;a&amp;#34;, &amp;#34;b&amp;#34;); Console.WriteLine($&amp;#34;{namedLetters.Alpha}, {namedLetters.Beta}&amp;#34;); //示例2 var alphabetStart = (Alpha: &amp;#34;a&amp;#34;, Beta: &amp;#34;b&amp;#34;); Console.WriteLine($&amp;#34;{alphabetStart.Alpha}, {alphabetStart."><title>从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览</title>
+<link rel=canonical href=/posts/%E4%BB%8E-c#-1.0-%E5%88%B0-c%23-9.0%E5%8E%86%E4%BB%A3-c%23-%E8%AF%AD%E8%A8%80%E7%89%B9%E6%80%A7%E4%B8%80%E8%A7%88/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览">
+<meta property="og:description" content="C# 版本历史记录  从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览 
+ 说明：因为Markdown下维护这样复杂的表格有一点麻烦，故，这里以图片形式展示出来，如后续内容有更新，请点击 这里 访问原始笔记链接。为知笔记 的表格渲染在移动端表现不佳，为了获得更好的阅读体验，请在电脑端访问查看。
+ C# 版本特性说明 现在是 2021 年，相信 C# 7.0 以前的版本大家都应该没有什么问题，因为像博主这样的 90 后“中年”男人，接触的都是这个版本的 C#。所以，在这里我们主要讲解大家C# 7.0、8.0 以及 9.0 的语法特性。考虑到文章篇幅有限，这里选取的都是博主个人比较喜欢的语法特性，如果这里没有你喜欢的特性，请参考文章末尾的参考链接。如果这里的特性你都不喜欢，请你马上关掉这个网页，愿这个世界：Love &amp;amp; Peace。可能你会感觉到我说话变得小心翼翼起来，因为这个世界上有种叫做“杠精”的生物，当它从我的只言片语里读出那些挫败感的时候，终于有了嘲笑我们这批步入30岁行列的90后的底气，没错，我在最近的博客评论中被读者“嘲讽”了，让暴风雨来得更猛烈一些吧！
+C# 7.0 在 C# 7.0 中，我个人比较喜欢的特性主要有以下几个：元组和弃元、更多的 expression-bodied 成员、out 变量、异步 Main 方法、模式匹配 和 引发表达式。
+元组和弃元 这个概念乍听起来可能会有一点陌生，其实，按我的理解，这就是增强的元组语法，终于可以摆脱Item1、Item2&amp;hellip;&amp;hellip;啦：
+//示例1 (string Alpha, string Beta) namedLetters = (&amp;#34;a&amp;#34;, &amp;#34;b&amp;#34;); Console.WriteLine($&amp;#34;{namedLetters.Alpha}, {namedLetters.Beta}&amp;#34;); //示例2 var alphabetStart = (Alpha: &amp;#34;a&amp;#34;, Beta: &amp;#34;b&amp;#34;); Console.WriteLine($&amp;#34;{alphabetStart.Alpha}, {alphabetStart.">
+<meta property="og:url" content="/posts/%E4%BB%8E-c#-1.0-%E5%88%B0-c%23-9.0%E5%8E%86%E4%BB%A3-c%23-%E8%AF%AD%E8%A8%80%E7%89%B9%E6%80%A7%E4%B8%80%E8%A7%88/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content=".NET"><meta property="article:tag" content="CSharp"><meta property="article:tag" content="语言"><meta property="article:tag" content="总结"><meta property="article:published_time" content="2021-02-01T22:36:47+00:00"><meta property="article:modified_time" content="2021-02-01T22:36:47+00:00">
+<meta name=twitter:title content="从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览">
+<meta name=twitter:description content="C# 版本历史记录  从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览 
+ 说明：因为Markdown下维护这样复杂的表格有一点麻烦，故，这里以图片形式展示出来，如后续内容有更新，请点击 这里 访问原始笔记链接。为知笔记 的表格渲染在移动端表现不佳，为了获得更好的阅读体验，请在电脑端访问查看。
+ C# 版本特性说明 现在是 2021 年，相信 C# 7.0 以前的版本大家都应该没有什么问题，因为像博主这样的 90 后“中年”男人，接触的都是这个版本的 C#。所以，在这里我们主要讲解大家C# 7.0、8.0 以及 9.0 的语法特性。考虑到文章篇幅有限，这里选取的都是博主个人比较喜欢的语法特性，如果这里没有你喜欢的特性，请参考文章末尾的参考链接。如果这里的特性你都不喜欢，请你马上关掉这个网页，愿这个世界：Love &amp;amp; Peace。可能你会感觉到我说话变得小心翼翼起来，因为这个世界上有种叫做“杠精”的生物，当它从我的只言片语里读出那些挫败感的时候，终于有了嘲笑我们这批步入30岁行列的90后的底气，没错，我在最近的博客评论中被读者“嘲讽”了，让暴风雨来得更猛烈一些吧！
+C# 7.0 在 C# 7.0 中，我个人比较喜欢的特性主要有以下几个：元组和弃元、更多的 expression-bodied 成员、out 变量、异步 Main 方法、模式匹配 和 引发表达式。
+元组和弃元 这个概念乍听起来可能会有一点陌生，其实，按我的理解，这就是增强的元组语法，终于可以摆脱Item1、Item2&amp;hellip;&amp;hellip;啦：
+//示例1 (string Alpha, string Beta) namedLetters = (&amp;#34;a&amp;#34;, &amp;#34;b&amp;#34;); Console.WriteLine($&amp;#34;{namedLetters.Alpha}, {namedLetters.Beta}&amp;#34;); //示例2 var alphabetStart = (Alpha: &amp;#34;a&amp;#34;, Beta: &amp;#34;b&amp;#34;); Console.WriteLine($&amp;#34;{alphabetStart.Alpha}, {alphabetStart.">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E4%BB%8E-c#-1.0-%E5%88%B0-c%23-9.0%E5%8E%86%E4%BB%A3-c%23-%E8%AF%AD%E8%A8%80%E7%89%B9%E6%80%A7%E4%B8%80%E8%A7%88/>从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Feb 01, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 5 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<h1 id=c-版本历史记录>C# 版本历史记录</h1>
+<p><figure>
+<a href=https://i.loli.net/2021/01/31/VKRu1xATWYkLqyi.png>
+<img src=https://i.loli.net/2021/01/31/VKRu1xATWYkLqyi.png loading=lazy alt="从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览">
+</a>
+<figcaption>从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览</figcaption>
+</figure></p>
+<blockquote>
+<p>说明：因为Markdown下维护这样复杂的表格有一点麻烦，故，这里以图片形式展示出来，如后续内容有更新，请点击 <a class=link href=https://47e58366.wiz06.com/wapp/pages/view/share/s/17VodC2zTAUm24Wzmx3lTnAV2RQJG_0B0AX52FeKVL2zBkmZ target=_blank rel=noopener>这里</a> 访问原始笔记链接。<a class=link href=https://www.wiz.cn/index.html target=_blank rel=noopener>为知笔记</a> 的表格渲染在移动端表现不佳，为了获得更好的阅读体验，请在电脑端访问查看。</p>
+</blockquote>
+<h1 id=c-版本特性说明>C# 版本特性说明</h1>
+<p>现在是 2021 年，相信 C# 7.0 以前的版本大家都应该没有什么问题，因为像博主这样的 90 后“中年”男人，接触的都是这个版本的 C#。所以，在这里我们主要讲解大家C# 7.0、8.0 以及 9.0 的语法特性。考虑到文章篇幅有限，这里选取的都是博主个人比较喜欢的语法特性，如果这里没有你喜欢的特性，请参考文章末尾的<strong>参考链接</strong>。如果这里的特性你都不喜欢，请你马上关掉这个网页，愿这个世界：Love & Peace。可能你会感觉到我说话变得小心翼翼起来，因为这个世界上有种叫做“<strong>杠精</strong>”的生物，当它从我的只言片语里读出那些挫败感的时候，终于有了嘲笑我们这批步入30岁行列的90后的底气，没错，我在最近的博客评论中被读者“嘲讽”了，让暴风雨来得更猛烈一些吧！</p>
+<h2 id=c-70>C# 7.0</h2>
+<p>在 C# 7.0 中，我个人比较喜欢的特性主要有以下几个：<strong>元组和弃元</strong>、<strong>更多的 expression-bodied 成员</strong>、<strong>out 变量</strong>、<strong>异步 Main 方法</strong>、<strong>模式匹配</strong> 和 <strong>引发表达式</strong>。</p>
+<h3 id=元组和弃元>元组和弃元</h3>
+<p>这个概念乍听起来可能会有一点陌生，其实，按我的理解，这就是增强的元组语法，终于可以摆脱<code>Item1</code>、<code>Item2</code>&mldr;&mldr;啦：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp> <span class=c1>//示例1
+</span><span class=c1></span><span class=p>(</span><span class=kt>string</span> <span class=n>Alpha</span><span class=p>,</span> <span class=kt>string</span> <span class=n>Beta</span><span class=p>)</span> <span class=n>namedLetters</span> <span class=p>=</span> <span class=p>(</span><span class=s>&#34;a&#34;</span><span class=p>,</span> <span class=s>&#34;b&#34;</span><span class=p>);</span>
+<span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;{namedLetters.Alpha}, {namedLetters.Beta}&#34;</span><span class=p>);</span>
+ <span class=c1>//示例2
+</span><span class=c1></span><span class=kt>var</span> <span class=n>alphabetStart</span> <span class=p>=</span> <span class=p>(</span><span class=n>Alpha</span><span class=p>:</span> <span class=s>&#34;a&#34;</span><span class=p>,</span> <span class=n>Beta</span><span class=p>:</span> <span class=s>&#34;b&#34;</span><span class=p>);</span>
+<span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;{alphabetStart.Alpha}, {alphabetStart.Beta}&#34;</span><span class=p>);</span>
+<span class=c1>//示例3
+</span><span class=c1></span><span class=kt>int</span> <span class=n>count</span> <span class=p>=</span> <span class=m>5</span><span class=p>;</span>
+<span class=kt>string</span> <span class=n>label</span> <span class=p>=</span> <span class=s>&#34;Colors used in the map&#34;</span><span class=p>;</span>
+<span class=kt>var</span> <span class=n>pair</span> <span class=p>=</span> <span class=p>(</span><span class=n>count</span><span class=p>,</span> <span class=n>label</span><span class=p>);</span>
+<span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=n>pair</span><span class=p>);</span>
+</code></pre></div><p>有一段时间，前端同事总和我吹嘘 ES6 里面的解构多么多么好用！对此，我想说，C# 一样可以解构，假设我们现在有下面的一个方法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>static</span> <span class=p>(</span><span class=kt>string</span><span class=p>,</span> <span class=kt>double</span><span class=p>,</span> <span class=kt>double</span><span class=p>)</span> <span class=n>GetLocation</span><span class=p>()</span> 
+ <span class=p>{</span>
+    <span class=kt>var</span> <span class=n>city</span> <span class=p>=</span> <span class=s>&#34;西安市&#34;</span><span class=p>;</span>
+    <span class=kt>var</span> <span class=n>lat</span> <span class=p>=</span> <span class=m>33.42d</span><span class=p>;</span>
+    <span class=kt>var</span> <span class=n>lon</span> <span class=p>=</span> <span class=m>107.40d</span><span class=p>;</span>
+    <span class=k>return</span> <span class=p>(</span><span class=n>city</span><span class=p>,</span> <span class=n>lon</span><span class=p>,</span> <span class=n>lat</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></div><p>这就是简化后的元组的用法，如果是以前，我们还需要返回一个<code>Tuple&lt;string, double, double></code>。此时，如果我们需要解析城市名称及其经纬度，可以这样做：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>//示例4
+</span><span class=c1></span><span class=p>(</span><span class=kt>string</span> <span class=n>city</span><span class=p>,</span> <span class=kt>double</span> <span class=n>lon</span><span class=p>,</span> <span class=kt>double</span> <span class=n>lat</span><span class=p>)</span> <span class=p>=</span> <span class=n>GetLocation</span><span class=p>();</span>
+<span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;{city},({lon},{lat})&#34;</span><span class=p>);</span>
+</code></pre></div><p>OK，那么什么又是弃元呢？继续以上面的代码为例，如果我不关心经纬度，只需要城市名称又该怎么办呢？人家的方法返回的是一个3元的结果，而我们只需要其中的1元，此时，就有了所谓弃元的概念：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=p>(</span><span class=kt>string</span> <span class=n>city</span><span class=p>,</span> <span class=m>_</span><span class=p>,</span> <span class=m>_</span><span class=p>)</span> <span class=p>=</span> <span class=n>GetLocation</span><span class=p>();</span>
+<span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;{city}&#34;</span><span class=p>);</span>
+</code></pre></div><p>在 C# 中可以使用下划线<code>_</code>来表示要舍弃的元，是为弃元，怎么样？你学会了吗？</p>
+<h3 id=更多的-expression-bodied-成员>更多的 expression-bodied 成员</h3>
+<p>这部分同样是经过强化的 Lambda 表达式，之前我们可以在成员函数和 只读属性上使用 Lambda 表达式，而现在，我们可以将其运用在<code>构造函数</code>、<code>终结器</code>以及 <code>get</code>和<code>set </code>访问器：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>// Expression-bodied constructor
+</span><span class=c1></span><span class=k>public</span> <span class=n>ExpressionMembersExample</span><span class=p>(</span><span class=kt>string</span> <span class=n>label</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=k>this</span><span class=p>.</span><span class=n>Label</span> <span class=p>=</span> <span class=n>label</span><span class=p>;</span>
+
+<span class=c1>// Expression-bodied finalizer
+</span><span class=c1></span><span class=p>~</span><span class=n>ExpressionMembersExample</span><span class=p>()</span> <span class=p>=&gt;</span> <span class=n>Console</span><span class=p>.</span><span class=n>Error</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;Finalized!&#34;</span><span class=p>);</span>
+
+<span class=k>private</span> <span class=kt>string</span> <span class=n>label</span><span class=p>;</span>
+
+<span class=c1>// Expression-bodied get / set accessors.
+</span><span class=c1></span><span class=k>public</span> <span class=kt>string</span> <span class=n>Label</span>
+<span class=p>{</span>
+    <span class=k>get</span> <span class=p>=&gt;</span> <span class=n>label</span><span class=p>;</span>
+    <span class=k>set</span> <span class=p>=&gt;</span> <span class=k>this</span><span class=p>.</span><span class=n>label</span> <span class=p>=</span> <span class=k>value</span> <span class=p>??</span> <span class=s>&#34;Default label&#34;</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div><h3 id=out变量><code>out</code>变量</h3>
+<p>个人认为，这是一个非常不错的改进，终于不用再单独声明<code>out</code>变量啦：</p>
+<pre tabindex=0><code>if (int.TryParse(input, out int result))
+    Console.WriteLine(result);
+else
+    Console.WriteLine(&quot;Could not parse input&quot;);
+</code></pre><h3 id=异步-main-方法>异步 <code>Main</code> 方法</h3>
+<p>顾名思义，<code>Main</code> 方法现在可以支持 <code>async</code> 关键字啦：</p>
+<pre tabindex=0><code>static async Task&lt;int&gt; Main()
+{
+    // This could also be replaced with the body
+    // DoAsyncWork, including its await expressions:
+    return await DoAsyncWork();
+}
+</code></pre><p>在没有返回值的情况下，可以考虑返回<code>Task</code>:</p>
+<pre tabindex=0><code>static async Task Main()
+{
+    await SomeAsyncMethod();
+}
+</code></pre><h3 id=模式匹配>模式匹配</h3>
+<p>主要是针对 <code>is</code> 和 <code>switch</code> 语句提供了增强的语法。在这里，对于前者来说，我们可以将判断和赋值两个步骤合二为一：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>static</span> <span class=kt>double</span> <span class=n>ComputeAreaModernIs</span><span class=p>(</span><span class=kt>object</span> <span class=n>shape</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>shape</span> <span class=k>is</span> <span class=n>Square</span> <span class=n>s</span><span class=p>)</span>
+        <span class=k>return</span> <span class=n>s</span><span class=p>.</span><span class=n>Side</span> <span class=p>*</span> <span class=n>s</span><span class=p>.</span><span class=n>Side</span><span class=p>;</span>
+    <span class=k>else</span> <span class=k>if</span> <span class=p>(</span><span class=n>shape</span> <span class=k>is</span> <span class=n>Circle</span> <span class=n>c</span><span class=p>)</span>
+        <span class=k>return</span> <span class=n>c</span><span class=p>.</span><span class=n>Radius</span> <span class=p>*</span> <span class=n>c</span><span class=p>.</span><span class=n>Radius</span> <span class=p>*</span> <span class=n>Math</span><span class=p>.</span><span class=n>PI</span><span class=p>;</span>
+    <span class=k>else</span> <span class=k>if</span> <span class=p>(</span><span class=n>shape</span> <span class=k>is</span> <span class=n>Rectangle</span> <span class=n>r</span><span class=p>)</span>
+        <span class=k>return</span> <span class=n>r</span><span class=p>.</span><span class=n>Height</span> <span class=p>*</span> <span class=n>r</span><span class=p>.</span><span class=n>Length</span><span class=p>;</span>
+    <span class=c1>// elided
+</span><span class=c1></span>    <span class=k>throw</span> <span class=k>new</span> <span class=n>ArgumentException</span><span class=p>(</span>
+        <span class=n>message</span><span class=p>:</span> <span class=s>&#34;shape is not a recognized shape&#34;</span><span class=p>,</span>
+        <span class=n>paramName</span><span class=p>:</span> <span class=n>nameof</span><span class=p>(</span><span class=n>shape</span><span class=p>));</span>
+<span class=p>}</span>
+</code></pre></div><p>而对于后者来说，主要打破了传统 <code>switch</code> 语句的常量模式：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>static</span> <span class=kt>double</span> <span class=n>ComputeArea_Version3</span><span class=p>(</span><span class=kt>object</span> <span class=n>shape</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>switch</span> <span class=p>(</span><span class=n>shape</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>case</span> <span class=n>Square</span> <span class=n>s</span> <span class=n>when</span> <span class=n>s</span><span class=p>.</span><span class=n>Side</span> <span class=p>==</span> <span class=m>0</span><span class=p>:</span>
+        <span class=k>case</span> <span class=n>Circle</span> <span class=n>c</span> <span class=n>when</span> <span class=n>c</span><span class=p>.</span><span class=n>Radius</span> <span class=p>==</span> <span class=m>0</span><span class=p>:</span>
+            <span class=k>return</span> <span class=m>0</span><span class=p>;</span>
+
+        <span class=k>case</span> <span class=n>Square</span> <span class=n>s</span><span class=p>:</span>
+            <span class=k>return</span> <span class=n>s</span><span class=p>.</span><span class=n>Side</span> <span class=p>*</span> <span class=n>s</span><span class=p>.</span><span class=n>Side</span><span class=p>;</span>
+        <span class=k>case</span> <span class=n>Circle</span> <span class=n>c</span><span class=p>:</span>
+            <span class=k>return</span> <span class=n>c</span><span class=p>.</span><span class=n>Radius</span> <span class=p>*</span> <span class=n>c</span><span class=p>.</span><span class=n>Radius</span> <span class=p>*</span> <span class=n>Math</span><span class=p>.</span><span class=n>PI</span><span class=p>;</span>
+        <span class=k>default</span><span class=p>:</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>ArgumentException</span><span class=p>(</span>
+                <span class=n>message</span><span class=p>:</span> <span class=s>&#34;shape is not a recognized shape&#34;</span><span class=p>,</span>
+                <span class=n>paramName</span><span class=p>:</span> <span class=n>nameof</span><span class=p>(</span><span class=n>shape</span><span class=p>));</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><h3 id=引发表达式>引发表达式</h3>
+<p>这个主要是针对 <code>throw</code> 关键字的增强，当我看到微软的文档的时候，我突然意识到，这个语法其实我用了很久啦！</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>//场景A：条件运算符
+</span><span class=c1></span><span class=kt>string</span> <span class=n>arg</span> <span class=p>=</span> <span class=n>args</span><span class=p>.</span><span class=n>Length</span> <span class=p>&gt;=</span> <span class=m>1</span> <span class=p>?</span> <span class=n>args</span><span class=p>[</span><span class=m>0</span><span class=p>]</span> <span class=p>:</span>
+    <span class=k>throw</span> <span class=k>new</span> <span class=n>ArgumentException</span><span class=p>(</span><span class=s>&#34;You must supply an argument&#34;</span><span class=p>);</span>
+<span class=c1>//场景B：Null合并运算符
+</span><span class=c1></span><span class=k>public</span> <span class=kt>string</span> <span class=n>Name</span>
+<span class=p>{</span>
+    <span class=k>get</span> <span class=p>=&gt;</span> <span class=n>name</span><span class=p>;</span>
+    <span class=k>set</span> <span class=p>=&gt;</span> <span class=n>name</span> <span class=p>=</span> <span class=k>value</span> <span class=p>??</span>
+        <span class=k>throw</span> <span class=k>new</span> <span class=n>ArgumentNullException</span><span class=p>(</span>
+          <span class=n>paramName</span><span class=p>:</span> <span class=n>nameof</span><span class=p>(</span><span class=k>value</span><span class=p>),</span> 
+          <span class=n>message</span><span class=p>:</span> <span class=s>&#34;Name cannot be null&#34;</span><span class=p>);</span>
+<span class=p>}</span>
+<span class=c1>//场景C：Lambda表达式
+</span><span class=c1></span><span class=n>DateTime</span> <span class=n>ToDateTime</span><span class=p>(</span><span class=n>IFormatProvider</span> <span class=n>provider</span><span class=p>)</span> <span class=p>=&gt;</span>
+    <span class=k>throw</span> <span class=k>new</span> <span class=n>InvalidCastException</span><span class=p>(</span><span class=s>&#34;Conversion to a DateTime is not supported.&#34;</span><span class=p>);</span>
+</code></pre></div><p>以上，就是 C# 7.0 中我个人比较喜欢的语法特性。需要了解所有 C# 7.0 语法特性的小伙伴们，则可以参考这里：<a class=link href=https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/csharp-7 target=_blank rel=noopener>C# 7.0 - C# 7.3 中的新增功能</a>。</p>
+<h2 id=c-80>C# 8.0</h2>
+<p>在 C# 8.0 中，我个人比较喜欢的特性主要有以下几个：<strong>默认接口方法</strong>、<strong>异步流</strong>、<strong>索引和范围</strong>。</p>
+<h3 id=默认接口方法>默认接口方法</h3>
+<p>关于这个，我觉得有点多此一举，如果一定要有一个默认行为，那你用继承来实现不就好啦，接口本来就是用来实现的啊摔！</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>ChineseSayHello</span> <span class=p>:</span> <span class=n>ISayHello</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=kt>string</span> <span class=n>Who</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=k>public</span> <span class=k>interface</span> <span class=n>ISayHello</span>
+<span class=p>{</span>
+    <span class=k>private</span> <span class=k>const</span> <span class=kt>string</span> <span class=n>DefaultPersopn</span> <span class=p>=</span> <span class=s>&#34;Anumouse&#34;</span><span class=p>;</span>
+    <span class=kt>string</span> <span class=n>Who</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>void</span> <span class=n>SayHello</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>Who</span> <span class=p>=</span> <span class=n>DefaultPersopn</span><span class=p>;</span>
+         <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;Hello, {Who}&#34;</span><span class=p>);</span>
+    <span class=p>}</span>
+ <span class=p>}</span>
+</code></pre></div><p>在上面这个例子里，<code>ChineseSayHello</code>没有实现<code>SayHello()</code>方法不影响编译，因为<code>ISayHello</code>有默认实现，可正因为如此，<code>SayHello()</code>方法属于<code>ISayHello</code>，不属于<code>ChineseSayHello</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>//正确，可以编译
+</span><span class=c1></span><span class=kt>var</span> <span class=n>sayHello</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ChineseSayHello</span><span class=p>()</span> <span class=k>as</span> <span class=n>ISayHello</span><span class=p>;</span>
+<span class=n>sayHello</span><span class=p>.</span><span class=n>SayHello</span><span class=p>();</span>
+<span class=c1>//错误，无法编译
+</span><span class=c1></span> <span class=kt>var</span> <span class=n>sayHello</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ChineseSayHello</span><span class=p>();</span>
+<span class=n>sayHello</span><span class=p>.</span><span class=n>SayHello</span><span class=p>();</span>
+</code></pre></div><h3 id=异步流>异步流</h3>
+<p>该特性可以看作是<code>IEnumerable&lt;T></code>的一个延伸，即<code>IAsyncEnumerable&lt;T></code>，主要有下面三个属性：</p>
+<ul>
+<li>它是用 async 修饰符声明的。</li>
+<li>它将返回 IAsyncEnumerable。</li>
+<li>该方法包含用于在异步流中返回连续元素的 <code>yield return</code> 语句。</li>
+</ul>
+<p>下面是一个来自微软官方的基本示例：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>//生成异步流
+</span><span class=c1></span><span class=k>public</span> <span class=k>static</span> <span class=k>async</span> <span class=n>System</span><span class=p>.</span><span class=n>Collections</span><span class=p>.</span><span class=n>Generic</span><span class=p>.</span><span class=n>IAsyncEnumerable</span><span class=p>&lt;</span><span class=kt>int</span><span class=p>&gt;</span> <span class=n>GenerateSequence</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=m>20</span><span class=p>;</span> <span class=n>i</span><span class=p>++)</span>
+    <span class=p>{</span>
+        <span class=k>await</span> <span class=n>Task</span><span class=p>.</span><span class=n>Delay</span><span class=p>(</span><span class=m>100</span><span class=p>);</span>
+        <span class=k>yield</span> <span class=k>return</span> <span class=n>i</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+<span class=c1>//枚举异步流
+</span><span class=c1></span><span class=k>await</span> <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>number</span> <span class=k>in</span> <span class=n>GenerateSequence</span><span class=p>())</span>
+<span class=p>{</span>
+    <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=n>number</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></div><p>和异步流相关的一个概念是：异步可释放，即 <a class=link href=https://docs.microsoft.com/zh-cn/dotnet/api/system.iasyncdisposable target=_blank rel=noopener>System.IAsyncDisposable</a>，这个可以参考：<a class=link href=https://docs.microsoft.com/zh-cn/dotnet/standard/garbage-collection/implementing-disposeasync target=_blank rel=noopener>实现 DisposeAsync 方法</a>。</p>
+<h3 id=索引和范围>索引和范围</h3>
+<p>关于这个，我们换一种说法，可能大家就能接受啦！是什么呢？答案是：切片。切片语法博主经常在 Python 中使用，想不到有生之年居然可以在 C# 里用到这个语法。不过，这个语法糖怎么看都不甜啊，因为没那味儿！</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=kt>var</span> <span class=n>words</span> <span class=p>=</span> <span class=k>new</span> <span class=kt>string</span><span class=p>[]</span>
+<span class=p>{</span>
+                <span class=c1>// index from start index from end
+</span><span class=c1></span>    <span class=s>&#34;The&#34;</span><span class=p>,</span> <span class=c1>// 0 ^9
+</span><span class=c1></span>    <span class=s>&#34;quick&#34;</span><span class=p>,</span> <span class=c1>// 1 ^8
+</span><span class=c1></span>    <span class=s>&#34;brown&#34;</span><span class=p>,</span> <span class=c1>// 2 ^7
+</span><span class=c1></span>    <span class=s>&#34;fox&#34;</span><span class=p>,</span> <span class=c1>// 3 ^6
+</span><span class=c1></span>    <span class=s>&#34;jumped&#34;</span><span class=p>,</span> <span class=c1>// 4 ^5
+</span><span class=c1></span>    <span class=s>&#34;over&#34;</span><span class=p>,</span> <span class=c1>// 5 ^4
+</span><span class=c1></span>    <span class=s>&#34;the&#34;</span><span class=p>,</span> <span class=c1>// 6 ^3
+</span><span class=c1></span>    <span class=s>&#34;lazy&#34;</span><span class=p>,</span> <span class=c1>// 7 ^2
+</span><span class=c1></span>    <span class=s>&#34;dog&#34;</span> <span class=c1>// 8 ^1
+</span><span class=c1></span><span class=p>};</span>  
+<span class=c1>//取最后一个元素
+</span><span class=c1></span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;The last word is {words[^1]}&#34;</span><span class=p>);</span>
+<span class=c1>//获取第一个元素到第三个元素
+</span><span class=c1></span><span class=kt>var</span> <span class=n>quickBrownFox</span> <span class=p>=</span> <span class=n>words</span><span class=p>[</span><span class=m>1.</span><span class=p>.</span><span class=m>4</span><span class=p>];</span>
+<span class=c1>//获取倒数第一个元素到倒数第二个元素
+</span><span class=c1></span><span class=kt>var</span> <span class=n>lazyDog</span> <span class=p>=</span> <span class=n>words</span><span class=p>[^</span><span class=m>2.</span><span class=p>.^</span><span class=m>0</span><span class=p>];</span>
+<span class=c1>//获取全部元素
+</span><span class=c1></span><span class=kt>var</span> <span class=n>all</span> <span class=p>=</span> <span class=n>words</span><span class=p>[..];</span>
+<span class=c1>//获取开始到第三个元素
+</span><span class=c1></span><span class=kt>var</span> <span class=n>firstPhrase</span> <span class=p>=</span> <span class=n>words</span><span class=p>[..</span><span class=m>4</span><span class=p>];</span>
+<span class=c1>//获取结束到倒数第二个元素
+</span><span class=c1></span><span class=kt>var</span> <span class=n>lastPhrase</span> <span class=p>=</span> <span class=n>words</span><span class=p>[</span><span class=m>6.</span><span class=p>.];</span>
+</code></pre></div><p>看起来这些东西在 Python 里都有啊，到底是哪里除了问题呢？我觉得更多的是符号上的不同吧， <code>^</code> 这个符号除了表示指数的意思以外，还有按位进行异或运算的意思，所以，这个语法糖加进来以后就会显得相当混乱，而 <code>..</code> 这个符号显然没有 <code>:</code> 写起来方便啊，所以，虽然 C# 从 C# 8.0 开始有了切片语法，可这不是我想要的切片语法啊！</p>
+<p>以上，就是 C# 8.0 中我个人比较喜欢的语法特性。需要了解所有 C# 8.0 语法特性的小伙伴们，则可以参考这里：<a class=link href=https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/csharp-8 target=_blank rel=noopener>C# 8.0 中的新增功能</a>。</p>
+<h2 id=c-90>C# 9.0</h2>
+<p>在 C# 9.0 中，我个人比较喜欢的特性主要有以下几个：<strong>Record</strong>、<strong>顶级语句</strong>、<strong>模式匹配增强</strong>。</p>
+<h3 id=record>Record</h3>
+<p><code>record</code> 是 C# 9.0 中提供的一个新的关键字，地位上等同于 <code>class</code> 和 <code>struct</code>，中文翻译为：记录类型。这是一种引用类型，它提供合成方法来提供值语义，从而实现相等性。 默认情况下，记录是不可变的。简而言之，<code>record</code> 是不可变的引用类型。你可能会说，我们为什么要搞这么一个类型出来呢？难道 <code>class</code> 不香吗？</p>
+<p>我觉得如果要回答这个问题，可以借鉴 <code>DDD</code> 中的<code>实体</code> 和 <code>值对象</code>这两个概念。<code>实体</code> 通常都有一个唯一的标识并且在整个生命周期中具有连续性，这一类角色通过 <code>class</code> 来实现一直都工作得很好。例如，每一个 <code>User</code> 都会有一个唯一的<code>UserId</code> ，我们使用 <code>UserId</code> 来判断其相等性。而 <code>值对象</code> 则是指那些没有唯一的标识、不可变的、通过属性来判断相等性。例如，我们有一个地址 <code>Address</code>，它由省、市、区、县和详细地址组成，那么，问题来了，如果两个 <code>Address</code> 的省、市、区、县和详细地址都相同，这两个 <code>Address</code> 是不是同一个地址呢？常识告诉我们：不会，因为它们是不同的实例。</p>
+<p>这就是 <code>record</code> 出现的原因，对于上面的这个问题，我们可以来解决：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=n>record</span> <span class=n>Address</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=kt>string</span> <span class=n>Province</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>public</span> <span class=kt>string</span> <span class=n>City</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>public</span> <span class=kt>string</span> <span class=n>District</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>public</span> <span class=kt>string</span> <span class=n>County</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=kt>var</span> <span class=n>addr1</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Address</span><span class=p>()</span> <span class=p>{</span> <span class=n>Province</span> <span class=p>=</span> <span class=s>&#34;陕西省&#34;</span><span class=p>,</span> <span class=n>City</span> <span class=p>=</span> <span class=s>&#34;西安市&#34;</span><span class=p>,</span> <span class=n>District</span> <span class=p>=</span> <span class=s>&#34;雁塔区&#34;</span> <span class=p>};</span>
+<span class=kt>var</span> <span class=n>addr2</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Address</span><span class=p>()</span> <span class=p>{</span> <span class=n>Province</span> <span class=p>=</span> <span class=s>&#34;陕西省&#34;</span><span class=p>,</span> <span class=n>City</span> <span class=p>=</span> <span class=s>&#34;西安市&#34;</span><span class=p>,</span> <span class=n>District</span> <span class=p>=</span> <span class=s>&#34;雁塔区&#34;</span> <span class=p>};</span>
+<span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;addr1 == addr2：{addr1 == addr2}&#34;</span><span class=p>);</span>
+</code></pre></div><p>想想以前我们是怎么做的呢？是不是要写类似下面这样的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>if</span> <span class=p>(</span><span class=n>addr1</span><span class=p>.</span><span class=n>Province</span> <span class=p>==</span> <span class=n>addr2</span><span class=p>.</span><span class=n>Province</span> <span class=p>&amp;&amp;</span> <span class=n>addr1</span><span class=p>.</span><span class=n>City</span> <span class=p>==</span> <span class=n>addr2</span><span class=p>.</span><span class=n>City</span><span class=p>)</span> <span class=p>{</span>
+    <span class=c1>//属性太多啦，我就不一个一个地比较啦，懂得都懂
+</span><span class=c1></span><span class=p>}</span>
+</code></pre></div><p>所以，这就是 <code>record</code> 存在的意义。除此之外呢，这个关键字更多的是语法层面上的，实际上从编译出来的 IL 来看，它本质上依然是一个类，并且它是不可变的。定义记录类型时，编译器会合成其他几种方法：</p>
+<ul>
+<li>基于值的相等性比较方法</li>
+<li>替代 GetHashCode()</li>
+<li>复制和克隆成员</li>
+<li>PrintMembers 和 ToString()</li>
+</ul>
+<p>那么，你可能还会有疑问，假如我定义了两个不同的记录类型，它们都拥有相同的属性成员，如果按值相等来判断的话，岂不是这两个不同的记录类型变成相同的了？这么重要的问题，微软怎么可能没有想到呢？编译器会合成一个 <code>EqualityContract</code> 属性，该属性返回与记录类型匹配的 <code>Type</code> 对象。在这里，微软再一次发挥了<code>元组</code>的威力，对于上面定义的地址，我们可以继续使用解构语法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=p>(</span><span class=n>province</span><span class=p>,</span> <span class=n>city</span><span class=p>,</span> <span class=n>district</span><span class=p>,</span> <span class=n>county</span><span class=p>)</span> <span class=p>=</span> <span class=n>addr1</span><span class=p>;</span>
+</code></pre></div><p>当然，我相信哪怕到2090年，这个世界上依然会有“<strong>杠精</strong>”：你说这玩意儿不能变？我就想变怎么办？答案是使用<code>with</code>语法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=n>record</span> <span class=n>Person</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=kt>string</span> <span class=n>LastName</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>public</span> <span class=kt>string</span> <span class=n>FirstName</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=p>}</span>
+
+    <span class=k>public</span> <span class=n>Person</span><span class=p>(</span><span class=kt>string</span> <span class=n>first</span><span class=p>,</span> <span class=kt>string</span> <span class=n>last</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>(</span><span class=n>FirstName</span><span class=p>,</span> <span class=n>LastName</span><span class=p>)</span> <span class=p>=</span> <span class=p>(</span><span class=n>first</span><span class=p>,</span> <span class=n>last</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=kt>var</span> <span class=n>person</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Person</span><span class=p>(</span><span class=s>&#34;Bill&#34;</span><span class=p>,</span> <span class=s>&#34;Wagner&#34;</span><span class=p>);</span>
+<span class=n>Person</span> <span class=n>brother</span> <span class=p>=</span> <span class=n>person</span> <span class=n>with</span> <span class=p>{</span> <span class=n>FirstName</span> <span class=p>=</span> <span class=s>&#34;Paul&#34;</span> <span class=p>};</span> <span class=c1>// 修改FirstName的副本
+</span><span class=c1></span><span class=n>Person</span> <span class=n>clone</span> <span class=p>=</span> <span class=n>person</span> <span class=n>with</span> <span class=p>{</span> <span class=p>};</span> <span class=c1>// 空集副本
+</span></code></pre></div><p>好了，关于记录类型就先为大家介绍到这里，更详细的说明可以参考这里：<a class=link href=https://docs.microsoft.com/zh-cn/dotnet/csharp/tutorials/exploration/records target=_blank rel=noopener>使用记录类型</a>。</p>
+<h3 id=顶级语句>顶级语句</h3>
+<p>顶级语句，这个又是一个听起来非常模糊的概念对不对？ 大家可以看一下这篇文章：<a class=link href=https://www.runoob.com/w3cnote/write-hello-world-program-26-different-programming-languages.html target=_blank rel=noopener>26 种不同的编程语言的 “Hello World” 程序</a>。怎么样，在众多解释型的语言中，C#、Java 甚至 C++ 的 “<strong>Hello World</strong>” 是不是都看起来有一点臃肿？</p>
+<p>好了，现在可以梦想成真啦！</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
+
+<span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;Hello World!&#34;</span><span class=p>);</span>
+</code></pre></div><p>如果觉得这样还显得臃肿，可以省略 <code>using</code> 部分：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=n>System</span><span class=p>.</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;Hello World!&#34;</span><span class=p>);</span>
+</code></pre></div><p>当然啦，一个项目里显然只能有一个文件可以使用顶级语句，你可以理解为这些代码运行在一个看不见的<code>Main()</code>方法中，而<code>Main()</code>方法显然只能有一个，相比下来，Python 就自由多啦，不过<code>if __name__ == '__main__'</code>的老梗就不再这里展开啦！</p>
+<h3 id=模式匹配增强>模式匹配增强</h3>
+<p>感觉微软在模式匹配的道路上越走越远啊，说好的语法糖呢？这简直是毒药，7.0 里面眼花缭乱的<code>switch</code>都还没学会呢！</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>static</span> <span class=kt>bool</span> <span class=n>IsLetter</span><span class=p>(</span><span class=k>this</span> <span class=kt>char</span> <span class=n>c</span><span class=p>)</span> <span class=p>=&gt;</span>
+    <span class=n>c</span> <span class=k>is</span> <span class=p>&gt;=</span> <span class=sc>&#39;a&#39;</span> <span class=n>and</span> <span class=p>&lt;=</span> <span class=sc>&#39;z&#39;</span> <span class=n>or</span> <span class=p>&gt;=</span> <span class=sc>&#39;A&#39;</span> <span class=n>and</span> <span class=p>&lt;=</span> <span class=sc>&#39;Z&#39;</span><span class=p>;</span>
+
+<span class=k>public</span> <span class=k>static</span> <span class=kt>bool</span> <span class=n>IsLetterOrSeparator</span><span class=p>(</span><span class=k>this</span> <span class=kt>char</span> <span class=n>c</span><span class=p>)</span> <span class=p>=&gt;</span>
+    <span class=n>c</span> <span class=k>is</span> <span class=p>(&gt;=</span> <span class=sc>&#39;a&#39;</span> <span class=n>and</span> <span class=p>&lt;=</span> <span class=sc>&#39;z&#39;</span><span class=p>)</span> <span class=n>or</span> <span class=p>(&gt;=</span> <span class=sc>&#39;A&#39;</span> <span class=n>and</span> <span class=p>&lt;=</span> <span class=sc>&#39;Z&#39;</span><span class=p>)</span> <span class=n>or</span> <span class=sc>&#39;.&#39;</span> <span class=n>or</span> <span class=sc>&#39;,&#39;</span><span class=p>;</span>
+
+<span class=k>if</span> <span class=p>(</span><span class=n>e</span> <span class=k>is</span> <span class=n>not</span> <span class=k>null</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>// ...
+</span><span class=c1></span><span class=p>}</span>
+</code></pre></div><p>以上，就是 C# 9.0 中我个人比较喜欢的语法特性。需要了解所有 C# 9.0 语法特性的小伙伴们，则可以参考这里：<a class=link href=https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/csharp-9 target=_blank rel=noopener>C# 9.0 中的新增功能</a>。</p>
+<h1 id=参考链接>参考链接</h1>
+<ul>
+<li><a class=link href=https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/csharp-version-history target=_blank rel=noopener>C# 发展历史</a></li>
+<li><a class=link href=https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/csharp-7 target=_blank rel=noopener>C# 7.0 - C# 7.3 中的新增功能</a></li>
+<li><a class=link href=https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/csharp-8 target=_blank rel=noopener>C# 8.0 中的新增功能</a></li>
+<li><a class=link href=https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/csharp-9 target=_blank rel=noopener>C# 9.0 中的新增功能</a></li>
+<li><a class=link href=https://www.cnblogs.com/MingsonZheng/p/11273700.html target=_blank rel=noopener>C# 版本与 .NET 版本对应关系以及各版本的特性</a></li>
+<li><a class=link href=https://www.cnblogs.com/microsoft-zyl/p/9093748.html target=_blank rel=noopener>C# 语言历史版本特性（C# 1.0到C# 8.0汇总）</a></li>
+</ul>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/.net/>.NET</a>
+<a href=/tags/csharp/>CSharp</a>
+<a href=/tags/%E8%AF%AD%E8%A8%80/>语言</a>
+<a href=/tags/%E6%80%BB%E7%BB%93/>总结</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/asp.net-core-grpc-%E9%9B%86%E6%88%90-polly-%E5%AE%9E%E7%8E%B0%E4%BC%98%E9%9B%85%E9%87%8D%E8%AF%95/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 集成 Polly 实现优雅重试</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-grpc-%E6%8B%A6%E6%88%AA%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 拦截器的使用技巧分享</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8mono%E6%89%93%E9%80%A0%E8%BD%BB%E9%87%8F%E7%BA%A7%E7%9A%84.net%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E6%97%B6/>
+<div class=article-details>
+<h2 class=article-title>使用Mono打造轻量级的.NET程序运行时</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8mono%E8%AE%A9.net%E7%A8%8B%E5%BA%8F%E8%B7%A8%E5%B9%B3%E5%8F%B0%E8%BF%90%E8%A1%8C/>
+<div class=article-details>
+<h2 class=article-title>使用Mono让.NET程序跨平台运行</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/c#%E4%B8%AD%E7%9A%84%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/>
+<div class=article-details>
+<h2 class=article-title>C#中的扩展方法学习总结</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg>
+</div>
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#c-70>C# 7.0</a>
+<ol>
+<li><a href=#元组和弃元>元组和弃元</a></li>
+<li><a href=#更多的-expression-bodied-成员>更多的 expression-bodied 成员</a></li>
+<li><a href=#out变量><code>out</code>变量</a></li>
+<li><a href=#异步-main-方法>异步 <code>Main</code> 方法</a></li>
+<li><a href=#模式匹配>模式匹配</a></li>
+<li><a href=#引发表达式>引发表达式</a></li>
+</ol>
+</li>
+<li><a href=#c-80>C# 8.0</a>
+<ol>
+<li><a href=#默认接口方法>默认接口方法</a></li>
+<li><a href=#异步流>异步流</a></li>
+<li><a href=#索引和范围>索引和范围</a></li>
+</ol>
+</li>
+<li><a href=#c-90>C# 9.0</a>
+<ol>
+<li><a href=#record>Record</a></li>
+<li><a href=#顶级语句>顶级语句</a></li>
+<li><a href=#模式匹配增强>模式匹配增强</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

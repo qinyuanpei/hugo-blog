@@ -1,0 +1,316 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="这段代码博主在本地使用NodeJS测试了没有不过什么问题，大家可以在截图中清楚地看到[music:29713754]已经被替换称了网易云音乐的Flash组件，这样在网页中就会显示出网易云音乐的播放器，我们就能听到这熟悉而温暖的旋律了;那么，现在我们其实就是在做这样一件事情，我们在文章中插入这样一个[key:value]的结构，然后通过程序将它替换成相应的HTML结构，这样就实现了在Hexo的文章中使用[key:value]结构来编写简单插件的功能，如果经历过使用wordpress建站的朋友一定知道，在wordpress中存在许多这样的类似插件，可以帮助写作者简化某些输入内容;相信经过博主的一番介绍，大家已经对这段代码相当熟悉了吧，这里就是先做判断，判断文章内容中是否有[key:vaule]这样的结构，如果没有就直接输出item.content"><title>为Hexo开发一个网易云音乐的文章插件</title>
+<link rel=canonical href=/posts/%E4%B8%BAhexo%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%E7%9A%84%E6%96%87%E7%AB%A0%E6%8F%92%E4%BB%B6/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="为Hexo开发一个网易云音乐的文章插件">
+<meta property="og:description" content="这段代码博主在本地使用NodeJS测试了没有不过什么问题，大家可以在截图中清楚地看到[music:29713754]已经被替换称了网易云音乐的Flash组件，这样在网页中就会显示出网易云音乐的播放器，我们就能听到这熟悉而温暖的旋律了;那么，现在我们其实就是在做这样一件事情，我们在文章中插入这样一个[key:value]的结构，然后通过程序将它替换成相应的HTML结构，这样就实现了在Hexo的文章中使用[key:value]结构来编写简单插件的功能，如果经历过使用wordpress建站的朋友一定知道，在wordpress中存在许多这样的类似插件，可以帮助写作者简化某些输入内容;相信经过博主的一番介绍，大家已经对这段代码相当熟悉了吧，这里就是先做判断，判断文章内容中是否有[key:vaule]这样的结构，如果没有就直接输出item.content">
+<meta property="og:url" content="/posts/%E4%B8%BAhexo%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%E7%9A%84%E6%96%87%E7%AB%A0%E6%8F%92%E4%BB%B6/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="网易"><meta property="article:tag" content="云音乐"><meta property="article:tag" content="插件"><meta property="article:tag" content="Hexo"><meta property="article:published_time" content="2015-03-24T10:32:39+00:00"><meta property="article:modified_time" content="2015-03-24T10:32:39+00:00">
+<meta name=twitter:title content="为Hexo开发一个网易云音乐的文章插件">
+<meta name=twitter:description content="这段代码博主在本地使用NodeJS测试了没有不过什么问题，大家可以在截图中清楚地看到[music:29713754]已经被替换称了网易云音乐的Flash组件，这样在网页中就会显示出网易云音乐的播放器，我们就能听到这熟悉而温暖的旋律了;那么，现在我们其实就是在做这样一件事情，我们在文章中插入这样一个[key:value]的结构，然后通过程序将它替换成相应的HTML结构，这样就实现了在Hexo的文章中使用[key:value]结构来编写简单插件的功能，如果经历过使用wordpress建站的朋友一定知道，在wordpress中存在许多这样的类似插件，可以帮助写作者简化某些输入内容;相信经过博主的一番介绍，大家已经对这段代码相当熟悉了吧，这里就是先做判断，判断文章内容中是否有[key:vaule]这样的结构，如果没有就直接输出item.content">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<img src=/images/avatar_hu9b977ab3a4b8472c7b4f807105204943_11692_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>飞鸿踏雪</a></h1>
+<h2 class=site-description>纵有疾风起，人生不言弃.</h2>
+</header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/ target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/movies/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>影单</span>
+</a>
+</li>
+<li>
+<a href=/books/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>书单</span>
+</a>
+</li>
+<li>
+<a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2/ style=background-color:#2a9d8f;color:#fff>
+独立博客
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E4%B8%BAhexo%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%E7%9A%84%E6%96%87%E7%AB%A0%E6%8F%92%E4%BB%B6/>为Hexo开发一个网易云音乐的文章插件</a>
+</h2>
+<h3 class=article-subtitle>
+这段代码博主在本地使用NodeJS测试了没有不过什么问题，大家可以在截图中清楚地看到[music:29713754]已经被替换称了网易云音乐的Flash组件，这样在网页中就会显示出网易云音乐的播放器，我们就能听到这熟悉而温暖的旋律了;那么，现在我们其实就是在做这样一件事情，我们在文章中插入这样一个[key:value]的结构，然后通过程序将它替换成相应的HTML结构，这样就实现了在Hexo的文章中使用[key:value]结构来编写简单插件的功能，如果经历过使用wordpress建站的朋友一定知道，在wordpress中存在许多这样的类似插件，可以帮助写作者简化某些输入内容;相信经过博主的一番介绍，大家已经对这段代码相当熟悉了吧，这里就是先做判断，判断文章内容中是否有[key:vaule]这样的结构，如果没有就直接输出item.content
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Mar 24, 2015</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>  当你打开这篇文章的时候，你听到一首熟悉的旋律，那是因为在你的心里始终装着一张泛黄的CD，你从来不愿意打开它，即使外表早已积满了灰尘，你依然视它如新的一般，我们喜欢把它叫做时光或者说是青春。</p>
+<p>  正如你所看到的，我在博客文章中插入了网易云音乐的播放器。这是一个基于Flash技术实现的组件。因为博主特别喜欢网易云音乐这个音乐产品，所以博主想将这个播放器带入到我的博客。在博客中使用这个播放器，只要在文章中添加如下代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-HTML data-lang=HTML><span class=p>&lt;</span><span class=nt>embed</span> <span class=na>src</span><span class=o>=</span><span class=s>&#34;http://music.163.com/style/swf/widget.swf?sid=29713754&amp;type=2&amp;auto=1&amp;width=278&amp;height=32&#34;</span> 
+<span class=na>width</span><span class=o>=</span><span class=s>&#34;298&#34;</span> <span class=na>height</span><span class=o>=</span><span class=s>&#34;52&#34;</span>  <span class=na>allowNetworking</span><span class=o>=</span><span class=s>&#34;all&#34;</span><span class=p>&gt;&lt;/</span><span class=nt>embed</span><span class=p>&gt;</span>
+</code></pre></div><p>  可是这样的结构对于一个写博客的人来说还是显得臃肿了，能不能让这个结构更简单写呢？简单到这样：</p>
+<pre tabindex=0><code>[music:29713754]
+</code></pre><p>  因为在这段代码中真正和音乐有关的只有sid这个参数，所以我们我们只需要关注这个参数就好了。那么，现在我们其实就是在做这样一件事情，我们在文章中插入这样一个[key:value]的结构，然后通过程序将它替换成相应的HTML结构，这样就实现了在Hexo的文章中使用[key:value]结构来编写简单插件的功能，如果经历过使用wordpress建站的朋友一定知道，在wordpress中存在许多这样的类似插件，可以帮助写作者简化某些输入内容。好了，那么今天我们就来试着为hexo编写这样一个小插件吧！为了避免将插件写到网页里的时候出现错误，我们首先在NodeJS中测试，测试程序如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript>   <span class=c1>//定义测试内容
+</span><span class=c1></span>   <span class=kd>var</span> <span class=nx>str</span><span class=o>=</span><span class=s2>&#34;这是一条测试内容以测试这个程序是否能够正确运行,现在让我们来听一首《匆匆那年》[music:29713754]&#34;</span><span class=p>;</span>
+   <span class=c1>//获得匹配内容
+</span><span class=c1></span>   <span class=kd>var</span> <span class=nx>dicts</span><span class=o>=</span><span class=nx>str</span><span class=p>.</span><span class=nx>match</span><span class=p>(</span><span class=sr>/\[(.*?):(.*?)\]/g</span><span class=p>);</span>
+   <span class=k>if</span><span class=p>(</span><span class=nx>dicts</span><span class=p>.</span><span class=nx>length</span><span class=o>==</span><span class=mi>0</span><span class=p>)</span> <span class=k>return</span><span class=p>;</span>
+   <span class=c1>//对每一个匹配项进行处理
+</span><span class=c1></span>   <span class=k>for</span><span class=p>(</span><span class=kd>var</span> <span class=nx>i</span><span class=o>=</span><span class=mi>0</span><span class=p>;</span><span class=nx>i</span><span class=o>&lt;</span><span class=nx>dicts</span><span class=p>.</span><span class=nx>length</span><span class=p>;</span><span class=nx>i</span><span class=o>++</span><span class=p>)</span>
+   <span class=p>{</span>
+         <span class=c1>//对匹配项进行分割,拆分结果为&#39;[music&#39;和&#39;29713754]&#39;
+</span><span class=c1></span>         <span class=c1>//我TM就郁闷了，在这里写成&#39;/:/&#39;报错
+</span><span class=c1></span>         <span class=c1>//可是写成/:/就顺利通过
+</span><span class=c1></span>         <span class=kd>var</span> <span class=nx>dict</span><span class=o>=</span><span class=nx>dicts</span><span class=p>[</span><span class=nx>i</span><span class=p>].</span><span class=nx>split</span><span class=p>(</span><span class=sr>/:/</span><span class=p>);</span>
+         <span class=c1>//获得键名
+</span><span class=c1></span>         <span class=kd>var</span> <span class=nx>key</span><span class=o>=</span><span class=nx>dict</span><span class=p>[</span><span class=mi>0</span><span class=p>].</span><span class=nx>substring</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span><span class=nx>dict</span><span class=p>[</span><span class=mi>0</span><span class=p>].</span><span class=nx>length</span><span class=p>);</span>
+         <span class=c1>//获得ID
+</span><span class=c1></span>         <span class=kd>var</span> <span class=nx>id</span><span class=o>=</span><span class=nx>dict</span><span class=p>[</span><span class=mi>1</span><span class=p>].</span><span class=nx>substring</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span><span class=nx>dict</span><span class=p>[</span><span class=mi>1</span><span class=p>].</span><span class=nx>indexOf</span><span class=p>(</span><span class=s1>&#39;]&#39;</span><span class=p>));</span>
+         <span class=c1>//判断键名的类型
+</span><span class=c1></span>         <span class=k>if</span><span class=p>(</span><span class=nx>key</span><span class=o>==</span><span class=s1>&#39;music&#39;</span><span class=p>)</span>
+         <span class=p>{</span>
+            <span class=nx>str</span><span class=o>=</span><span class=nx>str</span><span class=p>.</span><span class=nx>replace</span><span class=p>(</span><span class=nx>dicts</span><span class=p>[</span><span class=nx>i</span><span class=p>],</span><span class=s1>&#39;&lt;embed src=&#34;http://music.163.com/style/swf/widget.swf?sid=&#39;</span><span class=o>+</span> <span class=nx>id</span> <span class=o>+</span>
+            <span class=s1>&#39;&amp;type=2&amp;auto=1&amp;width=278&amp;height=32&#34; width=&#34;298&#34; height=&#34;52&#34;  allowNetworking=&#34;all&#34;&gt;&lt;/embed&gt;&#39;</span><span class=p>);</span>
+         <span class=p>}</span>
+    <span class=p>}</span>
+    <span class=c1>//输出结果
+</span><span class=c1></span>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>str</span><span class=p>);</span>
+</code></pre></div><p>  这段代码主要就是通过正则表达式来匹配文章正文中所有的[key:value]结构，然后根据key来确定当前结构表什么类型，根据id来确定当前类型的参数，尽管这里只提到了一个music的类型，不过我相信只要大家开动脑筋、发挥想像相信会有更好的想法产生吧！这段代码博主在本地使用NodeJS测试了没有不过什么问题，大家可以在截图中清楚地看到[music:29713754]已经被替换称了网易云音乐的Flash组件，这样在网页中就会显示出网易云音乐的播放器，我们就能听到这熟悉而温暖的旋律了。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fyzcv1i1qsj20is0cb74c.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fyzcv1i1qsj20is0cb74c.jpg loading=lazy alt=NodeJS程序演示效果>
+</a>
+<figcaption>NodeJS程序演示效果</figcaption>
+</figure></p>
+<p>  不过真的想要吐槽下JavaScript。本来JavaScript就是弱类型了吧，NodeJS再给弄一个除了报错什么都不会的命令行，因此在本地调试JavaScript代码实在是太困难了。昨天为了写出一个正确的正则表达式奋战到三点钟，后来终于给写出来了，实在压抑不住内心的喜悦匆匆忙忙地就往模板里面放，结果刚放进去再重新生成页面地时候博客就华丽地挂了，尝试了若干次无果后，果断放弃然后用备份地主题文件进行了覆盖替换。总之，经过这次事情，我是再不想接触Javacript了，你不让我面向对象我可以容忍，因为JavaScript本来就不是一门面向对象的语言。可是你总得让我知道我写的这个变量是个什么类型吧？因为这个插件的编写涉及到JavaScript、NodeJS、Hexo所以整个过程中编程的效率特别低，因为在没有文档、没有语法提示的情况下来写这样一段代码，在我看来完全就是摸着石头过河啊！</p>
+<p>  好了，停止吐槽！我们接下来看看这段代码怎样和Hexo整个到一起。按照博主的理解既然我们要对文章的内容中的[key:value]结构进行替换，我们首先应该知道文章的内容在哪里。经过这么长时间对Hexo的学(zhe)习(teng),我们知道文章的内容是定义在layout_partial下的article.ejs这个文件中，在这个文件中有一个叫做item的变量,这个item的真实身份其实是Hexo中定义的一个全局变量post。顾名思义，这个post就是我们发表的文章啦，它有一个重要的属性叫做content，就是我们这里要用到的东西了。我们来article.ejs这个文件中定义的一段代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-HTML data-lang=HTML>    <span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;entry&#34;</span><span class=p>&gt;</span>
+      <span class=err>&lt;</span>% if (item.excerpt <span class=err>&amp;&amp;</span> index){ %&gt;
+        <span class=err>&lt;</span>%- item.excerpt %&gt;
+      <span class=err>&lt;</span>% } else { %&gt;
+      　　　<span class=err>&lt;</span>% if (!index){ %&gt;
+                <span class=err>&lt;</span>% if (!index <span class=err>&amp;&amp;</span> item.toc){ %&gt;
+                   <span class=err>&lt;</span>%- partial(&#39;extra/toc&#39;) %&gt;
+                <span class=err>&lt;</span>% } %&gt;
+                <span class=err>&lt;</span>%- item.content %&gt;
+        　　<span class=err>&lt;</span>% } else { %&gt;
+        　　　　<span class=err>&lt;</span>%- item.content.substring(0,item.content.indexOf(&#39;\n&#39;)) %&gt;
+        　　<span class=err>&lt;</span>% } %&gt;
+      <span class=err>&lt;</span>% } %&gt;
+    <span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</code></pre></div><p>  这段代码是关于文章的内容的，因此我们要对文章内容进行修改的话，就要先读懂这块儿的代码。这块儿代码首先判断文章是不是处于首页位置(index)，接着判断文章中有没有ReadMore标记(excerpt)。如果文章在首页位置(index)且存在ReadMore标记(excerpt)，那么文章显示的是ReadMore标记前的内容(item.excerpt);如果文章没有ReadMore标记(excerpt)且文章在首页位置(index)，那么文章显示的整篇文章(item.content);如果文章在首页(index)可是没有ReadMore标记(excerpt)，那么选取文章的第一段作为文章的摘要来显示。这就是博主的博客目前采用的方案了，如果大家对这部分感兴趣的话，可以看看自己的博客使用的主题是如何定义这部分内容的，然后在此基础上做些调整以满足个性化的需求。</p>
+<p>  好了，那么在了解了这部分内容后，我们应该马上就能想到，我们需要掉正的代码应该是在第9行这个位置，即当文章不在首页的时候要显示的内容。好了，按照我们在测试程序中的写法，我们可以写出如下代码：</p>
+<pre tabindex=0><code class=language-NodeJS data-lang=NodeJS>&lt;% var dicts=item.content.match(/\[(.*?):(.*?)\]/g); %&gt;
+&lt;% if(dicts.length==0){ %&gt;
+   &lt;%- item.content %&gt;
+&lt;% } else { %&gt;
+   &lt;% for(i=0;i&lt;dicts.length;i++) %&gt;
+   &lt;% { %&gt;
+        &lt;% var dict=dicts[i].split(/:/); %&gt;
+        &lt;% var key=dict[0].substring(1,dict[0].length);  %&gt;
+        &lt;% var id=dict[1].substring(0,dict[1].length-1); %&gt;
+        &lt;% if(key=='music') %&gt;
+        &lt;% { %&gt;
+             item.content=item.content.replace(dicts[i],'&lt;embed src=&quot;http://music.163.com/style/swf/widget.swf?sid='+ id +
+             '&amp;type=2&amp;auto=1&amp;width=278&amp;height=32&quot; width=&quot;298&quot; height=&quot;52&quot; allowNetworking=&quot;all&quot;&gt;&lt;/embed&gt;')
+        &lt;% } %&gt;
+   &lt;% } %&gt;
+   &lt;%- item.content %&gt;
+&lt;% } %&gt;
+</code></pre><p>  相信经过博主的一番介绍，大家已经对这段代码相当熟悉了吧，这里就是先做判断，判断文章内容中是否有[key:vaule]这样的结构，如果没有就直接输出item.content;如果有就需要对其进行替换后再输出item.content。好了，现在我们用这段代码替换掉第9行代码，然后再次输出网页。可是结果让我们白忙活了一场，因为Hexo在输出网页的时候会报错，可能是因为博主写的JavaScript脚本Hexo无法解析吧！好了，从昨天下午开始差不多都在想着怎样解决这个问题，到现在还是没有一点头绪，文章里讲述的方法可以作为一种尝试，如果有兴趣、有精力、有能力解决这个问题的人，可以去进一步深入地探索这个问题。今天的内容就是这样了，睡觉！</p>
+<p><strong>2015年11月10日更新:</strong>
+  昨天抽空研究了下Hexo的<a class=link href=https://hexo.io/docs/plugins.html target=_blank rel=noopener>插件</a>机制，发现在Hexo中提供了一种<a class=link href=https://hexo.io/docs/tag-plugins.html target=_blank rel=noopener>标签</a>插件，可以帮助我们快速完成这种需求，所以就记录在这里。首先，它的原理是根据这样一个简单的标记来进行处理，当我们输入默认的这样的标记的时候它会被渲染为普通的引用标记，当我们在这个标记内传入参数后就可以利用程序进行处理。例如我们编写这样的简单的JS文件：</p>
+<pre tabindex=0><code>/**
+* hexo-tag-cloudmusic
+* https://github.com/qinyuanpei/hexo-tag-cloudmusic.git
+* Copyright (c) 2015, qinyuanpei
+* Licensed under the MIT license.
+*/
+
+hexo.extend.tag.register('cloudmusic', function(args){
+  var sid = args[0];
+  var config = hexo.config.cloudmusic || {};
+  var widgetType = hexo.config.widgetType || 'flash';
+  var widgetSize = config.widgetSize || 'small';
+  var autoPlay = config.autoPlay || 1;
+  var width = config.width || 278;
+  var height = config.height || 32;
+
+  if(widgetType == 'iframe'){
+  	if(widgetSize=='small'){
+  		return '&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=298 height=52 src=&quot;http://music.163.com/outchain/player?type=2&amp;id=' + sid + '&amp;auto=' + autoPlay +'&amp;height=32&quot;&gt;&lt;/iframe&gt;';
+  	}else if(widgetSize=='big'){
+  		return '&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=351 height=86 src=&quot;http://music.163.com/outchain/player?type=2&amp;id=' + sid + '&amp;auto=' + autoPlay + '&amp;height=66&quot;&gt;&lt;/iframe&gt;';
+  	}else if(widgetSize=='custom'){
+  		return '&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=' + width +' height=' + height +' src=&quot;http://music.163.com/outchain/player?type=2&amp;id=' + sid + '&amp;auto=' + autoPlay + '&amp;height=66&quot;&gt;&lt;/iframe&gt;';
+  	}
+  }else{
+  	if(widgetSize=='small'){
+  		return '&lt;embed src=&quot;http://music.163.com/style/swf/widget.swf?sid=' + sid + '&amp;type=2&amp;auto=' + autoPlay + '&amp;width=278&amp;height=32&quot; width=&quot;298&quot; height=&quot;52&quot;  allowNetworking=&quot;all&quot;&gt;&lt;/embed&gt;';
+  	}else{
+  		return '&lt;embed src=&quot;http://music.163.com/style/swf/widget.swf?sid=' + sid + '&amp;type=2&amp;auto=' + autoPlay + '&amp;width=320&amp;height=66&quot; width=&quot;340&quot; height=&quot;86&quot;  allowNetworking=&quot;all&quot;&gt;&lt;/embed&gt;';
+  	}
+  }
+});
+</code></pre><p>  大家可以看到这个JS文件本质上就是根据传入的sid来拼接生成网易云音乐的widget代码，这样当我们需要在博客中引用网易云音乐的时候只需要采用下面的标记：</p>
+<p>  这个项目我目前发布在我的<a class=link href=https://github.com/qinyuanpei/hexo-tag-cloudmusic target=_blank rel=noopener>Github</a>上，欢迎大家Start和Fork!</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E7%BD%91%E6%98%93/>网易</a>
+<a href=/tags/%E4%BA%91%E9%9F%B3%E4%B9%90/>云音乐</a>
+<a href=/tags/%E6%8F%92%E4%BB%B6/>插件</a>
+<a href=/tags/hexo/>Hexo</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E5%8E%9F%E7%94%9Fjavascript%E5%AE%9E%E7%8E%B0hexo%E5%8D%9A%E5%AE%A2%E6%8E%A8%E8%8D%90%E5%8A%9F%E8%83%BD/>
+<div class=article-details>
+<h2 class=article-title>原生JavaScript实现Hexo博客推荐功能</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-jsdelivr-%E4%B8%BA-hexo-%E5%8D%9A%E5%AE%A2%E6%8F%90%E4%BE%9B%E9%AB%98%E6%95%88%E5%85%8D%E8%B4%B9%E7%9A%84cdn%E5%8A%A0%E9%80%9F/>
+<div class=article-details>
+<h2 class=article-title>使用 jsDelivr 为 Hexo 博客提供高效免费的CDN加速</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8Etravis-ci%E5%AE%9E%E7%8E%B0-hexo-%E5%9C%A8-github-%E5%92%8C-coding-%E7%9A%84%E5%90%8C%E6%AD%A5%E9%83%A8%E7%BD%B2/>
+<div class=article-details>
+<h2 class=article-title>基于Travis CI实现 Hexo 在 Github 和 Coding 的同步部署</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E8%BF%81%E7%A7%BBhexo%E5%8D%9A%E5%AE%A2%E5%88%B0google%E6%B8%90%E8%BF%9B%E5%BC%8Fweb%E5%BA%94%E7%94%A8pwa/>
+<div class=article-details>
+<h2 class=article-title>迁移Hexo博客到Google渐进式Web应用(PWA)</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9C%A8hexo%E4%B8%AD%E4%B8%BA%E6%96%87%E7%AB%A0%E8%87%AA%E5%8A%A8%E6%B7%BB%E5%8A%A0%E7%89%88%E6%9D%83%E4%BF%A1%E6%81%AF%E5%A3%B0%E6%98%8E%E6%A8%A1%E5%9D%97/>
+<div class=article-details>
+<h2 class=article-title>在Hexo中为文章自动添加版权信息声明模块</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

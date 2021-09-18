@@ -1,0 +1,411 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="如果说，我们一定要找出一个词来形容这纷繁复杂的世界，我希望它会是熵。有人说，熵增定律是宇宙中最绝望的定律，所谓熵，即是指事物混乱或者无序的程度。在一个孤立系统下，熵是不断在增加的，当熵达到最大值时，系统就会出现严重混乱，直至最终走向死亡。从某种意义上来讲，它揭示了事物结构衰退的必然性，甚至于我们的人生，本来就是一场对抗熵增的旅程。熵增的不可逆性，正如时光无法倒流一般，古人说，“覆水难收”正是这个道理。同样地，当我们开始讨论微服务的划分/编写/治理的时候，当我们使用服务网格来定义微服务架构的时候……我们是否有意或者无意的增加了系统中的熵呢？**一个孤立的系统尚且会因为熵增而最终走向死亡，更何况是相互影响和制约的复杂系统呢？**现代互联网企业都在追求4个9(即99.99%)的高可用，这意味着年平均停机时长只有52.56分钟。在此之前。我们介绍过重试和熔断这两种故障转移的策略，而今天我们来介绍一种更朴素的策略：负载均衡。
+什么是负载均衡  负载均衡，即Load Banlancing，是一种计算机技术，用来在多个计算机(计算机集群)、网络连接、CPU、磁盘驱动器或其它资源中分配负载，以达到最优化资源使用、最大化吞吐率、最小化响应时间、避免过载的目的。
+ 我们可以注意到，在这个定义中，使用负载均衡技术的直接原因是避免过载，而根本原因则是为了优化资源使用，确保最大吞吐量、最小响应时间。所以，这本质上是一个局部最优解的问题，而具体的手段就是&amp;quot;多个&amp;quot;。有人说，技术世界不过是真实世界的一个镜像，联系生活中实际的案例，我们发现负载均衡比比皆是。譬如车站在面对春运高峰时增加售票窗口，银行通过多个业务窗口来为客户办理业务……等等。这样做的好处显而易见，可以大幅度地减少排队时间，增加&amp;quot;窗口&amp;quot;这个行为，在技术领域我们将其称为：水平扩展，因为有多个&amp;quot;窗口&amp;quot;，发生单点故障的概率就会大大降低，而这正是现在软件追求的三&amp;quot;高&amp;quot;：高性能、高可用、高并发。
+ 银行柜员窗口示意图 
+每次坐地铁经过小寨，时常听到地铁工作人员举着喇叭引导人们往不同的出口方向走动。此时，工作人员就是一个负载均衡器，它要做的就是避免某一个出口人流量过载。**从熵的角度来看，人流量过载，意味着无序/混乱状态加剧，现代社会通过道德和法律来对抗熵增，人类个体通过自律来对抗熵增。**有时候，我会忍不住去想，大人与小孩儿愈发内卷的恶性竞争，除了给这个世界带来更多的熵以外，还能带来什么？如果参考社会达尔文主义的理论，在这个弱肉强食的世界里，增加熵是人为的选择，而同样的，你亦可以选择&amp;quot;躺平&amp;quot;。
+ 负载均衡器示意图 
+OK，将思绪拉回到负载均衡，它所做的事情，本质上就是控制信息或者说流量流动的方向。一个网站，以集群的方式对外提供服务，你只需要输入一个域名，它就可以把请求分发到不同的机器上面去，而这就是所谓的负载均衡。目前，负载均衡器从种类上可以分为：基于DNS、基于MAC地址(二层)、基于IP(三层)、基于IP和Port(四层)、基于HTTP(七层)。
+ OSI七层模型与TCP/IP五层模型 
+譬如，博主曾经参与过伊利的项目，它们使用的就是一个四层的负载均衡器：F5。而像更常见Nginx、HAProxy，基本都是四层和七层的负载均衡器，而Envoy就厉害了，它可以同时支持三/四/七层。负载均衡器需要配合负载均衡算法来使用，典型的算法有：轮询法、随机法、哈希法、最小连接数法等等，而这些算法都可以结合加权算法引出新的变式，这里就不再一一列举啦。
+Envoy中的负载均衡 通过上一篇博客，我们已经了解到，Envoy中一个HTTP请求的走向，大致会经历：客户端、侦听器(Listeners)、集群(Clusters)、终结点(Endpoints)、服务(ervices)这样几个阶段。其中，一个集群可以有多个终结点(Endpoints)。所以，这里天然地就存在着负载均衡的设计。因为，负载均衡本质上就是告诉集群，它应该选择哪一个终结点(Endpoints)来提供服务。而之所以我们需要负载均衡，一个核心的原因，其实是因为我们选择了分布式。
+ Envoy架构图：负载均衡器连接集群和服务 
+如果类比RabbitMQ、Kafka和Redis，你就会发现，这些产品中或多或少地都会涉及到主(Leader)、从(Follower)以及推举Leader的实现，我个人更愿意将其看作是更广义的负载均衡。最直观的，它可以分担流量，简称分流，不至于让某一台服务器满负荷做运行。其次，它可以作为故障转移的一种方案，人生在世，多一个B计划，就多一种选择。同样地，多一台服务器，就多一分底气。最后，它可以指导某一个产品或者功能的推广，通过给服务器设置不同的权重，在必要的时候，将流量局部地导入某一个环境，腾讯和阿里这样的大厂，经常利用这种方式来做灰度测试。
+Envoy中支持常用的负载均衡算法，譬如：ROUND_ROBIN(轮询)、LEAST_REQUEST(最少请求)、RING_HASH(哈希环)、RANDOM(随机)、MAGLEV(磁悬浮)、CLUSTER_PROVIDED等等。因为一个集群下可以有多个终结点，所以，在Envoy中配置负载均衡，本质上就是在集群下面增加终结点，而每个终结点则会对应一个服务，特殊的点在于，这些服务可能是通过同一个Dockerfile或者Docker镜像来构建的。所以，一旦理解了这一点，Envoy的负载均衡就再没有什么神秘的地方。例如，下面的代码片段展示了，如何为WeatherService这个集群应用负载均衡：
+clusters:# Weather Service- name:weatherserviceconnect_timeout:0.25stype:STRICT_DNS# ROUND_ROBIN(轮询）# LEAST_REQUEST(最少请求)# RING_HASH(哈希环)# RANDOM(随机)# MAGLEV(磁悬浮)# CLUSTER_PROVIDEDlb_policy:LEAST_REQUESTload_assignment:cluster_name:weatherserviceendpoints:- lb_endpoints:- endpoint:address:socket_address:address:weatherservice1port_value:80- endpoint:address:socket_address:address:weatherservice2port_value:80是不是觉得特别简单？我想说，也许是Envoy更符合人的直观感受一些，理解起来本身没有太大的心智负担。最近看到一个缓存设计，居然还要依赖Kafka，使用者为了使用缓存这个功能，就必须先实现三个丑陋的委托，这就是所谓的心智负担，违背人类的直觉，使用缓存为什么要了解Kafka？到这里，你大概就能了解利用Envoy实现负载均衡的思路，首先是用同一个Dockerfile或者Docker镜像启动多个不同容器(服务)，然后将指定集群下面的终结点指定不同的服务，再告诉集群要用哪一种负载均衡策略即可。
+邂逅 ASP.NET Core OK，说了这么多，这里我们还是用ASP.NET Core写一个例子。可以预见到的是，我们需要一个Envoy网关，一个ASP.NET Core的服务。这里，我们还是用Docker-Compose来编排这些服务，下面是对应的docker-compose.yaml文件：
+version:&amp;#39;3&amp;#39;services:envoygateway:build:Envoy/ports:- &amp;#34;9090:9090&amp;#34;- &amp;#34;9091:9091&amp;#34;volumes:- ./Envoy/envoy.yaml:/etc/envoy/envoy.yamlweatherservice1:build:WeatherService/ports:- &amp;#34;8082:80&amp;#34;environment:ASPNETCORE_URLS:&amp;#34;http://+&amp;#34;ASPNETCORE_ENVIRONMENT:&amp;#34;Development&amp;#34;weatherservice2:build:WeatherService/ports:- &amp;#34;8084:80&amp;#34;environment:ASPNETCORE_URLS:&amp;#34;http://+&amp;#34;ASPNETCORE_ENVIRONMENT:&amp;#34;Development&amp;#34;而对于Envoy来说，主要的工作是维护集群下的终结点信息这块儿。其实，这段配置在本文的上一节就出现过啦，你有多少个服务实例，就配置多少个终结点，请求落在哪一个实例上，就交给Envoy来决定好啦。故而，这里我们不再做更多的解释：
+static_resources:listeners:- address:socket_address:address:0.0.0.0port_value:9090filter_chains:- filters:- name:envoy.filters.network.http_connection_managertyped_config:&amp;#34;@type&amp;#34;: type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManagercodec_type:AUTOstat_prefix:ingress_httproute_config:name:local_routevirtual_hosts:- name:backenddomains:- &amp;#34;*&amp;#34;routes:- match:prefix:&amp;#34;/api/w&amp;#34;route:auto_host_rewrite:trueprefix_rewrite:/Weathercluster:weatherservicehttp_filters:- name:envoy.filters.http.routerclusters:# Weather Service- name:weatherserviceconnect_timeout:0.25stype:STRICT_DNSlb_policy:LEAST_REQUESTload_assignment:cluster_name:weatherserviceendpoints:- lb_endpoints:- endpoint:address:socket_address:address:weatherservice1port_value:80- endpoint:address:socket_address:address:weatherservice2port_value:80admin:access_log_path:/tmp/admin_access.logaddress:socket_address:{address: 0.0.0.0, port_value:9091}使用docker compose up启动容器，我们可以注意到熟悉的ASP.NET Core的身影，这意味着，我们需要的服务都成功地跑起来了。简单调用下API看看，果然，可以正确地返回结果呢(逃……果然，我是一个喜新厌旧的人，自打用了Encoy以后，再不想用Nginx来做类似的事情(逃……"><title>ASP.NET Core 搭载 Envoy 实现微服务的负载均衡</title>
+<link rel=canonical href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="ASP.NET Core 搭载 Envoy 实现微服务的负载均衡">
+<meta property="og:description" content="如果说，我们一定要找出一个词来形容这纷繁复杂的世界，我希望它会是熵。有人说，熵增定律是宇宙中最绝望的定律，所谓熵，即是指事物混乱或者无序的程度。在一个孤立系统下，熵是不断在增加的，当熵达到最大值时，系统就会出现严重混乱，直至最终走向死亡。从某种意义上来讲，它揭示了事物结构衰退的必然性，甚至于我们的人生，本来就是一场对抗熵增的旅程。熵增的不可逆性，正如时光无法倒流一般，古人说，“覆水难收”正是这个道理。同样地，当我们开始讨论微服务的划分/编写/治理的时候，当我们使用服务网格来定义微服务架构的时候……我们是否有意或者无意的增加了系统中的熵呢？**一个孤立的系统尚且会因为熵增而最终走向死亡，更何况是相互影响和制约的复杂系统呢？**现代互联网企业都在追求4个9(即99.99%)的高可用，这意味着年平均停机时长只有52.56分钟。在此之前。我们介绍过重试和熔断这两种故障转移的策略，而今天我们来介绍一种更朴素的策略：负载均衡。
+什么是负载均衡  负载均衡，即Load Banlancing，是一种计算机技术，用来在多个计算机(计算机集群)、网络连接、CPU、磁盘驱动器或其它资源中分配负载，以达到最优化资源使用、最大化吞吐率、最小化响应时间、避免过载的目的。
+ 我们可以注意到，在这个定义中，使用负载均衡技术的直接原因是避免过载，而根本原因则是为了优化资源使用，确保最大吞吐量、最小响应时间。所以，这本质上是一个局部最优解的问题，而具体的手段就是&amp;quot;多个&amp;quot;。有人说，技术世界不过是真实世界的一个镜像，联系生活中实际的案例，我们发现负载均衡比比皆是。譬如车站在面对春运高峰时增加售票窗口，银行通过多个业务窗口来为客户办理业务……等等。这样做的好处显而易见，可以大幅度地减少排队时间，增加&amp;quot;窗口&amp;quot;这个行为，在技术领域我们将其称为：水平扩展，因为有多个&amp;quot;窗口&amp;quot;，发生单点故障的概率就会大大降低，而这正是现在软件追求的三&amp;quot;高&amp;quot;：高性能、高可用、高并发。
+ 银行柜员窗口示意图 
+每次坐地铁经过小寨，时常听到地铁工作人员举着喇叭引导人们往不同的出口方向走动。此时，工作人员就是一个负载均衡器，它要做的就是避免某一个出口人流量过载。**从熵的角度来看，人流量过载，意味着无序/混乱状态加剧，现代社会通过道德和法律来对抗熵增，人类个体通过自律来对抗熵增。**有时候，我会忍不住去想，大人与小孩儿愈发内卷的恶性竞争，除了给这个世界带来更多的熵以外，还能带来什么？如果参考社会达尔文主义的理论，在这个弱肉强食的世界里，增加熵是人为的选择，而同样的，你亦可以选择&amp;quot;躺平&amp;quot;。
+ 负载均衡器示意图 
+OK，将思绪拉回到负载均衡，它所做的事情，本质上就是控制信息或者说流量流动的方向。一个网站，以集群的方式对外提供服务，你只需要输入一个域名，它就可以把请求分发到不同的机器上面去，而这就是所谓的负载均衡。目前，负载均衡器从种类上可以分为：基于DNS、基于MAC地址(二层)、基于IP(三层)、基于IP和Port(四层)、基于HTTP(七层)。
+ OSI七层模型与TCP/IP五层模型 
+譬如，博主曾经参与过伊利的项目，它们使用的就是一个四层的负载均衡器：F5。而像更常见Nginx、HAProxy，基本都是四层和七层的负载均衡器，而Envoy就厉害了，它可以同时支持三/四/七层。负载均衡器需要配合负载均衡算法来使用，典型的算法有：轮询法、随机法、哈希法、最小连接数法等等，而这些算法都可以结合加权算法引出新的变式，这里就不再一一列举啦。
+Envoy中的负载均衡 通过上一篇博客，我们已经了解到，Envoy中一个HTTP请求的走向，大致会经历：客户端、侦听器(Listeners)、集群(Clusters)、终结点(Endpoints)、服务(ervices)这样几个阶段。其中，一个集群可以有多个终结点(Endpoints)。所以，这里天然地就存在着负载均衡的设计。因为，负载均衡本质上就是告诉集群，它应该选择哪一个终结点(Endpoints)来提供服务。而之所以我们需要负载均衡，一个核心的原因，其实是因为我们选择了分布式。
+ Envoy架构图：负载均衡器连接集群和服务 
+如果类比RabbitMQ、Kafka和Redis，你就会发现，这些产品中或多或少地都会涉及到主(Leader)、从(Follower)以及推举Leader的实现，我个人更愿意将其看作是更广义的负载均衡。最直观的，它可以分担流量，简称分流，不至于让某一台服务器满负荷做运行。其次，它可以作为故障转移的一种方案，人生在世，多一个B计划，就多一种选择。同样地，多一台服务器，就多一分底气。最后，它可以指导某一个产品或者功能的推广，通过给服务器设置不同的权重，在必要的时候，将流量局部地导入某一个环境，腾讯和阿里这样的大厂，经常利用这种方式来做灰度测试。
+Envoy中支持常用的负载均衡算法，譬如：ROUND_ROBIN(轮询)、LEAST_REQUEST(最少请求)、RING_HASH(哈希环)、RANDOM(随机)、MAGLEV(磁悬浮)、CLUSTER_PROVIDED等等。因为一个集群下可以有多个终结点，所以，在Envoy中配置负载均衡，本质上就是在集群下面增加终结点，而每个终结点则会对应一个服务，特殊的点在于，这些服务可能是通过同一个Dockerfile或者Docker镜像来构建的。所以，一旦理解了这一点，Envoy的负载均衡就再没有什么神秘的地方。例如，下面的代码片段展示了，如何为WeatherService这个集群应用负载均衡：
+clusters:# Weather Service- name:weatherserviceconnect_timeout:0.25stype:STRICT_DNS# ROUND_ROBIN(轮询）# LEAST_REQUEST(最少请求)# RING_HASH(哈希环)# RANDOM(随机)# MAGLEV(磁悬浮)# CLUSTER_PROVIDEDlb_policy:LEAST_REQUESTload_assignment:cluster_name:weatherserviceendpoints:- lb_endpoints:- endpoint:address:socket_address:address:weatherservice1port_value:80- endpoint:address:socket_address:address:weatherservice2port_value:80是不是觉得特别简单？我想说，也许是Envoy更符合人的直观感受一些，理解起来本身没有太大的心智负担。最近看到一个缓存设计，居然还要依赖Kafka，使用者为了使用缓存这个功能，就必须先实现三个丑陋的委托，这就是所谓的心智负担，违背人类的直觉，使用缓存为什么要了解Kafka？到这里，你大概就能了解利用Envoy实现负载均衡的思路，首先是用同一个Dockerfile或者Docker镜像启动多个不同容器(服务)，然后将指定集群下面的终结点指定不同的服务，再告诉集群要用哪一种负载均衡策略即可。
+邂逅 ASP.NET Core OK，说了这么多，这里我们还是用ASP.NET Core写一个例子。可以预见到的是，我们需要一个Envoy网关，一个ASP.NET Core的服务。这里，我们还是用Docker-Compose来编排这些服务，下面是对应的docker-compose.yaml文件：
+version:&amp;#39;3&amp;#39;services:envoygateway:build:Envoy/ports:- &amp;#34;9090:9090&amp;#34;- &amp;#34;9091:9091&amp;#34;volumes:- ./Envoy/envoy.yaml:/etc/envoy/envoy.yamlweatherservice1:build:WeatherService/ports:- &amp;#34;8082:80&amp;#34;environment:ASPNETCORE_URLS:&amp;#34;http://+&amp;#34;ASPNETCORE_ENVIRONMENT:&amp;#34;Development&amp;#34;weatherservice2:build:WeatherService/ports:- &amp;#34;8084:80&amp;#34;environment:ASPNETCORE_URLS:&amp;#34;http://+&amp;#34;ASPNETCORE_ENVIRONMENT:&amp;#34;Development&amp;#34;而对于Envoy来说，主要的工作是维护集群下的终结点信息这块儿。其实，这段配置在本文的上一节就出现过啦，你有多少个服务实例，就配置多少个终结点，请求落在哪一个实例上，就交给Envoy来决定好啦。故而，这里我们不再做更多的解释：
+static_resources:listeners:- address:socket_address:address:0.0.0.0port_value:9090filter_chains:- filters:- name:envoy.filters.network.http_connection_managertyped_config:&amp;#34;@type&amp;#34;: type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManagercodec_type:AUTOstat_prefix:ingress_httproute_config:name:local_routevirtual_hosts:- name:backenddomains:- &amp;#34;*&amp;#34;routes:- match:prefix:&amp;#34;/api/w&amp;#34;route:auto_host_rewrite:trueprefix_rewrite:/Weathercluster:weatherservicehttp_filters:- name:envoy.filters.http.routerclusters:# Weather Service- name:weatherserviceconnect_timeout:0.25stype:STRICT_DNSlb_policy:LEAST_REQUESTload_assignment:cluster_name:weatherserviceendpoints:- lb_endpoints:- endpoint:address:socket_address:address:weatherservice1port_value:80- endpoint:address:socket_address:address:weatherservice2port_value:80admin:access_log_path:/tmp/admin_access.logaddress:socket_address:{address: 0.0.0.0, port_value:9091}使用docker compose up启动容器，我们可以注意到熟悉的ASP.NET Core的身影，这意味着，我们需要的服务都成功地跑起来了。简单调用下API看看，果然，可以正确地返回结果呢(逃……果然，我是一个喜新厌旧的人，自打用了Encoy以后，再不想用Nginx来做类似的事情(逃……">
+<meta property="og:url" content="/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Envoy"><meta property="article:tag" content="微服务"><meta property="article:tag" content="负载均衡"><meta property="article:tag" content="熵增定律"><meta property="article:published_time" content="2021-07-05T22:49:47+00:00"><meta property="article:modified_time" content="2021-07-05T22:49:47+00:00">
+<meta name=twitter:title content="ASP.NET Core 搭载 Envoy 实现微服务的负载均衡">
+<meta name=twitter:description content="如果说，我们一定要找出一个词来形容这纷繁复杂的世界，我希望它会是熵。有人说，熵增定律是宇宙中最绝望的定律，所谓熵，即是指事物混乱或者无序的程度。在一个孤立系统下，熵是不断在增加的，当熵达到最大值时，系统就会出现严重混乱，直至最终走向死亡。从某种意义上来讲，它揭示了事物结构衰退的必然性，甚至于我们的人生，本来就是一场对抗熵增的旅程。熵增的不可逆性，正如时光无法倒流一般，古人说，“覆水难收”正是这个道理。同样地，当我们开始讨论微服务的划分/编写/治理的时候，当我们使用服务网格来定义微服务架构的时候……我们是否有意或者无意的增加了系统中的熵呢？**一个孤立的系统尚且会因为熵增而最终走向死亡，更何况是相互影响和制约的复杂系统呢？**现代互联网企业都在追求4个9(即99.99%)的高可用，这意味着年平均停机时长只有52.56分钟。在此之前。我们介绍过重试和熔断这两种故障转移的策略，而今天我们来介绍一种更朴素的策略：负载均衡。
+什么是负载均衡  负载均衡，即Load Banlancing，是一种计算机技术，用来在多个计算机(计算机集群)、网络连接、CPU、磁盘驱动器或其它资源中分配负载，以达到最优化资源使用、最大化吞吐率、最小化响应时间、避免过载的目的。
+ 我们可以注意到，在这个定义中，使用负载均衡技术的直接原因是避免过载，而根本原因则是为了优化资源使用，确保最大吞吐量、最小响应时间。所以，这本质上是一个局部最优解的问题，而具体的手段就是&amp;quot;多个&amp;quot;。有人说，技术世界不过是真实世界的一个镜像，联系生活中实际的案例，我们发现负载均衡比比皆是。譬如车站在面对春运高峰时增加售票窗口，银行通过多个业务窗口来为客户办理业务……等等。这样做的好处显而易见，可以大幅度地减少排队时间，增加&amp;quot;窗口&amp;quot;这个行为，在技术领域我们将其称为：水平扩展，因为有多个&amp;quot;窗口&amp;quot;，发生单点故障的概率就会大大降低，而这正是现在软件追求的三&amp;quot;高&amp;quot;：高性能、高可用、高并发。
+ 银行柜员窗口示意图 
+每次坐地铁经过小寨，时常听到地铁工作人员举着喇叭引导人们往不同的出口方向走动。此时，工作人员就是一个负载均衡器，它要做的就是避免某一个出口人流量过载。**从熵的角度来看，人流量过载，意味着无序/混乱状态加剧，现代社会通过道德和法律来对抗熵增，人类个体通过自律来对抗熵增。**有时候，我会忍不住去想，大人与小孩儿愈发内卷的恶性竞争，除了给这个世界带来更多的熵以外，还能带来什么？如果参考社会达尔文主义的理论，在这个弱肉强食的世界里，增加熵是人为的选择，而同样的，你亦可以选择&amp;quot;躺平&amp;quot;。
+ 负载均衡器示意图 
+OK，将思绪拉回到负载均衡，它所做的事情，本质上就是控制信息或者说流量流动的方向。一个网站，以集群的方式对外提供服务，你只需要输入一个域名，它就可以把请求分发到不同的机器上面去，而这就是所谓的负载均衡。目前，负载均衡器从种类上可以分为：基于DNS、基于MAC地址(二层)、基于IP(三层)、基于IP和Port(四层)、基于HTTP(七层)。
+ OSI七层模型与TCP/IP五层模型 
+譬如，博主曾经参与过伊利的项目，它们使用的就是一个四层的负载均衡器：F5。而像更常见Nginx、HAProxy，基本都是四层和七层的负载均衡器，而Envoy就厉害了，它可以同时支持三/四/七层。负载均衡器需要配合负载均衡算法来使用，典型的算法有：轮询法、随机法、哈希法、最小连接数法等等，而这些算法都可以结合加权算法引出新的变式，这里就不再一一列举啦。
+Envoy中的负载均衡 通过上一篇博客，我们已经了解到，Envoy中一个HTTP请求的走向，大致会经历：客户端、侦听器(Listeners)、集群(Clusters)、终结点(Endpoints)、服务(ervices)这样几个阶段。其中，一个集群可以有多个终结点(Endpoints)。所以，这里天然地就存在着负载均衡的设计。因为，负载均衡本质上就是告诉集群，它应该选择哪一个终结点(Endpoints)来提供服务。而之所以我们需要负载均衡，一个核心的原因，其实是因为我们选择了分布式。
+ Envoy架构图：负载均衡器连接集群和服务 
+如果类比RabbitMQ、Kafka和Redis，你就会发现，这些产品中或多或少地都会涉及到主(Leader)、从(Follower)以及推举Leader的实现，我个人更愿意将其看作是更广义的负载均衡。最直观的，它可以分担流量，简称分流，不至于让某一台服务器满负荷做运行。其次，它可以作为故障转移的一种方案，人生在世，多一个B计划，就多一种选择。同样地，多一台服务器，就多一分底气。最后，它可以指导某一个产品或者功能的推广，通过给服务器设置不同的权重，在必要的时候，将流量局部地导入某一个环境，腾讯和阿里这样的大厂，经常利用这种方式来做灰度测试。
+Envoy中支持常用的负载均衡算法，譬如：ROUND_ROBIN(轮询)、LEAST_REQUEST(最少请求)、RING_HASH(哈希环)、RANDOM(随机)、MAGLEV(磁悬浮)、CLUSTER_PROVIDED等等。因为一个集群下可以有多个终结点，所以，在Envoy中配置负载均衡，本质上就是在集群下面增加终结点，而每个终结点则会对应一个服务，特殊的点在于，这些服务可能是通过同一个Dockerfile或者Docker镜像来构建的。所以，一旦理解了这一点，Envoy的负载均衡就再没有什么神秘的地方。例如，下面的代码片段展示了，如何为WeatherService这个集群应用负载均衡：
+clusters:# Weather Service- name:weatherserviceconnect_timeout:0.25stype:STRICT_DNS# ROUND_ROBIN(轮询）# LEAST_REQUEST(最少请求)# RING_HASH(哈希环)# RANDOM(随机)# MAGLEV(磁悬浮)# CLUSTER_PROVIDEDlb_policy:LEAST_REQUESTload_assignment:cluster_name:weatherserviceendpoints:- lb_endpoints:- endpoint:address:socket_address:address:weatherservice1port_value:80- endpoint:address:socket_address:address:weatherservice2port_value:80是不是觉得特别简单？我想说，也许是Envoy更符合人的直观感受一些，理解起来本身没有太大的心智负担。最近看到一个缓存设计，居然还要依赖Kafka，使用者为了使用缓存这个功能，就必须先实现三个丑陋的委托，这就是所谓的心智负担，违背人类的直觉，使用缓存为什么要了解Kafka？到这里，你大概就能了解利用Envoy实现负载均衡的思路，首先是用同一个Dockerfile或者Docker镜像启动多个不同容器(服务)，然后将指定集群下面的终结点指定不同的服务，再告诉集群要用哪一种负载均衡策略即可。
+邂逅 ASP.NET Core OK，说了这么多，这里我们还是用ASP.NET Core写一个例子。可以预见到的是，我们需要一个Envoy网关，一个ASP.NET Core的服务。这里，我们还是用Docker-Compose来编排这些服务，下面是对应的docker-compose.yaml文件：
+version:&amp;#39;3&amp;#39;services:envoygateway:build:Envoy/ports:- &amp;#34;9090:9090&amp;#34;- &amp;#34;9091:9091&amp;#34;volumes:- ./Envoy/envoy.yaml:/etc/envoy/envoy.yamlweatherservice1:build:WeatherService/ports:- &amp;#34;8082:80&amp;#34;environment:ASPNETCORE_URLS:&amp;#34;http://+&amp;#34;ASPNETCORE_ENVIRONMENT:&amp;#34;Development&amp;#34;weatherservice2:build:WeatherService/ports:- &amp;#34;8084:80&amp;#34;environment:ASPNETCORE_URLS:&amp;#34;http://+&amp;#34;ASPNETCORE_ENVIRONMENT:&amp;#34;Development&amp;#34;而对于Envoy来说，主要的工作是维护集群下的终结点信息这块儿。其实，这段配置在本文的上一节就出现过啦，你有多少个服务实例，就配置多少个终结点，请求落在哪一个实例上，就交给Envoy来决定好啦。故而，这里我们不再做更多的解释：
+static_resources:listeners:- address:socket_address:address:0.0.0.0port_value:9090filter_chains:- filters:- name:envoy.filters.network.http_connection_managertyped_config:&amp;#34;@type&amp;#34;: type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManagercodec_type:AUTOstat_prefix:ingress_httproute_config:name:local_routevirtual_hosts:- name:backenddomains:- &amp;#34;*&amp;#34;routes:- match:prefix:&amp;#34;/api/w&amp;#34;route:auto_host_rewrite:trueprefix_rewrite:/Weathercluster:weatherservicehttp_filters:- name:envoy.filters.http.routerclusters:# Weather Service- name:weatherserviceconnect_timeout:0.25stype:STRICT_DNSlb_policy:LEAST_REQUESTload_assignment:cluster_name:weatherserviceendpoints:- lb_endpoints:- endpoint:address:socket_address:address:weatherservice1port_value:80- endpoint:address:socket_address:address:weatherservice2port_value:80admin:access_log_path:/tmp/admin_access.logaddress:socket_address:{address: 0.0.0.0, port_value:9091}使用docker compose up启动容器，我们可以注意到熟悉的ASP.NET Core的身影，这意味着，我们需要的服务都成功地跑起来了。简单调用下API看看，果然，可以正确地返回结果呢(逃……果然，我是一个喜新厌旧的人，自打用了Encoy以后，再不想用Nginx来做类似的事情(逃……">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<img src=/images/avatar_hu9b977ab3a4b8472c7b4f807105204943_11692_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>飞鸿踏雪</a></h1>
+<h2 class=site-description>纵有疾风起，人生不言弃.</h2>
+</header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/ target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/movies/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>影单</span>
+</a>
+</li>
+<li>
+<a href=/books/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>书单</span>
+</a>
+</li>
+<li>
+<a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/>ASP.NET Core 搭载 Envoy 实现微服务的负载均衡</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jul 05, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 1 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>如果说，我们一定要找出一个词来形容这纷繁复杂的世界，我希望它会是熵。有人说，熵增定律是宇宙中最绝望的定律，<strong>所谓熵，即是指事物混乱或者无序的程度。在一个孤立系统下，熵是不断在增加的，当熵达到最大值时，系统就会出现严重混乱，直至最终走向死亡</strong>。从某种意义上来讲，它揭示了事物结构衰退的必然性，甚至于我们的人生，本来就是一场对抗熵增的旅程。熵增的不可逆性，正如时光无法倒流一般，古人说，“覆水难收”正是这个道理。同样地，当我们开始讨论微服务的划分/编写/治理的时候，当我们使用服务网格来定义微服务架构的时候……我们是否有意或者无意的增加了系统中的熵呢？**一个孤立的系统尚且会因为熵增而最终走向死亡，更何况是相互影响和制约的复杂系统呢？**现代互联网企业都在追求4个9(即99.99%)的高可用，这意味着年平均停机时长只有52.56分钟。在此之前。我们介绍过重试和熔断这两种故障转移的策略，而今天我们来介绍一种更朴素的策略：负载均衡。</p>
+<h1 id=什么是负载均衡>什么是负载均衡</h1>
+<blockquote>
+<p>负载均衡，即<code>Load Banlancing</code>，是一种计算机技术，用来在多个计算机(计算机集群)、网络连接、CPU、磁盘驱动器或其它资源中分配负载，以达到<strong>最优化资源使用、最大化吞吐率、最小化响应时间、避免过载的目的</strong>。</p>
+</blockquote>
+<p>我们可以注意到，在这个定义中，使用负载均衡技术的直接原因是<strong>避免过载</strong>，而根本原因则是为了<strong>优化资源使用</strong>，确保<strong>最大吞吐量</strong>、<strong>最小响应时间</strong>。所以，这本质上是一个局部最优解的问题，而具体的手段就是"多个"。有人说，技术世界不过是真实世界的一个镜像，联系生活中实际的案例，我们发现负载均衡比比皆是。譬如车站在面对春运高峰时增加售票窗口，银行通过多个业务窗口来为客户办理业务……等等。这样做的好处显而易见，可以大幅度地减少排队时间，增加"窗口"这个行为，在技术领域我们将其称为：<strong>水平扩展</strong>，因为有多个"窗口"，发生单点故障的概率就会大大降低，而这正是现在软件追求的三"高"：高性能、高可用、高并发。</p>
+<p><figure>
+<a href=https://i.loli.net/2021/07/05/jymw8KCeEgROcZN.png>
+<img src=https://i.loli.net/2021/07/05/jymw8KCeEgROcZN.png loading=lazy alt=银行柜员窗口示意图>
+</a>
+<figcaption>银行柜员窗口示意图</figcaption>
+</figure></p>
+<p>每次坐地铁经过小寨，时常听到地铁工作人员举着喇叭引导人们往不同的出口方向走动。此时，工作人员就是一个负载均衡器，它要做的就是避免某一个出口人流量过载。**从熵的角度来看，人流量过载，意味着无序/混乱状态加剧，现代社会通过道德和法律来对抗熵增，人类个体通过自律来对抗熵增。**有时候，我会忍不住去想，大人与小孩儿愈发内卷的恶性竞争，除了给这个世界带来更多的熵以外，还能带来什么？<strong>如果参考社会达尔文主义的理论，在这个弱肉强食的世界里，增加熵是人为的选择，而同样的，你亦可以选择"躺平"。</strong></p>
+<p><figure>
+<a href=https://i.loli.net/2021/07/05/hIAUw8JHkjWnxm6.png>
+<img src=https://i.loli.net/2021/07/05/hIAUw8JHkjWnxm6.png loading=lazy alt=负载均衡器示意图>
+</a>
+<figcaption>负载均衡器示意图</figcaption>
+</figure></p>
+<p>OK，将思绪拉回到负载均衡，它所做的事情，本质上就是控制信息或者说流量流动的方向。一个网站，以集群的方式对外提供服务，你只需要输入一个域名，它就可以把请求分发到不同的机器上面去，而这就是所谓的负载均衡。目前，负载均衡器从种类上可以分为：基于<code>DNS</code>、基于<code>MAC</code>地址(二层)、基于<code>IP</code>(三层)、基于<code>IP</code>和<code>Port</code>(四层)、基于<code>HTTP</code>(七层)。</p>
+<p><figure>
+<a href=https://i.loli.net/2021/07/04/giY1R8PVZB9JdWQ.jpg>
+<img src=https://i.loli.net/2021/07/04/giY1R8PVZB9JdWQ.jpg loading=lazy alt=OSI七层模型与TCP/IP五层模型>
+</a>
+<figcaption>OSI七层模型与TCP/IP五层模型</figcaption>
+</figure></p>
+<p>譬如，博主曾经参与过伊利的项目，它们使用的就是一个四层的负载均衡器：F5。而像更常见<code>Nginx</code>、<code>HAProxy</code>，基本都是四层和七层的负载均衡器，而<code>Envoy</code>就厉害了，它可以同时支持三/四/七层。负载均衡器需要配合负载均衡算法来使用，典型的算法有：<strong>轮询法</strong>、<strong>随机法</strong>、<strong>哈希法</strong>、<strong>最小连接数法</strong>等等，而这些算法都可以结合加权算法引出新的变式，这里就不再一一列举啦。</p>
+<h1 id=envoy中的负载均衡>Envoy中的负载均衡</h1>
+<p>通过上一篇博客，我们已经了解到，<code>Envoy</code>中一个<code>HTTP</code>请求的走向，大致会经历：客户端、侦听器(<strong>Listeners</strong>)、集群(<strong>Clusters</strong>)、终结点(<strong>Endpoints</strong>)、服务(<strong>ervices</strong>)这样几个阶段。其中，一个集群可以有多个终结点(<strong>Endpoints</strong>)。所以，这里天然地就存在着负载均衡的设计。因为，负载均衡本质上就是告诉集群，它应该选择哪一个终结点(<strong>Endpoints</strong>)来提供服务。而之所以我们需要负载均衡，一个核心的原因，其实是因为我们选择了分布式。</p>
+<p><figure>
+<a href=https://i.loli.net/2021/07/02/k2DhXMudnibrzgt.png>
+<img src=https://i.loli.net/2021/07/02/k2DhXMudnibrzgt.png loading=lazy alt=Envoy架构图：负载均衡器连接集群和服务>
+</a>
+<figcaption>Envoy架构图：负载均衡器连接集群和服务</figcaption>
+</figure></p>
+<p>如果类比<code>RabbitMQ</code>、<code>Kafka</code>和<code>Redis</code>，你就会发现，这些产品中或多或少地都会涉及到主(<strong>Leader</strong>)、从(<strong>Follower</strong>)以及推举Leader的实现，我个人更愿意将其看作是更广义的负载均衡。最直观的，它可以分担流量，简称<strong>分流</strong>，不至于让某一台服务器满负荷做运行。其次，它可以作为故障转移的一种方案，<strong>人生在世，多一个B计划，就多一种选择。同样地，多一台服务器，就多一分底气</strong>。最后，它可以指导某一个产品或者功能的推广，通过给服务器设置不同的权重，在必要的时候，将流量局部地导入某一个环境，腾讯和阿里这样的大厂，经常利用这种方式来做<strong>灰度测试</strong>。</p>
+<p><code>Envoy</code>中支持常用的负载均衡算法，譬如：ROUND_ROBIN(轮询)、LEAST_REQUEST(最少请求)、RING_HASH(哈希环)、RANDOM(随机)、MAGLEV(磁悬浮)、CLUSTER_PROVIDED等等。因为一个集群下可以有多个终结点，所以，在<code>Envoy</code>中配置负载均衡，本质上就是在集群下面增加终结点，而每个终结点则会对应一个服务，特殊的点在于，这些服务可能是通过同一个<code>Dockerfile</code>或者<code>Docker</code>镜像来构建的。所以，一旦理解了这一点，<code>Envoy</code>的负载均衡就再没有什么神秘的地方。例如，下面的代码片段展示了，如何为<code>WeatherService</code>这个集群应用负载均衡：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=w>  </span><span class=nt>clusters</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=c># Weather Service</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice</span><span class=w>
+</span><span class=w>    </span><span class=nt>connect_timeout</span><span class=p>:</span><span class=w> </span><span class=m>0.</span><span class=l>25s</span><span class=w>
+</span><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>STRICT_DNS</span><span class=w>
+</span><span class=w>    </span><span class=c># ROUND_ROBIN(轮询）</span><span class=w>
+</span><span class=w>    </span><span class=c># LEAST_REQUEST(最少请求)</span><span class=w>
+</span><span class=w>    </span><span class=c># RING_HASH(哈希环)</span><span class=w>
+</span><span class=w>    </span><span class=c># RANDOM(随机)</span><span class=w>
+</span><span class=w>    </span><span class=c># MAGLEV(磁悬浮)</span><span class=w>
+</span><span class=w>    </span><span class=c># CLUSTER_PROVIDED</span><span class=w>
+</span><span class=w>    </span><span class=nt>lb_policy</span><span class=p>:</span><span class=w> </span><span class=l>LEAST_REQUEST</span><span class=w>
+</span><span class=w>    </span><span class=nt>load_assignment</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>cluster_name</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice</span><span class=w>
+</span><span class=w>      </span><span class=nt>endpoints</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>lb_endpoints</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span>- <span class=nt>endpoint</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span><span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=w>              </span><span class=nt>socket_address</span><span class=p>:</span><span class=w>
+</span><span class=w>                </span><span class=nt>address</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice1</span><span class=w>
+</span><span class=w>                </span><span class=nt>port_value</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span><span class=w>        </span>- <span class=nt>endpoint</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span><span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=w>              </span><span class=nt>socket_address</span><span class=p>:</span><span class=w>
+</span><span class=w>                </span><span class=nt>address</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice2</span><span class=w>
+</span><span class=w>                </span><span class=nt>port_value</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></code></pre></div><p>是不是觉得特别简单？我想说，也许是<code>Envoy</code>更符合人的直观感受一些，理解起来本身没有太大的心智负担。最近看到一个缓存设计，居然还要依赖<code>Kafka</code>，使用者为了使用缓存这个功能，就必须先实现三个丑陋的委托，这就是所谓的心智负担，违背人类的直觉，使用缓存为什么要了解<code>Kafka</code>？到这里，你大概就能了解利用<code>Envoy</code>实现负载均衡的思路，首先是用同一个<code>Dockerfile</code>或者<code>Docker</code>镜像启动多个不同容器(服务)，然后将指定集群下面的终结点指定不同的服务，再告诉集群要用哪一种负载均衡策略即可。</p>
+<h1 id=邂逅-aspnet-core>邂逅 ASP.NET Core</h1>
+<p>OK，说了这么多，这里我们还是用<code>ASP.NET Core</code>写一个例子。可以预见到的是，我们需要一个<code>Envoy</code>网关，一个<code>ASP.NET Core</code>的服务。这里，我们还是用<code>Docker-Compose</code>来编排这些服务，下面是对应的<code>docker-compose.yaml</code>文件：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3&#39;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>envoygateway</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w> </span><span class=l>Envoy/</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=s2>&#34;9090:9090&#34;</span><span class=w>
+</span><span class=w>      </span>- <span class=s2>&#34;9091:9091&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>./Envoy/envoy.yaml:/etc/envoy/envoy.yaml</span><span class=w>
+</span><span class=w>  </span><span class=nt>weatherservice1</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w> </span><span class=l>WeatherService/</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=s2>&#34;8082:80&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>environment</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>ASPNETCORE_URLS</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;http://+&#34;</span><span class=w>
+</span><span class=w>      </span><span class=nt>ASPNETCORE_ENVIRONMENT</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;Development&#34;</span><span class=w>
+</span><span class=w>  </span><span class=nt>weatherservice2</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w> </span><span class=l>WeatherService/</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=s2>&#34;8084:80&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>environment</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>ASPNETCORE_URLS</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;http://+&#34;</span><span class=w>
+</span><span class=w>      </span><span class=nt>ASPNETCORE_ENVIRONMENT</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;Development&#34;</span><span class=w>  
+</span></code></pre></div><p>而对于<code>Envoy</code>来说，主要的工作是维护集群下的终结点信息这块儿。其实，这段配置在本文的上一节就出现过啦，你有多少个服务实例，就配置多少个终结点，请求落在哪一个实例上，就交给<code>Envoy</code>来决定好啦。故而，这里我们不再做更多的解释：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>static_resources</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>listeners</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>socket_address</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>address</span><span class=p>:</span><span class=w> </span><span class=m>0.0.0.0</span><span class=w>
+</span><span class=w>        </span><span class=nt>port_value</span><span class=p>:</span><span class=w> </span><span class=m>9090</span><span class=w>
+</span><span class=w>    </span><span class=nt>filter_chains</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span>- <span class=nt>filters</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>envoy.filters.network.http_connection_manager</span><span class=w>
+</span><span class=w>        </span><span class=nt>typed_config</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span><span class=nt>&#34;@type&#34;: </span><span class=l>type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager</span><span class=w>
+</span><span class=w>          </span><span class=nt>codec_type</span><span class=p>:</span><span class=w> </span><span class=l>AUTO</span><span class=w>
+</span><span class=w>          </span><span class=nt>stat_prefix</span><span class=p>:</span><span class=w> </span><span class=l>ingress_http</span><span class=w>
+</span><span class=w>          </span><span class=nt>route_config</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>local_route</span><span class=w>
+</span><span class=w>            </span><span class=nt>virtual_hosts</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>backend</span><span class=w>
+</span><span class=w>              </span><span class=nt>domains</span><span class=p>:</span><span class=w>
+</span><span class=w>              </span>- <span class=s2>&#34;*&#34;</span><span class=w>
+</span><span class=w>              </span><span class=nt>routes</span><span class=p>:</span><span class=w>
+</span><span class=w>              </span>- <span class=nt>match</span><span class=p>:</span><span class=w>
+</span><span class=w>                  </span><span class=nt>prefix</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;/api/w&#34;</span><span class=w>
+</span><span class=w>                </span><span class=nt>route</span><span class=p>:</span><span class=w>
+</span><span class=w>                  </span><span class=nt>auto_host_rewrite</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>                  </span><span class=nt>prefix_rewrite</span><span class=p>:</span><span class=w> </span><span class=l>/Weather</span><span class=w>
+</span><span class=w>                  </span><span class=nt>cluster</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice</span><span class=w>
+</span><span class=w>          </span><span class=nt>http_filters</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>envoy.filters.http.router</span><span class=w>
+</span><span class=w>
+</span><span class=w>  </span><span class=nt>clusters</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=c># Weather Service</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice</span><span class=w>
+</span><span class=w>    </span><span class=nt>connect_timeout</span><span class=p>:</span><span class=w> </span><span class=m>0.</span><span class=l>25s</span><span class=w>
+</span><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>STRICT_DNS</span><span class=w>
+</span><span class=w>    </span><span class=nt>lb_policy</span><span class=p>:</span><span class=w> </span><span class=l>LEAST_REQUEST</span><span class=w>
+</span><span class=w>    </span><span class=nt>load_assignment</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>cluster_name</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice</span><span class=w>
+</span><span class=w>      </span><span class=nt>endpoints</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>lb_endpoints</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span>- <span class=nt>endpoint</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span><span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=w>              </span><span class=nt>socket_address</span><span class=p>:</span><span class=w>
+</span><span class=w>                </span><span class=nt>address</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice1</span><span class=w>
+</span><span class=w>                </span><span class=nt>port_value</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span><span class=w>        </span>- <span class=nt>endpoint</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span><span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=w>              </span><span class=nt>socket_address</span><span class=p>:</span><span class=w>
+</span><span class=w>                </span><span class=nt>address</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice2</span><span class=w>
+</span><span class=w>                </span><span class=nt>port_value</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>admin</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>access_log_path</span><span class=p>:</span><span class=w> </span><span class=l>/tmp/admin_access.log</span><span class=w>
+</span><span class=w>  </span><span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>socket_address</span><span class=p>:</span><span class=w> </span>{<span class=w> </span><span class=nt>address: 0.0.0.0, port_value</span><span class=p>:</span><span class=w> </span><span class=m>9091</span><span class=w> </span>}<span class=w>
+</span></code></pre></div><p>使用<code>docker compose up</code>启动容器，我们可以注意到熟悉的<code>ASP.NET Core</code>的身影，这意味着，我们需要的服务都成功地跑起来了。简单调用下API看看，果然，可以正确地返回结果呢(逃……果然，我是一个喜新厌旧的人，自打用了<code>Encoy</code>以后，再不想用<code>Nginx</code>来做类似的事情(逃……</p>
+<p><figure>
+<a href=https://i.loli.net/2021/07/04/lBIAyPZnSxiD3M8.png>
+<img src=https://i.loli.net/2021/07/04/lBIAyPZnSxiD3M8.png loading=lazy alt=通过管理接口查看集群的请求情况>
+</a>
+<figcaption>通过管理接口查看集群的请求情况</figcaption>
+</figure></p>
+<p>好了，如何验证我们选择的负载均衡策略呢？这是一个问题。不知道大家还记不记得<code>Envoy</code>的管理接口，它里面可以统计请求的次数，所以，我们只要看看两个服务各自请求了多少次里有好啦！这里以<code>RANDON</code>这个策略为例：</p>
+<p><figure>
+<a href=https://i.loli.net/2021/07/04/1U8RgZxaVcOFiXK.png>
+<img src=https://i.loli.net/2021/07/04/1U8RgZxaVcOFiXK.png loading=lazy alt=两个实例拥有不同的请求次数>
+</a>
+<figcaption>两个实例拥有不同的请求次数</figcaption>
+</figure></p>
+<p>可以注意到，两个的请求次数果然是随机的呢？而如果我们换成是<code>ROUND_ROBIN</code>，你就会发现这两个数值一前一后相互追赶。选择哪一种负载均衡策略，这个按大家实际的场景去决定就好。我倒觉得，按最少请求数的策略会好一点。虽然计算机永远不知疲倦地接收人们的指令，可考虑能者多劳这种人类世界里的策略，本身充满道德绑架的意味，使用负载均衡，站在计算机的角度来看，这是避免计算机内卷的一种方案。所以啊，老板们，请不要逮着一个老实人就拼了命的剥削，多学学负载均衡算法，<strong>卓别林心目中的摩登时代，我一点都不期待，技术世界总告诉我们要严谨、冷静，可充满人情味的世界，同样值得你去热爱啊。</strong></p>
+<h1 id=本文小结>本文小结</h1>
+<p>本文结合物理学中的熵增定律引出了负载均衡这个话题，而**负载均衡的本质，就是在多个计算机(计算机集群)、网络连接、CPU、磁盘驱动器或其它资源中分配负载，以达到最优化资源使用、最大化吞吐率、最小化响应时间、避免过载的目的。**对于这一点，我们可以结合现实生活中的"窗口"排队来理解。<strong>负载均衡可以和水平扩展完美结合，通过降低单点的故障率，来达到提升整个系统可用性的目的</strong>。接下来，我们介绍了常见的负载均衡器分类及其算法，<code>Envoy</code>中的负载均衡配置，并结合<code>ASP.NET Core</code>编写了一个实际的案例。好了，以上就是这篇博客的全部内容啦，如果大家对于熵增定律或者负载均衡器有任何的看法，欢迎大家在评论区留言，谢谢大家！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/envoy/>Envoy</a>
+<a href=/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/>微服务</a>
+<a href=/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/>负载均衡</a>
+<a href=/tags/%E7%86%B5%E5%A2%9E%E5%AE%9A%E5%BE%8B/>熵增定律</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0-grpc-%E6%9C%8D%E5%8A%A1%E4%BB%A3%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现 gRPC 服务代理</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81jwt/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现微服务身份认证(JWT)</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%9B%91%E6%8E%A7%E9%A2%84%E8%AD%A6/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现微服务的监控预警</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现微服务的反向代理</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-grpc-%E6%89%93%E9%80%9A%E5%89%8D%E7%AB%AF%E4%B8%96%E7%95%8C%E7%9A%84%E5%B0%9D%E8%AF%95/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 打通前端世界的尝试</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

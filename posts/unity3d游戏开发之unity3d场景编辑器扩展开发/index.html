@@ -1,0 +1,418 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="注意到DrawRotate()方法与DrawPositin()及DrawScale()方法在实现方式上略有不同，这是因为Transform组件的Rotation属性是一个Quaternion即四元数的结构，四元数是利用x、y、z、w四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的API接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过Transform的eulerAngles来实现，但是这种方式绘制的属性框大小和EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新;此时如果我们给场景中的某个物体附加上该脚本，则我们在Inspector窗口可以看到Example类的实例Example将被序列化到编辑器面板中，同时我们可以注意到私有的editable字段并没有被序列化出来，这是因为**在Unity3D中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化**，这一点希望大家注意;在第一个示例中，可以注意到我们使用了FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新"><title>Unity3D游戏开发之Unity3D场景编辑器扩展开发</title>
+<link rel=canonical href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8Bunity3d%E5%9C%BA%E6%99%AF%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="Unity3D游戏开发之Unity3D场景编辑器扩展开发">
+<meta property="og:description" content="注意到DrawRotate()方法与DrawPositin()及DrawScale()方法在实现方式上略有不同，这是因为Transform组件的Rotation属性是一个Quaternion即四元数的结构，四元数是利用x、y、z、w四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的API接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过Transform的eulerAngles来实现，但是这种方式绘制的属性框大小和EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新;此时如果我们给场景中的某个物体附加上该脚本，则我们在Inspector窗口可以看到Example类的实例Example将被序列化到编辑器面板中，同时我们可以注意到私有的editable字段并没有被序列化出来，这是因为**在Unity3D中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化**，这一点希望大家注意;在第一个示例中，可以注意到我们使用了FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新">
+<meta property="og:url" content="/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8Bunity3d%E5%9C%BA%E6%99%AF%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91/">
+<meta property="og:site_name" content="飞鸿踏雪">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="编辑器"><meta property="article:tag" content="扩展"><meta property="article:tag" content="Unity3D"><meta property="article:published_time" content="2015-10-13T12:59:01+00:00"><meta property="article:modified_time" content="2015-10-13T12:59:01+00:00">
+<meta name=twitter:title content="Unity3D游戏开发之Unity3D场景编辑器扩展开发">
+<meta name=twitter:description content="注意到DrawRotate()方法与DrawPositin()及DrawScale()方法在实现方式上略有不同，这是因为Transform组件的Rotation属性是一个Quaternion即四元数的结构，四元数是利用x、y、z、w四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的API接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过Transform的eulerAngles来实现，但是这种方式绘制的属性框大小和EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新;此时如果我们给场景中的某个物体附加上该脚本，则我们在Inspector窗口可以看到Example类的实例Example将被序列化到编辑器面板中，同时我们可以注意到私有的editable字段并没有被序列化出来，这是因为**在Unity3D中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化**，这一点希望大家注意;在第一个示例中，可以注意到我们使用了FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<img src=/images/avatar_hu9b977ab3a4b8472c7b4f807105204943_11692_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>飞鸿踏雪</a></h1>
+<h2 class=site-description>纵有疾风起，人生不言弃.</h2>
+</header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/ target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/movies/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>影单</span>
+</a>
+</li>
+<li>
+<a href=/books/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>书单</span>
+</a>
+</li>
+<li>
+<a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/ style=background-color:#2a9d8f;color:#fff>
+游戏开发
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8Bunity3d%E5%9C%BA%E6%99%AF%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91/>Unity3D游戏开发之Unity3D场景编辑器扩展开发</a>
+</h2>
+<h3 class=article-subtitle>
+注意到DrawRotate()方法与DrawPositin()及DrawScale()方法在实现方式上略有不同，这是因为Transform组件的Rotation属性是一个Quaternion即四元数的结构，四元数是利用x、y、z、w四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的API接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过Transform的eulerAngles来实现，但是这种方式绘制的属性框大小和EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新;此时如果我们给场景中的某个物体附加上该脚本，则我们在Inspector窗口可以看到Example类的实例Example将被序列化到编辑器面板中，同时我们可以注意到私有的editable字段并没有被序列化出来，这是因为**在Unity3D中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化**，这一点希望大家注意;在第一个示例中，可以注意到我们使用了FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Oct 13, 2015</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>  今天博主想和大家分享的是Unity3D场景编辑器的扩展开发，相关的话题我们在<a class=link href=http://localhost:4000/2015/03/31/unity3d-plugins-development-application-case/ target=_blank rel=noopener>Unity3D游戏开发之编辑器扩展程序开发实例</a>这篇文章中我们已经有所涉及，今天博主想特别针对场景编辑器的扩展开发来进行下深入研究。对于一个场景编辑器来说，它主要的作用是3D场景视图中实时显示、输入反馈和相关信息的更新。在Unity3D中提供了Editor、EditorWindow、GUILayout、EditorGUILayout、GUIUtility、EditorGUIUtility、Handles、Event等来完成这些工作。其中基于EditorWindow的这种扩展方式我们已经研究过了，这种扩展方式拥有自己的独立窗口使用OnGUI方法进行界面的绘制。</p>
+<p>今天我们想说的是基于Editor的这种扩展方式，这种扩展方式只能针对脚本，从脚本内容在Inspector里的显示布局到变量在Scene视图的可视化编辑，它都可以完全胜任。这里特别想说的是Handles和Event这两个类，这两个类分别提供了3D显示和输入反馈的功能，我们下面就来学习如何使用这些类来扩展Unity3D的场景编辑器。</p>
+<h1 id=创建一个扩展的transform组件>创建一个扩展的Transform组件</h1>
+<p>  Transform是Unity3D中一个基本的组件，下面我们来创建一个扩展的Transform组件，该组件可以对游戏体的坐标、旋转、缩放进行重置。首先，我们创建一个ExtendTransform的类，该类继承自Editor类：</p>
+<pre tabindex=0><code>using UnityEngine;
+using System.Collections;
+using UnityEditor;
+
+[CustomEditor(typeof(Transform),true)]
+public class ExtendTransform : Editor 
+{
+    /// &lt;summary&gt;
+    /// Position属性
+    /// &lt;/summary&gt;
+    private SerializedProperty mPos;
+
+    /// &lt;summary&gt;
+    /// Scale属性
+    /// &lt;/summary&gt;
+    private SerializedProperty mScale;
+
+    void OnEnable()
+    {
+        mPos = serializedObject.FindProperty(&quot;m_LocalPosition&quot;);
+        mScale = serializedObject.FindProperty(&quot;m_LocalScale&quot;) ;
+    }
+
+    /// &lt;summary&gt;
+    /// Inspector相关GUI函数
+    /// &lt;/summary&gt;
+    public override void OnInspectorGUI()
+    {
+        EditorGUIUtility.labelWidth = 15;
+        //获取最新的可序列化对象
+        serializedObject.Update();
+        //绘制物体的坐标、旋转和缩放
+        DrawPosition();
+        DrawRotate();
+        DrawScale();
+        //更新可序列化对象的属性
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    /// &lt;summary&gt;
+    /// 绘制位置
+    /// &lt;/summary&gt;
+    private void DrawPosition()
+    {
+        GUILayout.BeginHorizontal();
+        {
+            bool Reset = GUILayout.Button(&quot;P&quot;, GUILayout.Width(20f));
+            EditorGUILayout.LabelField(&quot;Position&quot;);
+            EditorGUILayout.PropertyField(mPos.FindPropertyRelative(&quot;x&quot;));
+            EditorGUILayout.PropertyField(mPos.FindPropertyRelative(&quot;y&quot;));
+            EditorGUILayout.PropertyField(mPos.FindPropertyRelative(&quot;z&quot;));
+            if(Reset) mPos.vector3Value = Vector3.zero;
+        }
+        GUILayout.EndHorizontal();
+    }
+
+    /// &lt;summary&gt;
+    /// 绘制旋转
+    /// &lt;/summary&gt;
+    private void DrawRotate()
+    {
+        Vector3 eulerAngles = ((Transform)target).eulerAngles;
+        GUILayout.BeginHorizontal();
+        {
+            bool Reset = GUILayout.Button(&quot;R&quot;, GUILayout.Width(20f));
+            EditorGUILayout.LabelField(&quot;Rotation&quot;, GUILayout.Width(70f));
+            EditorGUILayout.LabelField(&quot;X&quot;, GUILayout.Width(13f));
+            float angleX=EditorGUILayout.FloatField(eulerAngles.x, GUILayout.Width(56f));
+            EditorGUILayout.LabelField(&quot;Y&quot;, GUILayout.Width(13f));
+            float angleY = EditorGUILayout.FloatField(eulerAngles.y, GUILayout.Width(56f));
+            EditorGUILayout.LabelField(&quot;Z&quot;, GUILayout.Width(13f));
+            float angleZ = EditorGUILayout.FloatField(eulerAngles.z, GUILayout.Width(56f));
+            ((Transform)target).eulerAngles = new Vector3(angleX, angleY, angleZ);
+            if(Reset)
+            {
+                eulerAngles = Vector3.zero;
+                ((Transform)target).eulerAngles = Vector3.zero;
+            }
+        }
+        GUILayout.EndHorizontal();
+    }
+
+    /// &lt;summary&gt;
+    /// 绘制缩放
+    /// &lt;/summary&gt;
+    private void DrawScale()
+    {
+        GUILayout.BeginHorizontal();
+        {
+            bool Reset = GUILayout.Button(&quot;S&quot;, GUILayout.Width(20f));
+            EditorGUILayout.LabelField(&quot;Scale&quot;);
+            EditorGUILayout.PropertyField(mScale.FindPropertyRelative(&quot;x&quot;));
+            EditorGUILayout.PropertyField(mScale.FindPropertyRelative(&quot;y&quot;));
+            EditorGUILayout.PropertyField(mScale.FindPropertyRelative(&quot;z&quot;));
+            if (Reset) mScale.vector3Value = Vector3.one;
+        }
+        GUILayout.EndHorizontal();
+    }
+}
+</code></pre><p>  首先我们注意到ExtendTransform继承自Editor，这是我们开发这类编辑器扩展的第一个前提。其次我们注意到在该类的声明位置有这样一个标记:</p>
+<pre tabindex=0><code>[CustomEditor(typeof(Transform),true)]
+</code></pre><p>该标记表明我们这个编辑器扩展是针对Transform组件进行扩展的，即当物体存在Tranform组件时会在编辑器中响应这个编辑器扩展程序。我们在这个编辑器扩展程序中都做了哪些事情呢？第一，我们实现了OnEnable()方法，该方法相当于一个初始化的方法；第二，我们重写了OnOnInspectorGUI()方法，该方法将覆盖默认的Inspector窗口外观。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/None.jpg>
+<img src=https://ww1.sinaimg.cn/large/None.jpg loading=lazy alt=扩展后的Transform>
+</a>
+<figcaption>扩展后的Transform</figcaption>
+</figure></p>
+<p>好了，现在我们点击场景中默认的相机MainCamera可以发现默认的Transform会变成具有重置功能的扩展型Transform。下面我们来介绍这段程序中较为重要的核心内容：</p>
+<h2 id=unity3d中的可序列化对象>Unity3D中的可序列化对象</h2>
+<p>  通常我们所说的序列化是指将一个对象的实例转化为字符串的过程，而在Unity3D中可序列化对象更像是一种智能对象，它可以将脚本中的属性显示在Inspector窗口中，当场景发生变化时这些属性值将自动被更新。例如我们可以定义这样一个简单的脚本：</p>
+<pre tabindex=0><code>/// &lt;summary&gt;
+/// 定义一个可序列化类
+/// &lt;/summary&gt;
+[System.Serializable]
+public class ExampleClass 
+{
+    [SerializeField]
+    public int ID;
+    [SerializeField]
+    public string Name;
+    [SerializeField]
+    public Vector3[] Points;
+
+    private bool editable = false;
+}
+
+/// &lt;summary&gt;
+/// 定义一个简单的脚本
+/// &lt;/summary&gt;
+public class ExampleScript : MonoBehaviour 
+{
+    public ExampleClass Example;
+}
+</code></pre><p>此时如果我们给场景中的某个物体附加上该脚本，则我们在Inspector窗口可以看到Example类的实例Example将被序列化到编辑器面板中，同时我们可以注意到私有的editable字段并没有被序列化出来，这是因为<strong>在Unity3D中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化</strong>，这一点希望大家注意。好了，那么我们为什么要讲这部分内容呢，这是因为它和我们下面要讲的<strong>Editor基类中的属性和方法</strong>有着十分密切的关联。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/None.jpg>
+<img src=https://ww1.sinaimg.cn/large/None.jpg loading=lazy alt=Unity3D中的可序列化对象>
+</a>
+<figcaption>Unity3D中的可序列化对象</figcaption>
+</figure></p>
+<h2 id=editor基类中的属性和方法>Editor基类中的属性和方法</h2>
+<p>  Editor基类中有两个重要的属性，即target和serializedObject。target表示当前受检查的物体我们可以通过它获得当前物体；而serializedObject表示当前物体的全部可序列化信息，我们可以通过它获得指定的序列化字段及其数值。Editor基类中重要的方法有：</p>
+<ul>
+<li>OnInspectorGUI():该方法可对Inspector窗口面板进行扩展或者重写，比如我们可以通过DrawDefaultInspector()方法来绘制默认Inspector窗口面板然后在此基础上使用GUILayout或者EditorGUILayout等辅助类进行自定义的绘制。在这个示例中我们对整个面板进行了重写，值得注意的是为了让Inspector窗口面板正常工作，如果要重绘该窗口请确保对该方法进行覆盖。</li>
+<li>OnSceneGUI():该方法可对场景视图进行绘制，在实际的使用中可以配合Handles类和Event类来进行网格编辑、地形绘制或高级Gizmos等方面的工作。在本文的第二个示例中，我们将利用这一特性来编写一个用于NPC寻路的路径节点编辑工具。</li>
+</ul>
+<h2 id=对第一个示例的总结>对第一个示例的总结</h2>
+<p>  在第一个示例中，可以注意到我们使用了FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新。注意到DrawRotate()方法与DrawPositin()及DrawScale()方法在实现方式上略有不同，这是因为Transform组件的Rotation属性是一个Quaternion即四元数的结构，四元数是利用x、y、z、w四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的API接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过Transform的eulerAngles来实现，但是这种方式绘制的属性框大小和EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新。好了，暂时先总结到这里更多的细节大家可以通过代码来了解。</p>
+<h1 id=创建一个npc寻路节点编辑工具>创建一个NPC寻路节点编辑工具</h1>
+<p>  创建这样一个工具的想法来自我实际的工作体验，当我Unity3D中使用的Tween动画库从iTween变成Dotween后，我在使用Dotween的过程中一直没有找到类似于iTweenPath的路径节点编辑工具。作为一个有节操的程序员，去寻找破解版的Dotween Pro这样的事情我是能不干就不干啦，因为我觉得自己有能力做这样一个类似的小工具，所以在一边准备这篇文章的时候，一边开始设计这样一个路径节点编辑工具。相信经过第一个示例的铺垫和相关知识的储备，大家都了解了这些内容，所以这里直接给出代码啦，因为实在是没有多少内容，嘿嘿：</p>
+<pre tabindex=0><code>using UnityEngine;
+using System.Collections;
+using UnityEditor;
+
+[CustomEditor(typeof(PatrolNPC))]
+public class PatrolPathEditor : Editor 
+{
+    /// &lt;summary&gt;
+    /// 寻路节点
+    /// &lt;/summary&gt;
+    private Vector3[] paths;
+
+    /// &lt;summary&gt;
+    /// 显示寻路信息的GUI
+    /// &lt;/summary&gt;
+    private GUIStyle style=new GUIStyle();
+
+    /// &lt;summary&gt;
+    /// 初始化
+    /// &lt;/summary&gt;
+    void OnEnable()
+    {
+        //获取当前NPC的寻路路径
+        paths = ((PatrolNPC)target).Paths;
+        //初始化GUIStyle
+        style.fontStyle = FontStyle.Normal;
+        style.fontSize = 15;
+    }
+
+
+    void OnSceneGUI()
+    {
+        //获取当前NPC的寻路路径
+        paths = ((PatrolNPC)serializedObject.targetObject).Paths;
+        //设置节点的颜色为红色
+        Handles.color = Color.red;
+        if(paths.Length &lt;= 0 || paths.Length&lt;2) return;
+        //在场景中绘制每一个寻路节点
+        //可以在场景中编辑节点并将更新至对应的NPC
+        for (int i = 0; i &lt; paths.Length; i++)
+        {
+            paths[i] = Handles.PositionHandle(paths[i], Quaternion.identity);
+            Handles.SphereCap(i, paths[i], Quaternion.identity, 0.25f);
+            Handles.Label(paths[i], &quot;PathPoint&quot; + i, style);
+            if (i &lt; paths.Length &amp;&amp; i + 1 &lt; paths.Length)
+            {
+                Handles.DrawLine(paths[i], paths[i + 1]);
+            }
+        }
+    }
+    
+}
+</code></pre><p>  这里的PatrolNPC是一个可寻路NPC类，基本和这篇文章的内容无关，大家只要知道那个Paths字段是一个Vector3[]就好啦，这样当我们在场景中编辑这些路径节点的时候，对应NPC的路径节点信息就会同步发生更新，这样我们就可以随心所欲地规划NPC的移动路径啦，哈哈。好了，今天的内容就是这样啦，写完熬到这个点真心不容易啊，大家晚安，这是这个小工具在场景编辑器中的效果，嘻嘻，感觉还是蛮不错的吧，反正我是很喜欢就对啦！</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz68jsnh8kj20nn0hrnnk.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz68jsnh8kj20nn0hrnnk.jpg loading=lazy alt=路径节点编辑工具演示>
+</a>
+<figcaption>路径节点编辑工具演示</figcaption>
+</figure></p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E7%BC%96%E8%BE%91%E5%99%A8/>编辑器</a>
+<a href=/tags/%E6%89%A9%E5%B1%95/>扩展</a>
+<a href=/tags/unity3d/>Unity3D</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/>
+<div class=article-details>
+<h2 class=article-title>Unity3D游戏开发之编辑器扩展程序开发实例</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%89%A9%E5%B1%95unity3d%E7%BC%96%E8%BE%91%E5%99%A8%E7%9A%84%E8%84%9A%E6%9C%AC%E6%A8%A1%E6%9D%BF/>
+<div class=article-details>
+<h2 class=article-title>扩展Unity3D编辑器的脚本模板</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E8%A7%A3%E6%9E%90obj%E6%A8%A1%E5%9E%8B%E5%B9%B6%E5%B0%86%E5%85%B6%E5%8A%A0%E8%BD%BD%E5%88%B0unity3d%E5%9C%BA%E6%99%AF%E4%B8%AD/>
+<div class=article-details>
+<h2 class=article-title>解析OBJ模型并将其加载到Unity3D场景中</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%9C%BA%E6%99%AF%E4%BC%98%E5%8C%96%E7%B3%BB%E5%88%97%E4%B9%8B%E6%89%B9%E5%A4%84%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>Unity3D游戏场景优化系列之批处理</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8Bsqlite%E8%AE%A9%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BC%80%E5%8F%91%E6%9B%B4%E7%AE%80%E5%8D%95/>
+<div class=article-details>
+<h2 class=article-title>Unity3D游戏开发之SQLite让数据库开发更简单</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<script src=//cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js></script>
+<div id=waline class=waline-container></div>
+<style>.waline-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}.waline-container .vcount{color:var(--card-text-color-main)}</style><script>new Waline({dark:'html[data-scheme="dark"]',el:"#waline",emoji:["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"],locale:{admin:"Admin"},requiredMeta:["name","email","url"],serverURL:"https://waline-comments-woad.vercel.app/"})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2021 飞鸿踏雪
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

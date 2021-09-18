@@ -1,4 +1,4 @@
-{{ define "body-class" }}article-page{{ end }}
+﻿{{ define "body-class" }}article-page{{ end }}
 {{ define "main" }}
 
 <article class="has-image main-article">
@@ -6,7 +6,7 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/p/hexo-codespaces/">
-                <img src="/hugo-douban/images/movies.jpg" srcset="/hugo-douban/images/movies.jpg" loading="lazy"alt="影单" width="75%" height="75%">
+                <img src="/hugo-douban/images/books.jpg" srcset="/hugo-douban/images/books.jpg" loading="lazy"alt="书单" width="75%" height="75%">
             </a>
         </div>
         <div class="article-details">
@@ -14,7 +14,7 @@
         </div>
     </header>
 
-    <link rel="stylesheet" type="text/css" href="/hugo-douban/styles/index.css" />
+    <link rel="stylesheet" type="text/css" href="{{ $.Site.Param "baseUrl" }}/hugo-douban/styles/index.css" />
 
     {{ $doubanBooks := $.Site.Data.douban.books }}
 

@@ -1,4 +1,4 @@
----
+﻿---
 title: 关于
 description: 
 date: '2019-02-28'
@@ -13,6 +13,7 @@ menu:
         weight: -60
         pre: user
 ---
+![在这世界的角落](https://i.loli.net/2020/02/25/S8knQoPDYct9jHq.jpg)
 
 谢谢你，在这世界的角落，找到我：
 * 昵称：**飞鸿踏雪**

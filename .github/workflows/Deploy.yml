@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:    
-      - master
+      - blog
 
 jobs:
   build_static_pages:
@@ -34,14 +34,12 @@ jobs:
 
     - name: Build Site
       run: |
-        sudo rm -f config.yaml
-        sudo cp config_gh_pages.yaml config.yaml
         hugo --minify
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       with:
         personal_token: ${{ secrets.CI_TOKEN }} 
-        PUBLISH_BRANCH: gh-pages 
+        PUBLISH_BRANCH: master
         PUBLISH_DIR: ./public  
         commit_message: ${{ github.event.head_commit.message }}

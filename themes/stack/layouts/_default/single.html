@@ -1,6 +1,6 @@
 {{ define "body-class" }}
     {{ $TOCEnabled := default (default false .Site.Params.article.toc) .Params.toc }}
-    {{- .Scratch.Set "hasTOC" (and (ge (len .TableOfContents) 100) $TOCEnabled) -}}
+    {{- .Scratch.Set "hasTOC" $TOCEnabled -}} 
     article-page {{ if (.Scratch.Get "hasTOC") }}has-toc{{ end }}
 {{ end }}
 
@@ -14,7 +14,6 @@
 
 {{ define "main" }}
     {{ partial "article/article.html" . }}
-
     {{ partial "article/components/related-contents" . }}
      
     {{ if or (not (isset .Params "comments")) (eq .Params.comments "true")}} 

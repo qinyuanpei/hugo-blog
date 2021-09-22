@@ -185,4 +185,7 @@ markup:
         startLevel: 2
     highlight:
         noClasses: false
+    goldmark:
+        renderer:
+            unsafe: true
     defaultMarkdownHandler: "blackfriday"

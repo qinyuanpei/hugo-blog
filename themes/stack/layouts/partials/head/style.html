@@ -1,3 +1,5 @@
 {{ $sass := resources.Get "scss/style.scss" }}
 {{ $style := $sass | resources.ToCSS | minify }}
 <link rel="stylesheet" href="{{ $style.RelPermalink }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+

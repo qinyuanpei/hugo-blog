@@ -6,6 +6,7 @@ title: 飞鸿踏雪
 ignoreErrors:
  - error-remote-getjson
 
+
 # Change it to your Disqus shortname before using
 disqusShortname: hugo-theme-stack
 
@@ -184,3 +185,4 @@ markup:
         startLevel: 2
     highlight:
         noClasses: false
+    defaultMarkdownHandler: "blackfriday"

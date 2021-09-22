@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content=" https://cdn.jsdelivr.net/gh/user/repo@version/file;[jsDelivr提供的CDN加速资源](https://i.loli.net/2020/02/05/HtmhUdsSRLW4Q9A.png);https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"><title>使用 jsDelivr 为 Hexo 博客提供高效免费的CDN加速</title>
 <link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8-jsdelivr-%E4%B8%BA-hexo-%E5%8D%9A%E5%AE%A2%E6%8F%90%E4%BE%9B%E9%AB%98%E6%95%88%E5%85%8D%E8%B4%B9%E7%9A%84cdn%E5%8A%A0%E9%80%9F/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="使用 jsDelivr 为 Hexo 博客提供高效免费的CDN加速">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="使用 jsDelivr 为 Hexo 博客提供高效免费的CDN加速">
 <meta property="og:description" content=" https://cdn.jsdelivr.net/gh/user/repo@version/file;[jsDelivr提供的CDN加速资源](https://i.loli.net/2020/02/05/HtmhUdsSRLW4Q9A.png);https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js">
 <meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8-jsdelivr-%E4%B8%BA-hexo-%E5%8D%9A%E5%AE%A2%E6%8F%90%E4%BE%9B%E9%AB%98%E6%95%88%E5%85%8D%E8%B4%B9%E7%9A%84cdn%E5%8A%A0%E9%80%9F/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -92,26 +95,19 @@ on-phone--column extended">
 </div>
 </header>
 <section class=article-content>
-<p>最近给博客做了升级，从3.x升级到了4.x，主要是在官网看到了关于静态页面生成效率提升的内容。众所周知，Hexo在文章数目增加以后会越来越慢。博主大概是从14年年底开始使用Hexo这个静态博客的，截止到目前一共有176篇博客，其中的“慢”可想而知，中间甚至动过使用Hugo和VuePress的念头，所以，听说有性能方面的提升，还是决定第一时间来试试。整个升级过程挺顺利的，唯一遇到的问题是关于外部链接检测方面的，具体可以参考<a class=link href=https://github.com/hexojs/hexo/issues/4107 target=_blank rel=noopener>这里</a>。今天，博主主要想和大家分享下关于如何使用<a class=link href=http://www.jsdelivr.com/ target=_blank rel=noopener>jsDelivr</a>来为博客提供免费、高效的CDN服务，希望对大家有所帮助。</p>
-<p><a class=link href=http://www.jsdelivr.com/ target=_blank rel=noopener>jsDelivr</a>是一个免费、快速和可信赖的CDN加速服务，官网上声称它每个月可以支撑680亿次的请求。博主是在去年年底的时候，偶然了解到这个服务的存在，这次趁着疫情肆虐的间隙，终于把这个服务集成到了博客中。更重要的是，这个服务在Github上是<a class=link href=https://github.com/jsdelivr/jsdelivr target=_blank rel=noopener>开源</a>的。目前，它提供了针对<a class=link href=https://www.npmjs.com/ target=_blank rel=noopener>npm</a>、<a class=link href=https://github.com target=_blank rel=noopener>Github</a>和<a class=link href=https://cn.wordpress.org target=_blank rel=noopener>WordPress</a>的加速服务，只需要一行代码就可以获得加速效果，以常用的jQuery和Bootstrap为例：</p>
+<p>最近给博客做了升级，从3.x升级到了4.x，主要是在官网看到了关于静态页面生成效率提升的内容。众所周知，Hexo在文章数目增加以后会越来越慢。博主大概是从14年年底开始使用Hexo这个静态博客的，截止到目前一共有176篇博客，其中的“慢”可想而知，中间甚至动过使用Hugo和VuePress的念头，所以，听说有性能方面的提升，还是决定第一时间来试试。整个升级过程挺顺利的，唯一遇到的问题是关于外部链接检测方面的，具体可以参考<a href=https://github.com/hexojs/hexo/issues/4107>这里</a>。今天，博主主要想和大家分享下关于如何使用<a href=http://www.jsdelivr.com/>jsDelivr</a>来为博客提供免费、高效的CDN服务，希望对大家有所帮助。</p>
+<p><a href=http://www.jsdelivr.com/>jsDelivr</a>是一个免费、快速和可信赖的CDN加速服务，官网上声称它每个月可以支撑680亿次的请求。博主是在去年年底的时候，偶然了解到这个服务的存在，这次趁着疫情肆虐的间隙，终于把这个服务集成到了博客中。更重要的是，这个服务在Github上是<a href=https://github.com/jsdelivr/jsdelivr>开源</a>的。目前，它提供了针对<a href=https://www.npmjs.com/>npm</a>、<a href=https://github.com>Github</a>和<a href=https://cn.wordpress.org>WordPress</a>的加速服务，只需要一行代码就可以获得加速效果，以常用的jQuery和Bootstrap为例：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>// load jQuery v3.2.1
 </span><span class=c1></span><span class=nx>https</span><span class=o>:</span><span class=c1>//cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js
 </span><span class=c1></span>
 <span class=c1>// load bootstrap v4.4.1
 </span><span class=c1></span><span class=nx>https</span><span class=o>:</span><span class=c1>//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.js
-</span><span class=c1></span>
-</code></pre></div><p>这意味着我们只需要发布一个npm的包，就可以使用它提供的加速服务。CDN加速的好处我这里就不再多说了，只要我们的项目中用到了第三方的静态资源，譬如JavaScript/CSS等等都应该考虑接入到CDN中。有人常常担心CDN挂掉或者是私有化部署无法接入外网环境。我想说，我们目光应该长远一点，现在早已不是早年那种单打独斗式的开发模式了，我们不可能把所有资源都放到本地来。随着云计算的概念越发地深入人心，越来越多的基础服务都运行在一台又一台虚拟化的“云服务器”上，这种情况下，搞这种集中化配置的做法，是完全违背分布式的发展趋势的。</p>
-<p>如果说，针对npm包的CDN加速服务离我们还有点遥远，因为我们大多数情况下都是在使用别人写好的库。那么，接下来，针对Github的CDN加速服务应该会让我们无比兴奋吧，毕竟Github Pages的“慢”大家是可以感受得到的。不然，为什么大家要用Coding Pages做国内/国外的双线部署呢？首先，我们在浏览器里输入下面这个地址：<a class=link href=https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@latest/ target=_blank rel=noopener>https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@latest/</a>
-<figure>
-<a href=https://i.loli.net/2020/02/05/HtmhUdsSRLW4Q9A.png>
-<img src=https://i.loli.net/2020/02/05/HtmhUdsSRLW4Q9A.png loading=lazy alt=jsDelivr提供的CDN加速资源>
-</a>
-<figcaption>jsDelivr提供的CDN加速资源</figcaption>
-</figure>
-此时，可以注意到，<a class=link href=http://www.jsdelivr.com/ target=_blank rel=noopener>jsDelivr</a>可以把我们Github上的资源呈现出来，只要我们在Github上发布过相应的版本即可。这里的版本，可以理解为一次Release，对应Git中tag的概念，虽然Github现在引入了包管理器的概念，试图统一像npm、nuget、pip等等这样的包管理器。它提供的CDN服务有一个基本的格式：</p>
-<blockquote>
-<p><a class=link href=https://cdn.jsdelivr.net/gh/user/repo@version/file target=_blank rel=noopener>https://cdn.jsdelivr.net/gh/user/repo@version/file</a></p>
-</blockquote>
+</span></code></pre></div>
+<p>这意味着我们只需要发布一个npm的包，就可以使用它提供的加速服务。CDN加速的好处我这里就不再多说了，只要我们的项目中用到了第三方的静态资源，譬如JavaScript/CSS等等都应该考虑接入到CDN中。有人常常担心CDN挂掉或者是私有化部署无法接入外网环境。我想说，我们目光应该长远一点，现在早已不是早年那种单打独斗式的开发模式了，我们不可能把所有资源都放到本地来。随着云计算的概念越发地深入人心，越来越多的基础服务都运行在一台又一台虚拟化的“云服务器”上，这种情况下，搞这种集中化配置的做法，是完全违背分布式的发展趋势的。</p>
+<p>如果说，针对npm包的CDN加速服务离我们还有点遥远，因为我们大多数情况下都是在使用别人写好的库。那么，接下来，针对Github的CDN加速服务应该会让我们无比兴奋吧，毕竟Github Pages的“慢”大家是可以感受得到的。不然，为什么大家要用Coding Pages做国内/国外的双线部署呢？首先，我们在浏览器里输入下面这个地址：<a href=https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@latest/>https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@latest/</a>
+<img src=https://i.loli.net/2020/02/05/HtmhUdsSRLW4Q9A.png alt=jsDelivr提供的CDN加速资源>
+此时，可以注意到，<a href=http://www.jsdelivr.com/>jsDelivr</a>可以把我们Github上的资源呈现出来，只要我们在Github上发布过相应的版本即可。这里的版本，可以理解为一次Release，对应Git中tag的概念，虽然Github现在引入了包管理器的概念，试图统一像npm、nuget、pip等等这样的包管理器。它提供的CDN服务有一个基本的格式：
+> <a href=https://cdn.jsdelivr.net/gh/user/repo@version/file>https://cdn.jsdelivr.net/gh/user/repo@version/file</a></p>
 <p>如果大家感兴趣，可以把这里的user和repo改成自己的来体验一番。需要注意的是，这里的版本号同样可以换成Commit ID或者是分支的名称。我个人建议用tag，因为它通常携带了版本号信息，语义上要更好一点。那么，顺着这个思路，我们只要把Hexo中的资源的相对路径改为jsDelivr的CDN加速路径就好啦！为了让切换更加自如，这里我们为Hexo写一个Helper，它可以理解为Hexo中的辅助代码片段。我们在<code>&lt;YouTheme>/scripts/</code>目录下新建一个<code>plugins.js</code>文件，这样Hexo会在渲染时自动加载这个脚本文件：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=kr>const</span> <span class=nx>source</span> <span class=o>=</span> <span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>,</span> <span class=nx>ext</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
     <span class=k>if</span> <span class=p>(</span><span class=nx>cache</span><span class=p>)</span> <span class=p>{</span>
@@ -123,37 +119,27 @@ on-phone--column extended">
     <span class=p>}</span>
 <span class=p>}</span>
 <span class=nx>hexo</span><span class=p>.</span><span class=nx>extend</span><span class=p>.</span><span class=nx>helper</span><span class=p>.</span><span class=nx>register</span><span class=p>(</span><span class=s1>&#39;theme_js&#39;</span><span class=p>,</span> <span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=nx>source</span><span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>,</span> <span class=s1>&#39;.js&#39;</span><span class=p>))</span>
-<span class=nx>hexo</span><span class=p>.</span><span class=nx>extend</span><span class=p>.</span><span class=nx>helper</span><span class=p>.</span><span class=nx>register</span><span class=p>(</span><span class=s1>&#39;theme_css&#39;</span><span class=p>,</span> <span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=nx>source</span><span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>,</span> <span class=s1>&#39;.css&#39;</span><span class=p>))</span>
-</code></pre></div><p>接下来，修改布局文件，项目中的JavaScript和CSS文件，均通过<code>theme_js()</code>和<code>thems_css()</code>两个函数引入：</p>
+<span class=nx>hexo</span><span class=p>.</span><span class=nx>extend</span><span class=p>.</span><span class=nx>helper</span><span class=p>.</span><span class=nx>register</span><span class=p>(</span><span class=s1>&#39;theme_css&#39;</span><span class=p>,</span> <span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=nx>source</span><span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>,</span> <span class=s1>&#39;.css&#39;</span><span class=p>))</span></code></pre></div>
+<p>接下来，修改布局文件，项目中的JavaScript和CSS文件，均通过<code>theme_js()</code>和<code>thems_css()</code>两个函数引入：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell>//加载JavaScript
 &lt;script <span class=nv>src</span><span class=o>=</span><span class=s2>&#34;&lt;%- url_for(theme_js(&#39;assets/scripts/search&#39;, cache)) %&gt;&#34;</span> async&gt;&lt;/script&gt;
 //加载CSS
-&lt;link <span class=nv>rel</span><span class=o>=</span><span class=s2>&#34;stylesheet&#34;</span> <span class=nv>href</span><span class=o>=</span><span class=s2>&#34;&lt;%- url_for(theme_css(&#39;/assets/styles/style&#39;, cache)) %&gt;&#34;</span>&gt;
-</code></pre></div><p>既然是否使用CDN加速是可配置的，我们要在_config.yml文件中添加相应的配置项：</p>
+&lt;link <span class=nv>rel</span><span class=o>=</span><span class=s2>&#34;stylesheet&#34;</span> <span class=nv>href</span><span class=o>=</span><span class=s2>&#34;&lt;%- url_for(theme_css(&#39;/assets/styles/style&#39;, cache)) %&gt;&#34;</span>&gt;</code></pre></div>
+<p>既然是否使用CDN加速是可配置的，我们要在_config.yml文件中添加相应的配置项：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-YAML data-lang=YAML><span class=c># jsdelivr CDN</span><span class=w>
 </span><span class=w></span><span class=nt>jsdelivr</span><span class=p>:</span><span class=w>
 </span><span class=w>  </span><span class=nt>enable</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
 </span><span class=w>  </span><span class=nt>gh_user</span><span class=p>:</span><span class=w> </span><span class=l>qinyuanpei</span><span class=w>
 </span><span class=w>  </span><span class=nt>gh_repo</span><span class=p>:</span><span class=w> </span><span class=l>qinyuanpei.github.io</span><span class=w>
-</span><span class=w>  </span><span class=nt>baseUrl</span><span class=p>:</span><span class=w> </span><span class=l>cdn.jsdelivr.net</span><span class=w>
-</span></code></pre></div><p>除此以外，我们还需要在部署博客的时候，生成一个名为latest的tag。虽然官网上说，在引用CDN的时候版本号可以省略，不过经过博主反复尝试，不带版本号并不会指向正确的版本，有些资源文件会报404，因为这部分资源文件回滚以后发现还是没有。所以，最后博主只好把这个版本号给固定下来了，这样又引入一个新问题，即：每次部署的时候都要先删除远程的latest。所以，这块儿的<a class=link href=https://raw.githubusercontent.com/qinyuanpei/qinyuanpei.github.io/blog/.travis.yml target=_blank rel=noopener>Travis CI脚本</a>看起来会有点讨厌，如果大家有更好的方案，欢迎大家在博客中留言：</p>
+</span><span class=w>  </span><span class=nt>baseUrl</span><span class=p>:</span><span class=w> </span><span class=l>cdn.jsdelivr.net</span></code></pre></div>
+<p>除此以外，我们还需要在部署博客的时候，生成一个名为latest的tag。虽然官网上说，在引用CDN的时候版本号可以省略，不过经过博主反复尝试，不带版本号并不会指向正确的版本，有些资源文件会报404，因为这部分资源文件回滚以后发现还是没有。所以，最后博主只好把这个版本号给固定下来了，这样又引入一个新问题，即：每次部署的时候都要先删除远程的latest。所以，这块儿的<a href=https://raw.githubusercontent.com/qinyuanpei/qinyuanpei.github.io/blog/.travis.yml>Travis CI脚本</a>看起来会有点讨厌，如果大家有更好的方案，欢迎大家在博客中留言：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell> git tag latest
- git push --force --quiet <span class=s2>&#34;https://</span><span class=si>${</span><span class=nv>CI_TOKEN</span><span class=si>}</span><span class=s2>@</span><span class=si>${</span><span class=nv>GH_REF</span><span class=si>}</span><span class=s2>&#34;</span> master:master --tags
-</code></pre></div><p>好了，现在重新生成、部署，来看看效果吧：
-<figure>
-<a href=https://i.loli.net/2020/02/05/FZJi9esXWQzxLYf.png>
-<img src=https://i.loli.net/2020/02/05/FZJi9esXWQzxLYf.png loading=lazy alt="Coding Pages速度">
-</a>
-<figcaption>Coding Pages速度</figcaption>
-</figure></p>
-<p><figure>
-<a href=https://i.loli.net/2020/02/05/E3WYBRQk4DJCZr5.png>
-<img src=https://i.loli.net/2020/02/05/E3WYBRQk4DJCZr5.png loading=lazy alt="Github Pages速度">
-</a>
-<figcaption>Github Pages速度</figcaption>
-</figure>
+ git push --force --quiet <span class=s2>&#34;https://</span><span class=si>${</span><span class=nv>CI_TOKEN</span><span class=si>}</span><span class=s2>@</span><span class=si>${</span><span class=nv>GH_REF</span><span class=si>}</span><span class=s2>&#34;</span> master:master --tags</code></pre></div>
+<p>好了，现在重新生成、部署，来看看效果吧：
+<img src=https://i.loli.net/2020/02/05/FZJi9esXWQzxLYf.png alt="Coding Pages速度"></p>
+<p><img src=https://i.loli.net/2020/02/05/E3WYBRQk4DJCZr5.png alt="Github Pages速度">
 感觉效果还不错，Github Pages比平时要快很多，博主顺便就给Coding Pages启用了CDN加速。话说，看到这张图的时候总是感慨，如果肺炎疫情地图能像这两张图一样就好啦！面对这场无声的战役，有很多人一直在一线抗击病魔，还有很多人默默无闻地在支援武汉。或许，宅在家里的你我，什么都做不了，可即便如此，还是让我们一起来祈祷疫情快点结束吧，因为春天都要来了呢……好了，这就是这篇博客的全部内容啦，谢谢大家！</p>
-<h1 id=20200213-更新>2020/02/13 更新</h1>
+<h1 id=2020-02-13-更新>2020/02/13 更新</h1>
 <p>在此之前，博主提到版本号的问题，即每一次在CDN上生成的版本，怎样体现到Hexo中引用的资源上面。当时采用了一个取巧的方法，Hexo中固定版本号为latest，然后每次都推送这个tag。这样引发一个问题，每次都先去远程删除这个tag，显然这不是我期望的解决方案。最终，我采用的方案是，通过Travis CI编译部署的时候，首先导出变量<code>$TRAVIS_BUILD_NUMBER</code>到一个文本文件中，然后Hexo在生成静态页面的时侯，从这个文本文件中读取该变量的值作为版本号，这样每次编译部署的时候，我们总能获得一个新的tag，而这个tag和Hexo中引用的资源版本一致，这样就彻底解决了这个遗留问题。修改后的<code>plugins.js</code>文件内容如下：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=kd>var</span> <span class=nx>fs</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;fs&#39;</span><span class=p>);</span>
 <span class=kd>var</span> <span class=nx>version</span> <span class=o>=</span> <span class=s1>&#39;latest&#39;</span>
@@ -175,8 +161,8 @@ on-phone--column extended">
     <span class=p>}</span>
 <span class=p>}</span>
 <span class=nx>hexo</span><span class=p>.</span><span class=nx>extend</span><span class=p>.</span><span class=nx>helper</span><span class=p>.</span><span class=nx>register</span><span class=p>(</span><span class=s1>&#39;theme_js&#39;</span><span class=p>,</span> <span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=nx>source</span><span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>,</span> <span class=s1>&#39;.js&#39;</span><span class=p>))</span>
-<span class=nx>hexo</span><span class=p>.</span><span class=nx>extend</span><span class=p>.</span><span class=nx>helper</span><span class=p>.</span><span class=nx>register</span><span class=p>(</span><span class=s1>&#39;theme_css&#39;</span><span class=p>,</span> <span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=nx>source</span><span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>,</span> <span class=s1>&#39;.css&#39;</span><span class=p>))</span>
-</code></pre></div><p>修改后的<code>.travis.yml</code>文件可以在<a class=link href=https://raw.githubusercontent.com/qinyuanpei/qinyuanpei.github.io/blog/.travis.yml target=_blank rel=noopener>这里</a>获取。</p>
+<span class=nx>hexo</span><span class=p>.</span><span class=nx>extend</span><span class=p>.</span><span class=nx>helper</span><span class=p>.</span><span class=nx>register</span><span class=p>(</span><span class=s1>&#39;theme_css&#39;</span><span class=p>,</span> <span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=nx>source</span><span class=p>(</span><span class=nx>path</span><span class=p>,</span> <span class=nx>cache</span><span class=p>,</span> <span class=s1>&#39;.css&#39;</span><span class=p>))</span></code></pre></div>
+<p>修改后的<code>.travis.yml</code>文件可以在<a href=https://raw.githubusercontent.com/qinyuanpei/qinyuanpei.github.io/blog/.travis.yml>这里</a>获取。</p>
 </section>
 <footer class=article-footer>
 <section class=article-tags>

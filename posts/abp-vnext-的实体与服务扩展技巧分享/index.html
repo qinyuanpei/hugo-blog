@@ -2,15 +2,16 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="使用 ABP vNext 有一个月左右啦，这中间最大的一个收获是：ABP vNext 的开发效率真的是非常好，只要你愿意取遵循它模块化、DDD 的设计思想。因为官方默认实现了身份、审计、权限、定时任务等等的模块，所以，ABP vNext 是一个开箱即用的解决方案。通过脚手架创建的项目，基本具备了一个专业项目该有的“五脏六腑”，而这可以让我们专注于业务原型的探索。例如，博主是尝试结合 Ant Design Vue 来做一个通用的后台管理系统。话虽如此，我们在使用 ABP vNext 的过程中，还是希望可以针对性地对 ABP vNext 进行扩展，毕竟 ABP vNext 无法 100% 满足我们的使用要求。所以，在今天这篇博客中，我们就来说说 ABP vNext 中的扩展技巧，这里主要是指实体扩展和服务扩展这两个方面。我们经常在讲“开闭原则”，可扪心自问，我们每次修改代码的时候，是否真正做到了“对扩展开放，对修改关闭”呢？ 所以，在面对扩展这个话题时，我们不妨来一起看看 ABP vNext 中是如何实践“开闭原则”。
 扩展实体 首先，我们要说的是扩展实体，什么是实体呢？这其实是领域驱动设计(DDD)中的概念，相信对于实体、聚合根和值对象，大家早就耳熟能详了。在 ABP vNext 中，实体对应的类型为Entity，聚合根对应的类型为AggregateRoot。所以，你可以片面地认为，只要继承自Entity基类的类都是实体。通常，实体都会有一个唯一的标识(Id)，所以，订单、商品或者是用户，都属于实体的范畴。不过，按照业务边界上的不同，它们会在核心域、支撑域和通用域三者间频繁切换。而对于大多数系统而言，用户都将是一个通用的域。在 ABP vNext 中，其用户信息由AbpUsers表承载，它在架构上定义了IUser接口，借助于EF Core的表映射支持，我们所使用的AppUser本质上是映射到了AbpUsers表中。针对实体的扩展，在面向数据库编程的业务系统中，一个最典型的问题就是，我怎么样可以给AppUser添加字段。所以，下面我们以AppUser为例，来展示如何对实体进行扩展。
- DDD 中的实体、聚合根与值对象 
 实际上，ABP vNext 中提供了2种方式，来解决实体扩展的问题，它们分别是：Extra Properties 和 基于 EF Core 的表映射。在 官方文档 中，我们会得到更加详细的信息，这里简单介绍一下就好：
 Extra Properties 对于第1种方式，它要求我们必须实现IHasExtraProperties接口，这样我们就可以使用GetProperty()和SetProperty()两个方法，其原理是，将这些扩展字段以JSON格式存储在ExtraProperties这个字段上。如果使用MongoDB这样的非关系型数据库，则这些扩展字段可以单独存储。参考示例如下：
 // 设置扩展字段 var user = await _identityUserRepository.GetAsync(userId); user.SetProperty(&amp;#34;Title&amp;#34;, &amp;#34;起风了，唯有努力生存&amp;#34;); await _identityUserRepository.UpdateAsync(user); // 读取扩展字段 var user = await _identityUserRepository."><title>ABP vNext 的实体与服务扩展技巧分享</title>
 <link rel=canonical href=/posts/abp-vnext-%E7%9A%84%E5%AE%9E%E4%BD%93%E4%B8%8E%E6%9C%8D%E5%8A%A1%E6%89%A9%E5%B1%95%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="ABP vNext 的实体与服务扩展技巧分享">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="ABP vNext 的实体与服务扩展技巧分享">
 <meta property="og:description" content="使用 ABP vNext 有一个月左右啦，这中间最大的一个收获是：ABP vNext 的开发效率真的是非常好，只要你愿意取遵循它模块化、DDD 的设计思想。因为官方默认实现了身份、审计、权限、定时任务等等的模块，所以，ABP vNext 是一个开箱即用的解决方案。通过脚手架创建的项目，基本具备了一个专业项目该有的“五脏六腑”，而这可以让我们专注于业务原型的探索。例如，博主是尝试结合 Ant Design Vue 来做一个通用的后台管理系统。话虽如此，我们在使用 ABP vNext 的过程中，还是希望可以针对性地对 ABP vNext 进行扩展，毕竟 ABP vNext 无法 100% 满足我们的使用要求。所以，在今天这篇博客中，我们就来说说 ABP vNext 中的扩展技巧，这里主要是指实体扩展和服务扩展这两个方面。我们经常在讲“开闭原则”，可扪心自问，我们每次修改代码的时候，是否真正做到了“对扩展开放，对修改关闭”呢？ 所以，在面对扩展这个话题时，我们不妨来一起看看 ABP vNext 中是如何实践“开闭原则”。
 扩展实体 首先，我们要说的是扩展实体，什么是实体呢？这其实是领域驱动设计(DDD)中的概念，相信对于实体、聚合根和值对象，大家早就耳熟能详了。在 ABP vNext 中，实体对应的类型为Entity，聚合根对应的类型为AggregateRoot。所以，你可以片面地认为，只要继承自Entity基类的类都是实体。通常，实体都会有一个唯一的标识(Id)，所以，订单、商品或者是用户，都属于实体的范畴。不过，按照业务边界上的不同，它们会在核心域、支撑域和通用域三者间频繁切换。而对于大多数系统而言，用户都将是一个通用的域。在 ABP vNext 中，其用户信息由AbpUsers表承载，它在架构上定义了IUser接口，借助于EF Core的表映射支持，我们所使用的AppUser本质上是映射到了AbpUsers表中。针对实体的扩展，在面向数据库编程的业务系统中，一个最典型的问题就是，我怎么样可以给AppUser添加字段。所以，下面我们以AppUser为例，来展示如何对实体进行扩展。
- DDD 中的实体、聚合根与值对象 
 实际上，ABP vNext 中提供了2种方式，来解决实体扩展的问题，它们分别是：Extra Properties 和 基于 EF Core 的表映射。在 官方文档 中，我们会得到更加详细的信息，这里简单介绍一下就好：
 Extra Properties 对于第1种方式，它要求我们必须实现IHasExtraProperties接口，这样我们就可以使用GetProperty()和SetProperty()两个方法，其原理是，将这些扩展字段以JSON格式存储在ExtraProperties这个字段上。如果使用MongoDB这样的非关系型数据库，则这些扩展字段可以单独存储。参考示例如下：
 // 设置扩展字段 var user = await _identityUserRepository.GetAsync(userId); user.SetProperty(&amp;#34;Title&amp;#34;, &amp;#34;起风了，唯有努力生存&amp;#34;); await _identityUserRepository.UpdateAsync(user); // 读取扩展字段 var user = await _identityUserRepository.">
@@ -20,7 +21,6 @@ Extra Properties 对于第1种方式，它要求我们必须实现IHasExtraPrope
 <meta name=twitter:title content="ABP vNext 的实体与服务扩展技巧分享">
 <meta name=twitter:description content="使用 ABP vNext 有一个月左右啦，这中间最大的一个收获是：ABP vNext 的开发效率真的是非常好，只要你愿意取遵循它模块化、DDD 的设计思想。因为官方默认实现了身份、审计、权限、定时任务等等的模块，所以，ABP vNext 是一个开箱即用的解决方案。通过脚手架创建的项目，基本具备了一个专业项目该有的“五脏六腑”，而这可以让我们专注于业务原型的探索。例如，博主是尝试结合 Ant Design Vue 来做一个通用的后台管理系统。话虽如此，我们在使用 ABP vNext 的过程中，还是希望可以针对性地对 ABP vNext 进行扩展，毕竟 ABP vNext 无法 100% 满足我们的使用要求。所以，在今天这篇博客中，我们就来说说 ABP vNext 中的扩展技巧，这里主要是指实体扩展和服务扩展这两个方面。我们经常在讲“开闭原则”，可扪心自问，我们每次修改代码的时候，是否真正做到了“对扩展开放，对修改关闭”呢？ 所以，在面对扩展这个话题时，我们不妨来一起看看 ABP vNext 中是如何实践“开闭原则”。
 扩展实体 首先，我们要说的是扩展实体，什么是实体呢？这其实是领域驱动设计(DDD)中的概念，相信对于实体、聚合根和值对象，大家早就耳熟能详了。在 ABP vNext 中，实体对应的类型为Entity，聚合根对应的类型为AggregateRoot。所以，你可以片面地认为，只要继承自Entity基类的类都是实体。通常，实体都会有一个唯一的标识(Id)，所以，订单、商品或者是用户，都属于实体的范畴。不过，按照业务边界上的不同，它们会在核心域、支撑域和通用域三者间频繁切换。而对于大多数系统而言，用户都将是一个通用的域。在 ABP vNext 中，其用户信息由AbpUsers表承载，它在架构上定义了IUser接口，借助于EF Core的表映射支持，我们所使用的AppUser本质上是映射到了AbpUsers表中。针对实体的扩展，在面向数据库编程的业务系统中，一个最典型的问题就是，我怎么样可以给AppUser添加字段。所以，下面我们以AppUser为例，来展示如何对实体进行扩展。
- DDD 中的实体、聚合根与值对象 
 实际上，ABP vNext 中提供了2种方式，来解决实体扩展的问题，它们分别是：Extra Properties 和 基于 EF Core 的表映射。在 官方文档 中，我们会得到更加详细的信息，这里简单介绍一下就好：
 Extra Properties 对于第1种方式，它要求我们必须实现IHasExtraProperties接口，这样我们就可以使用GetProperty()和SetProperty()两个方法，其原理是，将这些扩展字段以JSON格式存储在ExtraProperties这个字段上。如果使用MongoDB这样的非关系型数据库，则这些扩展字段可以单独存储。参考示例如下：
 // 设置扩展字段 var user = await _identityUserRepository.GetAsync(userId); user.SetProperty(&amp;#34;Title&amp;#34;, &amp;#34;起风了，唯有努力生存&amp;#34;); await _identityUserRepository.UpdateAsync(user); // 读取扩展字段 var user = await _identityUserRepository.">
@@ -59,16 +59,11 @@ extended">
 </div>
 </header>
 <section class=article-content>
-<p>使用 <a class=link href=https://github.com/abpframework/abp target=_blank rel=noopener>ABP vNext</a> 有一个月左右啦，这中间最大的一个收获是：ABP vNext 的开发效率真的是非常好，只要你愿意取遵循它模块化、DDD 的设计思想。因为官方默认实现了身份、审计、权限、定时任务等等的模块，所以，ABP vNext 是一个开箱即用的解决方案。通过脚手架创建的项目，基本具备了一个专业项目该有的“<strong>五脏六腑</strong>”，而这可以让我们专注于业务原型的探索。例如，博主是尝试结合 <a class=link href=https://www.antdv.com/docs/vue/introduce-cn/ target=_blank rel=noopener>Ant Design Vue</a> 来做一个通用的后台管理系统。话虽如此，我们在使用 ABP vNext 的过程中，还是希望可以针对性地对 ABP vNext 进行扩展，毕竟 ABP vNext 无法 100% 满足我们的使用要求。所以，在今天这篇博客中，我们就来说说 ABP vNext 中的扩展技巧，这里主要是指实体扩展和服务扩展这两个方面。我们经常在讲“<strong>开闭原则</strong>”，可扪心自问，我们每次修改代码的时候，是否真正做到了“<strong>对扩展开放，对修改关闭</strong>”呢？ 所以，在面对扩展这个话题时，我们不妨来一起看看 ABP vNext 中是如何实践“<strong>开闭原则</strong>”。</p>
+<p>使用 <a href=https://github.com/abpframework/abp>ABP vNext</a> 有一个月左右啦，这中间最大的一个收获是：ABP vNext 的开发效率真的是非常好，只要你愿意取遵循它模块化、DDD 的设计思想。因为官方默认实现了身份、审计、权限、定时任务等等的模块，所以，ABP vNext 是一个开箱即用的解决方案。通过脚手架创建的项目，基本具备了一个专业项目该有的“<strong>五脏六腑</strong>”，而这可以让我们专注于业务原型的探索。例如，博主是尝试结合 <a href=https://www.antdv.com/docs/vue/introduce-cn/>Ant Design Vue</a> 来做一个通用的后台管理系统。话虽如此，我们在使用 ABP vNext 的过程中，还是希望可以针对性地对 ABP vNext 进行扩展，毕竟 ABP vNext 无法 100% 满足我们的使用要求。所以，在今天这篇博客中，我们就来说说 ABP vNext 中的扩展技巧，这里主要是指实体扩展和服务扩展这两个方面。我们经常在讲“<strong>开闭原则</strong>”，可扪心自问，我们每次修改代码的时候，是否真正做到了“<strong>对扩展开放，对修改关闭</strong>”呢？ 所以，在面对扩展这个话题时，我们不妨来一起看看 ABP vNext 中是如何实践“<strong>开闭原则</strong>”。</p>
 <h1 id=扩展实体>扩展实体</h1>
 <p>首先，我们要说的是扩展实体，什么是实体呢？这其实是领域驱动设计(<strong>DDD</strong>)中的概念，相信对于实体、聚合根和值对象，大家早就耳熟能详了。在 ABP vNext 中，实体对应的类型为<code>Entity</code>，聚合根对应的类型为<code>AggregateRoot</code>。所以，你可以片面地认为，只要继承自<code>Entity</code>基类的类都是实体。通常，实体都会有一个唯一的标识(<strong>Id</strong>)，所以，订单、商品或者是用户，都属于实体的范畴。不过，按照业务边界上的不同，它们会在核心域、支撑域和通用域三者间频繁切换。而对于大多数系统而言，用户都将是一个通用的域。在 ABP vNext 中，其用户信息由<code>AbpUsers</code>表承载，它在架构上定义了<code>IUser</code>接口，借助于EF Core的表映射支持，我们所使用的<code>AppUser</code>本质上是映射到了<code>AbpUsers</code>表中。针对实体的扩展，在面向数据库编程的业务系统中，一个最典型的问题就是，我怎么样可以给<code>AppUser</code>添加字段。所以，下面我们以<code>AppUser</code>为例，来展示如何对实体进行扩展。</p>
-<p><figure>
-<a href=https://i.loli.net/2021/04/19/dtANSYQqyDz9blw.jpg>
-<img src=https://i.loli.net/2021/04/19/dtANSYQqyDz9blw.jpg loading=lazy alt="DDD 中的实体、聚合根与值对象">
-</a>
-<figcaption>DDD 中的实体、聚合根与值对象</figcaption>
-</figure></p>
-<p>实际上，ABP vNext 中提供了2种方式，来解决实体扩展的问题，它们分别是：<strong>Extra Properties</strong> 和 <strong>基于 EF Core 的表映射</strong>。在 <a class=link href=https://docs.abp.io/zh-Hans/abp/latest/Customizing-Application-Modules-Extending-Entities target=_blank rel=noopener>官方文档</a> 中，我们会得到更加详细的信息，这里简单介绍一下就好：</p>
+<p><img src=https://i.loli.net/2021/04/19/dtANSYQqyDz9blw.jpg alt="DDD 中的实体、聚合根与值对象"></p>
+<p>实际上，ABP vNext 中提供了2种方式，来解决实体扩展的问题，它们分别是：<strong>Extra Properties</strong> 和 <strong>基于 EF Core 的表映射</strong>。在 <a href=https://docs.abp.io/zh-Hans/abp/latest/Customizing-Application-Modules-Extending-Entities>官方文档</a> 中，我们会得到更加详细的信息，这里简单介绍一下就好：</p>
 <h2 id=extra-properties>Extra Properties</h2>
 <p>对于第1种方式，它要求我们必须实现<code>IHasExtraProperties</code>接口，这样我们就可以使用<code>GetProperty()</code>和<code>SetProperty()</code>两个方法，其原理是，将这些扩展字段以<code>JSON</code>格式存储在<code>ExtraProperties</code>这个字段上。如果使用<code>MongoDB</code>这样的非关系型数据库，则这些扩展字段可以单独存储。参考示例如下：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>// 设置扩展字段
@@ -78,8 +73,8 @@ extended">
 
 <span class=c1>// 读取扩展字段
 </span><span class=c1></span><span class=kt>var</span> <span class=n>user</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>identityUserRepository</span><span class=p>.</span><span class=n>GetAsync</span><span class=p>(</span><span class=n>userId</span><span class=p>);</span>
-<span class=k>return</span> <span class=n>user</span><span class=p>.</span><span class=n>GetProperty</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;(</span><span class=s>&#34;Title&#34;</span><span class=p>);</span>
-</code></pre></div><p>可以想象得到，这种方式使用起来没有心智方面的困扰，主要问题是，这些扩展字段不利于关系型数据库的查询。其次，完全以字符串形式存在的键值对，难免存在数据类型的安全性问题。博主的上家公司，在面对这个问题时，采用的方案就是往数据库里加备用字段，从起初的5个，变成后来的10个，最后甚至变成20个，先不说这没完没了的加字段，代码中一直避不开的，其实是各种字符串的<strong>Parse</strong>/<strong>Convert</strong>，所以，大家可以自己去体会这其中的痛苦。</p>
+<span class=k>return</span> <span class=n>user</span><span class=p>.</span><span class=n>GetProperty</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;(</span><span class=s>&#34;Title&#34;</span><span class=p>);</span></code></pre></div>
+<p>可以想象得到，这种方式使用起来没有心智方面的困扰，主要问题是，这些扩展字段不利于关系型数据库的查询。其次，完全以字符串形式存在的键值对，难免存在数据类型的安全性问题。博主的上家公司，在面对这个问题时，采用的方案就是往数据库里加备用字段，从起初的5个，变成后来的10个，最后甚至变成20个，先不说这没完没了的加字段，代码中一直避不开的，其实是各种字符串的<strong>Parse</strong>/<strong>Convert</strong>，所以，大家可以自己去体会这其中的痛苦。</p>
 <h2 id=基于-ef-core-的表映射>基于 EF Core 的表映射</h2>
 <p>对于第2种方式，主要指 EF Core 里的“<strong>表拆分</strong>”或者“<strong>表共享</strong>”，譬如，当我们希望单独创建一个实体<code>SysUser</code>来替代默认的<code>AppUser</code>时，这就是表拆分，因为同一张表中的数据，实际上是被<code>AppUser</code>和<code>SysUser</code>共享啦，或者，你可以将其理解为，EF Core配置两个不同的实体时，它们的<code>ToTable()</code>方法都指向了同一张表。这里唯一不同的是，ABP vNext 中提供了一部分方法用来处理问题，因为牵扯到数据库，所以，还是需要“迁移”。下面，我们以给<code>AppUser</code>扩展两个自定义字段为例：</p>
 <p>首先，我们给<code>AppUser</code>类增加两个新属性，<code>Avatar</code> 和 <code>Profile</code>:</p>
@@ -91,8 +86,8 @@ extended">
     <span class=k>public</span> <span class=k>virtual</span> <span class=kt>string</span> <span class=n>Avatar</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>private</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
 
     <span class=c1>//  ...
-</span><span class=c1></span>
-</code></pre></div><p>接下来，按照 EF Core 的“<strong>套路</strong>”，我们需要配置下这两个新加的字段：</p>
+</span></code></pre></div>
+<p>接下来，按照 EF Core 的“<strong>套路</strong>”，我们需要配置下这两个新加的字段：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=n>builder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>AppUser</span><span class=p>&gt;(</span><span class=n>b</span> <span class=p>=&gt;</span>
 <span class=p>{</span>
     <span class=c1>// AbpUsers
@@ -111,8 +106,8 @@ extended">
 </span><span class=c1></span>    <span class=n>b</span><span class=p>.</span><span class=n>Property</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Avatar</span><span class=p>)</span>
       <span class=p>.</span><span class=n>HasMaxLength</span><span class=p>(</span><span class=n>AppUserConsts</span><span class=p>.</span><span class=n>MaxAvatarLength</span><span class=p>)</span>
       <span class=p>.</span><span class=n>HasColumnName</span><span class=p>(</span><span class=s>&#34;Avatar&#34;</span><span class=p>);</span>
-<span class=p>});</span>
-</code></pre></div><p>接下来，通过<code>MapEfCoreProperty()</code>方法，将新字段映射到<code>IdentityUser</code>实体，你可以理解为，<code>AppUser</code>和<code>IdentityUser</code>同时映射到了<code>AbpUsers</code>这张表：</p>
+<span class=p>});</span></code></pre></div>
+<p>接下来，通过<code>MapEfCoreProperty()</code>方法，将新字段映射到<code>IdentityUser</code>实体，你可以理解为，<code>AppUser</code>和<code>IdentityUser</code>同时映射到了<code>AbpUsers</code>这张表：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>// Avatar
 </span><span class=c1></span><span class=n>ObjectExtensionManager</span><span class=p>.</span><span class=n>Instance</span><span class=p>.</span><span class=n>MapEfCoreProperty</span><span class=p>&lt;</span><span class=n>IdentityUser</span><span class=p>,</span> <span class=kt>string</span><span class=p>&gt;(</span>
     <span class=n>nameof</span><span class=p>(</span><span class=n>AppUser</span><span class=p>.</span><span class=n>Avatar</span><span class=p>),</span>
@@ -125,8 +120,8 @@ extended">
       <span class=n>nameof</span><span class=p>(</span><span class=n>AppUser</span><span class=p>.</span><span class=n>Profile</span><span class=p>),</span>
       <span class=p>(</span><span class=n>entityBuilder</span><span class=p>,</span> <span class=n>propertyBuilder</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
       <span class=n>propertyBuilder</span><span class=p>.</span><span class=n>HasMaxLength</span><span class=p>(</span><span class=n>AppUserConsts</span><span class=p>.</span><span class=n>MaxProfileLength</span><span class=p>);</span>
-<span class=p>});</span>
-</code></pre></div><p>既然，连数据库实体都做了扩展，那么，数据传输对象(<strong>DTO</strong>)有什么理由拒绝呢？</p>
+<span class=p>});</span></code></pre></div>
+<p>既然，连数据库实体都做了扩展，那么，数据传输对象(<strong>DTO</strong>)有什么理由拒绝呢？</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=n>ObjectExtensionManager</span><span class=p>.</span><span class=n>Instance</span>
     <span class=p>.</span><span class=n>AddOrUpdateProperty</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;(</span>
         <span class=k>new</span><span class=p>[]</span>
@@ -150,14 +145,9 @@ extended">
         <span class=p>},</span>
         <span class=s>&#34;Profile&#34;</span>
     <span class=p>);</span>
-<span class=p>});</span>
-</code></pre></div><p>经过这一系列的“<strong>套路</strong>”，此时，我们会发现，新的字段已经生效：</p>
-<p><figure>
-<a href=https://i.loli.net/2021/04/19/WExbQrs61ltcqzy.png>
-<img src=https://i.loli.net/2021/04/19/WExbQrs61ltcqzy.png loading=lazy alt="ABP vNext 实体扩展效果展示">
-</a>
-<figcaption>ABP vNext 实体扩展效果展示</figcaption>
-</figure></p>
+<span class=p>});</span></code></pre></div>
+<p>经过这一系列的“<strong>套路</strong>”，此时，我们会发现，新的字段已经生效：</p>
+<p><img src=https://i.loli.net/2021/04/19/WExbQrs61ltcqzy.png alt="ABP vNext 实体扩展效果展示"></p>
 <h1 id=扩展服务>扩展服务</h1>
 <p>在 ABP vNext 中，我们还可以对服务进行扩展，得益于依赖注入的深入人心，我们可以非常容易地实现或者替换某一个接口，这里则指 ABP vNext 中的应用服务(ApplicationService)，例如，CrudAppService类可以帮助我们快速实现枯燥的增删改查，而我们唯一要做的，则是定义好实体的主键(<strong>Primary Key</strong>)、定义好实体的数据传输对象(<strong>DTO</strong>)。当我们发现 ABP vNext 中内置的模块或者服务，无法满足我们的使用要求时，我们就可以考虑对原有服务进行替换，或者是注入新的应用服务来扩展原有服务，这就是服务的扩展。在 ABP vNext 中，我们可以使用下面两种方法来对一个服务进行替换：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>// 通过[Dependency]和[ExposeServices]实现服务替换
@@ -171,15 +161,15 @@ extended">
 <span class=c1>// 通过ReplaceService实现服务替换
 </span><span class=c1></span><span class=n>context</span><span class=p>.</span><span class=n>Services</span><span class=p>.</span><span class=n>Replace</span><span class=p>(</span>
     <span class=n>ServiceDescriptor</span><span class=p>.</span><span class=n>Transient</span><span class=p>&lt;</span><span class=n>IIdentityUserAppService</span><span class=p>,</span> <span class=n>YourIdentityUserAppService</span><span class=p>&gt;()</span>
-<span class=p>);</span>
-</code></pre></div><p>这里，博主准备的一个示例是，默认的用户查询接口，其返回信息中只有用户相关的字段，我们希望在其中增加角色、组织单元等关联信息，此时。我们可以考虑实现下面的应用服务：</p>
+<span class=p>);</span></code></pre></div>
+<p>这里，博主准备的一个示例是，默认的用户查询接口，其返回信息中只有用户相关的字段，我们希望在其中增加角色、组织单元等关联信息，此时。我们可以考虑实现下面的应用服务：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>interface</span> <span class=n>IUserManageAppService</span>
 <span class=p>{</span>
     <span class=n>Task</span><span class=p>&lt;</span><span class=n>PagedResultDto</span><span class=p>&lt;</span><span class=n>UserDetailQueryDto</span><span class=p>&gt;&gt;</span> <span class=n>GetUsersWithDetails</span><span class=p>(</span>
       <span class=n>GetIdentityUsersInput</span> <span class=n>input</span>
     <span class=p>);</span>
-<span class=p>}</span>
-</code></pre></div><p>首先，我们定义了<code>IUserManageAppService</code>接口，它含有一个分页查询的方法<code>GetUsersWithDetails()</code>。接下来，我们来考虑如何实现这个接口。需要说明的是，在 ABP vNext 中，仓储模式的支持由通用仓储接口<code>IRepository&lt;TEntity, TKey></code>提供，ABP vNext 会在<code>AddDefaultRepositories()</code>方法中为每一个聚合根注入对应的仓储。同样地，你可以按照个人喜好为指定的实体注入对应的仓储。由于ABP vNext 同时支持 <code>EF Core</code>、<code>Dapper</code> 和 <code>MongoDB</code>，所以，我们还可以使用<code>EfCoreRepository</code>、<code>DapperRepository</code> 以及 <code>MongoDbRepository</code>，它们都是<code>IRepository</code>的具体实现类。在下面的例子中，我们使用的是<code>EfCoreRepository</code>这个类。</p>
+<span class=p>}</span></code></pre></div>
+<p>首先，我们定义了<code>IUserManageAppService</code>接口，它含有一个分页查询的方法<code>GetUsersWithDetails()</code>。接下来，我们来考虑如何实现这个接口。需要说明的是，在 ABP vNext 中，仓储模式的支持由通用仓储接口<code>IRepository&lt;TEntity, TKey></code>提供，ABP vNext 会在<code>AddDefaultRepositories()</code>方法中为每一个聚合根注入对应的仓储。同样地，你可以按照个人喜好为指定的实体注入对应的仓储。由于ABP vNext 同时支持 <code>EF Core</code>、<code>Dapper</code> 和 <code>MongoDB</code>，所以，我们还可以使用<code>EfCoreRepository</code>、<code>DapperRepository</code> 以及 <code>MongoDbRepository</code>，它们都是<code>IRepository</code>的具体实现类。在下面的例子中，我们使用的是<code>EfCoreRepository</code>这个类。</p>
 <p>事实上，这里注入的<code>EfCoreIdentityUserRepository</code>、<code>EfCoreIdentityRoleRepository</code> 以及 <code>EfCoreOrganizationUnitRepository</code>，都是<code>EfCoreRepository</code>的子类，这使得我们可以复用 ABP vNext 中关于身份标识的一切基础设施，来实现不同于官方的业务逻辑，而这就是我们所说的服务的扩展。</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=na>[Authorize(IdentityPermissions.Users.Default)]</span>
 <span class=k>public</span> <span class=k>class</span> <span class=nc>UserManageAppService</span> <span class=p>:</span> <span class=n>ApplicationService</span><span class=p>,</span> <span class=n>IUserManageAppService</span>
@@ -261,16 +251,11 @@ extended">
 
         <span class=k>return</span> <span class=k>new</span> <span class=n>PagedResultDto</span><span class=p>&lt;</span><span class=n>UserDetailQueryDto</span><span class=p>&gt;(</span><span class=n>total</span><span class=p>,</span> <span class=n>items</span><span class=p>);</span>
     <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><p>这里做一点补充说明，应用服务，即<code>ApplicationService</code>类，它集成了诸如<code>ObjectMapper</code>、<code>LoggerFactory</code>、<code>GuidGenerator</code>、国际化、<code>AsyncExecuter</code>等等的特性，继承该类可以让我们更加得心应手地编写代码。曾经，博主写过一篇关于“<strong>动态API</strong>”的<a class=link href=https://blog.yuanpei.me/posts/4236649/ target=_blank rel=noopener>博客</a>，它可以为我们免去从 Service 到 Controller 的这一层封装，当时正是受到了ABP 框架的启发。当博主再次在 ABP vNext 中看到这个功能时，不免会感慨逝者如斯，而事实上，这个功能真的好用，真香！下面是经过改造以后的用户列表。考虑到，在上一篇博客里，博主已经同大家分享过分页查询方面的实现技巧，这里就不再展开讲啦！</p>
-<p><figure>
-<a href=https://i.loli.net/2021/04/19/B6SO8Wk4EVh3Pcx.png>
-<img src=https://i.loli.net/2021/04/19/B6SO8Wk4EVh3Pcx.png loading=lazy alt=对“用户服务”进行扩展>
-</a>
-<figcaption>对“用户服务”进行扩展</figcaption>
-</figure></p>
+<span class=p>}</span></code></pre></div>
+<p>这里做一点补充说明，应用服务，即<code>ApplicationService</code>类，它集成了诸如<code>ObjectMapper</code>、<code>LoggerFactory</code>、<code>GuidGenerator</code>、国际化、<code>AsyncExecuter</code>等等的特性，继承该类可以让我们更加得心应手地编写代码。曾经，博主写过一篇关于“<strong>动态API</strong>”的<a href=https://blog.yuanpei.me/posts/4236649/>博客</a>，它可以为我们免去从 Service 到 Controller 的这一层封装，当时正是受到了ABP 框架的启发。当博主再次在 ABP vNext 中看到这个功能时，不免会感慨逝者如斯，而事实上，这个功能真的好用，真香！下面是经过改造以后的用户列表。考虑到，在上一篇博客里，博主已经同大家分享过分页查询方面的实现技巧，这里就不再展开讲啦！</p>
+<p><img src=https://i.loli.net/2021/04/19/B6SO8Wk4EVh3Pcx.png alt=对“用户服务”进行扩展></p>
 <h1 id=本文小结>本文小结</h1>
-<p>我们时常说，"<strong>对修改关闭，对扩展开放</strong>"，"<strong>单一职责</strong>"，可惜这些原则最多就出现在面试环节。当你接触了真实的代码，你会发现"<strong>修改</strong>&ldquo;永远比&rdquo;<strong>扩展</strong>&ldquo;多，博主曾经就见到过，一个简单的方法因为频繁地&rdquo;<strong>打补丁</strong>"，最后变得面目全非。其实，有时候并不是维护代码的人，不愿意去"<strong>扩展</strong>"，而是写出可"<strong>扩展</strong>&ldquo;的代码会更困难一点，尤其是当所有人都不愿意去思考，一味地追求短平快，这无疑只会加速代码的腐烂。在这一点上，ABP vNext 提供了一种优秀的范例，这篇文章主要分享了 ABP vNext 中实体和服务的扩展技巧，<strong>实体扩展解决了如何为数据库表添加扩展字段的问题，服务扩展解决了如何为默认服务扩展功能的问题</strong>，尤其是后者，依赖注入在其中扮演着无比重要的角色。果然，这世上的事情，只有你真正在乎的时候，你才会愿意去承认，那些你曾经轻视过的东西，也许，它们是对的吧！好了，以上就是这篇博客的全部内容，欢迎大家在评论区留言，喜欢的话请记得点赞、收藏、一键三连。</p>
+<p>我们时常说，&rdquo;<strong>对修改关闭，对扩展开放</strong>&ldquo;，&rdquo;<strong>单一职责</strong>&ldquo;，可惜这些原则最多就出现在面试环节。当你接触了真实的代码，你会发现&rdquo;<strong>修改</strong>&ldquo;永远比&rdquo;<strong>扩展</strong>&ldquo;多，博主曾经就见到过，一个简单的方法因为频繁地&rdquo;<strong>打补丁</strong>&ldquo;，最后变得面目全非。其实，有时候并不是维护代码的人，不愿意去&rdquo;<strong>扩展</strong>&ldquo;，而是写出可&rdquo;<strong>扩展</strong>&ldquo;的代码会更困难一点，尤其是当所有人都不愿意去思考，一味地追求短平快，这无疑只会加速代码的腐烂。在这一点上，ABP vNext 提供了一种优秀的范例，这篇文章主要分享了 ABP vNext 中实体和服务的扩展技巧，<strong>实体扩展解决了如何为数据库表添加扩展字段的问题，服务扩展解决了如何为默认服务扩展功能的问题</strong>，尤其是后者，依赖注入在其中扮演着无比重要的角色。果然，这世上的事情，只有你真正在乎的时候，你才会愿意去承认，那些你曾经轻视过的东西，也许，它们是对的吧！好了，以上就是这篇博客的全部内容，欢迎大家在评论区留言，喜欢的话请记得点赞、收藏、一键三连。</p>
 </section>
 <footer class=article-footer>
 <section class=article-tags>
@@ -386,10 +371,15 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <h2 class="widget-title section-title">目录</h2>
 <div class=widget--toc>
 <nav id=TableOfContents>
-<ol>
+<ul>
+<li><a href=#扩展实体>扩展实体</a>
+<ul>
 <li><a href=#extra-properties>Extra Properties</a></li>
 <li><a href=#基于-ef-core-的表映射>基于 EF Core 的表映射</a></li>
-</ol>
+</ul></li>
+<li><a href=#扩展服务>扩展服务</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ul>
 </nav>
 </div>
 </section>

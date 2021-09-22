@@ -4,7 +4,10 @@
 Binlog读取与解析 首先，我们通过 Python-Mysql-Replication 这个项目来读取Binlog，直接通过pip install mysql-replication安装即可。接下来，我们编写一个简单的脚本文件，这再次印证那句名言——人生苦短，我用Python：
 def readBinLog(): stream = BinLogStreamReader( # 填写IP、账号、密码即可 connection_settings = { &amp;#39;host&amp;#39;: &amp;#39;&amp;#39;, &amp;#39;port&amp;#39;: 3306, &amp;#39;user&amp;#39;: &amp;#39;&amp;#39;, &amp;#39;passwd&amp;#39;: &amp;#39;&amp;#39; }, # 每台服务器唯一 server_id = 3, # 主库Binlog读写完毕时是否阻塞连接 blocking = True, # 筛选指定的表 only_tables = [&amp;#39;order_info&amp;#39;, &amp;#39;log_info&amp;#39;], # 筛选指定的事件 only_events = [DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent]) for binlogevent in stream: for row in binlogevent.rows: event = { &amp;#34;schema&amp;#34;: binlogevent.schema, &amp;#34;table&amp;#34;: binlogevent.table, &amp;#34;log_pos&amp;#34;: binlogevent.packet.log_pos } if isinstance(binlogevent, DeleteRowsEvent): event[&amp;#34;action&amp;#34;] = &amp;#34;delete&amp;#34; event[&amp;#34;origin&amp;#34;] = dict(row[&amp;#34;values&amp;#34;]."><title>利用MySQL的Binlog实现数据同步与订阅(下)：EventBus篇</title>
 <link rel=canonical href=/posts/%E5%88%A9%E7%94%A8mysql%E7%9A%84binlog%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E4%B8%8E%E8%AE%A2%E9%98%85%E4%B8%8Beventbus%E7%AF%87/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="利用MySQL的Binlog实现数据同步与订阅(下)：EventBus篇">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="利用MySQL的Binlog实现数据同步与订阅(下)：EventBus篇">
 <meta property="og:description" content="终于到这个系列的最后一篇，在前两篇博客中，我们分别了介绍了Binlog的概念和事件总线(EventBus)的实现，在完成前面这将近好几千字的铺垫以后，我们终于可以进入正题，即通过EventBus发布Binlog，再通过编写对应的EventHandler来订阅这些Binlog，这样就实现了我们“最初的梦想”。坦白说，这个过程实在有一点漫长，庆幸的是，它终于还是来了。
 Binlog读取与解析 首先，我们通过 Python-Mysql-Replication 这个项目来读取Binlog，直接通过pip install mysql-replication安装即可。接下来，我们编写一个简单的脚本文件，这再次印证那句名言——人生苦短，我用Python：
 def readBinLog(): stream = BinLogStreamReader( # 填写IP、账号、密码即可 connection_settings = { &amp;#39;host&amp;#39;: &amp;#39;&amp;#39;, &amp;#39;port&amp;#39;: 3306, &amp;#39;user&amp;#39;: &amp;#39;&amp;#39;, &amp;#39;passwd&amp;#39;: &amp;#39;&amp;#39; }, # 每台服务器唯一 server_id = 3, # 主库Binlog读写完毕时是否阻塞连接 blocking = True, # 筛选指定的表 only_tables = [&amp;#39;order_info&amp;#39;, &amp;#39;log_info&amp;#39;], # 筛选指定的事件 only_events = [DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent]) for binlogevent in stream: for row in binlogevent.rows: event = { &amp;#34;schema&amp;#34;: binlogevent.schema, &amp;#34;table&amp;#34;: binlogevent.table, &amp;#34;log_pos&amp;#34;: binlogevent.packet.log_pos } if isinstance(binlogevent, DeleteRowsEvent): event[&amp;#34;action&amp;#34;] = &amp;#34;delete&amp;#34; event[&amp;#34;origin&amp;#34;] = dict(row[&amp;#34;values&amp;#34;].">
@@ -52,7 +55,7 @@ extended">
 <section class=article-content>
 <p>终于到这个系列的最后一篇，在前两篇博客中，我们分别了介绍了<strong>Binlog</strong>的概念和事件总线(<strong>EventBus</strong>)的实现，在完成前面这将近好几千字的铺垫以后，我们终于可以进入正题，即通过EventBus发布Binlog，再通过编写对应的EventHandler来订阅这些Binlog，这样就实现了我们“最初的梦想”。坦白说，这个过程实在有一点漫长，庆幸的是，它终于还是来了。</p>
 <h1 id=binlog读取与解析>Binlog读取与解析</h1>
-<p>首先，我们通过 <a class=link href=https://github.com/noplay/python-mysql-replication target=_blank rel=noopener>Python-Mysql-Replication</a> 这个项目来读取Binlog，直接通过<code>pip install mysql-replication</code>安装即可。接下来，我们编写一个简单的脚本文件，这再次印证那句名言——人生苦短，我用Python：</p>
+<p>首先，我们通过 <a href=https://github.com/noplay/python-mysql-replication>Python-Mysql-Replication</a> 这个项目来读取Binlog，直接通过<code>pip install mysql-replication</code>安装即可。接下来，我们编写一个简单的脚本文件，这再次印证那句名言——人生苦短，我用Python：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=k>def</span> <span class=nf>readBinLog</span><span class=p>():</span>
     <span class=n>stream</span> <span class=o>=</span> <span class=n>BinLogStreamReader</span><span class=p>(</span>
         <span class=c1># 填写IP、账号、密码即可</span>
@@ -93,9 +96,9 @@ extended">
                 <span class=n>event</span><span class=p>[</span><span class=s2>&#34;origin&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=kc>None</span>
                 <span class=n>event</span><span class=p>[</span><span class=s2>&#34;current&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>row</span><span class=p>[</span><span class=s2>&#34;values&#34;</span><span class=p>]</span><span class=o>.</span><span class=n>items</span><span class=p>())</span>
                 <span class=n>event</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>event</span><span class=o>.</span><span class=n>items</span><span class=p>())</span>
-    <span class=n>stream</span><span class=o>.</span><span class=n>close</span><span class=p>()</span>
-</code></pre></div><h1 id=发布binlog>发布Binlog</h1>
-<p>在读取到Binlog以后，我们需要将其发布到EventBus里，为此，在.NET Core这边提供一个Web API接口，只需要注入<code> IEventBus</code>然后调用<code> Publish()</code>即可：</p>
+    <span class=n>stream</span><span class=o>.</span><span class=n>close</span><span class=p>()</span></code></pre></div>
+<h1 id=发布binlog>发布Binlog</h1>
+<p>在读取到Binlog以后，我们需要将其发布到EventBus里，为此，在.NET Core这边提供一个Web API接口，只需要注入<code>IEventBus</code>然后调用<code>Publish()</code>即可：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=c1>// Post: /&lt;controller&gt;/Publish
 </span><span class=c1></span><span class=na>[HttpPost]</span>
 <span class=na>[Route (&#34;PublishBinLog&#34;)]</span>
@@ -106,8 +109,8 @@ extended">
     <span class=k>if</span> <span class=p>(</span><span class=n>eventModel</span><span class=p>.</span><span class=n>action</span> <span class=p>==</span> <span class=s>&#34;insert&#34;</span> <span class=p>&amp;&amp;</span> <span class=n>eventModel</span><span class=p>.</span><span class=n>table</span> <span class=p>==</span> <span class=s>&#34;order_info&#34;</span><span class=p>)</span>
         <span class=m>_</span><span class=n>eventBus</span><span class=p>.</span><span class=n>Publish</span> <span class=p>(</span><span class=n>eventModel</span><span class=p>.</span><span class=n>MapTo</span><span class=p>&lt;</span><span class=n>OrderInfoCreateEvent</span><span class=p>&gt;</span> <span class=p>());</span>
     <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>CompletedTask</span><span class=p>;</span>
-<span class=p>}</span>
-</code></pre></div><p>相应地，我们需要在脚本中添加调用Web API的逻辑代码，使用我们最熟悉的<code>requests</code>库即可：</p>
+<span class=p>}</span></code></pre></div>
+<p>相应地，我们需要在脚本中添加调用Web API的逻辑代码，使用我们最熟悉的<code>requests</code>库即可：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=k>def</span> <span class=nf>sendBinLog</span><span class=p>(</span><span class=n>event</span><span class=p>):</span>
     <span class=n>url</span> <span class=o>=</span> <span class=s2>&#34;https://localhost:44348/EventBus/PublishBinLog&#34;</span>
     <span class=n>headers</span> <span class=o>=</span> <span class=p>{</span>
@@ -117,8 +120,8 @@ extended">
         <span class=n>payload</span> <span class=o>=</span> <span class=n>json</span><span class=o>.</span><span class=n>dumps</span><span class=p>(</span><span class=n>event</span><span class=p>,</span><span class=bp>cls</span><span class=o>=</span><span class=n>ComplexEncoder</span><span class=p>)</span>
         <span class=n>response</span> <span class=o>=</span> <span class=n>session</span><span class=o>.</span><span class=n>request</span><span class=p>(</span><span class=s2>&#34;POST&#34;</span><span class=p>,</span> <span class=n>url</span><span class=p>,</span> <span class=n>data</span><span class=o>=</span><span class=n>payload</span><span class=p>,</span> <span class=n>headers</span><span class=o>=</span><span class=n>headers</span><span class=p>,</span> <span class=n>verify</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
     <span class=k>except</span> <span class=ne>Exception</span><span class=p>:</span>
-        <span class=k>pass</span>
-</code></pre></div><p>在这里，在处理Binlog的序列化的问题时，我们可能会遇到默认的JSON序列化器无法对event进行序列化的问题，此时，我们可以编写一个自定义的序列化器，下面是博主目前在使用的序列化器：</p>
+        <span class=k>pass</span></code></pre></div>
+<p>在这里，在处理Binlog的序列化的问题时，我们可能会遇到默认的JSON序列化器无法对event进行序列化的问题，此时，我们可以编写一个自定义的序列化器，下面是博主目前在使用的序列化器：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=k>class</span> <span class=nc>ComplexEncoder</span><span class=p>(</span><span class=n>json</span><span class=o>.</span><span class=n>JSONEncoder</span><span class=p>):</span>
     <span class=k>def</span> <span class=nf>default</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>obj</span><span class=p>):</span>
         <span class=k>if</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span> <span class=n>datetime</span><span class=p>):</span>
@@ -130,8 +133,8 @@ extended">
         <span class=k>elif</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span> <span class=nb>bytes</span><span class=p>):</span>
             <span class=k>return</span> <span class=n>obj</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span>  
         <span class=k>else</span><span class=p>:</span>
-            <span class=k>return</span> <span class=n>json</span><span class=o>.</span><span class=n>JSONEncoder</span><span class=o>.</span><span class=n>default</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>obj</span><span class=p>)</span>
-</code></pre></div><h1 id=订阅binlog>订阅Binlog</h1>
+            <span class=k>return</span> <span class=n>json</span><span class=o>.</span><span class=n>JSONEncoder</span><span class=o>.</span><span class=n>default</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>obj</span><span class=p>)</span></code></pre></div>
+<h1 id=订阅binlog>订阅Binlog</h1>
 <p>现在，为了订阅这些Binlog，我们来编写对应的EventHandler，这里我们定义两个EventHandler，一个用于打印日志编号、日志内容、日志级别等信息，一个用于统计不同级别的日志的数目。代码实现如下：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=c1>//打印日志的EventHandler
 </span><span class=c1></span><span class=k>public</span> <span class=k>class</span> <span class=nc>WriteLogEventHandler</span> <span class=p>:</span> <span class=n>IEventHandler</span><span class=p>&lt;</span><span class=n>WriteLogEvent</span><span class=p>&gt;</span> <span class=p>{</span>
@@ -162,8 +165,8 @@ extended">
         <span class=m>_</span><span class=n>cache</span><span class=p>.</span><span class=n>SetString</span> <span class=p>(</span><span class=n>@event</span><span class=p>.</span><span class=n>LOG_LEVEL</span><span class=p>,</span> <span class=n>cacheCount</span><span class=p>);;</span>
         <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>CompletedTask</span><span class=p>;</span>
     <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><p>注意，这里需要在<code>Startup</code>中注入<code>EventHandler</code>、<code>EventBus</code>以及各种必要的依赖项，你可以手动注册，或者参考下面的代码，实现扫描注册：</p>
+<span class=p>}</span></code></pre></div>
+<p>注意，这里需要在<code>Startup</code>中注入<code>EventHandler</code>、<code>EventBus</code>以及各种必要的依赖项，你可以手动注册，或者参考下面的代码，实现扫描注册：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=n>services</span><span class=p>.</span><span class=n>AddSingleton</span><span class=p>&lt;</span><span class=n>IRabbitMQPersistentConnection</span><span class=p>,</span> <span class=n>DefaultRabbitMQPersistentConnection</span><span class=p>&gt;</span> <span class=p>();</span>
 <span class=n>services</span><span class=p>.</span><span class=n>AddSingleton</span><span class=p>&lt;</span><span class=n>IEventBusSubscriptionManager</span><span class=p>,</span> <span class=n>EventBusSubscriptionManager</span><span class=p>&gt;</span> <span class=p>(</span><span class=n>sp</span> <span class=p>=&gt;</span> <span class=k>new</span> <span class=n>EventBusSubscriptionManager</span> <span class=p>());</span>
 <span class=n>services</span><span class=p>.</span><span class=n>AddSingleton</span><span class=p>&lt;</span><span class=n>IConnectionFactory</span><span class=p>,</span> <span class=n>ConnectionFactory</span><span class=p>&gt;</span> <span class=p>(</span><span class=n>sp</span> <span class=p>=&gt;</span> <span class=k>new</span> <span class=n>ConnectionFactory</span> <span class=p>()</span> <span class=p>{</span> <span class=n>HostName</span> <span class=p>=</span> <span class=s>&#34;localhost&#34;</span><span class=p>,</span> <span class=n>UserName</span> <span class=p>=</span> <span class=s>&#34;guest&#34;</span><span class=p>,</span> <span class=n>Password</span> <span class=p>=</span> <span class=s>&#34;guest&#34;</span> <span class=p>});</span>
@@ -186,29 +189,13 @@ extended">
 <span class=p>});</span>
 
 <span class=n>services</span><span class=p>.</span><span class=n>AddTransient</span><span class=p>&lt;</span><span class=n>WriteLogEventHandler</span><span class=p>&gt;();</span>
-<span class=n>services</span><span class=p>.</span><span class=n>AddTransient</span><span class=p>&lt;</span><span class=n>AnalyseLogEventHandler</span><span class=p>&gt;();</span>
-
-</code></pre></div><p>一起来看看效果，简直太完美了，我就是不想写中间表啊，这样多好！！！
-<figure>
-<a href=https://i.loli.net/2020/07/31/PRjfiYpWNqHxI7Z.gif>
-<img src=https://i.loli.net/2020/07/31/PRjfiYpWNqHxI7Z.gif loading=lazy alt="Python 读取 Binlog 演示">
-</a>
-<figcaption>Python 读取 Binlog 演示</figcaption>
-</figure>
-<figure>
-<a href=https://i.loli.net/2020/07/31/yVZgIn9NifpxTXa.gif>
-<img src=https://i.loli.net/2020/07/31/yVZgIn9NifpxTXa.gif loading=lazy alt=".NET Core 消费 Binlog演示">
-</a>
-<figcaption>.NET Core 消费 Binlog演示</figcaption>
-</figure>
-<figure>
-<a href=https://i.loli.net/2020/07/31/iMX5PFCoak7VDv9.png>
-<img src=https://i.loli.net/2020/07/31/iMX5PFCoak7VDv9.png loading=lazy alt="RabbitMQ Dashboard 演示">
-</a>
-<figcaption>RabbitMQ Dashboard 演示</figcaption>
-</figure></p>
+<span class=n>services</span><span class=p>.</span><span class=n>AddTransient</span><span class=p>&lt;</span><span class=n>AnalyseLogEventHandler</span><span class=p>&gt;();</span></code></pre></div>
+<p>一起来看看效果，简直太完美了，我就是不想写中间表啊，这样多好！！！
+<img src=https://i.loli.net/2020/07/31/PRjfiYpWNqHxI7Z.gif alt="Python 读取 Binlog 演示">
+<img src=https://i.loli.net/2020/07/31/yVZgIn9NifpxTXa.gif alt=".NET Core 消费 Binlog演示">
+<img src=https://i.loli.net/2020/07/31/iMX5PFCoak7VDv9.png alt="RabbitMQ Dashboard 演示"></p>
 <h1 id=本文小结>本文小结</h1>
-<p>通过三篇博客的篇幅，我们实现了“利用MySQL的Binlog实现数据同步与订阅”的想法。在这个过程中，我们了解了Binlog的相关概念，参考微软的 <a class=link href=https://github.com/dotnet-architecture/eShopOnContainers target=_blank rel=noopener>eShopOnContainers</a> 项目实现了一个基于RabbitMQ的EventBus，而这一切都在这篇博客中完成了最终的“拼合”，通过 <a class=link href=https://github.com/noplay/python-mysql-replication target=_blank rel=noopener>Python-Mysql-Replication</a> 实现了Binlog解析，而EventBus则作为整个事件系统的“上帝”对所有事件处理器(<strong>EventHandler</strong>)进行统一调度，最终我们不需要关心这些事件是如何被发布到EventBus中的，只需要知道它对应哪一个Event并为它编写对应的EventHandler即可，除了这篇博客中提到的Binlog以外，实际上它还可以作为系统内的“领域事件”来实现业务上的事件驱动，譬如<code>OrderInfoCreateEvent</code>这个事件可以表示一个订单被创建，而关心订单状态的人则可以通过EventHandler来实现订阅，实现类似发短信、发邮件、发微信等等的功能，或者可以让第三方的Web API来消费事件中携带的信息。同理，第三方的数据在流入系统时，可以先发布到消息队列中，再通过对应的EventHandler来进行异步处理，极大地改善系统接口的吞吐性能，而如果在这中间抽象出来一个数据交换层出来，那么就能收获更多不一样的东西，就在写这篇博客的时候，我在Github上的代码被收入了微软的"北极冰川火种计划"，虽然数字世界远比现实世界宽广得多，可能为这个世界减少一点“无用”的数据或者代码，应该一样可以算作是环保行为吧！</p>
+<p>通过三篇博客的篇幅，我们实现了“利用MySQL的Binlog实现数据同步与订阅”的想法。在这个过程中，我们了解了Binlog的相关概念，参考微软的 <a href=https://github.com/dotnet-architecture/eShopOnContainers>eShopOnContainers</a> 项目实现了一个基于RabbitMQ的EventBus，而这一切都在这篇博客中完成了最终的“拼合”，通过 <a href=https://github.com/noplay/python-mysql-replication>Python-Mysql-Replication</a> 实现了Binlog解析，而EventBus则作为整个事件系统的“上帝”对所有事件处理器(<strong>EventHandler</strong>)进行统一调度，最终我们不需要关心这些事件是如何被发布到EventBus中的，只需要知道它对应哪一个Event并为它编写对应的EventHandler即可，除了这篇博客中提到的Binlog以外，实际上它还可以作为系统内的“领域事件”来实现业务上的事件驱动，譬如<code>OrderInfoCreateEvent</code>这个事件可以表示一个订单被创建，而关心订单状态的人则可以通过EventHandler来实现订阅，实现类似发短信、发邮件、发微信等等的功能，或者可以让第三方的Web API来消费事件中携带的信息。同理，第三方的数据在流入系统时，可以先发布到消息队列中，再通过对应的EventHandler来进行异步处理，极大地改善系统接口的吞吐性能，而如果在这中间抽象出来一个数据交换层出来，那么就能收获更多不一样的东西，就在写这篇博客的时候，我在Github上的代码被收入了微软的&rdquo;北极冰川火种计划&rdquo;，虽然数字世界远比现实世界宽广得多，可能为这个世界减少一点“无用”的数据或者代码，应该一样可以算作是环保行为吧！</p>
 </section>
 <footer class=article-footer>
 <section class=article-tags>
@@ -319,7 +306,14 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <div class=widget-icon></div>
 <h2 class="widget-title section-title">目录</h2>
 <div class=widget--toc>
-<nav id=TableOfContents></nav>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#binlog读取与解析>Binlog读取与解析</a></li>
+<li><a href=#发布binlog>发布Binlog</a></li>
+<li><a href=#订阅binlog>订阅Binlog</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ul>
+</nav>
 </div>
 </section>
 </aside>

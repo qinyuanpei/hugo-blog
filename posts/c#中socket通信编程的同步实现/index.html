@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的Socket编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听"><title>C#中Socket通信编程的同步实现</title>
 <link rel=canonical href=/posts/c#%E4%B8%ADsocket%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%90%8C%E6%AD%A5%E5%AE%9E%E7%8E%B0/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="C#中Socket通信编程的同步实现">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="C#中Socket通信编程的同步实现">
 <meta property="og:description" content="服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的Socket编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听">
 <meta property="og:url" content="/posts/c#%E4%B8%ADsocket%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%90%8C%E6%AD%A5%E5%AE%9E%E7%8E%B0/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -92,14 +95,14 @@ on-phone--column extended">
 </div>
 </header>
 <section class=article-content>
-<p>  本文通过分析和总结C#中Socket通信编程的关键技术，按照同步实现的方式实现了一个简单的Socket聊天程序，目的是通过这个程序来掌握Socket编程，为进一步开发Unity3D网络游戏打下一个坚实的基础。</p>
+<p>&emsp;&emsp;本文通过分析和总结C#中Socket通信编程的关键技术，按照同步实现的方式实现了一个简单的Socket聊天程序，目的是通过这个程序来掌握Socket编程，为进一步开发Unity3D网络游戏打下一个坚实的基础。</p>
 <h1 id=socket编程基础>Socket编程基础</h1>
-<p>  关于Socket编程基础部分的内容，主要是了解和掌握.NET框架下为Socket编程提供的相关类和接口方法。.NET中常见的网络相关的API都集中在System.Net和System.Net.Socket这两个命名空间下，大家可以通过MSDN去了解这两个命名空间下相关的类和方法。这里援引一位朋友总结的一篇文章<a class=link href=http://www.cnblogs.com/sunev/archive/2012/08/05/2604189.html target=_blank rel=noopener>http://www.cnblogs.com/sunev/archive/2012/08/05/2604189.html</a>，大家可以从这里获得更为直观的认识。</p>
+<p>&emsp;&emsp;关于Socket编程基础部分的内容，主要是了解和掌握.NET框架下为Socket编程提供的相关类和接口方法。.NET中常见的网络相关的API都集中在System.Net和System.Net.Socket这两个命名空间下，大家可以通过MSDN去了解这两个命名空间下相关的类和方法。这里援引一位朋友总结的一篇文章<a href=http://www.cnblogs.com/sunev/archive/2012/08/05/2604189.html>http://www.cnblogs.com/sunev/archive/2012/08/05/2604189.html</a>，大家可以从这里获得更为直观的认识。</p>
 <h1 id=什么是socket编程的同步实现>什么是Socket编程的同步实现</h1>
-<p>  本文的目的是按照同步实现的方式来实现一个简单的Socket聊天程序，因此在解决这个问题前，我们首先来看看什么是Socket编程的同步实现。所谓Socket编程的同步实现就是指按照同步过程的方法来实现Socket通信。从编程来说，我们常用的方法或者函数都是同步过程。因为当我们调用一个方法或者函数的时候我们能够立即得到它的返回值。可是我们知道在Socket通信中，我们不能保证时时刻刻连接都通畅、更不能够保证时时刻刻都有数据收发，因为我们就需要不断去读取相应的值来确定整个过程的状态。这就是Socket编程的同步实现了，下面我们来看具体的实现过程。</p>
+<p>&emsp;&emsp;本文的目的是按照同步实现的方式来实现一个简单的Socket聊天程序，因此在解决这个问题前，我们首先来看看什么是Socket编程的同步实现。所谓Socket编程的同步实现就是指按照同步过程的方法来实现Socket通信。从编程来说，我们常用的方法或者函数都是同步过程。因为当我们调用一个方法或者函数的时候我们能够立即得到它的返回值。可是我们知道在Socket通信中，我们不能保证时时刻刻连接都通畅、更不能够保证时时刻刻都有数据收发，因为我们就需要不断去读取相应的值来确定整个过程的状态。这就是Socket编程的同步实现了，下面我们来看具体的实现过程。</p>
 <h1 id=如何实现socket同步通信>如何实现Socket同步通信</h1>
 <h2 id=服务端>服务端</h2>
-<p>  服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的Socket编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端。</p>
+<p>&emsp;&emsp;服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的Socket编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端。</p>
 <h3 id=基本流程>基本流程</h3>
 <ul>
 <li>创建套接字</li>
@@ -338,8 +341,8 @@ on-phone--column extended">
             <span class=p>}</span>
         <span class=p>}</span>
     <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><p>  好了，现在我们已经编写好了一个具备接收和发送数据能力的服务端程序。现在我们来尝试让服务端运行起来：</p>
+<span class=p>}</span></code></pre></div>
+<p>&emsp;&emsp;好了，现在我们已经编写好了一个具备接收和发送数据能力的服务端程序。现在我们来尝试让服务端运行起来：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-C# data-lang=C#><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
 <span class=k>using</span> <span class=nn>System.Collections.Generic</span><span class=p>;</span>
 <span class=k>using</span> <span class=nn>System.Text</span><span class=p>;</span>
@@ -364,10 +367,10 @@ on-phone--column extended">
         <span class=p>}</span>
     <span class=p>}</span>
 
-<span class=p>}</span>
-</code></pre></div><p>  现在我们来看看编写客户端Socket程序的基本流程</p>
+<span class=p>}</span></code></pre></div>
+<p>&emsp;&emsp;现在我们来看看编写客户端Socket程序的基本流程</p>
 <h2 id=客户端>客户端</h2>
-<p>  客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听。</p>
+<p>&emsp;&emsp;客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听。</p>
 <h3 id=基本流程-1>基本流程</h3>
 <ul>
 <li>创建套接字保证与服务器的端口一致</li>
@@ -533,8 +536,8 @@ on-phone--column extended">
             <span class=n>mClientSocket</span><span class=p>.</span><span class=n>Send</span><span class=p>(</span><span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>msg</span><span class=p>));</span>
         <span class=p>}</span>
     <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><p>  同样地，我们现在来运行客户端程序，这样客户端就可以和服务端进行通信了：</p>
+<span class=p>}</span></code></pre></div>
+<p>&emsp;&emsp;同样地，我们现在来运行客户端程序，这样客户端就可以和服务端进行通信了：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-C# data-lang=C#><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
 <span class=k>using</span> <span class=nn>System.Collections.Generic</span><span class=p>;</span>
 <span class=k>using</span> <span class=nn>System.Text</span><span class=p>;</span>
@@ -563,37 +566,21 @@ on-phone--column extended">
         <span class=p>}</span>
     <span class=p>}</span>
 
-<span class=p>}</span>
-</code></pre></div><p>  注意要先运行服务端的程序、再运行客户端的程序，不然程序会报错，嘿嘿！好了，下面是今天的效果演示图：</p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz01tlahhdj211y0lcgnz.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz01tlahhdj211y0lcgnz.jpg loading=lazy alt=聊天窗口效果演示>
-</a>
-<figcaption>聊天窗口效果演示</figcaption>
-</figure></p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fyzctms5wsj211y0lc7ez.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fyzctms5wsj211y0lc7ez.jpg loading=lazy alt=客户端下线效果演示>
-</a>
-<figcaption>客户端下线效果演示</figcaption>
-</figure></p>
+<span class=p>}</span></code></pre></div>
+<p>&emsp;&emsp;注意要先运行服务端的程序、再运行客户端的程序，不然程序会报错，嘿嘿！好了，下面是今天的效果演示图：</p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fz01tlahhdj211y0lcgnz.jpg alt=聊天窗口效果演示></p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fyzctms5wsj211y0lc7ez.jpg alt=客户端下线效果演示></p>
 <h1 id=总结>总结</h1>
-<p>  今天我们基本上写出了一个可以使用的用例，不过这个例子目前还存在以下问题：</p>
+<p>&emsp;&emsp;今天我们基本上写出了一个可以使用的用例，不过这个例子目前还存在以下问题：
+* 这里仅仅实现了发送字符串的功能，如何让这个程序支持更多的类型，从基础的int、float、double、string、single等类型到structure、class甚至是二进制文件的类型？
+* 如何让这个用例更具有扩展性，我们发现所有的Socket编程流程都是一样的，唯一不同就是在接收到数据以后该如何去处理，因为能不能将核心功能和自定义功能分离开来？</p>
 <ul>
-<li>
-<p>这里仅仅实现了发送字符串的功能，如何让这个程序支持更多的类型，从基础的int、float、double、string、single等类型到structure、class甚至是二进制文件的类型？</p>
-</li>
-<li>
-<p>如何让这个用例更具有扩展性，我们发现所有的Socket编程流程都是一样的，唯一不同就是在接收到数据以后该如何去处理，因为能不能将核心功能和自定义功能分离开来？</p>
-</li>
-<li>
-<p>在今天的这个用例中，数据传输的缓冲区大小我们人为设定为1024，那么如果碰到比这个设定更大的数据类型，这个用例该怎么来写？</p>
-</li>
+<li>在今天的这个用例中，数据传输的缓冲区大小我们人为设定为1024，那么如果碰到比这个设定更大的数据类型，这个用例该怎么来写？</li>
 </ul>
 <p>好了，这就是今天的内容了，希望大家喜欢，同时希望大家关注我的博客！</p>
 <p><strong>2016年1月24日更新</strong>：
-  要解决“支持更多类型的问题”，可以从两种思路来考虑，即实现所有类型到byte[]类型的转换或者是实现所有类型到string类型的转换，对于第二种思路我们通常称之为序列化，序列化可以解决所有类型到string类型的转换问题，唯一可能需要考量的一个部分就是缓冲区的大小问题。</p>
-<p>  要解决“将核心功能和自定义功能分离”这个问题，可以考虑使用委托机制来实现，委托机制可以理解为一个函数的指针，在需要将函数的控制权交给用户来处理的场景中，委托都是一种有效而明智的选择。</p>
+&emsp;&emsp;要解决“支持更多类型的问题”，可以从两种思路来考虑，即实现所有类型到byte[]类型的转换或者是实现所有类型到string类型的转换，对于第二种思路我们通常称之为序列化，序列化可以解决所有类型到string类型的转换问题，唯一可能需要考量的一个部分就是缓冲区的大小问题。</p>
+<p>&emsp;&emsp;要解决“将核心功能和自定义功能分离”这个问题，可以考虑使用委托机制来实现，委托机制可以理解为一个函数的指针，在需要将函数的控制权交给用户来处理的场景中，委托都是一种有效而明智的选择。</p>
 </section>
 <footer class=article-footer>
 <section class=article-tags>

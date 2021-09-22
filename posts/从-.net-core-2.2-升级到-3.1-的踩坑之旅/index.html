@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="升级2.2的时候，调整项目文件中的`Microsoft.NET.Sdk.Web`为`Microsoft.NET.Sdk`可以解决，而这个方法在3.x以后失效;- 安装完 `.NET Core 3.x`，使用`dotnet build`编译项目提示找不到`Microsoft.NET.Sdk.Web`;- 升级后提示无法加载类型：`Microsoft.AspNetCore.Mvc.MvcJsonOptions`，解决方案是："><title>从 .NET Core 2.2 升级到 3.1 的踩坑之旅</title>
 <link rel=canonical href=/posts/%E4%BB%8E-.net-core-2.2-%E5%8D%87%E7%BA%A7%E5%88%B0-3.1-%E7%9A%84%E8%B8%A9%E5%9D%91%E4%B9%8B%E6%97%85/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="从 .NET Core 2.2 升级到 3.1 的踩坑之旅">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="从 .NET Core 2.2 升级到 3.1 的踩坑之旅">
 <meta property="og:description" content="升级2.2的时候，调整项目文件中的`Microsoft.NET.Sdk.Web`为`Microsoft.NET.Sdk`可以解决，而这个方法在3.x以后失效;- 安装完 `.NET Core 3.x`，使用`dotnet build`编译项目提示找不到`Microsoft.NET.Sdk.Web`;- 升级后提示无法加载类型：`Microsoft.AspNetCore.Mvc.MvcJsonOptions`，解决方案是：">
 <meta property="og:url" content="/posts/%E4%BB%8E-.net-core-2.2-%E5%8D%87%E7%BA%A7%E5%88%B0-3.1-%E7%9A%84%E8%B8%A9%E5%9D%91%E4%B9%8B%E6%97%85/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -103,20 +106,19 @@ on-phone--column extended">
 <ul>
 <li>CreateWebHostBuilder()方法的返回值类型由<code>IWebHostBuilder</code>调整为<code>IHostBuilder</code></li>
 <li>增加引用项：<code>Microsoft.Extensions.Hosting</code></li>
-<li><code>Kestrel</code>配置变更至<code>ConfigureWebHostDefaults()</code>方法</li>
-</ul>
+<li><p><code>Kestrel</code>配置变更至<code>ConfigureWebHostDefaults()</code>方法</p>
 <pre tabindex=0><code>public static IHostBuilder CreateWebHostBuilder(string[] args) =&gt;
-    Host.CreateDefaultBuilder(args)
-        .ConfigureWebHostDefaults(webBuilder =&gt;
+Host.CreateDefaultBuilder(args)
+    .ConfigureWebHostDefaults(webBuilder =&gt;
+     {
+         webBuilder.ConfigureKestrel(serverOptions =&gt;
          {
-             webBuilder.ConfigureKestrel(serverOptions =&gt;
-             {
-                    // Set properties and call methods on options
-             })
-             .UseStartup&lt;Startup&gt;();
-        });
-
-</code></pre><p>如果通过 <code>HostBuilder</code>手动创建宿主，则需要在 <code>ConfigureWebHostDefaults()</code>方法中显式调用·<code>UseKestrel()</code>：</p>
+                // Set properties and call methods on options
+         })
+         .UseStartup&lt;Startup&gt;();
+    });</code></pre></li>
+</ul>
+<p>如果通过 <code>HostBuilder</code>手动创建宿主，则需要在 <code>ConfigureWebHostDefaults()</code>方法中显式调用·<code>UseKestrel()</code>：</p>
 <pre tabindex=0><code>public static void Main (string[] args) 
 {
     var host = new HostBuilder ()
@@ -133,88 +135,84 @@ on-phone--column extended">
         .Build ();
 
     host.Run ();
-}
-</code></pre><h1 id=更新startup>更新Startup</h1>
+}</code></pre>
+<h1 id=更新startup>更新Startup</h1>
 <ul>
-<li><code>Configure()</code>方法第二个参数由``IHostingEnvironment<code>调整为</code>IWebHostEnvironment<code>(需要引用</code>Microsoft.Extensions.Hosting`)</li>
+<li><code>Configure()</code>方法第二个参数由`<code>IHostingEnvironment</code>调整为<code>IWebHostEnvironment</code>(需要引用<code>Microsoft.Extensions.Hosting</code>)</li>
 <li>从管道中删除<code>UseMvc()</code>扩展方法，相应地，删除<code>AddMvc()</code>及其链式调用相关方法</li>
 <li><code>AddMvc()</code>等价于<code>AddRazorPages()</code> + <code>AddControllersWithViews()</code></li>
-<li><code>AddControllers()</code>对应<code>WebApi</code>模板，<code>AddControllersWithViews()</code>对应<code>MVC</code>模板，<code> AddRazorPages()</code>对应<code>SPA</code>模板</li>
-<li>路由注册由<code>传统路由</code>调整为<code>终结点路由</code>：</li>
-</ul>
+<li><code>AddControllers()</code>对应<code>WebApi</code>模板，<code>AddControllersWithViews()</code>对应<code>MVC</code>模板，<code>AddRazorPages()</code>对应<code>SPA</code>模板</li>
+<li><p>路由注册由<code>传统路由</code>调整为<code>终结点路由</code>：</p>
 <pre tabindex=0><code>public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
-    app.UseStaticFiles();
-    app.UseRouting();
-    app.UseCors();
-    app.UseAuthentication();
-    app.UseAuthorization();
-    app.UseEndpoints(endpoints =&gt;
-    {
-         //SignalR路由      
-        endpoints.MapHub&lt;ChatHub&gt;(&quot;/chat&quot;);
-        //RazorPages路由
-        endpoints.MapRazorPages()
-        //特性路由(WebApi)
-        endpoints.MapControllers();
-        //控制器路由(MVC)
-        endpoints.MapControllerRoute(&quot;default&quot;, &quot;{controller=Home}/{action=Index}/{id?}&quot;);
-    });
-}
-</code></pre><p>如果希望继续使用<code>传统路由</code>，则可以使用下列方法任一：</p>
+app.UseStaticFiles();
+app.UseRouting();
+app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseEndpoints(endpoints =&gt;
+{
+     //SignalR路由      
+    endpoints.MapHub&lt;ChatHub&gt;(&#34;/chat&#34;);
+    //RazorPages路由
+    endpoints.MapRazorPages()
+    //特性路由(WebApi)
+    endpoints.MapControllers();
+    //控制器路由(MVC)
+    endpoints.MapControllerRoute(&#34;default&#34;, &#34;{controller=Home}/{action=Index}/{id?}&#34;);
+});
+}</code></pre></li>
+</ul>
+<p>如果希望继续使用<code>传统路由</code>，则可以使用下列方法任一：</p>
 <pre tabindex=0><code>services.AddMvc(options =&gt; options.EnableEndpointRouting = false);
 services.AddControllers(options =&gt; options.EnableEndpointRouting = false);
 services.AddControllersWithViews(options =&gt; options.EnableEndpointRouting = false);
-services.AddRazorPages().AddMvcOptions(options =&gt; options.EnableEndpointRouting = false);
-</code></pre><h1 id=序列化反序列化>序列化/反序列化</h1>
+services.AddRazorPages().AddMvcOptions(options =&gt; options.EnableEndpointRouting = false);</code></pre>
+<h1 id=序列化-反序列化>序列化/反序列化</h1>
 <ul>
 <li>从<code>.NET Core 3.0</code> 开始，<code>System.Text.Json</code>默认作为替代<code>Newtonsoft.json</code>的新一代JSON API</li>
-<li>直接从<code>.NET Core 3.0</code> 创建的SignalR项目，服务端返回的JSON数据存在大小写的问题，这是由<code>System.Text.Json</code>引起的。解决方案是：</li>
-</ul>
+<li><p>直接从<code>.NET Core 3.0</code> 创建的SignalR项目，服务端返回的JSON数据存在大小写的问题，这是由<code>System.Text.Json</code>引起的。解决方案是：</p>
 <pre tabindex=0><code>services.AddSignalR()
-    .AddJsonProtocol(options =&gt; options.PayloadSerializerOptions.PropertyNamingPolicy = null);
-</code></pre><p>同理，对于该方案对于<code>services.AddControllers()</code>一样有效，前提是项目中使用了<code>System.Text.Json</code>。同理，对于SignalR的客户端项目，我们有：</p>
+.AddJsonProtocol(options =&gt; options.PayloadSerializerOptions.PropertyNamingPolicy = null);</code></pre></li>
+</ul>
+<p>同理，对于该方案对于<code>services.AddControllers()</code>一样有效，前提是项目中使用了<code>System.Text.Json</code>。同理，对于SignalR的客户端项目，我们有：</p>
 <pre tabindex=0><code>new HubConnectionBuilder()
-    .WithUrl(&quot;/chatHub&quot;)
+    .WithUrl(&#34;/chatHub&#34;)
     .AddJsonProtocol(options =&gt;
     {    
         //TODO
     })
-    .Build();
-</code></pre><ul>
-<li>SignalR的JavaScript客户端由<code>@aspnet/signalr</code> 调整为为<code> @microsoft/signalr</code>：</li>
-</ul>
-<pre tabindex=0><code>const signalR = require(&quot;@microsoft/signalr&quot;);
-let connection = new signalR.HubConnectionBuilder().withUrl(url).build();
-</code></pre><ul>
-<li>如果希望继续使用<code>Newtonsoft.json</code>，则需要安装<code>AspNetCore NewtonsoftJson</code>。相应地，需要显式调用<code>AddNewtonsoftJson()</code>扩展方法：</li>
-</ul>
+    .Build();</code></pre>
+<ul>
+<li><p>SignalR的JavaScript客户端由<code>@aspnet/signalr</code> 调整为为<code>@microsoft/signalr</code>：</p>
+<pre tabindex=0><code>const signalR = require(&#34;@microsoft/signalr&#34;);
+let connection = new signalR.HubConnectionBuilder().withUrl(url).build();</code></pre></li>
+<li><p>如果希望继续使用<code>Newtonsoft.json</code>，则需要安装<code>AspNetCore NewtonsoftJson</code>。相应地，需要显式调用<code>AddNewtonsoftJson()</code>扩展方法：</p>
 <pre tabindex=0><code>services.AddControllers()
-    .AddNewtonsoftJson(options =&gt; 
-    {
-        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-    });
-</code></pre><p>同样地，<code>AddNewtonsoftJson()</code>支持<code>AddControllers()</code>， <code>AddControllersWithViews()</code>， <code>AddRazorPages()</code>所有方法</p>
+.AddNewtonsoftJson(options =&gt; 
+{
+    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+});</code></pre></li>
+</ul>
+<p>同样地，<code>AddNewtonsoftJson()</code>支持<code>AddControllers()</code>， <code>AddControllersWithViews()</code>， <code>AddRazorPages()</code>所有方法</p>
 <h1 id=疑难杂症>疑难杂症</h1>
 <ul>
-<li>升级后提示无法加载类型：<code>Microsoft.AspNetCore.Mvc.MvcJsonOptions</code>，解决方案是：
-升级<code>Swashbuckle.AspNetCore</code>至最新版本(5.0+)，调整Swagger中间件配置代码：</li>
-</ul>
+<li><p>升级后提示无法加载类型：<code>Microsoft.AspNetCore.Mvc.MvcJsonOptions</code>，解决方案是：
+升级<code>Swashbuckle.AspNetCore</code>至最新版本(5.0+)，调整Swagger中间件配置代码：</p>
 <pre tabindex=0><code>services.AddSwaggerGen(swagger =&gt;
 {
-    //这里发生了变化，需要引用：Microsoft.OpenApi.Models
-    swagger.SwaggerDoc(&quot;v1&quot;, new OpenApiInfo { Title = &quot;ynamic WebApi&quot;, Version = &quot;v1.0&quot; });
-});
-</code></pre><ul>
-<li>安装完 <code>.NET Core 3.x</code>，使用<code>dotnet build</code>编译项目提示找不到<code>Microsoft.NET.Sdk.Web</code>。解决方案是：
+//这里发生了变化，需要引用：Microsoft.OpenApi.Models
+swagger.SwaggerDoc(&#34;v1&#34;, new OpenApiInfo { Title = &#34;ynamic WebApi&#34;, Version = &#34;v1.0&#34; });
+});</code></pre></li>
+<li><p>安装完 <code>.NET Core 3.x</code>，使用<code>dotnet build</code>编译项目提示找不到<code>Microsoft.NET.Sdk.Web</code>。解决方案是：
 升级2.2的时候，调整项目文件中的<code>Microsoft.NET.Sdk.Web</code>为<code>Microsoft.NET.Sdk</code>可以解决，而这个方法在3.x以后失效。
-此时，可以检查环境变量<code>MSBuildSDKsPath</code>中的SDK版本和实际版本是否一致，尤其是像博主这样从2.0一路升级到3.x的朋友，应该都会遇到这个问题。</li>
+此时，可以检查环境变量<code>MSBuildSDKsPath</code>中的SDK版本和实际版本是否一致，尤其是像博主这样从2.0一路升级到3.x的朋友，应该都会遇到这个问题。</p></li>
 </ul>
 <h1 id=参考链接>参考链接</h1>
 <ul>
-<li><a class=link href="https://docs.microsoft.com/zh-cn/aspnet/core/migration/22-to-30?view=aspnetcore-2.2&tabs=visual-studio" target=_blank rel=noopener>从 ASP.NET Core 2.2 迁移到3.0</a></li>
-<li><a class=link href=https://www.cnblogs.com/Irving/p/11587556.html target=_blank rel=noopener>升级 ASP.NET Core 3.0 设置 JSON 返回 PascalCase 格式与 SignalR 问题</a></li>
-<li><a class=link href=https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/1030 target=_blank rel=noopener>Incompatibility with ASP.NET Core 3.0</a></li>
+<li><a href="https://docs.microsoft.com/zh-cn/aspnet/core/migration/22-to-30?view=aspnetcore-2.2&tabs=visual-studio">从 ASP.NET Core 2.2 迁移到3.0</a></li>
+<li><a href=https://www.cnblogs.com/Irving/p/11587556.html>升级 ASP.NET Core 3.0 设置 JSON 返回 PascalCase 格式与 SignalR 问题</a></li>
+<li><a href=https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/1030>Incompatibility with ASP.NET Core 3.0</a></li>
 </ul>
 </section>
 <footer class=article-footer>

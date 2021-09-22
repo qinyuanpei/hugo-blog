@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="在这里子着色器使用Tags标签来告诉渲染引擎期望何时和如何渲染对象，其语法是：;在通道中可以定义其名称和任意数目的标签，通过使用tags来告诉渲染引擎在什么时候该如何渲染他们所期望的效果，其语法和Tags标签完全相同，即采用键值对来定义标签的名称和其对应的值;Properties是由多条标签组成的Shader属性定义，这些属性能够在Unity3D中的编辑器中显示出来，以此来确定这段Shader代码由哪些输入"><title>《Cg Programming in Unity》读书笔记</title>
 <link rel=canonical href=/posts/cg-programming-in-unity%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="《Cg Programming in Unity》读书笔记">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="《Cg Programming in Unity》读书笔记">
 <meta property="og:description" content="在这里子着色器使用Tags标签来告诉渲染引擎期望何时和如何渲染对象，其语法是：;在通道中可以定义其名称和任意数目的标签，通过使用tags来告诉渲染引擎在什么时候该如何渲染他们所期望的效果，其语法和Tags标签完全相同，即采用键值对来定义标签的名称和其对应的值;Properties是由多条标签组成的Shader属性定义，这些属性能够在Unity3D中的编辑器中显示出来，以此来确定这段Shader代码由哪些输入">
 <meta property="og:url" content="/posts/cg-programming-in-unity%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -92,13 +95,13 @@ on-phone--column extended">
 </div>
 </header>
 <section class=article-content>
-<p>  最近开始着手Shader语言的学习，因为Unity3D没有提供类似虚幻四引擎的材质编辑器功能，所以当在Unity3D中碰到需要提供引擎默认材质以外的效果的时候，就需要我们来编写Shader以实现各种特效，本文主要是结合《Cg Programming in Unity》这本书和<a class=link href=http://blog.csdn.net/poem_qianmo/article/details/49405909 target=_blank rel=noopener>浅墨</a>博客中关于Shader的这部分内容来学习和整理，目的是帮助博主快速掌握Shader语言。</p>
+<p>&emsp;&emsp;最近开始着手Shader语言的学习，因为Unity3D没有提供类似虚幻四引擎的材质编辑器功能，所以当在Unity3D中碰到需要提供引擎默认材质以外的效果的时候，就需要我们来编写Shader以实现各种特效，本文主要是结合《Cg Programming in Unity》这本书和<a href=http://blog.csdn.net/poem_qianmo/article/details/49405909>浅墨</a>博客中关于Shader的这部分内容来学习和整理，目的是帮助博主快速掌握Shader语言。</p>
 <h1 id=unity3d中的shader概述>Unity3D中的Shader概述</h1>
-<p>  为Unity3D编写Sahder代码相对OpenGL和DirectX要简单。Unity3D没有刻意地区分Cg语言和HLSL语言，因为这两者是非常相似的，这意味着使用HLSL编写的代码可以直接在Cg中使用，更为深入地探索HLSL和Cg的渊源你会戏剧性地发现Cg是Microsoft和NVIDIA联手推出并试图从硬件和软件上和GLSL相抗衡的一种产物。</p>
-<p>  其中<a class=link href=http://http.developer.nvidia.com/Cg/Cg_language.html target=_blank rel=noopener>Cg</a>是<a class=link href=http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter01.html target=_blank rel=noopener>Nvidia</a>提供的一种Shader编写语言，HLSL是DirectX提供的一种Shader编写语言，这意味着大部分的Cg代码同样可以被HLSL支持。Unity3D中使用的Shader编写语言是ShaderLab，其本质是对Cg进行了封装，因此在Unity3D中编写Shader本质上在给DirectX或者OpenGL写Shader，因为我猜测在引擎内部存在HLSL和GLSL的相互转换使得Unity3D能够在不同的平台都有较好的图形表现。</p>
-<p>  Unity3D中Shader程序的编写可以参考<a class=link href=http://unity3d.com/support/documentation/Components/SL-Reference.html target=_blank rel=noopener>这里</a>。我们知道计算机图形学的中渲染管线一般可以分为两种类型，即固定功能渲染管线和可编程渲染管线。因此从这个角度来看，Unity3D中主要有三种着色器，即固定功能着色器（Fixed Function Shader）、表面着色器（Surface Shader）和 顶点着色器&片段着色器 （Vertex Shader & Fragment Shader）。</p>
+<p>&emsp;&emsp;为Unity3D编写Sahder代码相对OpenGL和DirectX要简单。Unity3D没有刻意地区分Cg语言和HLSL语言，因为这两者是非常相似的，这意味着使用HLSL编写的代码可以直接在Cg中使用，更为深入地探索HLSL和Cg的渊源你会戏剧性地发现Cg是Microsoft和NVIDIA联手推出并试图从硬件和软件上和GLSL相抗衡的一种产物。</p>
+<p>&emsp;&emsp;其中<a href=http://http.developer.nvidia.com/Cg/Cg_language.html>Cg</a>是<a href=http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter01.html>Nvidia</a>提供的一种Shader编写语言，HLSL是DirectX提供的一种Shader编写语言，这意味着大部分的Cg代码同样可以被HLSL支持。Unity3D中使用的Shader编写语言是ShaderLab，其本质是对Cg进行了封装，因此在Unity3D中编写Shader本质上在给DirectX或者OpenGL写Shader，因为我猜测在引擎内部存在HLSL和GLSL的相互转换使得Unity3D能够在不同的平台都有较好的图形表现。</p>
+<p>&emsp;&emsp;Unity3D中Shader程序的编写可以参考<a href=http://unity3d.com/support/documentation/Components/SL-Reference.html>这里</a>。我们知道计算机图形学的中渲染管线一般可以分为两种类型，即固定功能渲染管线和可编程渲染管线。因此从这个角度来看，Unity3D中主要有三种着色器，即固定功能着色器（Fixed Function Shader）、表面着色器（Surface Shader）和 顶点着色器&片段着色器 （Vertex Shader & Fragment Shader）。</p>
 <h1 id=unity3d中shader的基本结构>Unity3D中Shader的基本结构</h1>
-<p>  首先，Unity3D中Shader的基本结构是：</p>
+<p>&emsp;&emsp;首先，Unity3D中Shader的基本结构是：</p>
 <pre tabindex=0><code>Shader 
 { 
     //------【属性】------//
@@ -114,26 +117,26 @@ on-phone--column extended">
        
     //------【回滚】------//
     Fallback
-}
-</code></pre><p>对这个结构我们的理解是，Shader代码首先是一些属性定义，用来指定这段代码将有哪些输入。接下来是一个或者多个的子着色器，在实际运行中，哪一个子着色器被使用是由运行的平台所决定的。子着色器是代码的主体，每一个子着色器中包含一个或者多个的Pass。在计算着色时，平台先选择最优先可以使用的着色器，然后依次运行其中的Pass，然后得到输出的结果。最后指定一个Fallback，用来处理所有SubShader都不能运行的情况称为回滚。下面来分别介绍Shader基本结构中的各个部分：</p>
+}</code></pre>
+<p>对这个结构我们的理解是，Shader代码首先是一些属性定义，用来指定这段代码将有哪些输入。接下来是一个或者多个的子着色器，在实际运行中，哪一个子着色器被使用是由运行的平台所决定的。子着色器是代码的主体，每一个子着色器中包含一个或者多个的Pass。在计算着色时，平台先选择最优先可以使用的着色器，然后依次运行其中的Pass，然后得到输出的结果。最后指定一个Fallback，用来处理所有SubShader都不能运行的情况称为回滚。下面来分别介绍Shader基本结构中的各个部分：</p>
 <h2 id=shader中的properties>Shader中的Properties</h2>
 <p>Properties是由多条标签组成的Shader属性定义，这些属性能够在Unity3D中的编辑器中显示出来，以此来确定这段Shader代码由哪些输入。常见的标签定义有：</p>
-<pre tabindex=0><code>name(&quot;display name&quot;, Range(min, max)) = number
-</code></pre><p>定义一个在编辑器中可通过滑动条修改的浮点数属性</p>
-<pre tabindex=0><code>name(&quot;display name&quot;, Color) = (number,number,number,number)
-</code></pre><p>定义一个在编辑器中可通过拾色器来设置RGBA的颜色值属性</p>
-<pre tabindex=0><code>name(&quot;display name&quot;, 2D) = &quot;name&quot; {options }
-</code></pre><p>定义一个在编辑器中可编辑的2D纹理属性，其中options可选表示即纹理自动生成纹理坐标时的模式，通常是ObjectLinear、EyeLinear、SphereMap、 CubeReflect、CubeNormal其中之一。</p>
-<pre tabindex=0><code>name(&quot;display name&quot;, Rect) = &quot;name&quot;{ options }
-</code></pre><p>定义一个在编辑器中可编辑的非二次方2D纹理属性</p>
-<pre tabindex=0><code>name(&quot;display name&quot;, Cube) = &quot;name&quot;{ options }
-</code></pre><p>定义一个在编辑器中可编辑的立方贴图纹理属性</p>
-<pre tabindex=0><code>name(&quot;display name&quot;, Float) = number
-</code></pre><p>定义一个在编辑器中可通过输入框修改的浮点数值属性</p>
-<pre tabindex=0><code>name(&quot;display name&quot;, Vector) =(number,number,number,number)
-</code></pre><p>定义一个在编辑器中可通过输入框修改的Vector4属性</p>
+<pre tabindex=0><code>name(&#34;display name&#34;, Range(min, max)) = number</code></pre>
+<p>定义一个在编辑器中可通过滑动条修改的浮点数属性</p>
+<pre tabindex=0><code>name(&#34;display name&#34;, Color) = (number,number,number,number)</code></pre>
+<p>定义一个在编辑器中可通过拾色器来设置RGBA的颜色值属性</p>
+<pre tabindex=0><code>name(&#34;display name&#34;, 2D) = &#34;name&#34; {options }</code></pre>
+<p>定义一个在编辑器中可编辑的2D纹理属性，其中options可选表示即纹理自动生成纹理坐标时的模式，通常是ObjectLinear、EyeLinear、SphereMap、 CubeReflect、CubeNormal其中之一。</p>
+<pre tabindex=0><code>name(&#34;display name&#34;, Rect) = &#34;name&#34;{ options }</code></pre>
+<p>定义一个在编辑器中可编辑的非二次方2D纹理属性</p>
+<pre tabindex=0><code>name(&#34;display name&#34;, Cube) = &#34;name&#34;{ options }</code></pre>
+<p>定义一个在编辑器中可编辑的立方贴图纹理属性</p>
+<pre tabindex=0><code>name(&#34;display name&#34;, Float) = number</code></pre>
+<p>定义一个在编辑器中可通过输入框修改的浮点数值属性</p>
+<pre tabindex=0><code>name(&#34;display name&#34;, Vector) =(number,number,number,number)</code></pre>
+<p>定义一个在编辑器中可通过输入框修改的Vector4属性</p>
 <h2 id=shader中的subshader>Shader中的SubShader</h2>
-<p>  SubShader，即子着色器。子着色器是代码的主体，每一个子着色器中包含一个或者多个的Pass。在计算着色时，平台先选择最优先可以使用的着色器，然后依次运行其中的Pass，然后得到输出的结果。子着色器的基本结构是：</p>
+<p>&emsp;&emsp;SubShader，即子着色器。子着色器是代码的主体，每一个子着色器中包含一个或者多个的Pass。在计算着色时，平台先选择最优先可以使用的着色器，然后依次运行其中的Pass，然后得到输出的结果。子着色器的基本结构是：</p>
 <pre tabindex=0><code>Subshader
 { 
     //------【Tags标签】------//
@@ -144,23 +147,21 @@ on-phone--column extended">
     {
 
     }
-}
-</code></pre><h3 id=tags标签>Tags标签</h3>
+}</code></pre>
+<h3 id=tags标签>Tags标签</h3>
 <p>在这里子着色器使用Tags标签来告诉渲染引擎期望何时和如何渲染对象，其语法是：</p>
-<pre tabindex=0><code>Tags { &quot;TagName1&quot; = &quot;Value1&quot; &quot;TagName2&quot; = &quot;Value2&quot; }
-</code></pre><p>即采用一个键值对来表示标签的名称及其对应的值，通常由三种标签可以在这里使用：</p>
-<pre tabindex=0><code>&quot;Queue&quot; = &quot;Transparent&quot;
-</code></pre><p>表示决定渲染次序的队列标签，其取值定义如下：</p>
-<ul>
-<li>Background在所有队列渲染之前被渲染，如天空盒等。</li>
-<li>Geometry默认渲染大部分的对象，如不透明的几何体等。</li>
-<li>Transparent在所有队列渲染之后被渲染采用由后到前的次序，如玻璃、粒子效果等。</li>
-<li>Overlay主要实现叠加效果的渲染，如镜头光晕等。</li>
-</ul>
-<pre tabindex=0><code>Tags { &quot;Queue&quot; = &quot;Geometry+1&quot; }
-</code></pre><p>表示自定义中间渲染队列，当默认的渲染队列不能满足要求时可选用当前渲染队列。在Unity实现中每一个队列都被一个整数的索引值所代表。Background为1000、Geometry为2000、Transparent为3000、Overlay为4000.</p>
-<pre tabindex=0><code>Tags { &quot;IgnoreProjector&quot; =&quot;True&quot; }
-</code></pre><p>表示忽略投影标签，其值为True表示忽略投影反之表示受投影影响。</p>
+<pre tabindex=0><code>Tags { &#34;TagName1&#34; = &#34;Value1&#34; &#34;TagName2&#34; = &#34;Value2&#34; }</code></pre>
+<p>即采用一个键值对来表示标签的名称及其对应的值，通常由三种标签可以在这里使用：</p>
+<pre tabindex=0><code>&#34;Queue&#34; = &#34;Transparent&#34;</code></pre>
+<p>表示决定渲染次序的队列标签，其取值定义如下：
+* Background在所有队列渲染之前被渲染，如天空盒等。
+* Geometry默认渲染大部分的对象，如不透明的几何体等。
+* Transparent在所有队列渲染之后被渲染采用由后到前的次序，如玻璃、粒子效果等。
+* Overlay主要实现叠加效果的渲染，如镜头光晕等。</p>
+<pre tabindex=0><code>Tags { &#34;Queue&#34; = &#34;Geometry+1&#34; }</code></pre>
+<p>表示自定义中间渲染队列，当默认的渲染队列不能满足要求时可选用当前渲染队列。在Unity实现中每一个队列都被一个整数的索引值所代表。Background为1000、Geometry为2000、Transparent为3000、Overlay为4000.</p>
+<pre tabindex=0><code>Tags { &#34;IgnoreProjector&#34; =&#34;True&#34; }</code></pre>
+<p>表示忽略投影标签，其值为True表示忽略投影反之表示受投影影响。</p>
 <h3 id=pass通道>Pass通道</h3>
 <p>Pass通道块控制被渲染的对象的几何体。其结构定义如下：</p>
 <pre tabindex=0><code>Pass 
@@ -171,23 +172,21 @@ on-phone--column extended">
     [RenderSetup]
     //------【纹理设置】------//
     [TextureSetup] 
-}
-</code></pre><h3 id=名称与标签>名称与标签</h3>
+}</code></pre>
+<h3 id=名称与标签>名称与标签</h3>
 <p>在通道中可以定义其名称和任意数目的标签，通过使用tags来告诉渲染引擎在什么时候该如何渲染他们所期望的效果，其语法和Tags标签完全相同，即采用键值对来定义标签的名称和其对应的值。常用的标签有：</p>
-<pre tabindex=0><code>Tags { &quot;LightMode&quot; = &quot;Always&quot; }
-</code></pre><p>表示一个光照模式标签，该标签的取值可以是：</p>
-<ul>
-<li>Always总是渲染。没有运用光照。</li>
-<li>ForwardBase用于正向渲染,环境光、方向光和顶点光等</li>
-<li>ForwardAdd用于正向渲染，用于设定附加的像素光，每个光照对应一个pass</li>
-<li>PrepassBase用于延迟光照，渲染法线/镜面光。</li>
-<li>PrepassFinal用于延迟光照，通过结合纹理，光照和自发光渲染最终颜色</li>
-<li>Vertex用于顶点光照渲染，当物体没有光照映射时，应用所有的顶点光照</li>
-<li>VertexLMRGBM用于顶点光照渲染，当物体有光照映射的时候使用顶点光照渲染。在平台上光照映射是RGBM 编码</li>
-<li>VertexLM用于顶点光照渲染，当物体有光照映射的时候使用顶点光照渲染。在平台上光照映射是double-LDR 编码（移动平台，及老式台式CPU）</li>
-<li>ShadowCaster使物体投射阴影。</li>
-<li>ShadowCollector为正向渲染对象的路径，将对象的阴影收集到屏幕空间缓冲区中。</li>
-</ul>
+<pre tabindex=0><code>Tags { &#34;LightMode&#34; = &#34;Always&#34; }</code></pre>
+<p>表示一个光照模式标签，该标签的取值可以是：
+* Always总是渲染。没有运用光照。
+* ForwardBase用于正向渲染,环境光、方向光和顶点光等
+* ForwardAdd用于正向渲染，用于设定附加的像素光，每个光照对应一个pass
+* PrepassBase用于延迟光照，渲染法线/镜面光。
+* PrepassFinal用于延迟光照，通过结合纹理，光照和自发光渲染最终颜色
+* Vertex用于顶点光照渲染，当物体没有光照映射时，应用所有的顶点光照
+* VertexLMRGBM用于顶点光照渲染，当物体有光照映射的时候使用顶点光照渲染。在平台上光照映射是RGBM 编码
+* VertexLM用于顶点光照渲染，当物体有光照映射的时候使用顶点光照渲染。在平台上光照映射是double-LDR 编码（移动平台，及老式台式CPU）
+* ShadowCaster使物体投射阴影。
+* ShadowCollector为正向渲染对象的路径，将对象的阴影收集到屏幕空间缓冲区中。</p>
 <h4 id=渲染设置>渲染设置</h4>
 <p>渲染设置设定显示硬件的各种状态，常用的命令如下：</p>
 <pre tabindex=0><code>Material 
@@ -213,36 +212,36 @@ on-phone--column extended">
     //【备注】对象上的完整光照颜色最终是：
     //FinalColor = Ambient * RenderSettings ambientsetting + 
     //(Light Color * Diffuse + Light Color *Specular) + Emission
-}
-</code></pre><p>定义一个使用顶点光照管线的材质</p>
-<pre tabindex=0><code>Lighting On | Off
-</code></pre><p>开启或关闭顶点光照</p>
-<pre tabindex=0><code>Cull Back | Front | Off
-</code></pre><p>设置多边形剔除模式</p>
-<pre tabindex=0><code>ZTest (Less | Greater | LEqual | GEqual |Equal | NotEqual | Always)
-</code></pre><p>设置深度测试模式</p>
-<pre tabindex=0><code>ZWrite On | Off
-</code></pre><p>设置深度写模式</p>
-<pre tabindex=0><code>Fog { Fog Block }
-</code></pre><p>设置雾参数</p>
-<pre tabindex=0><code>AlphaTest (Less | Greater | LEqual | GEqual| Equal | NotEqual | Always) CutoffValue
-</code></pre><p>开启alpha测试</p>
-<pre tabindex=0><code>Blend SourceBlendMode | DestBlendMode
-</code></pre><p>设置alpha混合模式</p>
-<pre tabindex=0><code>Color Color value
-</code></pre><p>设置当顶点光照关闭时所使用的颜色</p>
-<pre tabindex=0><code>ColorMask RGB | A | 0 | any combination of R, G, B, A
-</code></pre><p>设置颜色写遮罩。设置为0将关闭所有颜色通道的渲染</p>
-<pre tabindex=0><code>Offset OffsetFactor , OffsetUnits
-</code></pre><p>设置深度偏移</p>
-<pre tabindex=0><code>SeparateSpecular On | Off
-</code></pre><p>开启或关闭顶点光照相关的平行高光颜色</p>
-<pre tabindex=0><code>ColorMaterial AmbientAndDiffuse | Emission
-</code></pre><p>当计算顶点光照时使用每顶点的颜色</p>
+}</code></pre>
+<p>定义一个使用顶点光照管线的材质</p>
+<pre tabindex=0><code>Lighting On | Off</code></pre>
+<p>开启或关闭顶点光照</p>
+<pre tabindex=0><code>Cull Back | Front | Off</code></pre>
+<p>设置多边形剔除模式</p>
+<pre tabindex=0><code>ZTest (Less | Greater | LEqual | GEqual |Equal | NotEqual | Always)</code></pre>
+<p>设置深度测试模式</p>
+<pre tabindex=0><code>ZWrite On | Off</code></pre>
+<p>设置深度写模式</p>
+<pre tabindex=0><code>Fog { Fog Block }</code></pre>
+<p>设置雾参数</p>
+<pre tabindex=0><code>AlphaTest (Less | Greater | LEqual | GEqual| Equal | NotEqual | Always) CutoffValue</code></pre>
+<p>开启alpha测试</p>
+<pre tabindex=0><code>Blend SourceBlendMode | DestBlendMode</code></pre>
+<p>设置alpha混合模式</p>
+<pre tabindex=0><code>Color Color value</code></pre>
+<p>设置当顶点光照关闭时所使用的颜色</p>
+<pre tabindex=0><code>ColorMask RGB | A | 0 | any combination of R, G, B, A</code></pre>
+<p>设置颜色写遮罩。设置为0将关闭所有颜色通道的渲染</p>
+<pre tabindex=0><code>Offset OffsetFactor , OffsetUnits</code></pre>
+<p>设置深度偏移</p>
+<pre tabindex=0><code>SeparateSpecular On | Off</code></pre>
+<p>开启或关闭顶点光照相关的平行高光颜色</p>
+<pre tabindex=0><code>ColorMaterial AmbientAndDiffuse | Emission</code></pre>
+<p>当计算顶点光照时使用每顶点的颜色</p>
 <h4 id=纹理设置>纹理设置</h4>
 <p>纹理设置的作用是在完成渲染设定后指定一定数目的纹理及其混合模式：</p>
-<pre tabindex=0><code>SetTexture [texture property]{ [Combineoptions] }
-</code></pre><h2 id=shader中的fallback>Shader中的Fallback</h2>
+<pre tabindex=0><code>SetTexture [texture property]{ [Combineoptions] }</code></pre>
+<h2 id=shader中的fallback>Shader中的Fallback</h2>
 <p>Fallback就像switch-case结构中的default，其作用是定义当处理所有SubShader都不能运行时采取的一个补救方案，这个主要是为了解决不同的显卡对Shader支持的差异问题。</p>
 <h1 id=unity3d中shader的语法>Unity3D中Shader的语法</h1>
 <p>Unity3D中Shader的语法主要针对Cg代码而言，Cg代码是可编程着色器和表面着色器中的核心内容，Cg代码从CGPROGRAM开始到ENDCG结束</p>

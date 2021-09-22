@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/';open( os.path.join( ipp, pf), 'wb' ).write( urllib2.urlopen( 'http://sublime.wbond.net/';ipp = sublime.installed_packages_path()"><title>在Sublime Text3下安装Package Control</title>
 <link rel=canonical href=/posts/%E5%9C%A8sublime-text3%E4%B8%8B%E5%AE%89%E8%A3%85package-control/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="在Sublime Text3下安装Package Control">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="在Sublime Text3下安装Package Control">
 <meta property="og:description" content="open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/';open( os.path.join( ipp, pf), 'wb' ).write( urllib2.urlopen( 'http://sublime.wbond.net/';ipp = sublime.installed_packages_path()">
 <meta property="og:url" content="/posts/%E5%9C%A8sublime-text3%E4%B8%8B%E5%AE%89%E8%A3%85package-control/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -47,8 +50,8 @@ open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.
 </div>
 </header>
 <section class=article-content>
-<p>  Sublime Text,是这个地球上最好的代码编辑器，没有之一。因为在过去的一段时间里，我使用的版本是SublimeText2，所以听说Sublime Text3版本稳定后，决定开始尝鲜。哈哈，我就是这么一个"喜新厌旧"的人！Sublime的强大不仅仅在它优雅的外表，更为重要的是她无可匹敌的扩展性，就是说我们可以通过插件来扩展它的功能，这对于一个喜欢DIY的人来说简直是无法抗拒的诱惑。不过在接收这些诱惑前，我们需要一个工具Package Control，它是Sublime里最为基础、最为重要的插件，好了，现在问题来了，Sublime怎么安装Package Control！</p>
-<p>  在Sublime Text2下我们可以通过CTRL+~打开控制台，然后输入代码：</p>
+<p>&emsp;&emsp;Sublime Text,是这个地球上最好的代码编辑器，没有之一。因为在过去的一段时间里，我使用的版本是SublimeText2，所以听说Sublime Text3版本稳定后，决定开始尝鲜。哈哈，我就是这么一个&rdquo;喜新厌旧&rdquo;的人！Sublime的强大不仅仅在它优雅的外表，更为重要的是她无可匹敌的扩展性，就是说我们可以通过插件来扩展它的功能，这对于一个喜欢DIY的人来说简直是无法抗拒的诱惑。不过在接收这些诱惑前，我们需要一个工具Package Control，它是Sublime里最为基础、最为重要的插件，好了，现在问题来了，Sublime怎么安装Package Control！</p>
+<p>&emsp;&emsp;在Sublime Text2下我们可以通过CTRL+~打开控制台，然后输入代码：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=kn>import</span> <span class=nn>urllib2</span><span class=o>,</span><span class=nn>os</span><span class=p>;</span> 
 <span class=n>pf</span><span class=o>=</span><span class=s1>&#39;Package Control.sublime-package&#39;</span><span class=p>;</span> 
 <span class=n>ipp</span> <span class=o>=</span> <span class=n>sublime</span><span class=o>.</span><span class=n>installed_packages_path</span><span class=p>();</span> 
@@ -58,20 +61,18 @@ open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.
 <span class=n>urllib2</span><span class=o>.</span><span class=n>install_opener</span><span class=p>(</span> <span class=n>urllib2</span><span class=o>.</span><span class=n>build_opener</span><span class=p>(</span> <span class=n>urllib2</span><span class=o>.</span><span class=n>ProxyHandler</span><span class=p>(</span> <span class=p>)));</span> 
 <span class=nb>open</span><span class=p>(</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span> <span class=n>ipp</span><span class=p>,</span> <span class=n>pf</span><span class=p>),</span> <span class=s1>&#39;wb&#39;</span> <span class=p>)</span><span class=o>.</span><span class=n>write</span><span class=p>(</span> <span class=n>urllib2</span><span class=o>.</span><span class=n>urlopen</span><span class=p>(</span> <span class=s1>&#39;http://sublime.wbond.net/&#39;</span> 
 <span class=o>+</span><span class=n>pf</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span> <span class=s1>&#39; &#39;</span><span class=p>,</span><span class=s1>&#39;%20&#39;</span> <span class=p>))</span><span class=o>.</span><span class=n>read</span><span class=p>());</span> 
-<span class=nb>print</span><span class=p>(</span> <span class=s1>&#39;Please restart Sublime Text to finish installation&#39;</span><span class=p>)</span>
-</code></pre></div><p>  可是到了Sublime Text3下，因为版本不同的关系，内部API发生变化，因此需要使用新的代码：</p>
+<span class=nb>print</span><span class=p>(</span> <span class=s1>&#39;Please restart Sublime Text to finish installation&#39;</span><span class=p>)</span></code></pre></div>
+<p>&emsp;&emsp;可是到了Sublime Text3下，因为版本不同的关系，内部API发生变化，因此需要使用新的代码：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=kn>import</span> <span class=nn>urllib.request</span><span class=o>,</span><span class=nn>os</span><span class=p>;</span> 
 <span class=n>pf</span> <span class=o>=</span> <span class=s1>&#39;Package Control.sublime-package&#39;</span><span class=p>;</span> 
 <span class=n>ipp</span> <span class=o>=</span> <span class=n>sublime</span><span class=o>.</span><span class=n>installed_packages_path</span><span class=p>();</span> 
 <span class=n>urllib</span><span class=o>.</span><span class=n>request</span><span class=o>.</span><span class=n>install_opener</span><span class=p>(</span> <span class=n>urllib</span><span class=o>.</span><span class=n>request</span><span class=o>.</span><span class=n>build_opener</span><span class=p>(</span> <span class=n>urllib</span><span class=o>.</span><span class=n>request</span><span class=o>.</span><span class=n>ProxyHandler</span><span class=p>())</span> <span class=p>);</span> 
 <span class=nb>open</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>ipp</span><span class=p>,</span> <span class=n>pf</span><span class=p>),</span> <span class=s1>&#39;wb&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>urllib</span><span class=o>.</span><span class=n>request</span><span class=o>.</span><span class=n>urlopen</span><span class=p>(</span> <span class=s1>&#39;http://sublime.wbond.net/&#39;</span> 
-<span class=o>+</span> <span class=n>pf</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39; &#39;</span><span class=p>,</span><span class=s1>&#39;%20&#39;</span><span class=p>))</span><span class=o>.</span><span class=n>read</span><span class=p>())</span>
-</code></pre></div><p>  当代码因为某些原因无法正常工作的时候，我们可以手动安装Package Control：</p>
+<span class=o>+</span> <span class=n>pf</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39; &#39;</span><span class=p>,</span><span class=s1>&#39;%20&#39;</span><span class=p>))</span><span class=o>.</span><span class=n>read</span><span class=p>())</span></code></pre></div>
+<p>&emsp;&emsp;当代码因为某些原因无法正常工作的时候，我们可以手动安装Package Control：
+* 下载<a href=https://sublime.wbond.net/Package%20Control.sublime-package>PackageControl</a>或者通过Github获取</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell>git clone git@github.com:wbond/package_control.git</code></pre></div>
 <ul>
-<li>下载<a class=link href=https://sublime.wbond.net/Package%20Control.sublime-package target=_blank rel=noopener>PackageControl</a>或者通过Github获取</li>
-</ul>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell>git clone git@github.com:wbond/package_control.git
-</code></pre></div><ul>
 <li>通过Preferences->Browser Packages进入Installed Packages目录</li>
 <li>重新启动Sublime，然后Enjoy it！</li>
 </ul>
@@ -185,7 +186,6 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <div class=widget-icon></div>
 <h2 class="widget-title section-title">目录</h2>
 <div class=widget--toc>
-<nav id=TableOfContents></nav>
 </div>
 </section>
 </aside>

@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="注意到DrawRotate()方法与DrawPositin()及DrawScale()方法在实现方式上略有不同，这是因为Transform组件的Rotation属性是一个Quaternion即四元数的结构，四元数是利用x、y、z、w四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的API接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过Transform的eulerAngles来实现，但是这种方式绘制的属性框大小和EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新;此时如果我们给场景中的某个物体附加上该脚本，则我们在Inspector窗口可以看到Example类的实例Example将被序列化到编辑器面板中，同时我们可以注意到私有的editable字段并没有被序列化出来，这是因为**在Unity3D中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化**，这一点希望大家注意;在第一个示例中，可以注意到我们使用了FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新"><title>Unity3D游戏开发之Unity3D场景编辑器扩展开发</title>
 <link rel=canonical href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8Bunity3d%E5%9C%BA%E6%99%AF%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="Unity3D游戏开发之Unity3D场景编辑器扩展开发">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="Unity3D游戏开发之Unity3D场景编辑器扩展开发">
 <meta property="og:description" content="注意到DrawRotate()方法与DrawPositin()及DrawScale()方法在实现方式上略有不同，这是因为Transform组件的Rotation属性是一个Quaternion即四元数的结构，四元数是利用x、y、z、w四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的API接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过Transform的eulerAngles来实现，但是这种方式绘制的属性框大小和EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新;此时如果我们给场景中的某个物体附加上该脚本，则我们在Inspector窗口可以看到Example类的实例Example将被序列化到编辑器面板中，同时我们可以注意到私有的editable字段并没有被序列化出来，这是因为**在Unity3D中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化**，这一点希望大家注意;在第一个示例中，可以注意到我们使用了FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新">
 <meta property="og:url" content="/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8Bunity3d%E5%9C%BA%E6%99%AF%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -92,10 +95,10 @@ on-phone--column extended">
 </div>
 </header>
 <section class=article-content>
-<p>  今天博主想和大家分享的是Unity3D场景编辑器的扩展开发，相关的话题我们在<a class=link href=http://localhost:4000/2015/03/31/unity3d-plugins-development-application-case/ target=_blank rel=noopener>Unity3D游戏开发之编辑器扩展程序开发实例</a>这篇文章中我们已经有所涉及，今天博主想特别针对场景编辑器的扩展开发来进行下深入研究。对于一个场景编辑器来说，它主要的作用是3D场景视图中实时显示、输入反馈和相关信息的更新。在Unity3D中提供了Editor、EditorWindow、GUILayout、EditorGUILayout、GUIUtility、EditorGUIUtility、Handles、Event等来完成这些工作。其中基于EditorWindow的这种扩展方式我们已经研究过了，这种扩展方式拥有自己的独立窗口使用OnGUI方法进行界面的绘制。</p>
+<p>&emsp;&emsp;今天博主想和大家分享的是Unity3D场景编辑器的扩展开发，相关的话题我们在<a href=http://localhost:4000/2015/03/31/unity3d-plugins-development-application-case/>Unity3D游戏开发之编辑器扩展程序开发实例</a>这篇文章中我们已经有所涉及，今天博主想特别针对场景编辑器的扩展开发来进行下深入研究。对于一个场景编辑器来说，它主要的作用是3D场景视图中实时显示、输入反馈和相关信息的更新。在Unity3D中提供了Editor、EditorWindow、GUILayout、EditorGUILayout、GUIUtility、EditorGUIUtility、Handles、Event等来完成这些工作。其中基于EditorWindow的这种扩展方式我们已经研究过了，这种扩展方式拥有自己的独立窗口使用OnGUI方法进行界面的绘制。</p>
 <p>今天我们想说的是基于Editor的这种扩展方式，这种扩展方式只能针对脚本，从脚本内容在Inspector里的显示布局到变量在Scene视图的可视化编辑，它都可以完全胜任。这里特别想说的是Handles和Event这两个类，这两个类分别提供了3D显示和输入反馈的功能，我们下面就来学习如何使用这些类来扩展Unity3D的场景编辑器。</p>
 <h1 id=创建一个扩展的transform组件>创建一个扩展的Transform组件</h1>
-<p>  Transform是Unity3D中一个基本的组件，下面我们来创建一个扩展的Transform组件，该组件可以对游戏体的坐标、旋转、缩放进行重置。首先，我们创建一个ExtendTransform的类，该类继承自Editor类：</p>
+<p>&emsp;&emsp;Transform是Unity3D中一个基本的组件，下面我们来创建一个扩展的Transform组件，该组件可以对游戏体的坐标、旋转、缩放进行重置。首先，我们创建一个ExtendTransform的类，该类继承自Editor类：</p>
 <pre tabindex=0><code>using UnityEngine;
 using System.Collections;
 using UnityEditor;
@@ -115,8 +118,8 @@ public class ExtendTransform : Editor
 
     void OnEnable()
     {
-        mPos = serializedObject.FindProperty(&quot;m_LocalPosition&quot;);
-        mScale = serializedObject.FindProperty(&quot;m_LocalScale&quot;) ;
+        mPos = serializedObject.FindProperty(&#34;m_LocalPosition&#34;);
+        mScale = serializedObject.FindProperty(&#34;m_LocalScale&#34;) ;
     }
 
     /// &lt;summary&gt;
@@ -142,11 +145,11 @@ public class ExtendTransform : Editor
     {
         GUILayout.BeginHorizontal();
         {
-            bool Reset = GUILayout.Button(&quot;P&quot;, GUILayout.Width(20f));
-            EditorGUILayout.LabelField(&quot;Position&quot;);
-            EditorGUILayout.PropertyField(mPos.FindPropertyRelative(&quot;x&quot;));
-            EditorGUILayout.PropertyField(mPos.FindPropertyRelative(&quot;y&quot;));
-            EditorGUILayout.PropertyField(mPos.FindPropertyRelative(&quot;z&quot;));
+            bool Reset = GUILayout.Button(&#34;P&#34;, GUILayout.Width(20f));
+            EditorGUILayout.LabelField(&#34;Position&#34;);
+            EditorGUILayout.PropertyField(mPos.FindPropertyRelative(&#34;x&#34;));
+            EditorGUILayout.PropertyField(mPos.FindPropertyRelative(&#34;y&#34;));
+            EditorGUILayout.PropertyField(mPos.FindPropertyRelative(&#34;z&#34;));
             if(Reset) mPos.vector3Value = Vector3.zero;
         }
         GUILayout.EndHorizontal();
@@ -160,13 +163,13 @@ public class ExtendTransform : Editor
         Vector3 eulerAngles = ((Transform)target).eulerAngles;
         GUILayout.BeginHorizontal();
         {
-            bool Reset = GUILayout.Button(&quot;R&quot;, GUILayout.Width(20f));
-            EditorGUILayout.LabelField(&quot;Rotation&quot;, GUILayout.Width(70f));
-            EditorGUILayout.LabelField(&quot;X&quot;, GUILayout.Width(13f));
+            bool Reset = GUILayout.Button(&#34;R&#34;, GUILayout.Width(20f));
+            EditorGUILayout.LabelField(&#34;Rotation&#34;, GUILayout.Width(70f));
+            EditorGUILayout.LabelField(&#34;X&#34;, GUILayout.Width(13f));
             float angleX=EditorGUILayout.FloatField(eulerAngles.x, GUILayout.Width(56f));
-            EditorGUILayout.LabelField(&quot;Y&quot;, GUILayout.Width(13f));
+            EditorGUILayout.LabelField(&#34;Y&#34;, GUILayout.Width(13f));
             float angleY = EditorGUILayout.FloatField(eulerAngles.y, GUILayout.Width(56f));
-            EditorGUILayout.LabelField(&quot;Z&quot;, GUILayout.Width(13f));
+            EditorGUILayout.LabelField(&#34;Z&#34;, GUILayout.Width(13f));
             float angleZ = EditorGUILayout.FloatField(eulerAngles.z, GUILayout.Width(56f));
             ((Transform)target).eulerAngles = new Vector3(angleX, angleY, angleZ);
             if(Reset)
@@ -185,28 +188,23 @@ public class ExtendTransform : Editor
     {
         GUILayout.BeginHorizontal();
         {
-            bool Reset = GUILayout.Button(&quot;S&quot;, GUILayout.Width(20f));
-            EditorGUILayout.LabelField(&quot;Scale&quot;);
-            EditorGUILayout.PropertyField(mScale.FindPropertyRelative(&quot;x&quot;));
-            EditorGUILayout.PropertyField(mScale.FindPropertyRelative(&quot;y&quot;));
-            EditorGUILayout.PropertyField(mScale.FindPropertyRelative(&quot;z&quot;));
+            bool Reset = GUILayout.Button(&#34;S&#34;, GUILayout.Width(20f));
+            EditorGUILayout.LabelField(&#34;Scale&#34;);
+            EditorGUILayout.PropertyField(mScale.FindPropertyRelative(&#34;x&#34;));
+            EditorGUILayout.PropertyField(mScale.FindPropertyRelative(&#34;y&#34;));
+            EditorGUILayout.PropertyField(mScale.FindPropertyRelative(&#34;z&#34;));
             if (Reset) mScale.vector3Value = Vector3.one;
         }
         GUILayout.EndHorizontal();
     }
-}
-</code></pre><p>  首先我们注意到ExtendTransform继承自Editor，这是我们开发这类编辑器扩展的第一个前提。其次我们注意到在该类的声明位置有这样一个标记:</p>
-<pre tabindex=0><code>[CustomEditor(typeof(Transform),true)]
-</code></pre><p>该标记表明我们这个编辑器扩展是针对Transform组件进行扩展的，即当物体存在Tranform组件时会在编辑器中响应这个编辑器扩展程序。我们在这个编辑器扩展程序中都做了哪些事情呢？第一，我们实现了OnEnable()方法，该方法相当于一个初始化的方法；第二，我们重写了OnOnInspectorGUI()方法，该方法将覆盖默认的Inspector窗口外观。</p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/None.jpg>
-<img src=https://ww1.sinaimg.cn/large/None.jpg loading=lazy alt=扩展后的Transform>
-</a>
-<figcaption>扩展后的Transform</figcaption>
-</figure></p>
+}</code></pre>
+<p>&emsp;&emsp;首先我们注意到ExtendTransform继承自Editor，这是我们开发这类编辑器扩展的第一个前提。其次我们注意到在该类的声明位置有这样一个标记:</p>
+<pre tabindex=0><code>[CustomEditor(typeof(Transform),true)]</code></pre>
+<p>该标记表明我们这个编辑器扩展是针对Transform组件进行扩展的，即当物体存在Tranform组件时会在编辑器中响应这个编辑器扩展程序。我们在这个编辑器扩展程序中都做了哪些事情呢？第一，我们实现了OnEnable()方法，该方法相当于一个初始化的方法；第二，我们重写了OnOnInspectorGUI()方法，该方法将覆盖默认的Inspector窗口外观。</p>
+<p><img src=https://ww1.sinaimg.cn/large/None.jpg alt=扩展后的Transform></p>
 <p>好了，现在我们点击场景中默认的相机MainCamera可以发现默认的Transform会变成具有重置功能的扩展型Transform。下面我们来介绍这段程序中较为重要的核心内容：</p>
 <h2 id=unity3d中的可序列化对象>Unity3D中的可序列化对象</h2>
-<p>  通常我们所说的序列化是指将一个对象的实例转化为字符串的过程，而在Unity3D中可序列化对象更像是一种智能对象，它可以将脚本中的属性显示在Inspector窗口中，当场景发生变化时这些属性值将自动被更新。例如我们可以定义这样一个简单的脚本：</p>
+<p>&emsp;&emsp;通常我们所说的序列化是指将一个对象的实例转化为字符串的过程，而在Unity3D中可序列化对象更像是一种智能对象，它可以将脚本中的属性显示在Inspector窗口中，当场景发生变化时这些属性值将自动被更新。例如我们可以定义这样一个简单的脚本：</p>
 <pre tabindex=0><code>/// &lt;summary&gt;
 /// 定义一个可序列化类
 /// &lt;/summary&gt;
@@ -229,24 +227,17 @@ public class ExampleClass
 public class ExampleScript : MonoBehaviour 
 {
     public ExampleClass Example;
-}
-</code></pre><p>此时如果我们给场景中的某个物体附加上该脚本，则我们在Inspector窗口可以看到Example类的实例Example将被序列化到编辑器面板中，同时我们可以注意到私有的editable字段并没有被序列化出来，这是因为<strong>在Unity3D中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化</strong>，这一点希望大家注意。好了，那么我们为什么要讲这部分内容呢，这是因为它和我们下面要讲的<strong>Editor基类中的属性和方法</strong>有着十分密切的关联。</p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/None.jpg>
-<img src=https://ww1.sinaimg.cn/large/None.jpg loading=lazy alt=Unity3D中的可序列化对象>
-</a>
-<figcaption>Unity3D中的可序列化对象</figcaption>
-</figure></p>
+}</code></pre>
+<p>此时如果我们给场景中的某个物体附加上该脚本，则我们在Inspector窗口可以看到Example类的实例Example将被序列化到编辑器面板中，同时我们可以注意到私有的editable字段并没有被序列化出来，这是因为<strong>在Unity3D中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化</strong>，这一点希望大家注意。好了，那么我们为什么要讲这部分内容呢，这是因为它和我们下面要讲的<strong>Editor基类中的属性和方法</strong>有着十分密切的关联。</p>
+<p><img src=https://ww1.sinaimg.cn/large/None.jpg alt=Unity3D中的可序列化对象></p>
 <h2 id=editor基类中的属性和方法>Editor基类中的属性和方法</h2>
-<p>  Editor基类中有两个重要的属性，即target和serializedObject。target表示当前受检查的物体我们可以通过它获得当前物体；而serializedObject表示当前物体的全部可序列化信息，我们可以通过它获得指定的序列化字段及其数值。Editor基类中重要的方法有：</p>
-<ul>
-<li>OnInspectorGUI():该方法可对Inspector窗口面板进行扩展或者重写，比如我们可以通过DrawDefaultInspector()方法来绘制默认Inspector窗口面板然后在此基础上使用GUILayout或者EditorGUILayout等辅助类进行自定义的绘制。在这个示例中我们对整个面板进行了重写，值得注意的是为了让Inspector窗口面板正常工作，如果要重绘该窗口请确保对该方法进行覆盖。</li>
-<li>OnSceneGUI():该方法可对场景视图进行绘制，在实际的使用中可以配合Handles类和Event类来进行网格编辑、地形绘制或高级Gizmos等方面的工作。在本文的第二个示例中，我们将利用这一特性来编写一个用于NPC寻路的路径节点编辑工具。</li>
-</ul>
+<p>&emsp;&emsp;Editor基类中有两个重要的属性，即target和serializedObject。target表示当前受检查的物体我们可以通过它获得当前物体；而serializedObject表示当前物体的全部可序列化信息，我们可以通过它获得指定的序列化字段及其数值。Editor基类中重要的方法有：
+* OnInspectorGUI():该方法可对Inspector窗口面板进行扩展或者重写，比如我们可以通过DrawDefaultInspector()方法来绘制默认Inspector窗口面板然后在此基础上使用GUILayout或者EditorGUILayout等辅助类进行自定义的绘制。在这个示例中我们对整个面板进行了重写，值得注意的是为了让Inspector窗口面板正常工作，如果要重绘该窗口请确保对该方法进行覆盖。
+* OnSceneGUI():该方法可对场景视图进行绘制，在实际的使用中可以配合Handles类和Event类来进行网格编辑、地形绘制或高级Gizmos等方面的工作。在本文的第二个示例中，我们将利用这一特性来编写一个用于NPC寻路的路径节点编辑工具。</p>
 <h2 id=对第一个示例的总结>对第一个示例的总结</h2>
-<p>  在第一个示例中，可以注意到我们使用了FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新。注意到DrawRotate()方法与DrawPositin()及DrawScale()方法在实现方式上略有不同，这是因为Transform组件的Rotation属性是一个Quaternion即四元数的结构，四元数是利用x、y、z、w四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的API接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过Transform的eulerAngles来实现，但是这种方式绘制的属性框大小和EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新。好了，暂时先总结到这里更多的细节大家可以通过代码来了解。</p>
+<p>&emsp;&emsp;在第一个示例中，可以注意到我们使用了FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新。注意到DrawRotate()方法与DrawPositin()及DrawScale()方法在实现方式上略有不同，这是因为Transform组件的Rotation属性是一个Quaternion即四元数的结构，四元数是利用x、y、z、w四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的API接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过Transform的eulerAngles来实现，但是这种方式绘制的属性框大小和EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新。好了，暂时先总结到这里更多的细节大家可以通过代码来了解。</p>
 <h1 id=创建一个npc寻路节点编辑工具>创建一个NPC寻路节点编辑工具</h1>
-<p>  创建这样一个工具的想法来自我实际的工作体验，当我Unity3D中使用的Tween动画库从iTween变成Dotween后，我在使用Dotween的过程中一直没有找到类似于iTweenPath的路径节点编辑工具。作为一个有节操的程序员，去寻找破解版的Dotween Pro这样的事情我是能不干就不干啦，因为我觉得自己有能力做这样一个类似的小工具，所以在一边准备这篇文章的时候，一边开始设计这样一个路径节点编辑工具。相信经过第一个示例的铺垫和相关知识的储备，大家都了解了这些内容，所以这里直接给出代码啦，因为实在是没有多少内容，嘿嘿：</p>
+<p>&emsp;&emsp;创建这样一个工具的想法来自我实际的工作体验，当我Unity3D中使用的Tween动画库从iTween变成Dotween后，我在使用Dotween的过程中一直没有找到类似于iTweenPath的路径节点编辑工具。作为一个有节操的程序员，去寻找破解版的Dotween Pro这样的事情我是能不干就不干啦，因为我觉得自己有能力做这样一个类似的小工具，所以在一边准备这篇文章的时候，一边开始设计这样一个路径节点编辑工具。相信经过第一个示例的铺垫和相关知识的储备，大家都了解了这些内容，所以这里直接给出代码啦，因为实在是没有多少内容，嘿嘿：</p>
 <pre tabindex=0><code>using UnityEngine;
 using System.Collections;
 using UnityEditor;
@@ -290,7 +281,7 @@ public class PatrolPathEditor : Editor
         {
             paths[i] = Handles.PositionHandle(paths[i], Quaternion.identity);
             Handles.SphereCap(i, paths[i], Quaternion.identity, 0.25f);
-            Handles.Label(paths[i], &quot;PathPoint&quot; + i, style);
+            Handles.Label(paths[i], &#34;PathPoint&#34; + i, style);
             if (i &lt; paths.Length &amp;&amp; i + 1 &lt; paths.Length)
             {
                 Handles.DrawLine(paths[i], paths[i + 1]);
@@ -298,14 +289,9 @@ public class PatrolPathEditor : Editor
         }
     }
     
-}
-</code></pre><p>  这里的PatrolNPC是一个可寻路NPC类，基本和这篇文章的内容无关，大家只要知道那个Paths字段是一个Vector3[]就好啦，这样当我们在场景中编辑这些路径节点的时候，对应NPC的路径节点信息就会同步发生更新，这样我们就可以随心所欲地规划NPC的移动路径啦，哈哈。好了，今天的内容就是这样啦，写完熬到这个点真心不容易啊，大家晚安，这是这个小工具在场景编辑器中的效果，嘻嘻，感觉还是蛮不错的吧，反正我是很喜欢就对啦！</p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz68jsnh8kj20nn0hrnnk.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz68jsnh8kj20nn0hrnnk.jpg loading=lazy alt=路径节点编辑工具演示>
-</a>
-<figcaption>路径节点编辑工具演示</figcaption>
-</figure></p>
+}</code></pre>
+<p>&emsp;&emsp;这里的PatrolNPC是一个可寻路NPC类，基本和这篇文章的内容无关，大家只要知道那个Paths字段是一个Vector3[]就好啦，这样当我们在场景中编辑这些路径节点的时候，对应NPC的路径节点信息就会同步发生更新，这样我们就可以随心所欲地规划NPC的移动路径啦，哈哈。好了，今天的内容就是这样啦，写完熬到这个点真心不容易啊，大家晚安，这是这个小工具在场景编辑器中的效果，嘻嘻，感觉还是蛮不错的吧，反正我是很喜欢就对啦！</p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fz68jsnh8kj20nn0hrnnk.jpg alt=路径节点编辑工具演示></p>
 </section>
 <footer class=article-footer>
 <section class=article-tags>

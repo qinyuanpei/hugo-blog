@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="相信大家还记得我们在《C#中Socket通信编程的同步实现》这篇文章中使用多线程来实现简单聊天的案例吧，在这个案例中我们需要开启两个线程来不断监听客户端的连接和客户端的消息，这样的效率肯定是很低的;if (socket == null || message == string.Empty) return;在Socket的异步编程中，服务端不需要为一个客户端单独创建一个线程来维护其连接，可是这样带来的一个问题就是博主不知道该如何实现一个多客户端的异步编程的实例"><title>C#中Socket通信编程的异步实现</title>
 <link rel=canonical href=/posts/c#%E4%B8%ADsocket%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%BC%82%E6%AD%A5%E5%AE%9E%E7%8E%B0/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="C#中Socket通信编程的异步实现">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="C#中Socket通信编程的异步实现">
 <meta property="og:description" content="相信大家还记得我们在《C#中Socket通信编程的同步实现》这篇文章中使用多线程来实现简单聊天的案例吧，在这个案例中我们需要开启两个线程来不断监听客户端的连接和客户端的消息，这样的效率肯定是很低的;if (socket == null || message == string.Empty) return;在Socket的异步编程中，服务端不需要为一个客户端单独创建一个线程来维护其连接，可是这样带来的一个问题就是博主不知道该如何实现一个多客户端的异步编程的实例">
 <meta property="og:url" content="/posts/c#%E4%B8%ADsocket%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%BC%82%E6%AD%A5%E5%AE%9E%E7%8E%B0/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -92,9 +95,9 @@ on-phone--column extended">
 </div>
 </header>
 <section class=article-content>
-<p>  本文将在C#中Socket同步通信的基础上，分析和研究Socket异步编程的实现方法，目的是深入了解Socket编程的基本原理，增强对网络游戏开发相关内容的认识。</p>
+<p>&emsp;&emsp;本文将在C#中Socket同步通信的基础上，分析和研究Socket异步编程的实现方法，目的是深入了解Socket编程的基本原理，增强对网络游戏开发相关内容的认识。</p>
 <h1 id=什么是socket编程的异步的实现>什么是Socket编程的异步的实现</h1>
-<p>  所谓Socket编程的异步实现是指按照异步过程来实现Socket编程，那么什么是异步过程呢，我们把在完成了一次调用后通过状态、通知和回调来告知调用者的方式成为异步过程，换句话说，在异步过程中当调用一个方法时，调用者并不能够立刻得到结果，只有当这个方法调用完毕后调用者才能获得调用结果。这样做的好处是什么呢？答案是高效。相信大家还记得我们在《C#中Socket通信编程的同步实现》这篇文章中使用多线程来实现简单聊天的案例吧，在这个案例中我们需要开启两个线程来不断监听客户端的连接和客户端的消息，这样的效率肯定是很低的。那么现在好了，我们可以通过异步过程来解决这个问题，下面我们就来看看如何实现Socket的异步通信。</p>
+<p>&emsp;&emsp;所谓Socket编程的异步实现是指按照异步过程来实现Socket编程，那么什么是异步过程呢，我们把在完成了一次调用后通过状态、通知和回调来告知调用者的方式成为异步过程，换句话说，在异步过程中当调用一个方法时，调用者并不能够立刻得到结果，只有当这个方法调用完毕后调用者才能获得调用结果。这样做的好处是什么呢？答案是高效。相信大家还记得我们在《C#中Socket通信编程的同步实现》这篇文章中使用多线程来实现简单聊天的案例吧，在这个案例中我们需要开启两个线程来不断监听客户端的连接和客户端的消息，这样的效率肯定是很低的。那么现在好了，我们可以通过异步过程来解决这个问题，下面我们就来看看如何实现Socket的异步通信。</p>
 <h1 id=如何实现socket异步通信>如何实现Socket异步通信</h1>
 <h2 id=服务端>服务端</h2>
 <h3 id=基本流程>基本流程</h3>
@@ -199,8 +202,8 @@ on-phone--column extended">
             <span class=p>}</span>
         <span class=p>}</span>
     <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><h2 id=客户端>客户端</h2>
+<span class=p>}</span></code></pre></div>
+<h2 id=客户端>客户端</h2>
 <h3 id=基本流程-1>基本流程</h3>
 <ul>
 <li>创建套接字并保证与服务器的端口一致</li>
@@ -290,31 +293,24 @@ on-phone--column extended">
             <span class=p>}</span>
         <span class=p>}</span>
     <span class=p>}</span>
-<span class=p>}</span>
-
-</code></pre></div><p>从总体上来讲Socket异步编程的逻辑性更加明确了，因为我们只需要为每一个过程写好回调函数就好了。那么这个示例的效果如何呢？我们来看看它的演示效果：</p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fyzctofo6zj211y0lcdi3.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fyzctofo6zj211y0lcdi3.jpg loading=lazy alt=Socket异步编程效果演示>
-</a>
-<figcaption>Socket异步编程效果演示</figcaption>
-</figure></p>
+<span class=p>}</span></code></pre></div>
+<p>从总体上来讲Socket异步编程的逻辑性更加明确了，因为我们只需要为每一个过程写好回调函数就好了。那么这个示例的效果如何呢？我们来看看它的演示效果：</p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fyzctofo6zj211y0lcdi3.jpg alt=Socket异步编程效果演示></p>
 <h1 id=总结>总结</h1>
-<p>  和Socket同步编程的案例相比，今天的这个案例可能只是对Socket异步编程内容的一个简单应用，因为博主到现在为止都还没有写出一个可以进行交互聊天的程序来。在Socket的异步编程中，服务端不需要为一个客户端单独创建一个线程来维护其连接，可是这样带来的一个问题就是博主不知道该如何实现一个多客户端的异步编程的实例。如果有朋友知道如何实现的话，还希望能够告诉我，毕竟学习就是一个相互促进的过程啊。好了，最后想说的是博主这段时间研究Socket异步编程中关于异步方法调用的写法问题。我们知道Socket异步编程中的方法是成对出现的，每一个方法都有一个回调函数，对于回调函数，这里有两种写法，以BeginConnect方法为例：</p>
+<p>&emsp;&emsp;和Socket同步编程的案例相比，今天的这个案例可能只是对Socket异步编程内容的一个简单应用，因为博主到现在为止都还没有写出一个可以进行交互聊天的程序来。在Socket的异步编程中，服务端不需要为一个客户端单独创建一个线程来维护其连接，可是这样带来的一个问题就是博主不知道该如何实现一个多客户端的异步编程的实例。如果有朋友知道如何实现的话，还希望能够告诉我，毕竟学习就是一个相互促进的过程啊。好了，最后想说的是博主这段时间研究Socket异步编程中关于异步方法调用的写法问题。我们知道Socket异步编程中的方法是成对出现的，每一个方法都有一个回调函数，对于回调函数，这里有两种写法，以BeginConnect方法为例：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-C# data-lang=C#><span class=n>m_Socket</span><span class=p>.</span><span class=n>BeginConnect</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>m_ipEndPoint</span><span class=p>,</span> 
         <span class=k>new</span> <span class=n>AsyncCallback</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>ConnectCallBack</span><span class=p>),</span> 
         <span class=k>this</span><span class=p>.</span><span class=n>m_Socket</span><span class=p>);</span><span class=c1>//其中ConnectCallBack是一个回调函数
-</span></code></pre></div><p>或者</p>
+</span></code></pre></div>
+<p>或者</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-C# data-lang=C#><span class=n>m_Socket</span><span class=p>.</span><span class=n>BeginConnect</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>m_ipEndPoint</span><span class=p>,</span><span class=n>asyncResult</span><span class=p>=&gt;</span>
 <span class=p>{</span>
     <span class=c1>//在这里添加更多代码
-</span><span class=c1></span><span class=p>},</span><span class=k>null</span><span class=p>)</span>
-</code></pre></div><p>  博主为什么要在这里说这两种写法呢，有两个原因：</p>
-<ul>
-<li>第二种写法更为简洁，无需去构造容器传递Socket和消息，因为它们都是局部变量。如果我们使用第一种方法，因为主函数和回调函数是两个不同的函数，因此如果想要共享变量就需要通过IAsyncResult接口来访问容器中的值，这样显然增加了我们的工作量。</li>
-<li>第二种写法更为优雅，这似乎是C#语言中某种高级语法，具体叫什么我忘了，反正在Linq中经常看到这种写法的影子。</li>
-</ul>
-<p>  综合以上两个观点，博主还是建议大家使用第二种写法，博主打算有空的话将之前写的程序再重新写一遍，看看能不能找出代码中的问题。好了，今天的内容就是这样了，谢谢大家，希望大家喜欢！</p>
+</span><span class=c1></span><span class=p>},</span><span class=k>null</span><span class=p>)</span></code></pre></div>
+<p>&emsp;&emsp;博主为什么要在这里说这两种写法呢，有两个原因：
+* 第二种写法更为简洁，无需去构造容器传递Socket和消息，因为它们都是局部变量。如果我们使用第一种方法，因为主函数和回调函数是两个不同的函数，因此如果想要共享变量就需要通过IAsyncResult接口来访问容器中的值，这样显然增加了我们的工作量。
+* 第二种写法更为优雅，这似乎是C#语言中某种高级语法，具体叫什么我忘了，反正在Linq中经常看到这种写法的影子。</p>
+<p>&emsp;&emsp;综合以上两个观点，博主还是建议大家使用第二种写法，博主打算有空的话将之前写的程序再重新写一遍，看看能不能找出代码中的问题。好了，今天的内容就是这样了，谢谢大家，希望大家喜欢！</p>
 </section>
 <footer class=article-footer>
 <section class=article-tags>

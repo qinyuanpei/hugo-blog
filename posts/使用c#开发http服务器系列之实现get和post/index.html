@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="&#34;分割该行数据以后就可以得到“num1=23&num2=12”这样的结果，这里我们使用一个方法GetRequestParms来返回参数字典，这样作做是为了复用方法，因为在处理Post请求的时候我们会继续使用这个方法;例如我们传递的两个参数num1和num2对应的数值分别是12和24，那么在具体的请求报文中我们都能找到类似“num1=12&num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦;num1=23&num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了"><title>使用C#开发HTTP服务器系列之实现Get和Post</title>
 <link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E5%AE%9E%E7%8E%B0get%E5%92%8Cpost/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="使用C#开发HTTP服务器系列之实现Get和Post">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="使用C#开发HTTP服务器系列之实现Get和Post">
 <meta property="og:description" content="&#34;分割该行数据以后就可以得到“num1=23&num2=12”这样的结果，这里我们使用一个方法GetRequestParms来返回参数字典，这样作做是为了复用方法，因为在处理Post请求的时候我们会继续使用这个方法;例如我们传递的两个参数num1和num2对应的数值分别是12和24，那么在具体的请求报文中我们都能找到类似“num1=12&num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦;num1=23&num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了">
 <meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E5%AE%9E%E7%8E%B0get%E5%92%8Cpost/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -92,9 +95,9 @@ on-phone--column extended">
 </div>
 </header>
 <section class=article-content>
-<p>  各位朋友大家好，我是秦元培，欢迎大家关注我的博客，我的博客地址是<a class=link href=http://qinyuanpei.com target=_blank rel=noopener>http://qinyuanpei.com</a>。在我们这个Web服务器有了一个基本的门面以后，我们是时候来用它做点实际的事情了。还记得我们最早提到HTTP协议的用途是什么吗？它叫超文本传输协议啊，所以我们必须考虑让我们的服务器能够接收到客户端传来的数据。因为我们目前完成了大部分的工作，所以对数据传输这个问题我们这里选择以最简单的GET和POST为例来实现，这样我们今天的重点就落实在Get和Post的实现这个问题上来。而从原理上来讲，无论Get方式请求还是Post方式请求，我们都可以在请求报文中获得其请求参数，不同的是前者出现在请求行中，而后者出现在消息体中。例如我们传递的两个参数num1和num2对应的数值分别是12和24，那么在具体的请求报文中我们都能找到类似“num1=12&num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦。</p>
+<p>&emsp;&emsp;各位朋友大家好，我是秦元培，欢迎大家关注我的博客，我的博客地址是<a href=http://qinyuanpei.com>http://qinyuanpei.com</a>。在我们这个Web服务器有了一个基本的门面以后，我们是时候来用它做点实际的事情了。还记得我们最早提到HTTP协议的用途是什么吗？它叫超文本传输协议啊，所以我们必须考虑让我们的服务器能够接收到客户端传来的数据。因为我们目前完成了大部分的工作，所以对数据传输这个问题我们这里选择以最简单的GET和POST为例来实现，这样我们今天的重点就落实在Get和Post的实现这个问题上来。而从原理上来讲，无论Get方式请求还是Post方式请求，我们都可以在请求报文中获得其请求参数，不同的是前者出现在请求行中，而后者出现在消息体中。例如我们传递的两个参数num1和num2对应的数值分别是12和24，那么在具体的请求报文中我们都能找到类似“num1=12&num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦。</p>
 <h1 id=实现get请求>实现Get请求</h1>
-<p>  首先我们来实现Get请求，Get是HTTP协议中默认的请求类型，我们平时访问网页、请求资源实际上都是通过Get方式实现的。Get方式请求需要通过类似“?id=001&option=10”这样的形式附加在URL上，因此Get方式对浏览器来说是透明的，即用户可以通过浏览器地址栏知道，这个过程中传递了哪些参数以及这些参数的值分别是什么。而由于浏览器的限制，我们通过这种方式请求的时候能够传递的参数数目和长度都是有限的，而且当参数中存在中文数值的时候还需要对其进行编码。Get方式请求相对简单，我们下面来看看它的请求报文：</p>
+<p>&emsp;&emsp;首先我们来实现Get请求，Get是HTTP协议中默认的请求类型，我们平时访问网页、请求资源实际上都是通过Get方式实现的。Get方式请求需要通过类似“?id=001&option=10”这样的形式附加在URL上，因此Get方式对浏览器来说是透明的，即用户可以通过浏览器地址栏知道，这个过程中传递了哪些参数以及这些参数的值分别是什么。而由于浏览器的限制，我们通过这种方式请求的时候能够传递的参数数目和长度都是有限的，而且当参数中存在中文数值的时候还需要对其进行编码。Get方式请求相对简单，我们下面来看看它的请求报文：</p>
 <pre tabindex=0><code>GET /?num1=23&amp;num2=12 HTTP/1.1
 Accept: text/html, application/xhtml+xml, image/jxr, */*
 Accept-Language: zh-Hans-CN,zh-Hans;q=0.5
@@ -102,16 +105,16 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko)
 Accept-Encoding: gzip, deflate
 Host: localhost:4040
 Connection: Keep-Alive
-Cookie: _ga=GA1.1.1181222800.1463541781
-</code></pre><p>此时我们可以注意到在请求报文第一行，即请求行中出现了“/?num1=23&num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了。所以下面我们通过这样的方式来实现，我们为HtttpRequest类增加了一个Parms属性，它是一个键和值均为字符串类型的字典，我们使用这个字典来存储和管理客户端传递来的参数。</p>
+Cookie: _ga=GA1.1.1181222800.1463541781</code></pre>
+<p>此时我们可以注意到在请求报文第一行，即请求行中出现了“/?num1=23&num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了。所以下面我们通过这样的方式来实现，我们为HtttpRequest类增加了一个Parms属性，它是一个键和值均为字符串类型的字典，我们使用这个字典来存储和管理客户端传递来的参数。</p>
 <pre tabindex=0><code>//获取请求参数
-if(this.Method == &quot;GET&quot; &amp;&amp; this.URL.Contains('?'))
-    this.Params = GetRequestParams(lines[0].Split(' ')[1].Split('?')[1]);
-</code></pre><p>显然我们首先需要判断请求类型是否为GET以及请求中是否带有参数，其方法是判断请求地址中是否含有“?&ldquo;字符。这里的lines是指将报文信息按行分割以后的数组，显然请求地址在第一行，所以我们根据“?&ldquo;分割该行数据以后就可以得到“num1=23&num2=12”这样的结果，这里我们使用一个方法GetRequestParms来返回参数字典，这样作做是为了复用方法，因为在处理Post请求的时候我们会继续使用这个方法。该方法定义如下：</p>
+if(this.Method == &#34;GET&#34; &amp;&amp; this.URL.Contains(&#39;?&#39;))
+    this.Params = GetRequestParams(lines[0].Split(&#39; &#39;)[1].Split(&#39;?&#39;)[1]);</code></pre>
+<p>显然我们首先需要判断请求类型是否为GET以及请求中是否带有参数，其方法是判断请求地址中是否含有“?&ldquo;字符。这里的lines是指将报文信息按行分割以后的数组，显然请求地址在第一行，所以我们根据“?&ldquo;分割该行数据以后就可以得到“num1=23&num2=12”这样的结果，这里我们使用一个方法GetRequestParms来返回参数字典，这样作做是为了复用方法，因为在处理Post请求的时候我们会继续使用这个方法。该方法定义如下：</p>
 <pre tabindex=0><code> /// &lt;summary&gt;
 /// 从内容中解析请求参数并返回一个字典
 /// &lt;/summary&gt;
-/// &lt;param name=&quot;content&quot;&gt;使用&amp;连接的参数字符串&lt;/param&gt;
+/// &lt;param name=&#34;content&#34;&gt;使用&amp;连接的参数字符串&lt;/param&gt;
 /// &lt;returns&gt;如果存在参数则返回参数否则返回null&lt;/returns&gt;
 protected Dictionary&lt;string, string&gt; GetRequestParams(string content)
 {
@@ -120,7 +123,7 @@ protected Dictionary&lt;string, string&gt; GetRequestParams(string content)
         return null;
 
     //按照&amp;对字符进行分割
-    string[] reval = content.Split('&amp;');
+    string[] reval = content.Split(&#39;&amp;&#39;);
     if(reval.Length &lt;= 0)
         return null;
 
@@ -128,17 +131,17 @@ protected Dictionary&lt;string, string&gt; GetRequestParams(string content)
     Dictionary&lt;string, string&gt; dict = new Dictionary&lt;string, string&gt;();
     foreach(string val in reval)
     {
-        string[] kv = val.Split('=');
+        string[] kv = val.Split(&#39;=&#39;);
         if(kv.Length &lt;= 1)
-            dict.Add(kv[0], &quot;&quot;);
+            dict.Add(kv[0], &#34;&#34;);
         dict.Add(kv[0],kv[1]);
     }
 
     //返回字典
     return dict;
-}
-</code></pre><h1 id=实现post请求>实现Post请求</h1>
-<p>  Post请求相对Get请求比较安全，因为它克服了Get请求参数长度的限制问题，而且由于它的参数是存放在消息体中的，所以在传递参数的时候对用户而言是不可见的，我们平时接触到的网站登录都是这种类型，而复杂点的网站会通过验证码、Cookie等形式来避免爬虫程序模拟登录，在Web开发中Post请求可以由一个表单发起，可以由爬虫程序如HttpWebRequest、WebClient等发起，下面我们重点来分析它的请求报文：</p>
+}</code></pre>
+<h1 id=实现post请求>实现Post请求</h1>
+<p>&emsp;&emsp;Post请求相对Get请求比较安全，因为它克服了Get请求参数长度的限制问题，而且由于它的参数是存放在消息体中的，所以在传递参数的时候对用户而言是不可见的，我们平时接触到的网站登录都是这种类型，而复杂点的网站会通过验证码、Cookie等形式来避免爬虫程序模拟登录，在Web开发中Post请求可以由一个表单发起，可以由爬虫程序如HttpWebRequest、WebClient等发起，下面我们重点来分析它的请求报文：</p>
 <pre tabindex=0><code>POST / HTTP/1.1
 Accept: text/html, application/xhtml+xml, image/jxr, */*
 Accept-Language: zh-Hans-CN,zh-Hans;q=0.5
@@ -148,12 +151,12 @@ Host: localhost:4040
 Connection: Keep-Alive
 Cookie: _ga=GA1.1.1181222800.1463541781
 
-num1=23&amp;num2=12
-</code></pre><p>我们可以注意到此时请求行的请求方法变成了POST，而在报文结尾增加了一行内容，我们称其为“消息体”，这是一个可选的内容，请注意它前面有一个空行。所以，当我们处理一个Posst请求的时候，通过最后一行就可以解析出客户端传递过来的参数，和Get请求相同，我们这里继续使用GetRequestParams来完成解析。</p>
-<pre tabindex=0><code>if(this.Method == &quot;POST&quot;)
-    this.Params = GetRequestParams(lines[lines.Length-1]);
-</code></pre><h1 id=实例>实例</h1>
-<p>  现在我们来完成一个简单地实例，服务器自然由我们这里设计的这个服务器来完成咯，而客户端则由Unity来完成因为Unity有简单的WWW可以使用。首先来编写服务端，这个继承HttpServer就好了，我们主要来写这里的方法：</p>
+num1=23&amp;num2=12</code></pre>
+<p>我们可以注意到此时请求行的请求方法变成了POST，而在报文结尾增加了一行内容，我们称其为“消息体”，这是一个可选的内容，请注意它前面有一个空行。所以，当我们处理一个Posst请求的时候，通过最后一行就可以解析出客户端传递过来的参数，和Get请求相同，我们这里继续使用GetRequestParams来完成解析。</p>
+<pre tabindex=0><code>if(this.Method == &#34;POST&#34;)
+    this.Params = GetRequestParams(lines[lines.Length-1]);</code></pre>
+<h1 id=实例>实例</h1>
+<p>&emsp;&emsp;现在我们来完成一个简单地实例，服务器自然由我们这里设计的这个服务器来完成咯，而客户端则由Unity来完成因为Unity有简单的WWW可以使用。首先来编写服务端，这个继承HttpServer就好了，我们主要来写这里的方法：</p>
 <pre tabindex=0><code>using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -169,8 +172,8 @@ namespace HttpServer
         /// &lt;summary&gt;
         /// 构造函数
         /// &lt;/summary&gt;
-        /// &lt;param name=&quot;ipAddress&quot;&gt;IP地址&lt;/param&gt;
-        /// &lt;param name=&quot;port&quot;&gt;端口号&lt;/param&gt;
+        /// &lt;param name=&#34;ipAddress&#34;&gt;IP地址&lt;/param&gt;
+        /// &lt;param name=&#34;port&#34;&gt;端口号&lt;/param&gt;
         public ExampleServer(string ipAddress, int port)
             : base(ipAddress, port)
         {
@@ -180,17 +183,17 @@ namespace HttpServer
         public override void OnPost(HttpRequest request)
         {
             //获取客户端传递的参数
-            int num1 = int.Parse(request.Params[&quot;num1&quot;]);
-            int num2 = int.Parse(request.Params[&quot;num2&quot;]);
+            int num1 = int.Parse(request.Params[&#34;num1&#34;]);
+            int num2 = int.Parse(request.Params[&#34;num2&#34;]);
 
             //设置返回信息
-            string content = string.Format(&quot;这是通过Post方式返回的数据:num1={0},num2={1}&quot;,num1,num2);
+            string content = string.Format(&#34;这是通过Post方式返回的数据:num1={0},num2={1}&#34;,num1,num2);
 
             //构造响应报文
             HttpResponse response = new HttpResponse(content, Encoding.UTF8);
-            response.StatusCode = &quot;200&quot;;
-            response.Content_Type = &quot;text/html; charset=UTF-8&quot;;
-            response.Server = &quot;ExampleServer&quot;;
+            response.StatusCode = &#34;200&#34;;
+            response.Content_Type = &#34;text/html; charset=UTF-8&#34;;
+            response.Server = &#34;ExampleServer&#34;;
 
             //发送响应
             ProcessResponse(request.Handler, response);
@@ -199,50 +202,45 @@ namespace HttpServer
         public override void OnGet(HttpRequest request)
         {
             //获取客户端传递的参数
-            int num1 = int.Parse(request.Params[&quot;num1&quot;]);
-            int num2 = int.Parse(request.Params[&quot;num2&quot;]);
+            int num1 = int.Parse(request.Params[&#34;num1&#34;]);
+            int num2 = int.Parse(request.Params[&#34;num2&#34;]);
 
             //设置返回信息
-            string content = string.Format(&quot;这是通过Get方式返回的数据:num1={0},num2={1}&quot;,num1,num2);
+            string content = string.Format(&#34;这是通过Get方式返回的数据:num1={0},num2={1}&#34;,num1,num2);
 
             //构造响应报文
             HttpResponse response = new HttpResponse(content, Encoding.UTF8);
-            response.StatusCode = &quot;200&quot;;
-            response.Content_Type = &quot;text/html; charset=UTF-8&quot;;
-            response.Server = &quot;ExampleServer&quot;;
+            response.StatusCode = &#34;200&#34;;
+            response.Content_Type = &#34;text/html; charset=UTF-8&#34;;
+            response.Server = &#34;ExampleServer&#34;;
 
             //发送响应
             ProcessResponse(request.Handler, response);
         }
     }
-}
-</code></pre><p>因为这里需要对Get和Post进行响应，所以我们这里对OnGet和OnPost两个方法进行了重写，这里的处理方式非常简单，按照一定格式返回数据即可。下面我们来说说Unity作为客户端这边要做的工作。WWW是Unity3D中提供的一个简单的HTTP协议的封装类，它和.NET平台下的WebClient、HttpWebRequest/HttpWebResponse类似，都可以处理常见的HTTP请求如Get和Post这两种请求方式。</p>
+}</code></pre>
+<p>因为这里需要对Get和Post进行响应，所以我们这里对OnGet和OnPost两个方法进行了重写，这里的处理方式非常简单，按照一定格式返回数据即可。下面我们来说说Unity作为客户端这边要做的工作。WWW是Unity3D中提供的一个简单的HTTP协议的封装类，它和.NET平台下的WebClient、HttpWebRequest/HttpWebResponse类似，都可以处理常见的HTTP请求如Get和Post这两种请求方式。</p>
 <p>WWW的优势主要是简单易用和支持协程，尤其是Unity3D中的协程（Coroutine）这个特性，如果能够得到良好的使用，常常能够起到事倍功半的效果。因为WWW强调的是以HTTP短链接为主的易用性，所以相应地在超时、Cookie等HTTP头部字段支持的完整性上无法和WebClient、HttpWebRequest/HttpWebRespons相提并论，当我们需要更复杂的HTTP协议支持的时候，选择在WebClient、HttpWebRequest/HttpWebResponse上进行深度定制将会是一个不错的选择。我们这里需要的是发起一个简单的HTTP请求，所以使用WWW完全可以满足我们的要求，首先我们来看在Unity3D中如何发起一个Get请求，这里给出一个简单的代码示例：</p>
 <pre tabindex=0><code>//采用GET方式请求数据
 IEnumerator Get()
 {
-    WWW www = new WWW (&quot;http://127.0.0.1:4040/?num1=12&amp;num2=23&quot;);
+    WWW www = new WWW (&#34;http://127.0.0.1:4040/?num1=12&amp;num2=23&#34;);
     yield return www;
     Debug.Log(www.text);
-}
-</code></pre><p>现在我们是需要使用StartCoroutine调用这个方法就可以啦！同样地，对于Post请求，我们这里采用一个WWWForm来封装参数，而在网页开发中我们通常都是借助表单来向服务器传递参数的，这里给出同样简单的代码示例：</p>
+}</code></pre>
+<p>现在我们是需要使用StartCoroutine调用这个方法就可以啦！同样地，对于Post请求，我们这里采用一个WWWForm来封装参数，而在网页开发中我们通常都是借助表单来向服务器传递参数的，这里给出同样简单的代码示例：</p>
 <pre tabindex=0><code>//采用POST方式请求数据
 IEnumerator Post()
 {
     WWWForm form = new WWWForm ();
-    form.AddField (&quot;num1&quot;, 12);
-    form.AddField (&quot;num2&quot;, 23);
-    WWW www = new WWW (&quot;http://127.0.0.1:4040/&quot;, form);
+    form.AddField (&#34;num1&#34;, 12);
+    form.AddField (&#34;num2&#34;, 23);
+    WWW www = new WWW (&#34;http://127.0.0.1:4040/&#34;, form);
     yield return www;
     Debug.Log (www.text);
-}
-</code></pre><p>而运行这个实例，我们可以得到下面的结果：</p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzix87avuaj20dj05974c.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix87avuaj20dj05974c.jpg loading=lazy alt=测试结果>
-</a>
-<figcaption>测试结果</figcaption>
-</figure></p>
+}</code></pre>
+<p>而运行这个实例，我们可以得到下面的结果：</p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix87avuaj20dj05974c.jpg alt=测试结果></p>
 <p>都是谁告诉你做服务器开发一定要用Java的啊，现在我们可以写出自己的服务器了，本篇结束，下期见！</p>
 </section>
 <footer class=article-footer>

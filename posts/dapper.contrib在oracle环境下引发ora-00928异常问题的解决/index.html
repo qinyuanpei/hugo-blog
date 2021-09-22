@@ -4,7 +4,10 @@
 问题回顾 在使用 Dapper.Contrib 操作 Oracle 数据库的时候，通过 Insert() 方法来插入一个实体对象，此时，会引发 ORA-00928: 缺失 SELECT 关键字 这种典型的 Oracle 数据库错误，对于经常使用 Dapper 的博主而言，对于 @ 还是 : 这种无聊的语法还是有一点经验的，在尝试手写 SQL 语句后，发现使用 Dapper 提供的 Execute() 扩展方法一点问题都没有，初步判定应该是 Dapper.Contrib 这个扩展库的问题，在翻阅 Dapper 的源代码以后，终于找到了问题的根源所在，所以，下面请跟随博主的目光，来一起解读解读 Dapper.Contrib 这个扩展库，相信你看完以后就会明白，为什么这里会被 Oracle 数据库摆上一道，以及为什么它至今都不考虑合并 Oracle 数据库相关的PR。
 原因分析 众所周知，Dapper 的核心其实就是一个 SqlMapper ，它提供的 Query() 和 Execute() 接口本身都是附加在 IDbConnection 接口上的扩展方法，所以，最基础的 Dapper 用法其实是伴随着 SQL 语句和以匿名对象为主的参数化查询，这可以说是 Dapper 的核心，而 Dapper."><title>Dapper.Contrib在Oracle环境下引发ORA-00928异常问题的解决</title>
 <link rel=canonical href=/posts/dapper.contrib%E5%9C%A8oracle%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BC%95%E5%8F%91ora-00928%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="Dapper.Contrib在Oracle环境下引发ORA-00928异常问题的解决">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="Dapper.Contrib在Oracle环境下引发ORA-00928异常问题的解决">
 <meta property="og:description" content="话说最近这两周里，被迫官宣996的生活实在是无趣，在两周时间里安排三周的工作量，倘若用丞相的口吻来说，那便是: 我从未见过有如此厚颜无耻之人。无法为工作的紧急程度排出优先级，这便是身为肉食者们的鄙。古人云：肉食者鄙，未能远谋，诚不欺我也。一味地追求快速迭代，“屎”山越滚越高没有人在乎；一味地追求功能叠加，技术债务越来越多没有人在乎。所以，本着“多一事不如少一事”的原则，直接通过 Dapper 写 SQL 语句一样没有问题，因为被压榨完以后的时间只能写这个。在今天的这篇博客里，我想和大家分享的是，Dapper.Contrib在操作 Oracle 数据库时引发 ORA-00928: 缺失 SELECT 关键字 这一错误背后的根本原因，以及 Dapper 作为一个轻量级 ORM 在设计上做出的取舍。
 问题回顾 在使用 Dapper.Contrib 操作 Oracle 数据库的时候，通过 Insert() 方法来插入一个实体对象，此时，会引发 ORA-00928: 缺失 SELECT 关键字 这种典型的 Oracle 数据库错误，对于经常使用 Dapper 的博主而言，对于 @ 还是 : 这种无聊的语法还是有一点经验的，在尝试手写 SQL 语句后，发现使用 Dapper 提供的 Execute() 扩展方法一点问题都没有，初步判定应该是 Dapper.Contrib 这个扩展库的问题，在翻阅 Dapper 的源代码以后，终于找到了问题的根源所在，所以，下面请跟随博主的目光，来一起解读解读 Dapper.Contrib 这个扩展库，相信你看完以后就会明白，为什么这里会被 Oracle 数据库摆上一道，以及为什么它至今都不考虑合并 Oracle 数据库相关的PR。
 原因分析 众所周知，Dapper 的核心其实就是一个 SqlMapper ，它提供的 Query() 和 Execute() 接口本身都是附加在 IDbConnection 接口上的扩展方法，所以，最基础的 Dapper 用法其实是伴随着 SQL 语句和以匿名对象为主的参数化查询，这可以说是 Dapper 的核心，而 Dapper.">
@@ -67,8 +70,8 @@ extended">
 <span class=na>          [&#34;sqliteconnection&#34;]</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SQLiteAdapter</span><span class=p>(),</span>
 <span class=na>          [&#34;mysqlconnection&#34;]</span> <span class=p>=</span> <span class=k>new</span> <span class=n>MySqlAdapter</span><span class=p>(),</span>
 <span class=na>          [&#34;fbconnection&#34;]</span> <span class=p>=</span> <span class=k>new</span> <span class=n>FbAdapter</span><span class=p>()</span>
-    <span class=p>};</span>
-</code></pre></div><p>一个自然而然的问题是，这个 <code>ISqlAdapter</code> 接口是做什么的呢？为什么说 <code>Dapper.Contrib</code> 没有实现 Oracle 版本的 ISqlAdapter 呢？如果我们看一下 <code>ISqlAdapter</code> 的定义，就可以了解到其作用是告诉 Dapper ，应该怎么样处理数据库里的自增ID、怎么样表示 <code>Column = Value</code> 这样的结构，以及怎么样处理列名：</p>
+    <span class=p>};</span></code></pre></div>
+<p>一个自然而然的问题是，这个 <code>ISqlAdapter</code> 接口是做什么的呢？为什么说 <code>Dapper.Contrib</code> 没有实现 Oracle 版本的 ISqlAdapter 呢？如果我们看一下 <code>ISqlAdapter</code> 的定义，就可以了解到其作用是告诉 Dapper ，应该怎么样处理数据库里的自增ID、怎么样表示 <code>Column = Value</code> 这样的结构，以及怎么样处理列名：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>public</span> <span class=k>partial</span> <span class=k>interface</span> <span class=n>ISqlAdapter</span>
 <span class=p>{</span>
     <span class=kt>int</span> <span class=n>Insert</span><span class=p>(</span><span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>transaction</span><span class=p>,</span> 
@@ -78,8 +81,8 @@ extended">
     <span class=p>);</span>
     <span class=k>void</span> <span class=n>AppendColumnName</span><span class=p>(</span><span class=n>StringBuilder</span> <span class=n>sb</span><span class=p>,</span> <span class=kt>string</span> <span class=n>columnName</span><span class=p>);</span>
     <span class=k>void</span> <span class=n>AppendColumnNameEqualsValue</span><span class=p>(</span><span class=n>StringBuilder</span> <span class=n>sb</span><span class=p>,</span> <span class=kt>string</span> <span class=n>columnName</span><span class=p>);</span>
-<span class=p>}</span>
-</code></pre></div><p>这里以 <code>MySqlAdapter</code> 的实现为例：</p>
+<span class=p>}</span></code></pre></div>
+<p>这里以 <code>MySqlAdapter</code> 的实现为例：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>public</span> <span class=k>partial</span> <span class=k>class</span> <span class=nc>MySqlAdapter</span> <span class=p>:</span> <span class=n>ISqlAdapter</span>
 <span class=p>{</span>
     <span class=k>public</span> <span class=kt>int</span> <span class=n>Insert</span><span class=p>(</span><span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>transaction</span><span class=p>,</span> 
@@ -112,8 +115,8 @@ extended">
     <span class=p>{</span>
         <span class=n>sb</span><span class=p>.</span><span class=n>AppendFormat</span><span class=p>(</span><span class=s>&#34;`{0}` = @{1}&#34;</span><span class=p>,</span> <span class=n>columnName</span><span class=p>,</span> <span class=n>columnName</span><span class=p>);</span>
     <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><p>相信看到这里的时候，大家会和我一样感到失望，因为 Dapper 的底层依然是在拼 SQL ，尤其是看到 <code>AppendColumnNameEqualsValue()</code> 这个方法的时候，会有一种恍然大明白的感觉，因为 @ 这个符号对于 Dapper 的参数化查询而言，实在是熟悉得不能再熟悉了。我们都知道为 Dapper 写 SQL 语句的时候，要对 Oracle 区别对待，因为这个奇葩非要用 <code>:</code> 这个奇怪的符号。回到我们一开始的问题，为啥 <code>Dapper.Contrib</code> 在 Oracle 环境下会提示 <code>ORA-XXXXX</code> 这种鬼都看不明白的错误，因为它在处理 SQL 的语句的时候依然使用的是 <code>@</code> 这个符号。这又是为什么呢？因为当指定的 <code>IDbConnection</code> 在 <code>AdapterDictionary</code> 中不存在的时候，它会使用默认的 <code>SqlServerAdapter</code> ，显然，全世界只有 Oracle 这个奇葩会用 <code>:</code> 这个奇怪的符号。我们不是在调用 Insert() 方法的时候提示这个错误吗？那么 <code>Dapper.Contrib</code> 是怎么实现 <code>Insert()</code> 方法的呢？这个部分实现主要在第 352 行 ~ 第 360 行：</p>
+<span class=p>}</span></code></pre></div>
+<p>相信看到这里的时候，大家会和我一样感到失望，因为 Dapper 的底层依然是在拼 SQL ，尤其是看到 <code>AppendColumnNameEqualsValue()</code> 这个方法的时候，会有一种恍然大明白的感觉，因为 @ 这个符号对于 Dapper 的参数化查询而言，实在是熟悉得不能再熟悉了。我们都知道为 Dapper 写 SQL 语句的时候，要对 Oracle 区别对待，因为这个奇葩非要用 <code>:</code> 这个奇怪的符号。回到我们一开始的问题，为啥 <code>Dapper.Contrib</code> 在 Oracle 环境下会提示 <code>ORA-XXXXX</code> 这种鬼都看不明白的错误，因为它在处理 SQL 的语句的时候依然使用的是 <code>@</code> 这个符号。这又是为什么呢？因为当指定的 <code>IDbConnection</code> 在 <code>AdapterDictionary</code> 中不存在的时候，它会使用默认的 <code>SqlServerAdapter</code> ，显然，全世界只有 Oracle 这个奇葩会用 <code>:</code> 这个奇怪的符号。我们不是在调用 Insert() 方法的时候提示这个错误吗？那么 <code>Dapper.Contrib</code> 是怎么实现 <code>Insert()</code> 方法的呢？这个部分实现主要在第 352 行 ~ 第 360 行：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=kt>var</span> <span class=n>adapter</span> <span class=p>=</span> <span class=n>GetFormatter</span><span class=p>(</span><span class=n>connection</span><span class=p>);</span>
 
 <span class=k>for</span> <span class=p>(</span><span class=kt>var</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>allPropertiesExceptKeyAndComputed</span><span class=p>.</span><span class=n>Count</span><span class=p>;</span> <span class=n>i</span><span class=p>++)</span>
@@ -122,14 +125,14 @@ extended">
     <span class=n>adapter</span><span class=p>.</span><span class=n>AppendColumnName</span><span class=p>(</span><span class=n>sbColumnList</span><span class=p>,</span> <span class=n>property</span><span class=p>.</span><span class=n>Name</span><span class=p>);</span>  <span class=c1>//fix for issue #336
 </span><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=n>i</span> <span class=p>&lt;</span> <span class=n>allPropertiesExceptKeyAndComputed</span><span class=p>.</span><span class=n>Count</span> <span class=p>-</span> <span class=m>1</span><span class=p>)</span>
        <span class=n>sbColumnList</span><span class=p>.</span><span class=n>Append</span><span class=p>(</span><span class=s>&#34;, &#34;</span><span class=p>);</span>
- <span class=p>}</span>
-</code></pre></div><p>显然，这部分是按照属性名去组织 <code>columnList</code> 和 <code>parameterList</code> 的过程，对于 Oracle ，永远是充满吐槽的，比如不加双引号则强制大写的设定，这意味着如果你的表名或者字段名是区分大小写的话，在 Oracle 这里都要加上双引号，这对 <code>Dapper.Contrib</code> 有什么影响呢？原本我们只需要给实体添加<code>[Table]</code>标签即可，而现在你不得不考虑带上反斜杠转义，甚至当你需要为 <code>DBeaver</code> 下载一个JDBC的驱动的时候，甲骨文这家公司居然要强制你去注册，对于一个习惯像<code>·.NET Core</code>、<code>GCC</code>、<code>Python</code>、<code>Lua</code> 和 <code>Node</code> 这样开箱即用的人来说，这就像强迫你注册一大堆真实信息，然后发现 API 接口完全无法匹配你的需求一样痛苦。关于 <code>GetFormatter()</code> 方法，它和我们猜想的完全一致：</p>
+ <span class=p>}</span></code></pre></div>
+<p>显然，这部分是按照属性名去组织 <code>columnList</code> 和 <code>parameterList</code> 的过程，对于 Oracle ，永远是充满吐槽的，比如不加双引号则强制大写的设定，这意味着如果你的表名或者字段名是区分大小写的话，在 Oracle 这里都要加上双引号，这对 <code>Dapper.Contrib</code> 有什么影响呢？原本我们只需要给实体添加<code>[Table]</code>标签即可，而现在你不得不考虑带上反斜杠转义，甚至当你需要为 <code>DBeaver</code> 下载一个JDBC的驱动的时候，甲骨文这家公司居然要强制你去注册，对于一个习惯像<code>·.NET Core</code>、<code>GCC</code>、<code>Python</code>、<code>Lua</code> 和 <code>Node</code> 这样开箱即用的人来说，这就像强迫你注册一大堆真实信息，然后发现 API 接口完全无法匹配你的需求一样痛苦。关于 <code>GetFormatter()</code> 方法，它和我们猜想的完全一致：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>private</span> <span class=k>static</span> <span class=n>ISqlAdapter</span> <span class=n>GetFormatter</span><span class=p>(</span><span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>)</span>
 <span class=p>{</span>
    <span class=kt>var</span> <span class=n>name</span> <span class=p>=</span> <span class=n>GetDatabaseType</span><span class=p>?.</span><span class=n>Invoke</span><span class=p>(</span><span class=n>connection</span><span class=p>).</span><span class=n>ToLower</span><span class=p>()</span> <span class=p>??</span> <span class=n>connection</span><span class=p>.</span><span class=n>GetType</span><span class=p>().</span><span class=n>Name</span><span class=p>.</span><span class=n>ToLower</span><span class=p>();</span>
    <span class=k>return</span> <span class=n>AdapterDictionary</span><span class=p>.</span><span class=n>TryGetValue</span><span class=p>(</span><span class=n>name</span><span class=p>,</span> <span class=k>out</span> <span class=kt>var</span> <span class=n>adapter</span><span class=p>)</span> <span class=p>?</span> <span class=n>adapter</span> <span class=p>:</span> <span class=n>DefaultAdapter</span><span class=p>;</span>
-<span class=p>}</span>
-</code></pre></div><p>好了，在明白了以上种种因果关系以后，我们现在来考虑如何解决 Oracle 的问题。按照人类最直观的思维，既然它没有实现 Oracle 版本的 <code>ISqlAdapter</code> ，我自己实现一个不就好啦：</p>
+<span class=p>}</span></code></pre></div>
+<p>好了，在明白了以上种种因果关系以后，我们现在来考虑如何解决 Oracle 的问题。按照人类最直观的思维，既然它没有实现 Oracle 版本的 <code>ISqlAdapter</code> ，我自己实现一个不就好啦：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>public</span> <span class=k>class</span> <span class=nc>OracleSqlAdapter</span> <span class=p>:</span> <span class=n>ISqlAdapter</span>
 <span class=p>{</span>
     <span class=k>public</span> <span class=k>void</span> <span class=n>AppendColumnName</span><span class=p>(</span><span class=n>StringBuilder</span> <span class=n>sb</span><span class=p>,</span> <span class=kt>string</span> <span class=n>columnName</span><span class=p>)</span>
@@ -155,8 +158,8 @@ extended">
          <span class=kt>var</span> <span class=n>sql</span> <span class=p>=</span> <span class=s>$&#34;insert into {tableName} ({columnList}) values ({parameterList})&#34;</span><span class=p>;</span>
          <span class=k>return</span> <span class=n>connection</span><span class=p>.</span><span class=n>ExecuteAsync</span><span class=p>(</span><span class=n>sql</span><span class=p>,</span> <span class=n>entityToInsert</span><span class=p>,</span> <span class=n>transaction</span><span class=p>,</span> <span class=n>commandTimeout</span><span class=p>);</span>
     <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><p>坦白说， <code>Dapper.Contrib</code> 这种纯静态类的设计，完全就不给别人留扩展的口子，为此，扩展方法 + 反射搞一个突破口：</p>
+<span class=p>}</span></code></pre></div>
+<p>坦白说， <code>Dapper.Contrib</code> 这种纯静态类的设计，完全就不给别人留扩展的口子，为此，扩展方法 + 反射搞一个突破口：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp> <span class=k>public</span> <span class=k>static</span> <span class=k>class</span> <span class=nc>SqlAdapterrExtensions</span>
  <span class=p>{</span>
     <span class=k>public</span> <span class=k>static</span> <span class=k>void</span> <span class=n>UseSqlAdapter</span><span class=p>&lt;</span><span class=n>TSqlAdapter</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=n>TSqlAdapter</span> <span class=n>sqlAdapter</span><span class=p>)</span>
@@ -171,11 +174,11 @@ extended">
         <span class=k>if</span> <span class=p>(</span><span class=n>adapters</span> <span class=p>!=</span> <span class=k>null</span> <span class=p>&amp;&amp;</span> <span class=p>!</span><span class=n>adapters</span><span class=p>.</span><span class=n>ContainsKey</span><span class=p>(</span><span class=n>connectionType</span><span class=p>))</span>
             <span class=n>adapters</span><span class=p>?.</span><span class=n>Add</span><span class=p>(</span><span class=n>connectionType</span><span class=p>,</span> <span class=n>sqlAdapter</span><span class=p>);</span>
     <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><p>这样，我们不但可以满足眼下，还可以着眼未来，虽然未来有时候挺遥远，但梦想还是要有的，开闭原则，我做到了！改进后，我们这样处理即可：</p>
+<span class=p>}</span></code></pre></div>
+<p>这样，我们不但可以满足眼下，还可以着眼未来，虽然未来有时候挺遥远，但梦想还是要有的，开闭原则，我做到了！改进后，我们这样处理即可：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=n>connection</span> <span class=p>=</span> <span class=k>new</span> <span class=n>OracleConnection</span><span class=p>(</span><span class=n>ConnectionStrings</span><span class=p>.</span><span class=n>Default</span><span class=p>);</span>
-<span class=n>connection</span><span class=p>.</span><span class=n>UseSqlAdapter</span><span class=p>(</span><span class=k>new</span> <span class=n>OracleSqlAdapter</span><span class=p>());</span>
-</code></pre></div><p>此时，我们发现，我们解决了 Insert() 的问题，但随之而来的，Get()、Delete()、Update() 这一系列和主键相关的方法，都因为 <code>Dapper.Contrib</code> 中的主键设计而出现了问题，而这就是我们接下来要讲的主键Id参数化问题。</p>
+<span class=n>connection</span><span class=p>.</span><span class=n>UseSqlAdapter</span><span class=p>(</span><span class=k>new</span> <span class=n>OracleSqlAdapter</span><span class=p>());</span></code></pre></div>
+<p>此时，我们发现，我们解决了 Insert() 的问题，但随之而来的，Get()、Delete()、Update() 这一系列和主键相关的方法，都因为 <code>Dapper.Contrib</code> 中的主键设计而出现了问题，而这就是我们接下来要讲的主键Id参数化问题。</p>
 <h2 id=主键id参数化问题>主键Id参数化问题</h2>
 <p>当我谈起这个问题的时候，我对于 <code>Dapper.Contrib</code> 中支持自增ID的坚持是怀疑的，因为在分布式盛行的今天，有大量的分布式ID生成方案供我们选择，比如基于 <code>Redis</code> 的号段策略，基于雪花算法的ID生成等等。大家会注意到我实现的 OracleSqlAdapter 在实现 Insert() 方法的时候简化了大量代码，这是因为我真的不知道，怎么从 Oracle 中获取一个新生成的ID，尤其是这个ID居然还要依赖一个我听都没有听说过的“序列”，而之所以要在 ISqlAdapter 中实现 Insert() 方法，最根本的原因就是，各个数据库对于自增ID的实现是不一样的，比如 MySQL 中使用的是 <code>SCOPE_IDENTITY()</code>，而 MSSQL 中使用的则是 <code>SCOPE_IDENTITY()</code> ，就因为这一点点差异，我们就必须要去折腾一遍，可以说， Dapper.Contrib 不支持 Oracle 的一个重要原因，就是在 Oracle 下实现自增ID太麻烦了。</p>
 <p>既然大家都不用自增ID了，为什么还要在一个通用的ORM里折腾这个呢？说实话，我真担心有一天自增ID会溢出，谁让每个数据库里的上限都不一样呢？另一方面，既然Id在每个数据库的实现都不一样，那么，作为Id本身应该考虑放到 <code>ISqlAdapter</code> 接口中由使用者来实现啊，可偏偏 ISqlAdapter 里只定义了一个 Insert() 方法，所以，就算我们实现了 OracleSqlAdapter ，一样无法解决 Insert() 方法以外的其它方法在 Oracle 下面的问题，正因为如此，默认的 @ 符号在 Oracle 环境下下没有被完全替换掉，这就需要修改 Dapper.Contrib 的底层代码，这真的是一个不好的设计，因为使用者完全没有办法通过重写来覆盖某些默认行为，我们一起来看看，需要修改哪些地方：</p>
@@ -199,8 +202,7 @@ extended">
 </span><span class=c1></span>    <span class=n>dynParams</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=s>&#34;@id&#34;</span><span class=p>,</span> <span class=n>id</span><span class=p>);</span>
 
     <span class=c1>//以下代码已省略
-</span><span class=c1></span><span class=p>}</span>
-</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>public</span> <span class=k>static</span> <span class=kt>long</span> <span class=n>Insert</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=n>T</span> <span class=n>entityToInsert</span><span class=p>,</span>
+</span><span class=c1></span><span class=p>}</span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>public</span> <span class=k>static</span> <span class=kt>long</span> <span class=n>Insert</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=n>T</span> <span class=n>entityToInsert</span><span class=p>,</span>
 <span class=n>IDbTransaction</span> <span class=n>transaction</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=kt>int?</span> <span class=n>commandTimeout</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span> <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=k>class</span>
 <span class=p>{</span>
     <span class=c1>//以上代码已省略
@@ -216,8 +218,8 @@ extended">
     <span class=p>}</span>
 
     <span class=c1>//以下代码已省略
-</span><span class=c1></span><span class=p>}</span>
-</code></pre></div><p>其实，仔细阅读 Update() 和 Delete() 两个方法的实现，就会发现它们都非常完美地避开了这一点，就是不知道为什么只有两个方法采用了不同地方式去拼接 SQL ，当然，这里我们会意识到有个列名的问题，尤其是在需要区分大小写的情况下，为此，我们可能需要去定义一个 ColumnAttribute，还能说什么呢？请和我大声地吐槽：**垃圾 Oracle ！**你看，就为了这一点点差异，我们不得不去额外写一点代码，所以，喊了很多年的去IOE，我表示举双手赞成。</p>
+</span><span class=c1></span><span class=p>}</span></code></pre></div>
+<p>其实，仔细阅读 Update() 和 Delete() 两个方法的实现，就会发现它们都非常完美地避开了这一点，就是不知道为什么只有两个方法采用了不同地方式去拼接 SQL ，当然，这里我们会意识到有个列名的问题，尤其是在需要区分大小写的情况下，为此，我们可能需要去定义一个 ColumnAttribute，还能说什么呢？请和我大声地吐槽：<strong>垃圾 Oracle ！</strong>你看，就为了这一点点差异，我们不得不去额外写一点代码，所以，喊了很多年的去IOE，我表示举双手赞成。</p>
 <p>事实上，社区里已经有类似的PR，可因为改动的范围比较大，官方至今都没有考虑过将其合并到主干分支上，所以，这个问题一直没有解决，这是一个悲伤的故事。</p>
 <h1 id=相关思考>相关思考</h1>
 <p>在阅读 Dapper 源码的同时，我查阅了一个和 Dapper.Contrib 类似的项目：DapperExtension，我发现这个项目目前处在“荒废”的状态，因为它遇到了相同的问题，即 SQL 这门看起来统一实则相当不统一的语言，因为每一个数据库厂商几乎都在给标准“添砖加瓦“，就以自增ID为例，MySQL、MSSQL、Oracle 居然是三种不同的实现方式，尤其是 Oracle 这个奇葩，居然还需要定义一个序列来解决这个问题，这个奇葩给数据库加注释都那么另类，这带来的问题是什么？Dapper.Contrib 无力去实现 Oracle 的自增ID而放弃了 Oracle ，所以，即使社区里提交了PR，因为实现方式有点脏，官方一直没有合并到主干上去。</p>
@@ -337,10 +339,16 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <h2 class="widget-title section-title">目录</h2>
 <div class=widget--toc>
 <nav id=TableOfContents>
-<ol>
+<ul>
+<li><a href=#问题回顾>问题回顾</a></li>
+<li><a href=#原因分析>原因分析</a>
+<ul>
 <li><a href=#oracle版本的isqladapter>Oracle版本的ISqlAdapter</a></li>
 <li><a href=#主键id参数化问题>主键Id参数化问题</a></li>
-</ol>
+</ul></li>
+<li><a href=#相关思考>相关思考</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ul>
 </nav>
 </div>
 </section>

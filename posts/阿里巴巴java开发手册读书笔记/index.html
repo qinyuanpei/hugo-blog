@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="说明：表达是否最好用0和1来表示，我们用Y和N时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用unsigned tinyint类型，它本身就自带默认值0，这样就可以避免这种问题的出现;说明：建议全部使用小写，因为主流SQL教程的里关键字都采用大写，但在PLSQL/SQLyog里编写SQL语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写;说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某SAP提供的OA接口，除了超级难用以外，每次都要花大量时间去对字段"><title>《阿里巴巴Java开发手册》读书笔记</title>
 <link rel=canonical href=/posts/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="《阿里巴巴Java开发手册》读书笔记">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="《阿里巴巴Java开发手册》读书笔记">
 <meta property="og:description" content="说明：表达是否最好用0和1来表示，我们用Y和N时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用unsigned tinyint类型，它本身就自带默认值0，这样就可以避免这种问题的出现;说明：建议全部使用小写，因为主流SQL教程的里关键字都采用大写，但在PLSQL/SQLyog里编写SQL语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写;说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某SAP提供的OA接口，除了超级难用以外，每次都要花大量时间去对字段">
 <meta property="og:url" content="/posts/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -128,8 +131,6 @@ on-phone--column extended">
 <p>说明：所谓“悲观锁”，是指认为数据一定会被篡改，此时，在一个作用域结束前对其进行加锁，典型的如lock关键字。而所谓“乐观锁”，是认为数据不一定会被篡改，此时，通过一个version来作为更新的依据。</p>
 <blockquote>
 <p>1.6.12 在并发场景下，通过双重检查锁(double-checkedlocking)实现延迟初始化的优化问题隐患，推荐解决方案中较为简单的一种(JDK5及以上版本)，即目标属性声明为volatile型。</p>
-</blockquote>
-<blockquote>
 <p>1.7.4 在表达异常的分支时，尽量少用if-else方式。如果不得不使用if…elseif…else方式，请勿超过3层。</p>
 </blockquote>
 <p>说明：当条件不满足时可以直接return，或者先判断不满足的条件，则剩余逻辑默认就是满足条件的分支，尽量避免使用if…elseif…else方式，同时保证分支里的代码足够简单，复杂的逻辑应考虑封装或者用switch…case甚至多态来重构。</p>
@@ -164,12 +165,10 @@ on-phone--column extended">
 </blockquote>
 <p>说明：建议全部使用小写，因为主流SQL教程的里关键字都采用大写，但在PLSQL/SQLyog里编写SQL语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写。我们表名用小写，表字段用大写，输出的SQL语句看起来特别奇怪。</p>
 <blockquote>
-<p>5.1.13 字段允许适当冗余，以提高查询性能，但必须考虑数据一致。冗余字段应遵循：</p>
+<p>5.1.13 字段允许适当冗余，以提高查询性能，但必须考虑数据一致。冗余字段应遵循：
+- 不是频繁修改的字段
+- 不是varchar超长字段，更不能是text字段。</p>
 </blockquote>
-<ul>
-<li>不是频繁修改的字段</li>
-<li>不是varchar超长字段，更不能是text字段。</li>
-</ul>
 <p>说明：冗余字段是个好东西，但主表和扩展表间的一致性保证需要经过良好的设计，那种把相关表都放在一个事务里处理的做法，都声称是为了保证数据的一致性，可实际过程中依然会存在数据不一致的情况。</p>
 <blockquote>
 <p>5.1.15 当单表行数超过500万行活着单表容量超过2G时，才推荐进行分库分表。</p>
@@ -177,8 +176,6 @@ on-phone--column extended">
 <p>说明：多租户架构下，不同租户采用不同的库，是最简单的数据隔离方案，但缺点是增加了维护多个库的成本。如果要分库分表，最好从框架层面来“切库”，而不要让开发人员自行维护数据库的连接字符串。</p>
 <blockquote>
 <p>5.2.1 业务上具有唯一特性的字段，即使是多个字段的组合，也必须建成唯一索引。根据墨菲定律，只要没有唯一索引，必然会有脏数据产生，即使在应用层做了非常完善的检验控制。</p>
-</blockquote>
-<blockquote>
 <p>5.2.2 超过三个表禁止join，需要join的字段，类型必须绝对一致；当多表关联查询时，保证被关联的字段需要有索引。</p>
 </blockquote>
 <p>说明：关系型数据库最值得炫耀的地方就是表多，超过三张表禁止join，实际中根本不现实，所以，建议以业务场景为准，我就曾经join了5张表，大概客户就喜欢看这些东西吧！</p>

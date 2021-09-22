@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="在《CG Programming in Unity》一书中提到了贝塞尔曲线，实现了一个基础版本的贝塞尔曲线绘制，即在给定P0和P2的前提下，由用户通过滑杆对P1进行控制，可以实时预览当前曲线的样式，感兴趣的朋友可以阅读该书的第9章部分;二次贝塞尔曲线的路径由给定点P0、P1、P2的函数B(t)给出:;P0、P1、P2、P3四个点在平面或在三维空间中定义了三次方贝塞尔曲线"><title>贝塞尔曲线学习笔记</title>
 <link rel=canonical href=/posts/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="贝塞尔曲线学习笔记">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="贝塞尔曲线学习笔记">
 <meta property="og:description" content="在《CG Programming in Unity》一书中提到了贝塞尔曲线，实现了一个基础版本的贝塞尔曲线绘制，即在给定P0和P2的前提下，由用户通过滑杆对P1进行控制，可以实时预览当前曲线的样式，感兴趣的朋友可以阅读该书的第9章部分;二次贝塞尔曲线的路径由给定点P0、P1、P2的函数B(t)给出:;P0、P1、P2、P3四个点在平面或在三维空间中定义了三次方贝塞尔曲线">
 <meta property="og:url" content="/posts/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -92,90 +95,51 @@ on-phone--column extended">
 </div>
 </header>
 <section class=article-content>
-<p>  贝塞尔曲线(Bezier Curve)是由法国工程师皮埃尔·贝塞尔(Pierre Bezier)于1962年提出的一种曲线。在数学的数值分析领域中，贝塞尔曲线是计算机图形学中相当重要的参数曲线，其主要意义在于无论是直线还是曲线都能在数学上予以描述。最早贝塞尔曲线被用来对汽车主体进行设计，现在贝塞尔曲线被广泛地运用到计算机图形软件(如Photoshop、Flash等)中，是计算机图形领域重要的一个数学曲线。</p>
+<p>&emsp;&emsp;贝塞尔曲线(Bezier Curve)是由法国工程师皮埃尔·贝塞尔(Pierre Bezier)于1962年提出的一种曲线。在数学的数值分析领域中，贝塞尔曲线是计算机图形学中相当重要的参数曲线，其主要意义在于无论是直线还是曲线都能在数学上予以描述。最早贝塞尔曲线被用来对汽车主体进行设计，现在贝塞尔曲线被广泛地运用到计算机图形软件(如Photoshop、Flash等)中，是计算机图形领域重要的一个数学曲线。</p>
 <h1 id=贝塞尔曲线主要内容>贝塞尔曲线主要内容</h1>
-<p>  贝塞尔曲线就是这样的一条曲线，它是依据四个位置任意的点坐标绘制出的一条光滑曲线。在历史上，研究贝塞尔曲线的人最初是按照已知曲线参数方程来确定四个点的思路设计出这种矢量曲线绘制法。贝塞尔曲线的有趣之处更在于它的皮筋效应，也就是说，随着点有规律地移动，曲线将产生皮筋伸引一样的变换，带来视觉上的冲击。1962年，法国数学家Pierre Bezier第一个研究了这种矢量绘制曲线的方法，并给出了详细的计算公式，因此按照这样的公式绘制出来的曲线就用他的姓氏来命名是为贝塞尔曲线。贝塞尔曲线按照阶数可以从一次扩展到n次，这里例举出常见的一次贝塞尔曲线、二次贝塞尔曲线和三次贝塞尔曲线。</p>
+<p>&emsp;&emsp;贝塞尔曲线就是这样的一条曲线，它是依据四个位置任意的点坐标绘制出的一条光滑曲线。在历史上，研究贝塞尔曲线的人最初是按照已知曲线参数方程来确定四个点的思路设计出这种矢量曲线绘制法。贝塞尔曲线的有趣之处更在于它的皮筋效应，也就是说，随着点有规律地移动，曲线将产生皮筋伸引一样的变换，带来视觉上的冲击。1962年，法国数学家Pierre Bezier第一个研究了这种矢量绘制曲线的方法，并给出了详细的计算公式，因此按照这样的公式绘制出来的曲线就用他的姓氏来命名是为贝塞尔曲线。贝塞尔曲线按照阶数可以从一次扩展到n次，这里例举出常见的一次贝塞尔曲线、二次贝塞尔曲线和三次贝塞尔曲线。</p>
 <h2 id=一次贝塞尔曲线>一次贝塞尔曲线</h2>
-<p>  一次贝塞尔曲线，即线性贝塞尔曲线，其定义是:给定点P0、P1，贝塞尔曲线是两点间的一条直线。线性贝塞尔曲线由下列公式给出：</p>
-<blockquote>
-<p>B(t)=P0+(P1-P0)<em>t=(1-t)P0+t</em>P1,其中t是一个0到1之间的数值</p>
-</blockquote>
-<p>  该公式等同于对P1,P0两点进行线性插值。</p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziy0m9qvng206o02s74z.gif>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy0m9qvng206o02s74z.gif loading=lazy alt=一次贝塞尔曲线>
-</a>
-<figcaption>一次贝塞尔曲线</figcaption>
-</figure></p>
+<p>&emsp;&emsp;一次贝塞尔曲线，即线性贝塞尔曲线，其定义是:给定点P0、P1，贝塞尔曲线是两点间的一条直线。线性贝塞尔曲线由下列公式给出：
+>B(t)=P0+(P1-P0)*t=(1-t)P0+t*P1,其中t是一个0到1之间的数值</p>
+<p>&emsp;&emsp;该公式等同于对P1,P0两点进行线性插值。</p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy0m9qvng206o02s74z.gif alt=一次贝塞尔曲线></p>
 <h2 id=二次贝塞尔曲线>二次贝塞尔曲线</h2>
-<p>  二次贝塞尔曲线的路径由给定点P0、P1、P2的函数B(t)给出:</p>
-<blockquote>
-<p>B(t)=(1-t)^2 * P0+2t(1-t)P1+t^2P2,其中t是一个0到1之间的数值</p>
-</blockquote>
-<p>  为构建二次贝塞尔曲线，可以中介点Q0和Q1作为由0至1的t:</p>
-<ul>
-<li>由P0至P1的连续点Q0，描述一条线性贝塞尔曲线。</li>
-<li>由P1至P2的连续点Q1，描述一条线性贝塞尔曲线。</li>
-<li>由Q0至Q1的连续点B(t)，描述一条二次贝塞尔曲线。</li>
-</ul>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05pf9zdcj206o02sa9x.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05pf9zdcj206o02sa9x.jpg loading=lazy alt=二次贝塞尔曲线原理图>
-</a>
-<figcaption>二次贝塞尔曲线原理图</figcaption>
-</figure></p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05mpz5ijg206o02sgnc.gif>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05mpz5ijg206o02sgnc.gif loading=lazy alt=二次贝塞尔曲线演示效果>
-</a>
-<figcaption>二次贝塞尔曲线演示效果</figcaption>
-</figure></p>
+<p>&emsp;&emsp;二次贝塞尔曲线的路径由给定点P0、P1、P2的函数B(t)给出:
+>B(t)=(1-t)^2 * P0+2t(1-t)P1+t^2P2,其中t是一个0到1之间的数值</p>
+<p>&emsp;&emsp;为构建二次贝塞尔曲线，可以中介点Q0和Q1作为由0至1的t:
+* 由P0至P1的连续点Q0，描述一条线性贝塞尔曲线。
+* 由P1至P2的连续点Q1，描述一条线性贝塞尔曲线。
+* 由Q0至Q1的连续点B(t)，描述一条二次贝塞尔曲线。</p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05pf9zdcj206o02sa9x.jpg alt=二次贝塞尔曲线原理图></p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05mpz5ijg206o02sgnc.gif alt=二次贝塞尔曲线演示效果></p>
 <h2 id=三次贝塞尔曲线>三次贝塞尔曲线</h2>
-<p>  P0、P1、P2、P3四个点在平面或在三维空间中定义了三次方贝塞尔曲线。曲线起始于P0走向P1，并从P2的方向来到P3。P0和P1之间的间距，决定了曲线在转而趋进P3之前，走向P2方向的“长度有多长”。三次贝塞尔曲线的公式是:</p>
-<blockquote>
-<p>B(t)=P0(1-t)^3+3P1t(1-t)^2+3P2t^2(1-t)+P3t^3,其中t是一个0到1之间的数值</p>
-</blockquote>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05gr7svtj206o02sq2v.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05gr7svtj206o02sq2v.jpg loading=lazy alt=三次贝塞尔曲线原理图>
-</a>
-<figcaption>三次贝塞尔曲线原理图</figcaption>
-</figure></p>
-<p>  三次贝塞尔曲线的绘制这里采取的是一种已知曲线参数方程来确定四个点的方法，这种方法称为矢量曲线绘制法。这里以二维平面为例(如需三维空间同理构造出z(t)即可):</p>
-<blockquote>
-<p>x(t)=ax<em>t^3+bx</em>t^2+cx<em>t+x0
-y(t)=ay</em>t^3+by<em>t^2+cy</em>t+y0</p>
-</blockquote>
-<p>  因为x0、y0已知，因此我们可以用下列公式计算出剩余三个点的坐标:</p>
-<blockquote>
-<p>x1 = x0 + cx / 3
-x2 = x1 + ( cx + bx ) / 3
-x3 = x0 + cx + bx + ax</p>
-</blockquote>
+<p>&emsp;&emsp;P0、P1、P2、P3四个点在平面或在三维空间中定义了三次方贝塞尔曲线。曲线起始于P0走向P1，并从P2的方向来到P3。P0和P1之间的间距，决定了曲线在转而趋进P3之前，走向P2方向的“长度有多长”。三次贝塞尔曲线的公式是:
+>B(t)=P0(1-t)^3+3P1t(1-t)^2+3P2t^2(1-t)+P3t^3,其中t是一个0到1之间的数值</p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05gr7svtj206o02sq2v.jpg alt=三次贝塞尔曲线原理图></p>
+<p>&emsp;&emsp;三次贝塞尔曲线的绘制这里采取的是一种已知曲线参数方程来确定四个点的方法，这种方法称为矢量曲线绘制法。这里以二维平面为例(如需三维空间同理构造出z(t)即可):
+>x(t)=ax*t^3+bx*t^2+cx*t+x0
+>y(t)=ay*t^3+by*t^2+cy*t+y0</p>
+<p>&emsp;&emsp;因为x0、y0已知，因此我们可以用下列公式计算出剩余三个点的坐标:
+>x1 = x0 + cx / 3
+>x2 = x1 + ( cx + bx ) / 3
+>x3 = x0 + cx + bx + ax</p>
 <blockquote>
 <p>y1 = y0 + cy / 3
 y2 = y1 + ( cy + by ) / 3
 y3 = y0 + cy + by + ay</p>
 </blockquote>
-<p>  在x0、y0已知的前提下，可以通过变换得到:</p>
-<blockquote>
-<p>cx = 3 * ( x1 - x0 )
-bx = 3 * ( x2 - x1 ) - cx
-ax = x3 - x0 - cx - bx</p>
-</blockquote>
+<p>&emsp;&emsp;在x0、y0已知的前提下，可以通过变换得到:
+>cx = 3 * ( x1 - x0 )
+>bx = 3 * ( x2 - x1 ) - cx
+>ax = x3 - x0 - cx - bx</p>
 <blockquote>
 <p>cy = 3 * ( y1 - y0 )
 by = 3 * ( y2 - y1 ) - cy
 ay = y3 - y0 - cy - by</p>
 </blockquote>
-<p>  因此只要给定四个点，总能构造出一条三次贝塞尔曲线，这种方法是一种较为实用和可靠的方法。</p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz022bq7csg206o02s76z.gif>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz022bq7csg206o02s76z.gif loading=lazy alt=三次贝塞尔曲线效果演示>
-</a>
-<figcaption>三次贝塞尔曲线效果演示</figcaption>
-</figure></p>
-<p>  下面我们来看一个简单的示例，该示例以Unity3D为基础建立，希望对大家理解贝塞尔曲线有所帮助。</p>
+<p>&emsp;&emsp;因此只要给定四个点，总能构造出一条三次贝塞尔曲线，这种方法是一种较为实用和可靠的方法。</p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fz022bq7csg206o02s76z.gif alt=三次贝塞尔曲线效果演示></p>
+<p>&emsp;&emsp;下面我们来看一个简单的示例，该示例以Unity3D为基础建立，希望对大家理解贝塞尔曲线有所帮助。</p>
 <h1 id=代码示例>代码示例</h1>
 <p>(尝试着实现了下，发现暂时有些问题，等实现了再更新上来吧！)</p>
 <p>2015年12月19日更新：
@@ -232,7 +196,7 @@ public class QuadraticBezier : MonoBehaviour
             lineRenderer = this.gameObject.AddComponent&lt;LineRenderer&gt;();
         lineRenderer.useWorldSpace = true;
         lineRenderer.SetColors(LineColor,LineColor);
-        lineRenderer.material = new Material(Shader.Find(&quot;Particles/Additive&quot;));
+        lineRenderer.material = new Material(Shader.Find(&#34;Particles/Additive&#34;));
         lineRenderer.SetWidth(LineWidth,LineWidth);
         lineRenderer.SetVertexCount(PointsCount);
     }
@@ -254,21 +218,16 @@ public class QuadraticBezier : MonoBehaviour
 
     void OnGUI()
     {
-        GUILayout.Label(string.Format(&quot;第一个参数：P0=({0},{1},{2})&quot;, P0.x, P0.y, P0.z));
-        GUILayout.Label(string.Format(&quot;第二个参数：P1=({0},{1},{2})&quot;, P1.x, P1.y, P1.z));
-        GUILayout.Label(&quot;请拖动下面的滑杆调整第二个参数P1观察曲线变化&quot;);
+        GUILayout.Label(string.Format(&#34;第一个参数：P0=({0},{1},{2})&#34;, P0.x, P0.y, P0.z));
+        GUILayout.Label(string.Format(&#34;第二个参数：P1=({0},{1},{2})&#34;, P1.x, P1.y, P1.z));
+        GUILayout.Label(&#34;请拖动下面的滑杆调整第二个参数P1观察曲线变化&#34;);
         paramX = GUILayout.HorizontalSlider(paramX, 0, 1);
         paramY = GUILayout.HorizontalSlider(paramY, 0, 1);
-        GUILayout.Label(string.Format(&quot;第三个参数：P2=({0},{1},{2})&quot;, P2.x, P2.y, P2.z));
+        GUILayout.Label(string.Format(&#34;第三个参数：P2=({0},{1},{2})&#34;, P2.x, P2.y, P2.z));
     }
-}
-</code></pre><p>在这段代码中通过两个参数来调整P1，这里取Z分量为0主要是方便研究，扩展到三维空间需要给定第三个参数来对应的调整。这个示例的运行效果如下：</p>
-<p><figure>
-<a href=/>
-<img src=/ loading=lazy alt=效果展示>
-</a>
-<figcaption>效果展示</figcaption>
-</figure></p>
+}</code></pre>
+<p>在这段代码中通过两个参数来调整P1，这里取Z分量为0主要是方便研究，扩展到三维空间需要给定第三个参数来对应的调整。这个示例的运行效果如下：</p>
+<p>![效果展示]()</p>
 </section>
 <footer class=article-footer>
 <section class=article-tags>

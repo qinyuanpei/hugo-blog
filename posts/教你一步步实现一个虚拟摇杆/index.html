@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="接下来，我们在场景中添加一个角色模型来测试我们编写的虚拟摇杆，因为在JoyStick中我们已经定义了事件委托，所以在这里就是简单的调用啦;关于使用第三方插件来实现虚拟摇杆，请大家参照我以前写的文章[Unity3D游戏开发之使用EasyTouch虚拟摇杆控制人物移动](http://blog.csdn.net/qinyuanpei/article/details/26204177)，在这里就不再赘述了;在这段脚本中，我们实现了OnPointerDown、OnPointerUp和OnDrag三个uGUI事件接口，然后注册了相关的事件委托，这里借鉴了EasyTouch的设计，可以使得虚拟摇杆的逻辑和角色控制逻辑相互分离"><title>教你一步步实现一个虚拟摇杆</title>
 <link rel=canonical href=/posts/%E6%95%99%E4%BD%A0%E4%B8%80%E6%AD%A5%E6%AD%A5%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="教你一步步实现一个虚拟摇杆">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="教你一步步实现一个虚拟摇杆">
 <meta property="og:description" content="接下来，我们在场景中添加一个角色模型来测试我们编写的虚拟摇杆，因为在JoyStick中我们已经定义了事件委托，所以在这里就是简单的调用啦;关于使用第三方插件来实现虚拟摇杆，请大家参照我以前写的文章[Unity3D游戏开发之使用EasyTouch虚拟摇杆控制人物移动](http://blog.csdn.net/qinyuanpei/article/details/26204177)，在这里就不再赘述了;在这段脚本中，我们实现了OnPointerDown、OnPointerUp和OnDrag三个uGUI事件接口，然后注册了相关的事件委托，这里借鉴了EasyTouch的设计，可以使得虚拟摇杆的逻辑和角色控制逻辑相互分离">
 <meta property="og:url" content="/posts/%E6%95%99%E4%BD%A0%E4%B8%80%E6%AD%A5%E6%AD%A5%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -92,11 +95,10 @@ Unity3D
 </div>
 </header>
 <section class=article-content>
-<p>  各位朋友，大家好，我是秦元培，欢迎大家关注我的博客，我的博客地址是<a class=link href=http://qinyuanpei.com target=_blank rel=noopener>http://qinyuanpei.com</a>。最近因为项目需要决定尝试自己来实现一个虚拟摇杆，所以在今天的文章中我们的目标是使用uGUI来制作一个可以在移动平台稳定运行的虚拟摇杆(请不要问我为什么不使用NGUI来实现，你说我做个虚拟摇杆有必要在项目里导入那么多的资源嘛23333)。关于使用第三方插件来实现虚拟摇杆，请大家参照我以前写的文章<a class=link href=http://blog.csdn.net/qinyuanpei/article/details/26204177 target=_blank rel=noopener>Unity3D游戏开发之使用EasyTouch虚拟摇杆控制人物移动</a>，在这里就不再赘述了。</p>
-<p>  虚拟摇杆这种输入方式相信大家在手机游戏平台上已经相当的熟悉了，首先我们来简单了解下虚拟摇杆的设计原理。虚拟摇杆有一张固定的2D贴图(背景层)和一张可拖动的2D贴图(控制层)构成，默认情况下控制层在背景层的中心，我们称这个位置为初始位置，当移动控制层后移动层的位置会发生变化，此时控制层的当前位置和初始位置两点间可以计算出一个2D向量，通过这个向量我们就可以判断虚拟摇杆的移动方向。在经典的八方向摇杆导航中摇杆中可移动方向被分成了上、左上、右上、下、左下、右下、左、右共8个方向。我们知道根据三角函数可以非常容易地计算出这个2D向量的角度并由此判定摇杆是在向着这8个方向中的哪一个方向移动。在今天的文章中，我们不需要考虑这8个方向，因为我们可以向任何一个方向进行移动。</p>
-<p>  好了，首先在场景中创建两个Image组件和一个空的游戏体，然后将这两个Image组件拖拽到这个空的游戏体下使它们称为其子节点。这里需要注意的是这两个Image的层级关系。现在我们来编写脚本，这个脚本将被添加到控制层物体上：</p>
-<pre tabindex=0><code>
-/*
+<p>&emsp;&emsp;各位朋友，大家好，我是秦元培，欢迎大家关注我的博客，我的博客地址是<a href=http://qinyuanpei.com>http://qinyuanpei.com</a>。最近因为项目需要决定尝试自己来实现一个虚拟摇杆，所以在今天的文章中我们的目标是使用uGUI来制作一个可以在移动平台稳定运行的虚拟摇杆(请不要问我为什么不使用NGUI来实现，你说我做个虚拟摇杆有必要在项目里导入那么多的资源嘛23333)。关于使用第三方插件来实现虚拟摇杆，请大家参照我以前写的文章<a href=http://blog.csdn.net/qinyuanpei/article/details/26204177>Unity3D游戏开发之使用EasyTouch虚拟摇杆控制人物移动</a>，在这里就不再赘述了。</p>
+<p>&emsp;&emsp;虚拟摇杆这种输入方式相信大家在手机游戏平台上已经相当的熟悉了，首先我们来简单了解下虚拟摇杆的设计原理。虚拟摇杆有一张固定的2D贴图(背景层)和一张可拖动的2D贴图(控制层)构成，默认情况下控制层在背景层的中心，我们称这个位置为初始位置，当移动控制层后移动层的位置会发生变化，此时控制层的当前位置和初始位置两点间可以计算出一个2D向量，通过这个向量我们就可以判断虚拟摇杆的移动方向。在经典的八方向摇杆导航中摇杆中可移动方向被分成了上、左上、右上、下、左下、右下、左、右共8个方向。我们知道根据三角函数可以非常容易地计算出这个2D向量的角度并由此判定摇杆是在向着这8个方向中的哪一个方向移动。在今天的文章中，我们不需要考虑这8个方向，因为我们可以向任何一个方向进行移动。</p>
+<p>&emsp;&emsp;好了，首先在场景中创建两个Image组件和一个空的游戏体，然后将这两个Image组件拖拽到这个空的游戏体下使它们称为其子节点。这里需要注意的是这两个Image的层级关系。现在我们来编写脚本，这个脚本将被添加到控制层物体上：</p>
+<pre tabindex=0><code>/*
  * uGUI虚拟摇杆
  * 作者：秦元培
  * 博客：http://qinyuanpei.com
@@ -159,7 +161,7 @@ public class JoyStick : MonoBehaviour,IPointerDownHandler, IPointerUpHandler, ID
     /// &lt;summary&gt;
     /// 定义触摸过程事件委托 
     /// &lt;/summary&gt;
-    /// &lt;param name=&quot;vec&quot;&gt;虚拟摇杆的移动方向&lt;/param&gt;
+    /// &lt;param name=&#34;vec&#34;&gt;虚拟摇杆的移动方向&lt;/param&gt;
 	public delegate void JoyStickTouchMove(Vector2 vec);
 
     /// &lt;summary&gt;
@@ -235,7 +237,7 @@ public class JoyStick : MonoBehaviour,IPointerDownHandler, IPointerUpHandler, ID
 	/// 返回虚拟摇杆的偏移量
 	/// &lt;/summary&gt;
 	/// &lt;returns&gt;The joy stick axis.&lt;/returns&gt;
-	/// &lt;param name=&quot;eventData&quot;&gt;Event data.&lt;/param&gt;
+	/// &lt;param name=&#34;eventData&#34;&gt;Event data.&lt;/param&gt;
 	private Vector2 GetJoyStickAxis(PointerEventData eventData)
 	{
 		//获取手指位置的世界坐标
@@ -255,13 +257,10 @@ public class JoyStick : MonoBehaviour,IPointerDownHandler, IPointerUpHandler, ID
 	}
 
 
-}
-
-
-</code></pre><p>  在这段脚本中，我们实现了OnPointerDown、OnPointerUp和OnDrag三个uGUI事件接口，然后注册了相关的事件委托，这里借鉴了EasyTouch的设计，可以使得虚拟摇杆的逻辑和角色控制逻辑相互分离。这里的核心方法是GetJoyStickAxis()方法，通过这个方法我们可以获得一个Vector2类型的值，它表示的是未标准化过的虚拟摇杆的偏移量。这里的RectTransformUtility.ScreenPointToWorldPointInRectangle()方法表示将一个屏幕坐标转化为对应RectTransform的世界坐标，RectTransform的anchoredPosition属性表示的是当前元素在场景中的屏幕坐标。我们知道屏幕坐标是以像素为单位的，因此这里使用屏幕坐标可以计算出虚拟摇杆在水平方向和垂直方向上移动了多少个像素，我们以此来作为虚拟摇杆的偏移量衡量指标。TouchedAxis是经过标准化以后的偏移量，我们将把这个值传递到事件委托中以提供给外部来调用。好了，要说的就这些了，没有说到的大家可以看看代码里的注释或者是在博客中给我留言，就是这样啦。</p>
-<p>  接下来，我们在场景中添加一个角色模型来测试我们编写的虚拟摇杆，因为在JoyStick中我们已经定义了事件委托，所以在这里就是简单的调用啦。好了，我们一起来看看代码吧！</p>
-<pre tabindex=0><code>
-/*
+}</code></pre>
+<p>&emsp;&emsp;在这段脚本中，我们实现了OnPointerDown、OnPointerUp和OnDrag三个uGUI事件接口，然后注册了相关的事件委托，这里借鉴了EasyTouch的设计，可以使得虚拟摇杆的逻辑和角色控制逻辑相互分离。这里的核心方法是GetJoyStickAxis()方法，通过这个方法我们可以获得一个Vector2类型的值，它表示的是未标准化过的虚拟摇杆的偏移量。这里的RectTransformUtility.ScreenPointToWorldPointInRectangle()方法表示将一个屏幕坐标转化为对应RectTransform的世界坐标，RectTransform的anchoredPosition属性表示的是当前元素在场景中的屏幕坐标。我们知道屏幕坐标是以像素为单位的，因此这里使用屏幕坐标可以计算出虚拟摇杆在水平方向和垂直方向上移动了多少个像素，我们以此来作为虚拟摇杆的偏移量衡量指标。TouchedAxis是经过标准化以后的偏移量，我们将把这个值传递到事件委托中以提供给外部来调用。好了，要说的就这些了，没有说到的大家可以看看代码里的注释或者是在博客中给我留言，就是这样啦。</p>
+<p>&emsp;&emsp;接下来，我们在场景中添加一个角色模型来测试我们编写的虚拟摇杆，因为在JoyStick中我们已经定义了事件委托，所以在这里就是简单的调用啦。好了，我们一起来看看代码吧！</p>
+<pre tabindex=0><code>/*
  * Joystick3D.cs
  * 3D模式下的虚拟摇杆测试
  * 作者：秦元培
@@ -288,12 +287,12 @@ public class JoyStick3D : MonoBehaviour
 
 	void OnJoyStickBegin(Vector2 vec)
 	{
-        Debug.Log(&quot;开始触摸虚拟摇杆&quot;);
+        Debug.Log(&#34;开始触摸虚拟摇杆&#34;);
 	}
 
 	void OnJoyStickMove (Vector2 vec)
 	{
-        Debug.Log(&quot;正在移动虚拟摇杆&quot;);
+        Debug.Log(&#34;正在移动虚拟摇杆&#34;);
 
         //设置角色朝向
 		Quaternion q = Quaternion.LookRotation (new Vector3 (vec.x, 0, vec.y));
@@ -301,37 +300,26 @@ public class JoyStick3D : MonoBehaviour
 
         //移动角色并播放奔跑动画
 		transform.Translate(Vector3.forward * 75f * Time.deltaTime);
-		animation.CrossFade(&quot;Run&quot;);
+		animation.CrossFade(&#34;Run&#34;);
 	}
 	
 	void OnJoyStickEnd ()
 	{
-        Debug.Log(&quot;触摸移动摇杆结束&quot;);
+        Debug.Log(&#34;触摸移动摇杆结束&#34;);
 
         //播放默认待机动画
-		animation.CrossFade(&quot;idle&quot;);
+		animation.CrossFade(&#34;idle&#34;);
 	}
 
     void OnGUI()
     {
-        GUI.Label(new Rect(30,30,200,30),&quot;3D模式下的虚拟摇杆测试&quot;);
+        GUI.Label(new Rect(30,30,200,30),&#34;3D模式下的虚拟摇杆测试&#34;);
     }
-}
-
-</code></pre><p>  最终程序的运行效果如下图所示，我们编写的这个虚拟摇杆可以在手机上完美的运行，欢饮大家来一起测试和吐槽！</p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixbnf1fsg20nm0d8avw.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixbnf1fsg20nm0d8avw.jpg loading=lazy alt=2D模式演示>
-</a>
-<figcaption>2D模式演示</figcaption>
-</figure></p>
-<p><figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzix8zemu3g20nf0dbaky.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix8zemu3g20nf0dbaky.jpg loading=lazy alt=3D模式演示>
-</a>
-<figcaption>3D模式演示</figcaption>
-</figure></p>
-<p>  好了，今天的内容就是这样啦！欢迎大家继续关注我的博客，希望大家喜欢！</p>
+}</code></pre>
+<p>&emsp;&emsp;最终程序的运行效果如下图所示，我们编写的这个虚拟摇杆可以在手机上完美的运行，欢饮大家来一起测试和吐槽！</p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixbnf1fsg20nm0d8avw.jpg alt=2D模式演示></p>
+<p><img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix8zemu3g20nf0dbaky.jpg alt=3D模式演示></p>
+<p>&emsp;&emsp;好了，今天的内容就是这样啦！欢迎大家继续关注我的博客，希望大家喜欢！</p>
 </section>
 <footer class=article-footer>
 <section class=article-tags>

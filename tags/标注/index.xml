@@ -1,25 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>标注 on 飞鸿踏雪</title><link>/tags/%E6%A0%87%E6%B3%A8/</link><description>Recent content in 标注 on 飞鸿踏雪</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 10 Sep 2019 09:44:18 +0000</lastBuildDate><atom:link href="/tags/%E6%A0%87%E6%B3%A8/index.xml" rel="self" type="application/rss+xml"/><item><title>百度地图加载海量标注性能优化策略</title><link>/posts/%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE%E5%8A%A0%E8%BD%BD%E6%B5%B7%E9%87%8F%E6%A0%87%E6%B3%A8%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</link><pubDate>Tue, 10 Sep 2019 09:44:18 +0000</pubDate><guid>/posts/%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE%E5%8A%A0%E8%BD%BD%E6%B5%B7%E9%87%8F%E6%A0%87%E6%B3%A8%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</guid><description>在上一篇博客中关于Vue表单验证的话题里，我提到了这段时间在做的城市配载功能，这个功能主要着眼于，如何为客户提供一条路线最优、时效最短、装载率最高的路线。事实上，这是目前物流运输行业智能化、专业化的一个趋势，即面向特定行业的局部最优解问题，简单来说，怎么样能在装更多货物的同时满足运费更低的条件，同时要考虑超载等等不可抗性因素，所以，这实际上是一个数学问题。而作为这个功能本身，在地图上加载大量标注更是基础中的基础，所以，今天这篇博客想说说，通过百度地图API加载海量标注时，关于性能优化方面的一点点经验。
 问题还原 根据IP定位至用户所在城市后，后台一次性查询出近一个月内的订单，然后将其全部在地图上展示出来。当用户点击或者框选标注物时，对应的订单配载到当前运单中。当用户再次点击标注物，则对应的订单从当前运单中删除。以西安市为例，一次性加载850个左右的订单，用户操作一段时间后，Chrome内存占用达250多兆，拖拽地图的过程中可以明显地感觉到页面卡顿。因为自始至终，地图上的订单数量不变，即不会移除覆盖物，同时需要在内存中持久化订单相关的信息。所以，在城市配载1.0版本的时候，测试同事给我提了一个性能方面的Bug。可开始提方案并坚持这样做的，难道不是产品吗？为什么要给开发提Bug呢？OK，我们来给不靠谱的产品一点点填坑吧，大概想到了下面三种方案，分别是标注物聚合、Canvas API和视野内可见。
-密密麻麻的地图
 标注物聚合方案 所谓“标注物聚合”，就是指在一定的地图层级上，地图上的覆盖物主要是以聚合的形式显示的，譬如显示某一个省份里共有多少个订单，而不是把所有订单都展示出来，除非地图放大到一定的层级。这种其实在我们产品上是有应用的，比如运单可视化基本上是全国范围内的车辆位置，这个时候在省一级缩放比例上使用聚合展示就非常有必要。可在城市配载这里就相当尴尬啦，因为据说客户会把地图放大到市区街道这种程度来对订单进行配载，所以，这种标注物聚合方案的效果简直是微乎其微，而且更尴尬的问题在于，官方的 MarkerClusterer 插件支持的是标准的覆盖物，即Marker类。而我们的产品为了好看、做更复杂的交互，设计了更复杂的标记物原型，这就迫使我们必须使用自定义覆盖物，而自定义覆盖物通常会用HTML+CSS来实现。
-标注聚合器MarkerClusterer
-所以，一个简洁的Marker类和复杂的DOM结构，会在性能上存在巨大差异，这恰恰是我们加载了800多个点就产生性能问题的原因，因为一个“好看”的标注物，居然由4个DOM节点组成，而这个“好看”的标注物还不知道要怎么样实现Marker类里的右键菜单。所以，追求“好看”有问题吗？没有，可华而不实的“好看”，恰恰是性能降低的万恶之源，更不用说，因为覆盖物不会从地图上删除，每次框选都要进行800多次的点的检测了，而这些除了开发没有人会在乎，总有人摆出一副**“这个需求很简单，怎么实现我不管”**的态度……虽然这种方案已经被Pass掉了，这里我们还是通过一个简单的示例，来演示下MarkerClusterer插件的简单使用吧！以后对于前端类的代码，博主会优先使用CodePen进行展示，因为这样子显然比贴代码要生动呀！
+所以，一个简洁的Marker类和复杂的DOM结构，会在性能上存在巨大差异，这恰恰是我们加载了800多个点就产生性能问题的原因，因为一个“好看”的标注物，居然由4个DOM节点组成，而这个“好看”的标注物还不知道要怎么样实现Marker类里的右键菜单。所以，追求“好看”有问题吗？没有，可华而不实的“好看”，恰恰是性能降低的万恶之源，更不用说，因为覆盖物不会从地图上删除，每次框选都要进行800多次的点的检测了，而这些除了开发没有人会在乎，总有人摆出一副“这个需求很简单，怎么实现我不管”的态度……虽然这种方案已经被Pass掉了，这里我们还是通过一个简单的示例，来演示下MarkerClusterer插件的简单使用吧！以后对于前端类的代码，博主会优先使用CodePen进行展示，因为这样子显然比贴代码要生动呀！
 {% codepen qinyuanpei qBWJgGE dark [css,result 480px] %}
 这里稍微提带说一下这个插件的优化，经博主测试，在标记物数目达到100000的时候，拖拽地图的时候可以明显的感觉的卡顿，这一点大家可以直接在CodePen中进行测试。产生性能问题的原因主要在以下代码片段：
-/**
-* 向该聚合添加一个标记。
-* @param {Marker} marker 要添加的标记。
-* @return 无返回值。
-*/
-Cluster.prototype.addMarker = function(marker){
-if(this.isMarkerInCluster(marker)){
-return false;
-}//也可用marker.isInCluster判断,外面判断OK，这里基本不会命中
-if (!this._center){
-this._center = marker.getPosition();
-this.updateGridBounds();//
-} else {
-if(this._isAverageCenter){
-var l = this._markers.length + 1;
-var lat = (this._center.lat * (l - 1) + marker.getPosition().lat) / l;
-var lng = (this.</description></item></channel></rss>
+/** * 向该聚合添加一个标记。 * @param {Marker} marker 要添加的标记。 * @return 无返回值。 */ Cluster.prototype.addMarker = function(marker){ if(this.isMarkerInCluster(marker)){ return false; }//也可用marker.isInCluster判断,外面判断OK，这里基本不会命中 if (!this._center){ this._center = marker.getPosition(); this.updateGridBounds();// } else { if(this._isAverageCenter){ var l = this._markers.length + 1; var lat = (this._center.lat * (l - 1) + marker.getPosition().lat) / l; var lng = (this.</description></item></channel></rss>

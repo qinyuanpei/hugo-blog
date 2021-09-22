@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="- 指使用符合RPC风格的XML或JSON + HTTP接口的系统(不使用SOAP);- 使用HTTP;# 查询参数和路径的使用区别"><title>《Web API 的设计与开发》读书笔记</title>
 <link rel=canonical href=/posts/web-api-%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="《Web API 的设计与开发》读书笔记">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="《Web API 的设计与开发》读书笔记">
 <meta property="og:description" content="- 指使用符合RPC风格的XML或JSON + HTTP接口的系统(不使用SOAP);- 使用HTTP;# 查询参数和路径的使用区别">
 <meta property="og:url" content="/posts/web-api-%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -119,25 +122,18 @@ on-phone--column extended">
 <h1 id=查询参数和路径的使用区别>查询参数和路径的使用区别</h1>
 <ul>
 <li>表示唯一资源时，放在路径中</li>
-<li>当参数可以忽略时，放在查询参数中</li>
-</ul>
-<h1 id=restful的设计级别>RESTful的设计级别</h1>
-<ul>
-<li>使用HTTP</li>
-<li>引入资源的概念</li>
-<li>引入HTTP动词</li>
-<li>引入HATEOAS</li>
-</ul>
-<h1 id=如何指定数据格式>如何指定数据格式？</h1>
-<ul>
-<li>查询参数：url?format=xml</li>
-<li>扩展名：/url.json</li>
-<li>Accept头部字段</li>
-</ul>
-<h1 id=让用户决定响应的内容>让用户决定响应的内容</h1>
-<ul>
-<li>GraphQL</li>
-</ul>
+<li><p>当参数可以忽略时，放在查询参数中</p>
+<h1 id=restful的设计级别>RESTful的设计级别</h1></li>
+<li><p>使用HTTP</p></li>
+<li><p>引入资源的概念</p></li>
+<li><p>引入HTTP动词</p></li>
+<li><p>引入HATEOAS</p>
+<h1 id=如何指定数据格式>如何指定数据格式？</h1></li>
+<li><p>查询参数：url?format=xml</p></li>
+<li><p>扩展名：/url.json</p></li>
+<li><p>Accept头部字段</p>
+<h1 id=让用户决定响应的内容>让用户决定响应的内容</h1></li>
+<li><p>GraphQL</p>
 <h1 id=通过状态码表示错误信息>通过状态码表示错误信息</h1>
 <p>1xx：消息
 2xx：成功
@@ -149,26 +145,23 @@ on-phone--column extended">
 过期模型：Cache-Control/Expires
 验证模型：Last-Modified/ETag
 Vary首部：指定缓存单位
-Conent-Type/Accept：指定媒体类型</p>
+Conent-Type/Accept：指定媒体类型</p></li>
+</ul>
 <h1 id=api版本控制>API版本控制</h1>
 <ul>
 <li>在URI中嵌入版本号</li>
 <li>在查询字符串中加入版本信息</li>
-<li>通过媒体类型指定版本</li>
-</ul>
-<h1 id=api安全问题>API安全问题</h1>
-<ul>
-<li>推荐使用HTTPS</li>
-<li>XSS/XSRF注入漏洞</li>
-<li>返回正确的数据格式</li>
-<li>使用安全相关首部</li>
-<li>采用KVS实现访问限制</li>
-</ul>
-<h1 id=提供api文档>提供API文档</h1>
-<ul>
-<li>API Blueprint</li>
-<li>API Console/Apigee</li>
-<li>提供SDK</li>
+<li><p>通过媒体类型指定版本</p>
+<h1 id=api安全问题>API安全问题</h1></li>
+<li><p>推荐使用HTTPS</p></li>
+<li><p>XSS/XSRF注入漏洞</p></li>
+<li><p>返回正确的数据格式</p></li>
+<li><p>使用安全相关首部</p></li>
+<li><p>采用KVS实现访问限制</p>
+<h1 id=提供api文档>提供API文档</h1></li>
+<li><p>API Blueprint</p></li>
+<li><p>API Console/Apigee</p></li>
+<li><p>提供SDK</p></li>
 </ul>
 </section>
 <footer class=article-footer>

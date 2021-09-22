@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="local dir=1;这里定义了getNextPoint()的方法，目的是计算在蛇头位置添加的下一个元素，这里我们注意到根据蛇的移动方向(dir)的不同，其中0表示上、1表示下、2表示左、3表示右，计算出下一个元素的位置，因为在这个游戏中网格大小是20，所以这里可以直接根据坐标来计算一个元素的位置;local gameState=1"><title>使用Love2D引擎开发贪吃蛇游戏</title>
 <link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8love2d%E5%BC%95%E6%93%8E%E5%BC%80%E5%8F%91%E8%B4%AA%E5%90%83%E8%9B%87%E6%B8%B8%E6%88%8F/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="使用Love2D引擎开发贪吃蛇游戏">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="使用Love2D引擎开发贪吃蛇游戏">
 <meta property="og:description" content="local dir=1;这里定义了getNextPoint()的方法，目的是计算在蛇头位置添加的下一个元素，这里我们注意到根据蛇的移动方向(dir)的不同，其中0表示上、1表示下、2表示左、3表示右，计算出下一个元素的位置，因为在这个游戏中网格大小是20，所以这里可以直接根据坐标来计算一个元素的位置;local gameState=1">
 <meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8love2d%E5%BC%95%E6%93%8E%E5%BC%80%E5%8F%91%E8%B4%AA%E5%90%83%E8%9B%87%E6%B8%B8%E6%88%8F/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -92,43 +95,19 @@ local dir=1;这里定义了getNextPoint()的方法，目的是计算在蛇头位
 </div>
 </header>
 <section class=article-content>
-<p>  今天来介绍博主最近捣腾的一个小游戏“贪吃蛇”。“贪吃蛇”这个游戏相信大家都不会感到陌生吧。今天博主将通过<a class=link href=http://love2d.org/ target=_blank rel=noopener>Love2D</a>这款游戏引擎来为大家实现一个简单的贪吃蛇游戏,在本篇文章当中我们将会涉及到“贪吃蛇”的基本算法、Lua语言编程等基本的内容，希望能够对大家开发类似的游戏提供借鉴和思考，文章中如有不足之处，还希望大家能够谅解，因为博主的游戏开发基本就是这样慢慢摸索着学习，所以难免会有不足的地方。</p>
+<p>&emsp;&emsp;今天来介绍博主最近捣腾的一个小游戏“贪吃蛇”。“贪吃蛇”这个游戏相信大家都不会感到陌生吧。今天博主将通过<a href=http://love2d.org/>Love2D</a>这款游戏引擎来为大家实现一个简单的贪吃蛇游戏,在本篇文章当中我们将会涉及到“贪吃蛇”的基本算法、Lua语言编程等基本的内容，希望能够对大家开发类似的游戏提供借鉴和思考，文章中如有不足之处，还希望大家能够谅解，因为博主的游戏开发基本就是这样慢慢摸索着学习，所以难免会有不足的地方。</p>
 <h2 id=游戏算法>游戏算法</h2>
-<p>  我们首先来看看贪吃蛇是怎么移动的？
-<figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05nhb62pj205m05lq33.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05nhb62pj205m05lq33.jpg loading=lazy alt=贪吃蛇游戏算法演示1>
-</a>
-<figcaption>贪吃蛇游戏算法演示1</figcaption>
-</figure>
-<figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05k1yzipj205m05lq33.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05k1yzipj205m05lq33.jpg loading=lazy alt=贪吃蛇游戏算法演示2>
-</a>
-<figcaption>贪吃蛇游戏算法演示2</figcaption>
-</figure>
-<figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05dugbchj205m05lq33.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05dugbchj205m05lq33.jpg loading=lazy alt=贪吃蛇游戏算法演示3>
-</a>
-<figcaption>贪吃蛇游戏算法演示3</figcaption>
-</figure>
-<figure>
-<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz01zh5qn2j205m05lq33.jpg>
-<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz01zh5qn2j205m05lq33.jpg loading=lazy alt=贪吃蛇游戏算法演示4>
-</a>
-<figcaption>贪吃蛇游戏算法演示4</figcaption>
-</figure>
-  通过这四张图的演示，我们可以发现这样一个规律：</p>
-<blockquote>
-<p>蛇的移动其实是将蛇身体的最后一个元素移动到第一个元素的位置</p>
-</blockquote>
-<p>  那么完成这样一个工作需要两个步骤：</p>
-<blockquote>
-<p>1、将在蛇头位置插入一个新的元素
-2、移除蛇尾位置的最后一个元素</p>
-</blockquote>
-<p>  好了，了解了蛇的移动后我们再来考虑一个问题，怎样判断蛇吃到了食物？思路和蛇的移动类似，主要考虑在蛇头插入的这个元素和食物的关系，如果这个元素的坐标和食物的坐标是相同的，那么就可以认为蛇吃到了食物，此时蛇的身体应该是变长的，所以只要在蛇头位置插入一个元素就可以了。反之，如果蛇没有吃到食物，那么蛇应该是移动的，所以就可以按照移动的方法来处理了。那么在蛇头位置插入的这个元素该如何确定呢？我们来看下面这段程序：</p>
+<p>&emsp;&emsp;我们首先来看看贪吃蛇是怎么移动的？
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05nhb62pj205m05lq33.jpg alt=贪吃蛇游戏算法演示1>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05k1yzipj205m05lq33.jpg alt=贪吃蛇游戏算法演示2>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05dugbchj205m05lq33.jpg alt=贪吃蛇游戏算法演示3>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz01zh5qn2j205m05lq33.jpg alt=贪吃蛇游戏算法演示4>
+&emsp;&emsp;通过这四张图的演示，我们可以发现这样一个规律：
+>蛇的移动其实是将蛇身体的最后一个元素移动到第一个元素的位置</p>
+<p>&emsp;&emsp;那么完成这样一个工作需要两个步骤：
+> 1、将在蛇头位置插入一个新的元素
+> 2、移除蛇尾位置的最后一个元素</p>
+<p>&emsp;&emsp;好了，了解了蛇的移动后我们再来考虑一个问题，怎样判断蛇吃到了食物？思路和蛇的移动类似，主要考虑在蛇头插入的这个元素和食物的关系，如果这个元素的坐标和食物的坐标是相同的，那么就可以认为蛇吃到了食物，此时蛇的身体应该是变长的，所以只要在蛇头位置插入一个元素就可以了。反之，如果蛇没有吃到食物，那么蛇应该是移动的，所以就可以按照移动的方法来处理了。那么在蛇头位置插入的这个元素该如何确定呢？我们来看下面这段程序：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Lua data-lang=Lua><span class=c1>--计算下一个目标点</span>
 <span class=kr>function</span> <span class=nf>getNextPoint</span><span class=p>()</span>
   <span class=c1>--计算下一个目标点</span>
@@ -151,8 +130,8 @@ local dir=1;这里定义了getNextPoint()的方法，目的是计算在蛇头位
   <span class=kr>end</span>
 
   <span class=kr>return</span> <span class=n>snake</span>
-<span class=kr>end</span>
-</code></pre></div><p>  这里定义了getNextPoint()的方法，目的是计算在蛇头位置添加的下一个元素，这里我们注意到根据蛇的移动方向(dir)的不同，其中0表示上、1表示下、2表示左、3表示右，计算出下一个元素的位置，因为在这个游戏中网格大小是20，所以这里可以直接根据坐标来计算一个元素的位置。snakes是一个table，保存的是当前的蛇的全部元素的坐标。通过维护这个table，我们就可以利用绘图的函数绘制出蛇的身体，这样蛇就可以移动起来了。我们来看看蛇是怎样移动的：</p>
+<span class=kr>end</span></code></pre></div>
+<p>&emsp;&emsp;这里定义了getNextPoint()的方法，目的是计算在蛇头位置添加的下一个元素，这里我们注意到根据蛇的移动方向(dir)的不同，其中0表示上、1表示下、2表示左、3表示右，计算出下一个元素的位置，因为在这个游戏中网格大小是20，所以这里可以直接根据坐标来计算一个元素的位置。snakes是一个table，保存的是当前的蛇的全部元素的坐标。通过维护这个table，我们就可以利用绘图的函数绘制出蛇的身体，这样蛇就可以移动起来了。我们来看看蛇是怎样移动的：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Lua data-lang=Lua><span class=c1>--核心算法——蛇的移动</span>
 <span class=kr>function</span> <span class=nf>SnakeUpdate</span><span class=p>()</span>
   <span class=c1>--获取元素个数</span>
@@ -170,8 +149,8 @@ local dir=1;这里定义了getNextPoint()的方法，目的是计算在蛇头位
       <span class=n>table.remove</span><span class=p>(</span><span class=n>snakes</span><span class=p>,</span><span class=n>n</span><span class=o>+</span><span class=mi>1</span><span class=p>)</span>
     <span class=kr>end</span> 
   <span class=kr>end</span>
-<span class=kr>end</span>
-</code></pre></div><p>  在这里我们定义了一个foodState变量以保存食物的状态，当食物的状态为BeEated的时候表示食物被蛇吃掉了，此时应该重新生成一个食物的坐标，此时事物的状态将变成WaitToEat。食物的坐标保存在foodX和foodY这两个变量中，大家可以到完整的代码中去查看。</p>
+<span class=kr>end</span></code></pre></div>
+<p>&emsp;&emsp;在这里我们定义了一个foodState变量以保存食物的状态，当食物的状态为BeEated的时候表示食物被蛇吃掉了，此时应该重新生成一个食物的坐标，此时事物的状态将变成WaitToEat。食物的坐标保存在foodX和foodY这两个变量中，大家可以到完整的代码中去查看。</p>
 <h2 id=游戏状态>游戏状态</h2>
 <p>我们知道蛇碰到四周墙壁的时候就会死亡，此时游戏结束。这个比较简单，只要判断蛇头的坐标和屏幕的关系就可以了。因为在这个游戏中屏幕的尺寸为640X640，所以判断游戏是否结束的代码可以这样写：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Lua data-lang=Lua><span class=c1>--判断游戏状态</span>
@@ -179,10 +158,10 @@ local dir=1;这里定义了getNextPoint()的方法，目的是计算在蛇头位
     <span class=n>gameState</span><span class=o>=</span><span class=mi>0</span>
   <span class=kr>else</span>
     <span class=n>gameState</span><span class=o>=</span><span class=mi>1</span>
-  <span class=kr>end</span>
-</code></pre></div><p>  这里gameState为0表示游戏结束，gameState为1表示游戏正常进行。</p>
+  <span class=kr>end</span></code></pre></div>
+<p>&emsp;&emsp;这里gameState为0表示游戏结束，gameState为1表示游戏正常进行。</p>
 <h2 id=完整代码>完整代码</h2>
-<p>  在完成了这些核心的算法以后，剩下的事情就交给Love2D引擎来绘制吧，最后给出完整的程序代码：</p>
+<p>&emsp;&emsp;在完成了这些核心的算法以后，剩下的事情就交给Love2D引擎来绘制吧，最后给出完整的程序代码：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Lua data-lang=Lua><span class=c1>--定义窗口宽度和高度</span>
 <span class=kd>local</span> <span class=n>w</span><span class=o>=</span><span class=mi>640</span>
 <span class=kd>local</span> <span class=n>h</span><span class=o>=</span><span class=mi>640</span>
@@ -358,21 +337,11 @@ local dir=1;这里定义了getNextPoint()的方法，目的是计算在蛇头位
   <span class=kr>end</span>
 
   <span class=kr>return</span> <span class=n>snake</span>
-<span class=kr>end</span>
-</code></pre></div><p>  将代码压缩成.love文件后就可以运行了，我们来看看最终的效果：</p>
-<p><figure>
-<a href=https://camo.githubusercontent.com/c67d24e7970bb47f8c6ed45bd520ab09dfb4c917/687474703a2f2f7069632e636f6e6e2e63632f62732e706e67>
-<img src=https://camo.githubusercontent.com/c67d24e7970bb47f8c6ed45bd520ab09dfb4c917/687474703a2f2f7069632e636f6e6e2e63632f62732e706e67 loading=lazy alt=Demo1>
-</a>
-<figcaption>Demo1</figcaption>
-</figure>
-<figure>
-<a href=https://camo.githubusercontent.com/479dd593c4a4f722e07ed4ccc5ddd574fe5dbd10/687474703a2f2f7069632e636f6e6e2e63632f5a722e706e67>
-<img src=https://camo.githubusercontent.com/479dd593c4a4f722e07ed4ccc5ddd574fe5dbd10/687474703a2f2f7069632e636f6e6e2e63632f5a722e706e67 loading=lazy alt=Demo2>
-</a>
-<figcaption>Demo2</figcaption>
-</figure></p>
-<p>  本文的项目作为开源项目托管在Github上，可以通过<a class=link href=https://github.com/qinyuanpei/Love2D_Snake target=_blank rel=noopener>Github</a>来获取项目源代码。谢谢大家，今天的内容就是这样了。</p>
+<span class=kr>end</span></code></pre></div>
+<p>&emsp;&emsp;将代码压缩成.love文件后就可以运行了，我们来看看最终的效果：</p>
+<p><img src=https://camo.githubusercontent.com/c67d24e7970bb47f8c6ed45bd520ab09dfb4c917/687474703a2f2f7069632e636f6e6e2e63632f62732e706e67 alt=Demo1>
+<img src=https://camo.githubusercontent.com/479dd593c4a4f722e07ed4ccc5ddd574fe5dbd10/687474703a2f2f7069632e636f6e6e2e63632f5a722e706e67 alt=Demo2></p>
+<p>&emsp;&emsp;本文的项目作为开源项目托管在Github上，可以通过<a href=https://github.com/qinyuanpei/Love2D_Snake>Github</a>来获取项目源代码。谢谢大家，今天的内容就是这样了。</p>
 </section>
 <footer class=article-footer>
 <section class=article-tags>

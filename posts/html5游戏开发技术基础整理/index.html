@@ -2,7 +2,10 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="## JavaScript中的面向对象编程;如果直接使用JavaScript代码;### 在JavaScript中函数(function)就是就是一个类(class)"><title>HTML5游戏开发技术基础整理</title>
 <link rel=canonical href=/posts/html5%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E6%95%B4%E7%90%86/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="HTML5游戏开发技术基础整理">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="HTML5游戏开发技术基础整理">
 <meta property="og:description" content="## JavaScript中的面向对象编程;如果直接使用JavaScript代码;### 在JavaScript中函数(function)就是就是一个类(class)">
 <meta property="og:url" content="/posts/html5%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E6%95%B4%E7%90%86/">
 <meta property="og:site_name" content="飞鸿踏雪">
@@ -92,15 +95,15 @@ on-phone--column extended">
 </div>
 </header>
 <section class=article-content>
-<p>  随着HTML5标准最终敲定，HTML5将有望成为游戏开发领域的的热门平台。HTML5游戏能够运行于包括iPhone系列和iPad系列在内的计算机、智能手机以及平板电脑上，是目前跨平台应用开发的最佳实施方案。本文系根据[HML5 Canvas游戏开发实战]一书中的内容整理而成，是了解和学习HTML5游戏开发的基础内容，希望能够帮助到那些和博主一样致力于游戏开发的朋友们！</p>
+<p>&emsp;&emsp;随着HTML5标准最终敲定，HTML5将有望成为游戏开发领域的的热门平台。HTML5游戏能够运行于包括iPhone系列和iPad系列在内的计算机、智能手机以及平板电脑上，是目前跨平台应用开发的最佳实施方案。本文系根据[HML5 Canvas游戏开发实战]一书中的内容整理而成，是了解和学习HTML5游戏开发的基础内容，希望能够帮助到那些和博主一样致力于游戏开发的朋友们！</p>
 <h2 id=javascript中的面向对象编程>JavaScript中的面向对象编程</h2>
-<p>  对于游戏开发来说，面向对象编程(OOP)是一种重要而且必要的方法，所以在了解HTML5游戏开发前，首先应该了解JavaScript中的面向对象编程。JavaScript是一种基于对象的语言，可它并不是一种真正的面向对象的编程语言，因为在JavaScript的语法中不存在类(Class)的概念。下面我们将分析和解决在JavaScript中实现封装、继承等面向对象的问题。</p>
-<h3 id=在javascript中函数function就是就是一个类class>在JavaScript中函数(function)就是就是一个类(class)</h3>
+<p>&emsp;&emsp;对于游戏开发来说，面向对象编程(OOP)是一种重要而且必要的方法，所以在了解HTML5游戏开发前，首先应该了解JavaScript中的面向对象编程。JavaScript是一种基于对象的语言，可它并不是一种真正的面向对象的编程语言，因为在JavaScript的语法中不存在类(Class)的概念。下面我们将分析和解决在JavaScript中实现封装、继承等面向对象的问题。</p>
+<h3 id=在javascript中函数-function-就是就是一个类-class>在JavaScript中函数(function)就是就是一个类(class)</h3>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//声明一个函数
 </span><span class=c1></span><span class=kd>function</span> <span class=nx>MyClass</span><span class=p>(){}</span>
 <span class=c1>//实例化一个对象
-</span><span class=c1></span><span class=kd>var</span> <span class=nx>cls1</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>MyClass</span><span class=p>();</span>
-</code></pre></div><h3 id=使用this关键字就可以为类增加属性>使用this关键字就可以为类增加属性</h3>
+</span><span class=c1></span><span class=kd>var</span> <span class=nx>cls1</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>MyClass</span><span class=p>();</span></code></pre></div>
+<h3 id=使用this关键字就可以为类增加属性>使用this关键字就可以为类增加属性</h3>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//声明一个类并定义其构造函数
 </span><span class=c1></span><span class=kd>function</span> <span class=nx>MyClass</span><span class=p>(</span><span class=nx>name</span><span class=p>,</span><span class=nx>age</span><span class=p>)</span>
 <span class=p>{</span>
@@ -110,8 +113,8 @@ on-phone--column extended">
 <span class=c1>//实例化一个对象
 </span><span class=c1></span><span class=kd>var</span> <span class=nx>cls1</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>MyClass</span><span class=p>(</span><span class=s2>&#34;张三&#34;</span><span class=p>,</span><span class=mi>20</span><span class=p>)</span>
 <span class=c1>//输出cls1的两个属性值
-</span><span class=c1></span><span class=nx>alert</span><span class=p>(</span><span class=s2>&#34;name=&#34;</span> <span class=o>+</span> <span class=nx>cls1</span><span class=p>.</span><span class=nx>name</span> <span class=o>+</span> <span class=s2>&#34;&amp;&#34;</span> <span class=o>+</span> <span class=nx>cls1</span><span class=p>.</span><span class=nx>age</span><span class=p>)</span>
-</code></pre></div><h3 id=使用prototype属性可以为类添加方法>使用prototype属性可以为类添加方法</h3>
+</span><span class=c1></span><span class=nx>alert</span><span class=p>(</span><span class=s2>&#34;name=&#34;</span> <span class=o>+</span> <span class=nx>cls1</span><span class=p>.</span><span class=nx>name</span> <span class=o>+</span> <span class=s2>&#34;&amp;&#34;</span> <span class=o>+</span> <span class=nx>cls1</span><span class=p>.</span><span class=nx>age</span><span class=p>)</span></code></pre></div>
+<h3 id=使用prototype属性可以为类添加方法>使用prototype属性可以为类添加方法</h3>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//声明一个类并定义其构造函数
 </span><span class=c1></span><span class=kd>function</span> <span class=nx>MyClass</span><span class=p>(</span><span class=nx>name</span><span class=p>,</span><span class=nx>age</span><span class=p>)</span>
 <span class=p>{</span>
@@ -133,8 +136,8 @@ on-phone--column extended">
     <span class=p>{</span>
         <span class=nx>alert</span><span class=p>(</span><span class=s2>&#34;age=&#34;</span> <span class=o>+</span> <span class=k>this</span><span class=p>.</span><span class=nx>age</span><span class=p>)</span>
     <span class=p>}</span>
-<span class=p>};</span>
-</code></pre></div><h3 id=使用apply方法实现属性和方法的继承>使用apply方法实现属性和方法的继承</h3>
+<span class=p>};</span></code></pre></div>
+<h3 id=使用apply方法实现属性和方法的继承>使用apply方法实现属性和方法的继承</h3>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//定义一个父类People
 </span><span class=c1></span><span class=kd>function</span> <span class=nx>People</span><span class=p>()</span>
 <span class=p>{</span>
@@ -189,24 +192,24 @@ on-phone--column extended">
 
 <span class=c1>//实例化Student对象
 </span><span class=c1></span><span class=kd>var</span> <span class=nx>stu</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Student</span><span class=p>(</span><span class=s2>&#34;张三&#34;</span><span class=p>,</span><span class=mi>20</span><span class=p>,</span><span class=s2>&#34;男&#34;</span><span class=p>);</span>
-<span class=nx>stu</span><span class=p>.</span><span class=nx>getType</span><span class=p>();</span>
-</code></pre></div><h3 id=静态类的实现>静态类的实现</h3>
+<span class=nx>stu</span><span class=p>.</span><span class=nx>getType</span><span class=p>();</span></code></pre></div>
+<h3 id=静态类的实现>静态类的实现</h3>
 <pre tabindex=0><code>function staticClass()
 {
-    staticClass.name = &quot;张三&quot;;
+    staticClass.name = &#34;张三&#34;;
     staticClass.toString=function
     {
-        alert(&quot;name=&quot; + staticClass.name )
+        alert(&#34;name=&#34; + staticClass.name )
     };
 };
 
 alert(staticClass.name);
-staticClass.toString();
-</code></pre><h2 id=canvas绘图基础>Canvas绘图基础</h2>
+staticClass.toString();</code></pre>
+<h2 id=canvas绘图基础>Canvas绘图基础</h2>
 <p>HTML5提供了图像、视频、音频、表单、位置、本地数据库、离线存储、websocket等各种全新的特性，对于HTML游戏开发而言，我们主要关注图像、音频、本地数据库以及websocket等，首先我们来了解下Canavs绘图的基础内容。</p>
-<p>  Canvas是HTML5为我们提供的一张画布，可以让我们在HTML上直接绘制图形，因此Canvas可以作为HTML5游戏开发的基本元素，即HTML5游戏引擎的底层都是以Canvas元素来驱动的。Canvas本身没有绘图的能力，需要借助于JavaScript来实现绘图的功能。使用Canvas元素只需要在网页中添加canvas标记即可，如</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-HTML data-lang=HTML><span class=p>&lt;</span><span class=nt>canvas</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;myCanavs&#34;</span> <span class=na>width</span><span class=o>=</span><span class=s>&#34;800&#34;</span> <span class=na>height</span><span class=o>=</span><span class=s>&#34;480&#34;</span><span class=p>&gt;&lt;/</span><span class=nt>canvas</span><span class=p>&gt;</span>
-</code></pre></div><p>  接下来我们通过JavaScript来获取这个Canvas并通过相关API实现绘图环境的初始化</p>
+<p>&emsp;&emsp;Canvas是HTML5为我们提供的一张画布，可以让我们在HTML上直接绘制图形，因此Canvas可以作为HTML5游戏开发的基本元素，即HTML5游戏引擎的底层都是以Canvas元素来驱动的。Canvas本身没有绘图的能力，需要借助于JavaScript来实现绘图的功能。使用Canvas元素只需要在网页中添加canvas标记即可，如</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-HTML data-lang=HTML><span class=p>&lt;</span><span class=nt>canvas</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;myCanavs&#34;</span> <span class=na>width</span><span class=o>=</span><span class=s>&#34;800&#34;</span> <span class=na>height</span><span class=o>=</span><span class=s>&#34;480&#34;</span><span class=p>&gt;&lt;/</span><span class=nt>canvas</span><span class=p>&gt;</span></code></pre></div>
+<p>&emsp;&emsp;接下来我们通过JavaScript来获取这个Canvas并通过相关API实现绘图环境的初始化</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//获取Canvas元素
 </span><span class=c1></span><span class=kd>var</span> <span class=nx>canvas</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s1>&#39;myCanvas&#39;</span><span class=p>);</span>
 <span class=c1>//检查canvas合法性
@@ -214,8 +217,8 @@ staticClass.toString();
 <span class=p>{</span>
     <span class=c1>//获取当前上下文
 </span><span class=c1></span>    <span class=kd>var</span> <span class=nx>ctx</span> <span class=o>=</span> <span class=nx>canvas</span><span class=p>.</span><span class=nx>getContext</span><span class=p>(</span><span class=s1>&#39;2d&#39;</span><span class=p>)</span>    
-<span class=p>}</span>
-</code></pre></div><p>  因为目前Canvas只支持2D绘图，因此，这里的参数暂时只能为2d。因为Cnavas绘图的API都封装在ctx这个实例中，因此下面的所有操作都是基于ctx来实现的：</p>
+<span class=p>}</span></code></pre></div>
+<p>&emsp;&emsp;因为目前Canvas只支持2D绘图，因此，这里的参数暂时只能为2d。因为Cnavas绘图的API都封装在ctx这个实例中，因此下面的所有操作都是基于ctx来实现的：</p>
 <h3 id=使用canvas绘制线>使用Canvas绘制线</h3>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//设置线宽
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>lineWidth</span> <span class=o>=</span> <span class=mi>10</span><span class=p>;</span>
@@ -228,8 +231,8 @@ staticClass.toString();
 <span class=c1>//路径终点
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>lineTo</span><span class=p>(</span><span class=mi>150</span><span class=p>,</span><span class=mi>50</span><span class=p>);</span>
 <span class=c1>//绘制路径
-</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span>
-</code></pre></div><h3 id=使用cnavas绘制矩形>使用Cnavas绘制矩形</h3>
+</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span></code></pre></div>
+<h3 id=使用cnavas绘制矩形>使用Cnavas绘制矩形</h3>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//设置线宽
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>lineWidth</span><span class=o>=</span><span class=mi>5</span><span class=p>;</span>
 <span class=c1>//设置画笔颜色
@@ -237,32 +240,32 @@ staticClass.toString();
 <span class=c1>//创建路径
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>beginPath</span><span class=p>();</span>
 <span class=c1>//绘制矩形
-</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>strokeRect</span><span class=p>(</span><span class=mi>10</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>70</span><span class=p>,</span><span class=mi>40</span><span class=p>);</span>
-</code></pre></div><p>  或者</p>
+</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>strokeRect</span><span class=p>(</span><span class=mi>10</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>70</span><span class=p>,</span><span class=mi>40</span><span class=p>);</span></code></pre></div>
+<p>&emsp;&emsp;或者</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//定义矩形
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>rect</span><span class=p>(</span><span class=mi>10</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>70</span><span class=p>,</span><span class=mi>40</span><span class=p>);</span>
 <span class=c1>//绘制矩形
-</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span>
-</code></pre></div><p>如果需要对矩形进行填充</p>
+</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span></code></pre></div>
+<p>如果需要对矩形进行填充</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//创建路径
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>beginPath</span><span class=p>()</span>
 <span class=c1>//绘制矩形
-</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fillRect</span><span class=p>(</span><span class=mi>10</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>70</span><span class=p>,</span><span class=mi>40</span><span class=p>)</span>
-</code></pre></div><h3 id=使用canvas绘制圆>使用Canvas绘制圆</h3>
+</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fillRect</span><span class=p>(</span><span class=mi>10</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>70</span><span class=p>,</span><span class=mi>40</span><span class=p>)</span></code></pre></div>
+<h3 id=使用canvas绘制圆>使用Canvas绘制圆</h3>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//创建路径
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>beginPath</span><span class=p>();</span>
 <span class=c1>//定义圆
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>arc</span><span class=p>(</span><span class=mi>100</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>50</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>360</span><span class=o>*</span><span class=nb>Math</span><span class=p>.</span><span class=nx>PI</span><span class=o>/</span><span class=mi>180</span><span class=p>,</span><span class=kc>true</span><span class=p>);</span>
 <span class=c1>//绘制圆
-</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span>
-</code></pre></div><p>  同样地，可以使用fill进行填充绘制</p>
+</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span></code></pre></div>
+<p>&emsp;&emsp;同样地，可以使用fill进行填充绘制</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//创建路径
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>beginPath</span><span class=p>();</span>
 <span class=c1>//定义圆
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>arc</span><span class=p>(</span><span class=mi>100</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>50</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>360</span><span class=o>*</span><span class=nb>Math</span><span class=p>.</span><span class=nx>PI</span><span class=o>/</span><span class=mi>180</span><span class=p>,</span><span class=kc>true</span><span class=p>);</span>
 <span class=c1>//绘制圆
-</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fill</span><span class=p>();</span>
-</code></pre></div><h3 id=使用canvas绘制圆角矩形>使用Canvas绘制圆角矩形</h3>
+</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fill</span><span class=p>();</span></code></pre></div>
+<h3 id=使用canvas绘制圆角矩形>使用Canvas绘制圆角矩形</h3>
 <p>绘制圆角矩形需要arcTo函数配合lineTo来完成</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//创建路径
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>beginPath</span><span class=p>();</span>
@@ -276,35 +279,35 @@ staticClass.toString();
 <span class=nx>ctx</span><span class=p>.</span><span class=nx>lineTo</span><span class=p>(</span><span class=mi>20</span><span class=p>,</span><span class=mi>40</span><span class=p>);</span>
 <span class=nx>ctx</span><span class=p>.</span><span class=nx>arcTo</span><span class=p>(</span><span class=mi>20</span><span class=p>,</span><span class=mi>20</span><span class=p>,</span><span class=mi>40</span><span class=p>,</span><span class=mi>20</span><span class=p>,</span><span class=mi>20</span><span class=p>);</span>
 <span class=c1>//绘制圆角矩形
-</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span>
-</code></pre></div><h3 id=使用canvas绘制复杂图形>使用Canvas绘制复杂图形</h3>
-<p>  在HTML5中可以通过quadraticCurveTo函数绘制二次贝塞尔曲线，通过bezierCurveTo函数绘制三次贝塞尔曲线,具体代码请参考API文档。</p>
+</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span></code></pre></div>
+<h3 id=使用canvas绘制复杂图形>使用Canvas绘制复杂图形</h3>
+<p>&emsp;&emsp;在HTML5中可以通过quadraticCurveTo函数绘制二次贝塞尔曲线，通过bezierCurveTo函数绘制三次贝塞尔曲线,具体代码请参考API文档。</p>
 <h3 id=使用canvas绘制文字>使用Canvas绘制文字</h3>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//设置字体
 </span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>font</span><span class=o>=</span><span class=s2>&#34;30px Arial&#34;</span><span class=p>;</span>
 <span class=c1>//绘制文字
-</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>strokeText</span><span class=p>(</span><span class=s2>&#34;Hello HTML5&#34;</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>50</span><span class=p>);</span>
-</code></pre></div><h3 id=使用canvas绘制图片>使用Canvas绘制图片</h3>
-<p>  绘制图片使用drawImage函数，其函数原型如下：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=nx>drawImage</span><span class=p>(</span><span class=nx>image</span><span class=p>,</span><span class=nx>dx</span><span class=p>,</span><span class=nx>dy</span><span class=p>);</span>
-</code></pre></div><p>  其中image可以是HTML中的标签或者是JavaScript中的Image对象。如</p>
+</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>strokeText</span><span class=p>(</span><span class=s2>&#34;Hello HTML5&#34;</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>50</span><span class=p>);</span></code></pre></div>
+<h3 id=使用canvas绘制图片>使用Canvas绘制图片</h3>
+<p>&emsp;&emsp;绘制图片使用drawImage函数，其函数原型如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=nx>drawImage</span><span class=p>(</span><span class=nx>image</span><span class=p>,</span><span class=nx>dx</span><span class=p>,</span><span class=nx>dy</span><span class=p>);</span></code></pre></div>
+<p>&emsp;&emsp;其中image可以是HTML中的<img>标签或者是JavaScript中的Image对象。如</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-HTML data-lang=HTML>//定义一个img标签
-<span class=p>&lt;</span><span class=nt>img</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;img_source&#34;</span> <span class=na>src</span><span class=o>=</span><span class=s>&#34;source.jpg&#34;</span> <span class=na>width</span><span class=o>=</span><span class=s>&#34;240&#34;</span> <span class=na>height</span><span class=o>=</span><span class=s>&#34;240&#34;</span><span class=p>/&gt;</span>
-</code></pre></div><p>  接下来通过getElementById来取得图像数据，并将其绘制出来</p>
+<span class=p>&lt;</span><span class=nt>img</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;img_source&#34;</span> <span class=na>src</span><span class=o>=</span><span class=s>&#34;source.jpg&#34;</span> <span class=na>width</span><span class=o>=</span><span class=s>&#34;240&#34;</span> <span class=na>height</span><span class=o>=</span><span class=s>&#34;240&#34;</span><span class=p>/&gt;</span></code></pre></div>
+<p>&emsp;&emsp;接下来通过getElementById来取得图像数据，并将其绘制出来</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=kd>var</span> <span class=nx>img</span><span class=o>=</span><span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;img_source&#34;</span><span class=p>);</span>
-<span class=nx>ctx</span><span class=p>.</span><span class=nx>draw</span><span class=p>(</span><span class=nx>img</span><span class=p>,</span><span class=mi>200</span><span class=p>,</span><span class=mi>200</span><span class=p>);</span>
-</code></pre></div><p>  如果直接使用JavaScript代码</p>
+<span class=nx>ctx</span><span class=p>.</span><span class=nx>draw</span><span class=p>(</span><span class=nx>img</span><span class=p>,</span><span class=mi>200</span><span class=p>,</span><span class=mi>200</span><span class=p>);</span></code></pre></div>
+<p>&emsp;&emsp;如果直接使用JavaScript代码</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=kd>var</span> <span class=nx>img</span><span class=o>=</span><span class=k>new</span> <span class=nx>Image</span><span class=p>();</span>
 <span class=nx>img</span><span class=p>.</span><span class=nx>src</span><span class=o>=</span><span class=s2>&#34;source.jpg&#34;</span><span class=p>;</span>
-<span class=nx>ctx</span><span class=p>.</span><span class=nx>draw</span><span class=p>(</span><span class=nx>img</span><span class=p>,</span><span class=mi>200</span><span class=p>,</span><span class=mi>200</span><span class=p>)</span>
-</code></pre></div><h3 id=图形的平移操作>图形的平移操作</h3>
-<p>  使用translate函数实现在水平和垂直方向上的平移</p>
+<span class=nx>ctx</span><span class=p>.</span><span class=nx>draw</span><span class=p>(</span><span class=nx>img</span><span class=p>,</span><span class=mi>200</span><span class=p>,</span><span class=mi>200</span><span class=p>)</span></code></pre></div>
+<h3 id=图形的平移操作>图形的平移操作</h3>
+<p>&emsp;&emsp;使用translate函数实现在水平和垂直方向上的平移</p>
 <h3 id=图形的旋转操作>图形的旋转操作</h3>
-<p>  使用rotate函数实现旋转，需要注意的是传入的参数是弧度</p>
+<p>&emsp;&emsp;使用rotate函数实现旋转，需要注意的是传入的参数是弧度</p>
 <h3 id=图形的伸缩操作>图形的伸缩操作</h3>
-<p>  使用scale函数实现伸缩，当参数为负值时表示在该方向上翻转</p>
+<p>&emsp;&emsp;使用scale函数实现伸缩，当参数为负值时表示在该方向上翻转</p>
 <h3 id=图形高级特效>图形高级特效</h3>
-<p>  这里主要介绍线性渐变、径向渐变、颜色反转、灰度。
+<p>&emsp;&emsp;这里主要介绍线性渐变、径向渐变、颜色反转、灰度。
 ####线性渐变</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//创建一个线性渐变容器
 </span><span class=c1></span><span class=kd>var</span> <span class=nx>grd</span><span class=o>=</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>createLinearGradient</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>200</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span>
@@ -312,20 +315,20 @@ staticClass.toString();
 </span><span class=c1></span><span class=nx>grd</span><span class=p>.</span><span class=nx>addColorStop</span><span class=p>(</span><span class=mf>0.2</span><span class=p>,</span><span class=s2>&#34;#00ff00&#34;</span><span class=p>);</span>
 <span class=nx>grd</span><span class=p>.</span><span class=nx>addColorStop</span><span class=p>(</span><span class=mf>0.8</span><span class=p>,</span><span class=s2>&#34;#ff0000&#34;</span><span class=p>);</span>
 <span class=c1>//应用渐变
-</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fillStyle</span><span class=o>=</span><span class=nx>grd</span><span class=p>;</span>
-</code></pre></div><p>####径向渐变</p>
+</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fillStyle</span><span class=o>=</span><span class=nx>grd</span><span class=p>;</span></code></pre></div>
+<p>####径向渐变</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=c1>//创建一个径向渐变容器
 </span><span class=c1></span><span class=kd>var</span> <span class=nx>grd</span><span class=o>=</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>createRadialGradient</span><span class=p>(</span><span class=mi>100</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>50</span><span class=p>);</span>
 <span class=c1>//添加颜色
 </span><span class=c1></span><span class=nx>grd</span><span class=p>.</span><span class=nx>addColorStop</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span><span class=s2>&#34;#00ff00&#34;</span><span class=p>);</span>
 <span class=nx>grd</span><span class=p>.</span><span class=nx>addColorStop</span><span class=p>(,</span><span class=s2>&#34;#ff0000&#34;</span><span class=p>);</span>
 <span class=c1>//应用渐变
-</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fillStyle</span><span class=o>=</span><span class=nx>grd</span><span class=p>;</span>
-</code></pre></div><p>####颜色反转
-  遍历每个像素并对RGB值进行取反
+</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fillStyle</span><span class=o>=</span><span class=nx>grd</span><span class=p>;</span></code></pre></div>
+<p>####颜色反转
+&emsp;&emsp;遍历每个像素并对RGB值进行取反
 ####灰度
-  灰度计算公式：gary=red<em>0.3+green</em>0.59+blue*0.11</p>
-<p>  基础的内容就是这些了，以后如果碰到需要HTML5的地方可以回过头来看看。</p>
+&emsp;&emsp;灰度计算公式：gary=red*0.3+green*0.59+blue*0.11</p>
+<p>&emsp;&emsp;基础的内容就是这些了，以后如果碰到需要HTML5的地方可以回过头来看看。</p>
 </section>
 <footer class=article-footer>
 <section class=article-tags>

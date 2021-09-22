@@ -4,7 +4,10 @@
 ABP vNext中的分页查询 OK，当大家接触过 ABP vNext 以后，就会了解到这样一件事情，即，ABP vNext 中默认提供的分页查询接口，在大多数情况下，通常都会是下面这样的风格。这里以角色查询的接口为例，它对应的请求地址是：/api/identity/roles?SkipCount=0&amp;amp;MaxResultCount=10。此时，我们可以注意到，返回的数据结构中含有totalCount和items两个属性。其中，totalCount表示记录的总数目，items表示当前页对应的记录。
 { &amp;#34;totalCount&amp;#34;: 2, &amp;#34;items&amp;#34;: [ { &amp;#34;name&amp;#34;: &amp;#34;Admin&amp;#34;, &amp;#34;isDefault&amp;#34;: false, &amp;#34;isStatic&amp;#34;: true, &amp;#34;isPublic&amp;#34;: true, &amp;#34;concurrencyStamp&amp;#34;: &amp;#34;cb53f2d7-159e-452d-9d9c-021629b500e0&amp;#34;, &amp;#34;id&amp;#34;: &amp;#34;39fb19e8-fb34-dfbd-3c70-181f604fd5ff&amp;#34;, &amp;#34;extraProperties&amp;#34;: {} }, { &amp;#34;name&amp;#34;: &amp;#34;Manager&amp;#34;, &amp;#34;isDefault&amp;#34;: false, &amp;#34;isStatic&amp;#34;: false, &amp;#34;isPublic&amp;#34;: false, &amp;#34;concurrencyStamp&amp;#34;: &amp;#34;145ec550-7fe7-4c80-85e3-f317a168e6b6&amp;#34;, &amp;#34;id&amp;#34;: &amp;#34;39fb6216-2803-20c6-7211-76f8fe38b90e&amp;#34;, &amp;#34;extraProperties&amp;#34;: {} } ] } 事实上，ABP vNext 中自带的分页查询，主要是通过SkipCount和MaxResultCount两个参数来实现。假设MaxResultCount，即分页大小为m，则第n页对应的SkipCount应该为(n-1) * m。如果大家对于LINQ非常熟悉的话，应该可以自然而然地联想到Skip()和Take()两个方法，这是一个非常自然的联想，因为 ABP vNext 就是这样实现分页查询的。这里以博主的“数据字典”分页查询接口为例："><title>ABP vNext 对接 Ant Design Vue 实现分页查询</title>
 <link rel=canonical href=/posts/abp-vnext-%E5%AF%B9%E6%8E%A5-ant-design-vue-%E5%AE%9E%E7%8E%B0%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="ABP vNext 对接 Ant Design Vue 实现分页查询">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="ABP vNext 对接 Ant Design Vue 实现分页查询">
 <meta property="og:description" content="在 上一篇 博客中，博主和大家分享了如何在 EF Core 中实现多租户架构。在这一过程中，博主主要参考了 ABP vNext 这个框架。从上个月开始，我个人发起了一个项目，基于 ABP vNext 和 Ant Design Vue 来实现一个通用的后台管理系统，希望以此来推进 DDD 和 Vue 的学习，努力打通前端与后端的“任督二脉”。因此，接下来的这段时间内，我写作的主题将会围绕 ABP vNext 和 Ant Design Vue。而在今天的这篇博客中，我们来说说 ABP vNext 对接 Ant Design Vue 实现分页查询的问题，希望能让大家在面对类似问题时有所帮助。我不打算写一个系列教程，更多的是从我个人的关注点出发，如果大家有更多想要交流的话题，欢迎大家通过评论或者邮件来留言，谢谢大家！
 ABP vNext中的分页查询 OK，当大家接触过 ABP vNext 以后，就会了解到这样一件事情，即，ABP vNext 中默认提供的分页查询接口，在大多数情况下，通常都会是下面这样的风格。这里以角色查询的接口为例，它对应的请求地址是：/api/identity/roles?SkipCount=0&amp;amp;MaxResultCount=10。此时，我们可以注意到，返回的数据结构中含有totalCount和items两个属性。其中，totalCount表示记录的总数目，items表示当前页对应的记录。
 { &amp;#34;totalCount&amp;#34;: 2, &amp;#34;items&amp;#34;: [ { &amp;#34;name&amp;#34;: &amp;#34;Admin&amp;#34;, &amp;#34;isDefault&amp;#34;: false, &amp;#34;isStatic&amp;#34;: true, &amp;#34;isPublic&amp;#34;: true, &amp;#34;concurrencyStamp&amp;#34;: &amp;#34;cb53f2d7-159e-452d-9d9c-021629b500e0&amp;#34;, &amp;#34;id&amp;#34;: &amp;#34;39fb19e8-fb34-dfbd-3c70-181f604fd5ff&amp;#34;, &amp;#34;extraProperties&amp;#34;: {} }, { &amp;#34;name&amp;#34;: &amp;#34;Manager&amp;#34;, &amp;#34;isDefault&amp;#34;: false, &amp;#34;isStatic&amp;#34;: false, &amp;#34;isPublic&amp;#34;: false, &amp;#34;concurrencyStamp&amp;#34;: &amp;#34;145ec550-7fe7-4c80-85e3-f317a168e6b6&amp;#34;, &amp;#34;id&amp;#34;: &amp;#34;39fb6216-2803-20c6-7211-76f8fe38b90e&amp;#34;, &amp;#34;extraProperties&amp;#34;: {} } ] } 事实上，ABP vNext 中自带的分页查询，主要是通过SkipCount和MaxResultCount两个参数来实现。假设MaxResultCount，即分页大小为m，则第n页对应的SkipCount应该为(n-1) * m。如果大家对于LINQ非常熟悉的话，应该可以自然而然地联想到Skip()和Take()两个方法，这是一个非常自然的联想，因为 ABP vNext 就是这样实现分页查询的。这里以博主的“数据字典”分页查询接口为例：">
@@ -50,7 +53,7 @@ extended">
 </div>
 </header>
 <section class=article-content>
-<p>在 <a class=link href=https://blog.yuanpei.me/posts/2151871792/ target=_blank rel=noopener>上一篇</a> 博客中，博主和大家分享了如何在 <a class=link href="https://docs.microsoft.com/zh-cn/ef/core/get-started/overview/first-app?tabs=netcore-cli" target=_blank rel=noopener>EF Core</a> 中实现多租户架构。在这一过程中，博主主要参考了 <a class=link href=https://github.com/abpframework/abp target=_blank rel=noopener>ABP vNext</a> 这个框架。从上个月开始，我个人发起了一个项目，基于 <a class=link href=https://github.com/abpframework/abp target=_blank rel=noopener>ABP vNext</a> 和 <a class=link href=https://www.antdv.com/docs/vue/introduce-cn/ target=_blank rel=noopener>Ant Design Vue</a> 来实现一个通用的后台管理系统，希望以此来推进 <a class=link href=https://www.jdon.com/ddd.html target=_blank rel=noopener>DDD</a> 和 <a class=link href=https://cn.vuejs.org/ target=_blank rel=noopener>Vue</a> 的学习，努力打通前端与后端的“<strong>任督二脉</strong>”。因此，接下来的这段时间内，我写作的主题将会围绕 ABP vNext 和 Ant Design Vue。而在今天的这篇博客中，我们来说说 ABP vNext 对接 Ant Design Vue 实现分页查询的问题，希望能让大家在面对类似问题时有所帮助。我不打算写一个系列教程，更多的是从我个人的关注点出发，如果大家有更多想要交流的话题，欢迎大家通过评论或者邮件来留言，谢谢大家！</p>
+<p>在 <a href=https://blog.yuanpei.me/posts/2151871792/>上一篇</a> 博客中，博主和大家分享了如何在 <a href="https://docs.microsoft.com/zh-cn/ef/core/get-started/overview/first-app?tabs=netcore-cli">EF Core</a> 中实现多租户架构。在这一过程中，博主主要参考了 <a href=https://github.com/abpframework/abp>ABP vNext</a> 这个框架。从上个月开始，我个人发起了一个项目，基于 <a href=https://github.com/abpframework/abp>ABP vNext</a> 和 <a href=https://www.antdv.com/docs/vue/introduce-cn/>Ant Design Vue</a> 来实现一个通用的后台管理系统，希望以此来推进 <a href=https://www.jdon.com/ddd.html>DDD</a> 和 <a href=https://cn.vuejs.org/>Vue</a> 的学习，努力打通前端与后端的“<strong>任督二脉</strong>”。因此，接下来的这段时间内，我写作的主题将会围绕 ABP vNext 和 Ant Design Vue。而在今天的这篇博客中，我们来说说 ABP vNext 对接 Ant Design Vue 实现分页查询的问题，希望能让大家在面对类似问题时有所帮助。我不打算写一个系列教程，更多的是从我个人的关注点出发，如果大家有更多想要交流的话题，欢迎大家通过评论或者邮件来留言，谢谢大家！</p>
 <h1 id=abp-vnext中的分页查询>ABP vNext中的分页查询</h1>
 <p>OK，当大家接触过 ABP vNext 以后，就会了解到这样一件事情，即，ABP vNext 中默认提供的分页查询接口，在大多数情况下，通常都会是下面这样的风格。这里以角色查询的接口为例，它对应的请求地址是：<code>/api/identity/roles?SkipCount=0&MaxResultCount=10</code>。此时，我们可以注意到，返回的数据结构中含有<code>totalCount</code>和<code>items</code>两个属性。其中，<code>totalCount</code>表示记录的总数目，<code>items</code>表示当前页对应的记录。</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=p>{</span>
@@ -75,8 +78,8 @@ extended">
       <span class=nt>&#34;extraProperties&#34;</span><span class=p>:</span> <span class=p>{}</span>
     <span class=p>}</span>
   <span class=p>]</span>
-<span class=p>}</span>
-</code></pre></div><p>事实上，ABP vNext 中自带的分页查询，主要是通过<code>SkipCount</code>和<code>MaxResultCount</code>两个参数来实现。假设<code>MaxResultCount</code>，即分页大小为<code>m</code>，则第<code>n</code>页对应的<code>SkipCount</code>应该为<code>(n-1) * m</code>。如果大家对于<code>LINQ</code>非常熟悉的话，应该可以自然而然地联想到<code>Skip()</code>和<code>Take()</code>两个方法，这是一个非常自然的联想，因为 ABP vNext 就是这样实现分页查询的。这里以博主的“<strong>数据字典</strong>”分页查询接口为例：</p>
+<span class=p>}</span></code></pre></div>
+<p>事实上，ABP vNext 中自带的分页查询，主要是通过<code>SkipCount</code>和<code>MaxResultCount</code>两个参数来实现。假设<code>MaxResultCount</code>，即分页大小为<code>m</code>，则第<code>n</code>页对应的<code>SkipCount</code>应该为<code>(n-1) * m</code>。如果大家对于<code>LINQ</code>非常熟悉的话，应该可以自然而然地联想到<code>Skip()</code>和<code>Take()</code>两个方法，这是一个非常自然的联想，因为 ABP vNext 就是这样实现分页查询的。这里以博主的“<strong>数据字典</strong>”分页查询接口为例：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>async</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>PagedResultDto</span><span class=p>&lt;</span><span class=n>DataDictionaryQueryDto</span><span class=p>&gt;&gt;</span> <span class=n>GetCategories</span><span class=p>(</span>
     <span class=n>GetDataDictionaryRequestInput</span> <span class=n>input</span>
 <span class=p>)</span>
@@ -98,10 +101,10 @@ extended">
       <span class=n>TotalCount</span> <span class=p>=</span> <span class=n>totalCount</span><span class=p>,</span>
       <span class=n>Items</span> <span class=p>=</span> <span class=n>ObjectMapper</span><span class=p>.</span><span class=n>Map</span><span class=p>&lt;</span><span class=n>List</span><span class=p>&lt;</span><span class=n>DataDictionary</span><span class=p>&gt;,</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>DataDictionaryQueryDto</span><span class=p>&gt;&gt;(</span><span class=n>items</span><span class=p>)</span>
     <span class=p>};</span>
-<span class=p>}</span>
-</code></pre></div><p>可以注意到，在 ABP vNext 中我们只需要构造好<code>TotalCount</code>和<code>Items</code>这两个属性即可。</p>
+<span class=p>}</span></code></pre></div>
+<p>可以注意到，在 ABP vNext 中我们只需要构造好<code>TotalCount</code>和<code>Items</code>这两个属性即可。</p>
 <h1 id=stable组件中的分页查询>STable组件中的分页查询</h1>
-<p>接下来，在 Ant Design Vue 的 Pro 版本中，我们使用<code>STable</code>组件来展示列表类的数据，关于这个组件的使用方法，大家可以参考 <a class=link href=https://github.com/vueComponent/ant-design-vue-pro/blob/master/src/components/Table/README.md target=_blank rel=noopener>官方文档</a>。按照最小化可行产品(<strong>MVP</strong>)的理念，一个最简单的<code>STable</code>组件的使用，如下面所示：</p>
+<p>接下来，在 Ant Design Vue 的 Pro 版本中，我们使用<code>STable</code>组件来展示列表类的数据，关于这个组件的使用方法，大家可以参考 <a href=https://github.com/vueComponent/ant-design-vue-pro/blob/master/src/components/Table/README.md>官方文档</a>。按照最小化可行产品(<strong>MVP</strong>)的理念，一个最简单的<code>STable</code>组件的使用，如下面所示：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-html data-lang=html><span class=p>&lt;</span><span class=nt>template</span><span class=p>&gt;</span>
   <span class=p>&lt;</span><span class=nt>s-table</span>
     <span class=na>ref</span><span class=o>=</span><span class=s>&#34;table&#34;</span>
@@ -112,8 +115,8 @@ extended">
     <span class=na>:rowSelection</span><span class=o>=</span><span class=s>&#34;{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }&#34;</span>
   <span class=p>&gt;</span>
   <span class=p>&lt;/</span><span class=nt>s-table</span><span class=p>&gt;</span>
-<span class=p>&lt;/</span><span class=nt>template</span><span class=p>&gt;</span>
-</code></pre></div><p>对于这个组件而言，其中最重要的地方当属<code>data</code>属性，它接受一个函数，该函数的返回值为<code>Promise</code>对象，并且有一个参数：</p>
+<span class=p>&lt;/</span><span class=nt>template</span><span class=p>&gt;</span></code></pre></div>
+<p>对于这个组件而言，其中最重要的地方当属<code>data</code>属性，它接受一个函数，该函数的返回值为<code>Promise</code>对象，并且有一个参数：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=o>&lt;</span><span class=nx>script</span><span class=o>&gt;</span>
   <span class=kr>import</span> <span class=nx>STable</span> <span class=nx>from</span> <span class=s1>&#39;@/components&#39;</span>
 
@@ -140,8 +143,8 @@ extended">
       <span class=p>}</span>
     <span class=p>}</span>
   <span class=p>}</span>
-<span class=o>&lt;</span><span class=err>/script&gt;</span>
-</code></pre></div><p>也许，你会好奇这个<code>parameter</code>到底是个什么东西？可如果我们将其打印出来，就会发现它其实是分页查询相关的参数：<code>Object { pageNo: 1, pageSize: 10 }</code>，而更进一步，如果深入到这个组件的源代码中，我们会注意到组件内部有一个<code>loadData()</code>方法：</p>
+<span class=o>&lt;</span><span class=err>/script&gt;</span></code></pre></div>
+<p>也许，你会好奇这个<code>parameter</code>到底是个什么东西？可如果我们将其打印出来，就会发现它其实是分页查询相关的参数：<code>Object { pageNo: 1, pageSize: 10 }</code>，而更进一步，如果深入到这个组件的源代码中，我们会注意到组件内部有一个<code>loadData()</code>方法：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=nx>loadData</span> <span class=p>(</span><span class=nx>pagination</span><span class=p>,</span> <span class=nx>filters</span><span class=p>,</span> <span class=nx>sorter</span><span class=p>)</span> <span class=p>{</span>
   <span class=k>this</span><span class=p>.</span><span class=nx>localLoading</span> <span class=o>=</span> <span class=kc>true</span>
   <span class=kr>const</span> <span class=nx>parameter</span> <span class=o>=</span> <span class=nb>Object</span><span class=p>.</span><span class=nx>assign</span><span class=p>({</span>
@@ -161,7 +164,8 @@ extended">
   <span class=p>)</span>
   <span class=kr>const</span> <span class=nx>result</span> <span class=o>=</span> <span class=k>this</span><span class=p>.</span><span class=nx>data</span><span class=p>(</span><span class=nx>parameter</span><span class=p>)</span>
   <span class=c1>// 对接自己的通用数据接口需要修改下方代码中的 r.pageNo, r.totalCount, r.data
-</span></code></pre></div><p>可以注意到，在<code>STable</code>组件内部，它会将分页、排序和过滤三种不同类型的参数，通过<code>Object.assign()</code>方法聚合到一个对象上，这个对象实际上就是我们刚刚打印出来的<code>parameter</code>。为什么这样说呢？因为它接下来就要调用<code>data</code>属性指向的方法啦！还记得这个<code>data</code>是什么吗？不错，它是一个函数，既然是一个函数，当然可以直接调用。到这里，我们可以获得第一个信息，即，<strong>ABP vNext 中的表格组件STable，本身封装了分页查询相关的参数，只要将这些参数传递给后端就可以实现分页查询</strong>。</p>
+</span></code></pre></div>
+<p>可以注意到，在<code>STable</code>组件内部，它会将分页、排序和过滤三种不同类型的参数，通过<code>Object.assign()</code>方法聚合到一个对象上，这个对象实际上就是我们刚刚打印出来的<code>parameter</code>。为什么这样说呢？因为它接下来就要调用<code>data</code>属性指向的方法啦！还记得这个<code>data</code>是什么吗？不错，它是一个函数，既然是一个函数，当然可以直接调用。到这里，我们可以获得第一个信息，即，<strong>ABP vNext 中的表格组件STable，本身封装了分页查询相关的参数，只要将这些参数传递给后端就可以实现分页查询</strong>。</p>
 <h1 id=实现参数转换层>实现参数转换层</h1>
 <p>既然，这个参数和 ABP vNext 需要的参数不同，为了不修改已有的接口，我们考虑在这中间加一层转换。为此，我们定义下面的函数：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=c1>// 默认列表查询条件
@@ -196,12 +200,12 @@ extended">
   <span class=p>}</span>
 
   <span class=k>return</span> <span class=nx>abpListQuery</span>
-<span class=p>}</span>
-</code></pre></div><p>代码非常简单，通过<code>transformAbpListQuery</code>函数，我们就实现了从<code>STable</code>到<code>ABP vNext</code>的参数转换。需要说明的是，这里的排序使用到了 <a class=link href=https://github.com/zzzprojects/System.Linq.Dynamic.Core target=_blank rel=noopener>System.Linq.Dynamic.Core</a> 这个库，它可以实现<code>IQueryable</code>级别的、基于字符串的动态表达式构建功能，使用方法如下：</p>
+<span class=p>}</span></code></pre></div>
+<p>代码非常简单，通过<code>transformAbpListQuery</code>函数，我们就实现了从<code>STable</code>到<code>ABP vNext</code>的参数转换。需要说明的是，这里的排序使用到了 <a href=https://github.com/zzzprojects/System.Linq.Dynamic.Core>System.Linq.Dynamic.Core</a> 这个库，它可以实现<code>IQueryable</code>级别的、基于字符串的动态表达式构建功能，使用方法如下：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=kt>var</span> <span class=n>resultSingle</span> <span class=p>=</span> <span class=n>queryable</span><span class=p>.</span><span class=n>OrderBy</span><span class=p>&lt;</span><span class=n>User</span><span class=p>&gt;(</span><span class=s>&#34;NumberProperty&#34;</span><span class=p>);</span>
 <span class=kt>var</span> <span class=n>resultSingleDescending</span> <span class=p>=</span> <span class=n>queryable</span><span class=p>.</span><span class=n>OrderBy</span><span class=p>&lt;</span><span class=n>User</span><span class=p>&gt;(</span><span class=s>&#34;NumberProperty DESC&#34;</span><span class=p>);</span>
-<span class=kt>var</span> <span class=n>resultMultiple</span> <span class=p>=</span> <span class=n>queryable</span><span class=p>.</span><span class=n>OrderBy</span><span class=p>&lt;</span><span class=n>User</span><span class=p>&gt;(</span><span class=s>&#34;NumberProperty, StringProperty&#34;</span><span class=p>);</span>
-</code></pre></div><p>所以，当它为降序排序时，我们在排序字段的后面添加<code>DESC</code>即可。关于<code>filter</code>参数，我准备做一套通用性更强的方案，所以，这里就暂时留空啦！接下来，如果大家足够细心的话，会发现<code>STable</code>组件对返回值同样有一定的要求，它要求返回值中至少含有<code>pageNo</code>、<code>totalCount</code>, <code>data</code>三个属性，而这，是我们获得的第二个信息：</p>
+<span class=kt>var</span> <span class=n>resultMultiple</span> <span class=p>=</span> <span class=n>queryable</span><span class=p>.</span><span class=n>OrderBy</span><span class=p>&lt;</span><span class=n>User</span><span class=p>&gt;(</span><span class=s>&#34;NumberProperty, StringProperty&#34;</span><span class=p>);</span></code></pre></div>
+<p>所以，当它为降序排序时，我们在排序字段的后面添加<code>DESC</code>即可。关于<code>filter</code>参数，我准备做一套通用性更强的方案，所以，这里就暂时留空啦！接下来，如果大家足够细心的话，会发现<code>STable</code>组件对返回值同样有一定的要求，它要求返回值中至少含有<code>pageNo</code>、<code>totalCount</code>, <code>data</code>三个属性，而这，是我们获得的第二个信息：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=c1>// 对接自己的通用数据接口需要修改下方代码中的 r.pageNo, r.totalCount, r.data
 </span><span class=c1>// eslint-disable-next-line
 </span><span class=c1></span><span class=k>if</span> <span class=p>((</span><span class=k>typeof</span> <span class=nx>result</span> <span class=o>===</span> <span class=s1>&#39;object&#39;</span> <span class=o>||</span> <span class=k>typeof</span> <span class=nx>result</span> <span class=o>===</span> <span class=s1>&#39;function&#39;</span><span class=p>)</span> 
@@ -219,8 +223,8 @@ extended">
     <span class=k>this</span><span class=p>.</span><span class=nx>localDataSource</span> <span class=o>=</span> <span class=nx>r</span><span class=p>.</span><span class=nx>data</span> <span class=c1>// 返回结果中的数组数据
 </span><span class=c1></span>    <span class=k>this</span><span class=p>.</span><span class=nx>localLoading</span> <span class=o>=</span> <span class=kc>false</span>
   <span class=p>})</span>
-<span class=p>}</span>
-</code></pre></div><p>依样画葫芦，我们继续编写转换层的代码，返回值格式参考了 Ant Design Vue 中Mock接口的返回值格式：</p>
+<span class=p>}</span></code></pre></div>
+<p>依样画葫芦，我们继续编写转换层的代码，返回值格式参考了 Ant Design Vue 中Mock接口的返回值格式：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=c1>// 查询结果转化
 </span><span class=c1></span><span class=kr>export</span> <span class=kd>function</span> <span class=nx>transformAbpQueryResult</span> <span class=p>(</span><span class=nx>data</span><span class=p>,</span> <span class=nx>message</span><span class=p>,</span> <span class=nx>code</span> <span class=o>=</span> <span class=mi>0</span><span class=p>,</span> <span class=nx>headers</span> <span class=o>=</span> <span class=p>{})</span> <span class=p>{</span>
   <span class=kr>const</span> <span class=nx>responseBody</span> <span class=o>=</span> <span class=p>{</span> <span class=p>}</span>
@@ -254,8 +258,8 @@ extended">
     <span class=nx>data</span><span class=o>:</span> <span class=nx>data</span><span class=p>.</span><span class=nx>items</span>
   <span class=p>}</span>
   <span class=k>return</span> <span class=nx>transformAbpQueryResult</span><span class=p>(</span><span class=nx>pagedResult</span><span class=p>)</span>
-<span class=p>}</span>
-</code></pre></div><p>对于分页结果而言，我们会将分页大小、当前页数、总页数、总记录数及其对应的数据，统一封装到一个对象中，然后再将其传递给返回值中的<code>result</code>属性。</p>
+<span class=p>}</span></code></pre></div>
+<p>对于分页结果而言，我们会将分页大小、当前页数、总页数、总记录数及其对应的数据，统一封装到一个对象中，然后再将其传递给返回值中的<code>result</code>属性。</p>
 <h1 id=最终对接效果>最终对接效果</h1>
 <p>好了，写了这么多，我们到底实现了一个什么效果呢？对于一开始的角色查询接口，我们可以这样封装到前端的服务层：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=kr>export</span> <span class=kd>function</span> <span class=nx>getRoles</span> <span class=p>(</span><span class=nx>query</span><span class=p>)</span> <span class=p>{</span>
@@ -267,8 +271,8 @@ extended">
     <span class=p>}).</span><span class=nx>then</span><span class=p>(</span><span class=nx>data</span> <span class=p>=&gt;</span> <span class=p>{</span>
         <span class=k>return</span> <span class=nx>buildPagingQueryResult</span><span class=p>(</span><span class=nx>queryParam</span><span class=p>,</span> <span class=nx>data</span><span class=p>)</span>
     <span class=p>})</span>
-<span class=p>}</span>
-</code></pre></div><p>接下来，我们只需要实现<code>loadData()</code>方法即可：</p>
+<span class=p>}</span></code></pre></div>
+<p>接下来，我们只需要实现<code>loadData()</code>方法即可：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=kr>import</span> <span class=p>{</span> <span class=nx>getRoles</span><span class=p>,</span> <span class=nx>updateRole</span><span class=p>,</span> <span class=nx>createRole</span><span class=p>,</span> <span class=nx>deleteRole</span> <span class=p>}</span> <span class=nx>from</span> <span class=s1>&#39;@/api/recipe/abp.role&#39;</span>
 
 <span class=nx>loadData</span><span class=o>:</span> <span class=nx>parameter</span> <span class=p>=&gt;</span> <span class=p>{</span>
@@ -276,14 +280,9 @@ extended">
     <span class=p>.</span><span class=nx>then</span><span class=p>(</span><span class=nx>res</span> <span class=p>=&gt;</span> <span class=p>{</span>
       <span class=k>return</span> <span class=nx>res</span><span class=p>.</span><span class=nx>result</span>
     <span class=p>})</span>
-  <span class=p>},</span>
-</code></pre></div><p>此时，我们可以注意到，ABP vNext 与 Ant Design Vue 完美地集成在一起，并且参数的转换完全符合我们的预期。这样做的好处显而易见，我们只需要遵循 ABP vNext 的规范进行开发即可，考虑到 ABP vNext 可以直接将<code>ApplicationService</code>暴露为 API 接口，这意味着我们写完了接口，就可以立即开始前后端的联调工作，这无疑可以加快我们的研发效率！</p>
-<p><figure>
-<a href=https://i.loli.net/2021/04/09/Uq1M4ZEOJ5VhTdl.png>
-<img src=https://i.loli.net/2021/04/09/Uq1M4ZEOJ5VhTdl.png loading=lazy alt="ABP vNext 与 Ant Design Vue 完成整合">
-</a>
-<figcaption>ABP vNext 与 Ant Design Vue 完成整合</figcaption>
-</figure></p>
+  <span class=p>},</span></code></pre></div>
+<p>此时，我们可以注意到，ABP vNext 与 Ant Design Vue 完美地集成在一起，并且参数的转换完全符合我们的预期。这样做的好处显而易见，我们只需要遵循 ABP vNext 的规范进行开发即可，考虑到 ABP vNext 可以直接将<code>ApplicationService</code>暴露为 API 接口，这意味着我们写完了接口，就可以立即开始前后端的联调工作，这无疑可以加快我们的研发效率！</p>
+<p><img src=https://i.loli.net/2021/04/09/Uq1M4ZEOJ5VhTdl.png alt="ABP vNext 与 Ant Design Vue 完成整合"></p>
 <p>好了，以上就是这篇博客的全部内容啦！这篇博客要实现的功能其实并不复杂，唯一的难点是，需要在前端和后端两个技术栈上频繁地切换上下文，这可能就是全栈开发者面临的最大挑战，因为技术世界浩如烟海，而一个人的精力终究有限，古人云：<strong>朝闻道，夕死可矣</strong>，人生百年，吾道不孤，还是请你继续努力哦！</p>
 </section>
 <footer class=article-footer>
@@ -399,7 +398,14 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <div class=widget-icon></div>
 <h2 class="widget-title section-title">目录</h2>
 <div class=widget--toc>
-<nav id=TableOfContents></nav>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#abp-vnext中的分页查询>ABP vNext中的分页查询</a></li>
+<li><a href=#stable组件中的分页查询>STable组件中的分页查询</a></li>
+<li><a href=#实现参数转换层>实现参数转换层</a></li>
+<li><a href=#最终对接效果>最终对接效果</a></li>
+</ul>
+</nav>
 </div>
 </section>
 </aside>

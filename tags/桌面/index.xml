@@ -7,11 +7,9 @@ sudo cp /etc/apt/sources.list /etc/apt/sources.list.2019016 sudo vim /etc/apt/so
 网易开源镜像站：http://mirrors.163.com/.help/ubuntu.html
 完成镜像源的切换以后，我们就可以愉快地使用apt-get update刷一波存在感啦，话说最近看到一条微博，建议给sudo起一个别名plz或者pls。除了调侃以外，可能更多是想把冰冷的命令行变得充满人情味吧。Windows下安装VcXsrv大家都轻车熟路啦，这个不再过多的说明。下面，我们来安装以下Ubuntu桌面环境：
 echo &amp;#34;y&amp;#34;|sudo apt-get install ubuntu-desktop unity compizconfig-settings-manager sudo dpkg-reconfigure dbus &amp;amp;&amp;amp; service dbus restart 接下来配置XLaunch，这是我们安装完VcXsrv后自带一个应用程序：
-配置XLaunch
 按照默认配置直至完成后我，我们会发现桌面上出现了一个黑色的窗口，如下图所示：
-XLaunch经典黑屏
 此时，我们在Ubuntu的Bash窗口中输入sudo compiz命令并切回XLaunch界面。接下来，就是见证奇迹的时刻：
-经典的Ubuntu桌面
 如你所见，这是Ubuntu默认的Unity桌面，博主一开始是在Ubuntu16.04上研(折)究(腾)的，当时安装完以后桌面其实是黑色的，因为当时并没有保留下这历史性的一刻，所以，从网上找了张图来这里充数啦，这张图片出自：Run any Desktop Environment in WSL。
 OK，既然Ubuntu可以装桌面，那么，衍生自Ubuntu的Elementary OS和Linux Deepin应该同样可以吧，虽然目前应用商店里还有这两个发行版。本着不折腾就不会死的选择，先装个Elementary OS的桌面环境试试呗！我个人挺喜欢这个发行版的，理由是默认主题样式就很好看，同理，Linux Deepin除了好看以外，本身就带有大量优秀的软件。所以说，人类果然还是始于颜值的啊！Elementary OS使用的桌面环境是Pantheon，我们可以通过下面的命令行快速安装：
-sudo add-apt-repository ppa:elementary-os/stable sudo apt update sudo apt install elementary-desktop 通常，每个桌面环境都会自带一部分“最佳”适配的应用程序，考虑到WSL并不是一个完整的Linux实现，我们在这里卸载掉一部分WSL下不支持的应用程序。而微软新推出的WSL2，则是基于VM的实现，两种方式完全没有可比性，这里不做无意义的争论：</description></item></channel></rss>
+sudo add-apt-repository ppa:elementary-os/stable sudo apt update sudo apt install elementary-desktop 通常，每个桌面环境都会自带一部分“最佳”适配的应用程序，考虑到WSL并不是一个完整的Linux实现，我们在这里卸载掉一部分WSL下不支持的应用程序。而微软新推出的WSL2，则是基于VM的实现，两种方式完全没有可比性，这里不做无意义的争论：
+sudo apt purge gnome-screensaver \ switchboard-plug-power switchboard-plug-bluetooth switchboard-plug-networking \ wingpanel-indicator-bluetooth wingpanel 参考Installing Pantheon Desktop On Ubuntu这篇文章中的建议，为了启动Pantheon桌面环境，我们需要 gala、 plank和wingpanel三个软件，它们的作用有点像前面的compiz。而关于X410，你可以把它理解为和VcXsrv类似的软件，不同的是这是一个付费软件，作者写了一系列的博客来推广它。接下来，在安装gala的过程中，你大概会遇到这个错误：</description></item></channel></rss>

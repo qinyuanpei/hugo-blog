@@ -3,8 +3,8 @@
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“CURD Boy”。虽然不过是朴实无华的“增删查改”，可隐隐然早已分出了无数的流派。在这些不同的流派中，有的人坚持“我手写我心”，认为手写SQL才是真正的王道，没有读过/写过成百上千行的存储过程，便不足以谈论程序员的人生。而有的人喜欢ORM的清晰、整洁，认为数据库和面向对象存在着天然抗阻，ORM更有利于推进DDD和微服务的落地。相信大家都听说过Java里的SSH框架，从Hibernate到Mybatis再到Spring Data JPA，可以说这种争论一直没有停止过。这里我们不打算讨论这个问题，我们平时使用EF或者EFCore的过程中，作为连接数据库和面向对象两个异世界的桥梁，ORM需要我们来告诉它，实体数据与数据库表字段的映射关系，所以，经常需要通过数据注解或者Fulent API来写各种配置。那么，有没有什么方案可以让我们偷这个懒呢？下面隆重请出本文的主角：EFCore.NamingConventions。
 使用方法 EFCore. NamingConventions，目前由一个非官方的组织进行维护，代码托管在 Github 上，100％的开源项目。
 如果你希望直接使用它的话，可以直接通过NuGet进行安装：
-Install-Package EFCore.NamingConventions 接下来，我们只需要在DbContext的 OnConfiguring()方法中，调用它提供的扩展方法即可：
-protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =&amp;gt; optionsBuilder .UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) .UseSnakeCaseNamingConvention(); 或者，你可以使用依赖注入的方式：
+Install-Package EFCore.NamingConventions  接下来，我们只需要在DbContext的 OnConfiguring()方法中，调用它提供的扩展方法即可：
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =&amp;gt; optionsBuilder .UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) .UseSnakeCaseNamingConvention();  或者，你可以使用依赖注入的方式：
 services.AddDbContext&amp;lt;ChinookContext&amp;gt;(options =&amp;gt; options.UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) .UseSnakeCaseNamingConvention() ); 这里我以SQLite数据库为例，来展示它的具体使用细节。事实上，它提供了 4 种命名约定的策略：
  UseSnakeCaseNamingConvention: FullName -&amp;gt; full_name UseLowerCaseNamingConvention: FullName -&amp;gt; fullname UseCamelCaseNamingConvention: FullName -&amp;gt; fullName UseUpperCaseNamingConvention: FullName -&amp;gt; FULLNAME  简单来说，就是当我们的实体中存在一个属性FullName时，它会告诉EF或者EFCore，这个属性FullName对应的表字段是什么。
 虽然，在大多数的场景中，我们都希望属性名称和表字段一致，可你要知道，像Oracle这种对大小写敏感的数据库，特别喜欢自作聪明地帮你全部改成大写。
@@ -14,12 +14,15 @@ services.AddDbContext&amp;lt;ChinookContext&amp;gt;(options =&amp;gt; options.Us
 首先，我们定义必要的实体，并为DbContext配置实体命名约束规则：
 // Album public class Album { public int AlbumId { get; set; } public string Title { get; set; } public int ArtistId { get; set; } public string TenantId { get; set; } } // Artist public class Artist { public int ArtistId { get; set; } public string Name { get; set; } public string TenantId { get; set; } } 接下来，通过迁移命令来生成数据库架构："><title>EFCore 实体命名约定库：EFCore.NamingConventions</title>
 <link rel=canonical href=/posts/efcore-%E5%AE%9E%E4%BD%93%E5%91%BD%E5%90%8D%E7%BA%A6%E5%AE%9A%E5%BA%93efcore.namingconventions/>
-<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="EFCore 实体命名约定库：EFCore.NamingConventions">
+<link rel=stylesheet href=/scss/style.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
+<script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="EFCore 实体命名约定库：EFCore.NamingConventions">
 <meta property="og:description" content="在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“CURD Boy”。虽然不过是朴实无华的“增删查改”，可隐隐然早已分出了无数的流派。在这些不同的流派中，有的人坚持“我手写我心”，认为手写SQL才是真正的王道，没有读过/写过成百上千行的存储过程，便不足以谈论程序员的人生。而有的人喜欢ORM的清晰、整洁，认为数据库和面向对象存在着天然抗阻，ORM更有利于推进DDD和微服务的落地。相信大家都听说过Java里的SSH框架，从Hibernate到Mybatis再到Spring Data JPA，可以说这种争论一直没有停止过。这里我们不打算讨论这个问题，我们平时使用EF或者EFCore的过程中，作为连接数据库和面向对象两个异世界的桥梁，ORM需要我们来告诉它，实体数据与数据库表字段的映射关系，所以，经常需要通过数据注解或者Fulent API来写各种配置。那么，有没有什么方案可以让我们偷这个懒呢？下面隆重请出本文的主角：EFCore.NamingConventions。
 使用方法 EFCore. NamingConventions，目前由一个非官方的组织进行维护，代码托管在 Github 上，100％的开源项目。
 如果你希望直接使用它的话，可以直接通过NuGet进行安装：
-Install-Package EFCore.NamingConventions 接下来，我们只需要在DbContext的 OnConfiguring()方法中，调用它提供的扩展方法即可：
-protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =&amp;gt; optionsBuilder .UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) .UseSnakeCaseNamingConvention(); 或者，你可以使用依赖注入的方式：
+Install-Package EFCore.NamingConventions  接下来，我们只需要在DbContext的 OnConfiguring()方法中，调用它提供的扩展方法即可：
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =&amp;gt; optionsBuilder .UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) .UseSnakeCaseNamingConvention();  或者，你可以使用依赖注入的方式：
 services.AddDbContext&amp;lt;ChinookContext&amp;gt;(options =&amp;gt; options.UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) .UseSnakeCaseNamingConvention() ); 这里我以SQLite数据库为例，来展示它的具体使用细节。事实上，它提供了 4 种命名约定的策略：
  UseSnakeCaseNamingConvention: FullName -&amp;gt; full_name UseLowerCaseNamingConvention: FullName -&amp;gt; fullname UseCamelCaseNamingConvention: FullName -&amp;gt; fullName UseUpperCaseNamingConvention: FullName -&amp;gt; FULLNAME  简单来说，就是当我们的实体中存在一个属性FullName时，它会告诉EF或者EFCore，这个属性FullName对应的表字段是什么。
 虽然，在大多数的场景中，我们都希望属性名称和表字段一致，可你要知道，像Oracle这种对大小写敏感的数据库，特别喜欢自作聪明地帮你全部改成大写。
@@ -35,8 +38,8 @@ services.AddDbContext&amp;lt;ChinookContext&amp;gt;(options =&amp;gt; options.Us
 <meta name=twitter:description content="在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“CURD Boy”。虽然不过是朴实无华的“增删查改”，可隐隐然早已分出了无数的流派。在这些不同的流派中，有的人坚持“我手写我心”，认为手写SQL才是真正的王道，没有读过/写过成百上千行的存储过程，便不足以谈论程序员的人生。而有的人喜欢ORM的清晰、整洁，认为数据库和面向对象存在着天然抗阻，ORM更有利于推进DDD和微服务的落地。相信大家都听说过Java里的SSH框架，从Hibernate到Mybatis再到Spring Data JPA，可以说这种争论一直没有停止过。这里我们不打算讨论这个问题，我们平时使用EF或者EFCore的过程中，作为连接数据库和面向对象两个异世界的桥梁，ORM需要我们来告诉它，实体数据与数据库表字段的映射关系，所以，经常需要通过数据注解或者Fulent API来写各种配置。那么，有没有什么方案可以让我们偷这个懒呢？下面隆重请出本文的主角：EFCore.NamingConventions。
 使用方法 EFCore. NamingConventions，目前由一个非官方的组织进行维护，代码托管在 Github 上，100％的开源项目。
 如果你希望直接使用它的话，可以直接通过NuGet进行安装：
-Install-Package EFCore.NamingConventions 接下来，我们只需要在DbContext的 OnConfiguring()方法中，调用它提供的扩展方法即可：
-protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =&amp;gt; optionsBuilder .UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) .UseSnakeCaseNamingConvention(); 或者，你可以使用依赖注入的方式：
+Install-Package EFCore.NamingConventions  接下来，我们只需要在DbContext的 OnConfiguring()方法中，调用它提供的扩展方法即可：
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =&amp;gt; optionsBuilder .UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) .UseSnakeCaseNamingConvention();  或者，你可以使用依赖注入的方式：
 services.AddDbContext&amp;lt;ChinookContext&amp;gt;(options =&amp;gt; options.UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) .UseSnakeCaseNamingConvention() ); 这里我以SQLite数据库为例，来展示它的具体使用细节。事实上，它提供了 4 种命名约定的策略：
  UseSnakeCaseNamingConvention: FullName -&amp;gt; full_name UseLowerCaseNamingConvention: FullName -&amp;gt; fullname UseCamelCaseNamingConvention: FullName -&amp;gt; fullName UseUpperCaseNamingConvention: FullName -&amp;gt; FULLNAME  简单来说，就是当我们的实体中存在一个属性FullName时，它会告诉EF或者EFCore，这个属性FullName对应的表字段是什么。
 虽然，在大多数的场景中，我们都希望属性名称和表字段一致，可你要知道，像Oracle这种对大小写敏感的数据库，特别喜欢自作聪明地帮你全部改成大写。
@@ -80,22 +83,22 @@ extended">
 </div>
 </header>
 <section class=article-content>
-<p>在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“<strong>CURD Boy</strong>”。虽然不过是朴实无华的“<strong>增删查改</strong>”，可隐隐然早已分出了无数的流派。在这些不同的流派中，有的人坚持“<strong>我手写我心</strong>”，认为手写<code>SQL</code>才是真正的王道，没有读过/写过成百上千行的存储过程，便不足以谈论程序员的人生。而有的人喜欢<code>ORM</code>的清晰、整洁，认为数据库和面向对象存在着天然抗阻，<code>ORM</code>更有利于推进<code>DDD</code>和微服务的落地。相信大家都听说过<code>Java</code>里的<code>SSH</code>框架，从<code>Hibernate</code>到<code>Mybatis</code>再到<code>Spring Data JPA</code>，可以说这种争论一直没有停止过。这里我们不打算讨论这个问题，我们平时使用<code>EF</code>或者<code>EFCore</code>的过程中，作为连接数据库和面向对象两个异世界的桥梁，<code>ORM</code>需要我们来告诉它，实体数据与数据库表字段的映射关系，所以，经常需要通过<code>数据注解</code>或者<code>Fulent API</code>来写各种配置。那么，有没有什么方案可以让我们偷这个懒呢？下面隆重请出本文的主角：<a class=link href=https://github.com/efcore/EFCore.NamingConventions target=_blank rel=noopener>EFCore.NamingConventions</a>。</p>
+<p>在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“<strong>CURD Boy</strong>”。虽然不过是朴实无华的“<strong>增删查改</strong>”，可隐隐然早已分出了无数的流派。在这些不同的流派中，有的人坚持“<strong>我手写我心</strong>”，认为手写<code>SQL</code>才是真正的王道，没有读过/写过成百上千行的存储过程，便不足以谈论程序员的人生。而有的人喜欢<code>ORM</code>的清晰、整洁，认为数据库和面向对象存在着天然抗阻，<code>ORM</code>更有利于推进<code>DDD</code>和微服务的落地。相信大家都听说过<code>Java</code>里的<code>SSH</code>框架，从<code>Hibernate</code>到<code>Mybatis</code>再到<code>Spring Data JPA</code>，可以说这种争论一直没有停止过。这里我们不打算讨论这个问题，我们平时使用<code>EF</code>或者<code>EFCore</code>的过程中，作为连接数据库和面向对象两个异世界的桥梁，<code>ORM</code>需要我们来告诉它，实体数据与数据库表字段的映射关系，所以，经常需要通过<code>数据注解</code>或者<code>Fulent API</code>来写各种配置。那么，有没有什么方案可以让我们偷这个懒呢？下面隆重请出本文的主角：<a href=https://github.com/efcore/EFCore.NamingConventions>EFCore.NamingConventions</a>。</p>
 <h1 id=使用方法>使用方法</h1>
-<p><a class=link href=https://github.com/efcore/EFCore.NamingConventions target=_blank rel=noopener>EFCore. NamingConventions</a>，目前由一个非官方的组织进行维护，代码托管在 Github 上，100％的开源项目。</p>
+<p><a href=https://github.com/efcore/EFCore.NamingConventions>EFCore. NamingConventions</a>，目前由一个非官方的组织进行维护，代码托管在 Github 上，100％的开源项目。</p>
 <p>如果你希望直接使用它的话，可以直接通过<code>NuGet</code>进行安装：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>Install-Package EFCore.NamingConventions  
-</code></pre></div><p>接下来，我们只需要在<code>DbContext</code>的 <code>OnConfiguring()</code>方法中，调用它提供的扩展方法即可：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>Install-Package EFCore.NamingConventions  </code></pre></div>
+<p>接下来，我们只需要在<code>DbContext</code>的 <code>OnConfiguring()</code>方法中，调用它提供的扩展方法即可：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>protected</span> <span class=k>override</span> <span class=k>void</span> <span class=n>OnConfiguring</span><span class=p>(</span><span class=n>DbContextOptionsBuilder</span> <span class=n>optionsBuilder</span><span class=p>)</span>  
 <span class=p>=&gt;</span> <span class=n>optionsBuilder</span>  
 <span class=p>.</span><span class=n>UseSqlite</span><span class=p>(</span><span class=s>&#34;Data Source=Chinook.db&#34;</span><span class=p>)</span>
-<span class=p>.</span><span class=n>UseSnakeCaseNamingConvention</span><span class=p>();</span>  
-</code></pre></div><p>或者，你可以使用依赖注入的方式：</p>
+<span class=p>.</span><span class=n>UseSnakeCaseNamingConvention</span><span class=p>();</span>  </code></pre></div>
+<p>或者，你可以使用依赖注入的方式：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=n>services</span><span class=p>.</span><span class=n>AddDbContext</span><span class=p>&lt;</span><span class=n>ChinookContext</span><span class=p>&gt;(</span><span class=n>options</span> <span class=p>=&gt;</span> 
     <span class=n>options</span><span class=p>.</span><span class=n>UseSqlite</span><span class=p>(</span><span class=s>&#34;Data Source=Chinook.db&#34;</span><span class=p>)</span>
           <span class=p>.</span><span class=n>UseSnakeCaseNamingConvention</span><span class=p>()</span>
-<span class=p>);</span>
-</code></pre></div><p>这里我以<code>SQLite</code>数据库为例，来展示它的具体使用细节。事实上，它提供了 4 种命名约定的策略：</p>
+<span class=p>);</span></code></pre></div>
+<p>这里我以<code>SQLite</code>数据库为例，来展示它的具体使用细节。事实上，它提供了 4 种命名约定的策略：</p>
 <ul>
 <li>UseSnakeCaseNamingConvention: <code>FullName</code> -> <code>full_name</code></li>
 <li>UseLowerCaseNamingConvention: <code>FullName</code> -> <code>fullname</code></li>
@@ -124,17 +127,12 @@ extended">
     <span class=k>public</span> <span class=kt>int</span> <span class=n>ArtistId</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
     <span class=k>public</span> <span class=kt>string</span> <span class=n>Name</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
     <span class=k>public</span> <span class=kt>string</span> <span class=n>TenantId</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><p>接下来，通过迁移命令来生成数据库架构：</p>
+<span class=p>}</span></code></pre></div>
+<p>接下来，通过迁移命令来生成数据库架构：</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>Add-Migration <span class=s2>&#34;Init-Database&#34;</span> -Context ChinookContext
-Update-Database
-</code></pre></div><p>可以注意到，生成的数据库表字段会以小写+下划线的方式命名。这就是所谓的实体命名约束。</p>
-<p><figure>
-<a href=https://i.loli.net/2021/06/18/cSVRWrDTbnv29Ze.png>
-<img src=https://i.loli.net/2021/06/18/cSVRWrDTbnv29Ze.png loading=lazy alt="通过实体命名约束生成的 Album 表">
-</a>
-<figcaption>通过实体命名约束生成的 Album 表</figcaption>
-</figure></p>
+Update-Database</code></pre></div>
+<p>可以注意到，生成的数据库表字段会以小写+下划线的方式命名。这就是所谓的实体命名约束。</p>
+<p><img src=https://i.loli.net/2021/06/18/cSVRWrDTbnv29Ze.png alt="通过实体命名约束生成的 Album 表"></p>
 <p>只要大家都看着这个约定来写实体的属性，这套机制就可以完美工作。它和<code>MVC</code>里的默认路由一样，都是属于一种“<strong>约定大于配置</strong>”的方案。</p>
 <p>在我看来，不管是配置还是约定。当以团队为单位进行协作时，最好还是以文档的形式记录下来，否则会出现两种结局，<strong>其一是没人知道怎么配置，其二是新人不知道有这个约定</strong>。</p>
 <p>以上就是<code>EFCore.NamingConventions</code>的基本用法，更多的细节大家可以去阅读它的<code>README</code>，因为这个库需要结合迁移功能来使用，所以，如果要在已存在的表上应用这套约束规则时，建议大家还是小心谨慎一点。</p>
@@ -252,7 +250,13 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <div class=widget-icon></div>
 <h2 class="widget-title section-title">目录</h2>
 <div class=widget--toc>
-<nav id=TableOfContents></nav>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#使用方法>使用方法</a></li>
+<li><a href=#第一个示例>第一个示例</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ul>
+</nav>
 </div>
 </section>
 </aside>

@@ -5,7 +5,7 @@
 <link rel=stylesheet href=/scss/style.min.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
 <script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="又见AOP之基于RealProxy实现WCF动态代理">
+<script src=https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js></script><meta property="og:title" content="又见AOP之基于RealProxy实现WCF动态代理">
 <meta property="og:description" content="顺着这样的思路，如果我们可以把ChannelFactory注入到RealProxy中，就可以在接口调用过程中记录相关信息，这样我们就可以关注调用本身，因为所有的我们不想写的代码，现在全部都由代理类接管了，更重要的是，所有通过这种方式调用的WCF服务，都可以以一种统一而简洁的方式去处理，永远不用担心因为某个人忘记写代理方法而出现问题，下面给出整个实现的关键代码：;现在，我们来考虑WCF，WCF需要通过ChannelFactory来创建和释放，而这恰恰是代理类所做的事情，就像下面的代码一样，我们通常会把所有的WCF集中配置在一个地方，并通过构造Binding和终结点地址来创建一个WCF服务，在调用服务的过程中，会对调用时间、异常信息等进行记录，这其实和我举的第一个例子完全一致，那么我们能不能用RealProxy来实现这些功能呢;首先，我们定义一个简单的接口ICalculator，它含有加、减、乘、除四种基本运算，我们希望记录每个方法调用的参数、结果和执行时间，因此通过RealProxy对现有类型CalculatorService进行代理，并动态地创建代理对象来供调用方使用，下面给出关键代码：">
 <meta property="og:url" content="/posts/%E5%8F%88%E8%A7%81aop%E4%B9%8B%E5%9F%BA%E4%BA%8Erealproxy%E5%AE%9E%E7%8E%B0wcf%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/">
 <meta property="og:site_name" content="飞鸿踏雪">

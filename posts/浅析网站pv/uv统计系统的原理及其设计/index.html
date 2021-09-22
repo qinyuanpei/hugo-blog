@@ -5,7 +5,7 @@
 <link rel=stylesheet href=/scss/style.min.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
 <script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="浅析网站PV/UV统计系统的原理及其设计">
+<script src=https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js></script><meta property="og:title" content="浅析网站PV/UV统计系统的原理及其设计">
 <meta property="og:description" content="至此，我们就达到了基于Nginx访问日志实现PV/UV统计的目的;考虑到“不蒜子”里因为更换域名而导致的访问统计重置的问题，我增加了一个初始化站点UV/PV的功能，满足了像博主这样虚荣心爆棚的人的需要;实际上这里整个站点的UV统计是不严谨的，因为严格地来讲，同一个IP访问了同一个站点下的N篇文章，它的UV严格地来说应该算1次，可我们这个方案本身就是向LeanCloud妥协的一种做法，就像我这里直接使用了`location.href`和`document.title`，它带来的问题就是，一个网站的域名或者链接发生变化的时候，访问统计就会被重置从0开始">
 <meta property="og:url" content="/posts/%E6%B5%85%E6%9E%90%E7%BD%91%E7%AB%99pv/uv%E7%BB%9F%E8%AE%A1%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8E%9F%E7%90%86%E5%8F%8A%E5%85%B6%E8%AE%BE%E8%AE%A1/">
 <meta property="og:site_name" content="飞鸿踏雪">

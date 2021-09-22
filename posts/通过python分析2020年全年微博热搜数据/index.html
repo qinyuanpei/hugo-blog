@@ -11,7 +11,7 @@
 <link rel=stylesheet href=/scss/style.min.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
 <script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="通过Python分析2020年全年微博热搜数据">
+<script src=https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js></script><meta property="og:title" content="通过Python分析2020年全年微博热搜数据">
 <meta property="og:description" content="几天前， Catcher Wong 大佬告诉我，他终于写完了2020年的年终总结。在看完大佬的年终总结以后，我有一种“前浪被后浪拍死在沙滩上”的感觉，正如当学生时都看“别人家的孩子”，工作以后看的都是“别人的年终总结”。我们的生活，其实就是由“别人”和“我们”交织在一起，而更多的时候，是成为“大多数”的“我们”，去关注成为“少数”的“别人”。我想说的是，世间万物互为装饰，就像卞之琳在《断章》里写道，“明月装饰了你的窗子，你装饰了别人的梦”。即便一个人在历史长河中，尤如一叶飘泊不定的孤舟在波涛中摇荡，可每一朵浪花都曾以自己的方式美丽过，所以，看“别人”的生活，联想“我们”的生活，这便是我同2020告别的一种方式，为此，博主决定抓取2020年全年366天的微博热搜，通过可视化的方式来串联起2020年的回忆。
 热搜抓取 首先，我们来考虑微博热搜的数据来源。 微博 官方提供了一个热搜排行榜的页面：https://s.weibo.com/top/summary，可惜这个网站只支持查看当天的热搜，显然这无法满足我们的需求。在搜索引擎的帮助下，找到了两个网站，它们分别是：微博时光机 和 热搜神器。经过一番权衡，决定选择页面结构更简单一点的 微博时光机 。
 通过抓包，可以快速获得两个关键的接口，它们分别是 获取timeId接口 和 获取历史热搜接口。

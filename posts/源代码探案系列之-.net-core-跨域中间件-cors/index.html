@@ -9,7 +9,7 @@ public class CorsPolicy { public bool AllowAnyHeader { get; } public bool AllowA
 <link rel=stylesheet href=/scss/style.min.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
 <script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="源代码探案系列之 .NET Core 跨域中间件 CORS">
+<script src=https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js></script><meta property="og:title" content="源代码探案系列之 .NET Core 跨域中间件 CORS">
 <meta property="og:description" content="本文是 #源代码探案系列# 第三篇，今天这篇博客，我们来一起解读下 ASP.NET Core 中的 CORS 中间件，熟悉这个中间件的的小伙伴们，想必都已经猜出本文的主题：跨域。这确实是一个老生常谈的话题，可我并不认为，大家愿意去深入探究这个问题，因为博主曾经发现，每当工作中遇到跨域问题的时候，更多的是直接重写跨域相关的 HTTP 头。博主曾经写过一篇关于跨域的博客：《聊聊前端跨域的爱恨情仇》，当时是完全以前端的视角来看待跨域。所以，在今天这篇博客里，博主想带领大家从一种新的视角来看待跨域，也许，可以从中发现不一样的东西。
 核心流程 关于 ASP.NET Core 中的 CORS，大家都知道的是，可以通过UseCors()方法在整个 HTTP 请求管道中启用跨域中间件，或者是通过AddCors()方法来定义跨域策略，亦或者通过[EnableCors]来显式地指定跨域策略，更多的细节大家可以参考微软的官方文档，而在这里，我想聊一点大家可能不知道的东西，譬如：服务器端如何处理来自浏览器端的跨域请求？而这一切在 ASP.NET Core 中又如何实现？带着这些问题来解读 CORS 中间件的源代码，我们能更快的找到我们想得到的答案。一图胜千言，请允许博主使用这张流程图来“开宗明义”，我们这就开始今天的“探案”：
 核心部件 对于整个 CORS 中间件而言，核心部件主要有：CorsPolicy、CorsService 以及 CorsMiddleware。

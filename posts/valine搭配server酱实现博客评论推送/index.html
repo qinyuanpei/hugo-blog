@@ -5,7 +5,7 @@
 <link rel=stylesheet href=/scss/style.min.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
 <script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="Valine搭配Server酱实现博客评论推送">
+<script src=https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js></script><meta property="og:title" content="Valine搭配Server酱实现博客评论推送">
 <meta property="og:description" content="所以，说白了我们就是想利用它这个“云引擎”来调用Server酱的接口，幸运的是，LeanCloud提供的Hooks目前是支持Nodejs的，所以，到这里思路就非常清晰了，我们给`Comment`这张表加一个`AfterSave`类型的Hooks，在保存完以后调用Server酱接口推送评论信息即可;[Valine](https://valine.js.org/)是一个基于[LeanCloud](https://leancloud.cn)的评论系统，在很长的一段时间里，一直作为多说、[Gitalk](https://gitalk.github.io/)、[Gitment](https://github.com/imsun/gitment)等等的一个替代品，博主所使用的评论系统实际上就是Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊;Valine本身是利用LeanCloud的数据存储SDK来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出JSON格式评论信息的功能">
 <meta property="og:url" content="/posts/valine%E6%90%AD%E9%85%8Dserver%E9%85%B1%E5%AE%9E%E7%8E%B0%E5%8D%9A%E5%AE%A2%E8%AF%84%E8%AE%BA%E6%8E%A8%E9%80%81/">
 <meta property="og:site_name" content="飞鸿踏雪">

@@ -5,7 +5,7 @@
 <link rel=stylesheet href=/scss/style.min.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
 <script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="关于单位转换相关问题的常见思路">
+<script src=https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js></script><meta property="og:title" content="关于单位转换相关问题的常见思路">
 <meta property="og:description" content="我今天想说的是，一个业务中遇到的单位转换的问题，我们平时在存储货物的重量时，默认都是以千克作为单位来存储的，直到我们对接了一家以大宗商品交易作为主要业务的客户，对方要求我们在界面上统一用吨来展示数据，因为这样更符合客户方的使用习惯;我最终还是通过反射解决了这个问题，即在使用AutoMapper前，从数据库查出数据后，首先要做的第一件事情就是对数值进行转换：;这样看起来是没有问题的，可当你结合今天这篇博客的背景来看是，就会发现一个问题，所有的数值在展示的时候都必须要知道，数据库里存储的数值的原始单位是什么，而使用者希望在界面上看到的数值的单位又是什么">
 <meta property="og:url" content="/posts/%E5%85%B3%E4%BA%8E%E5%8D%95%E4%BD%8D%E8%BD%AC%E6%8D%A2%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98%E7%9A%84%E5%B8%B8%E8%A7%81%E6%80%9D%E8%B7%AF/">
 <meta property="og:site_name" content="飞鸿踏雪">

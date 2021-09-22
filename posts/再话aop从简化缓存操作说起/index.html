@@ -7,7 +7,7 @@ var cacheKey = &amp;#34;GetAllStudents&amp;#34;; var students = new List&amp;lt;
 <link rel=stylesheet href=/scss/style.min.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
 <script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="再话AOP，从简化缓存操作说起">
+<script src=https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js></script><meta property="og:title" content="再话AOP，从简化缓存操作说起">
 <meta property="og:description" content="AOP，即：面向切面编程，关于这个概念，博主其实写过好几篇博客啦！从这个概念，我们可以引申出诸如代理模式、动态代理、装饰器模式、过滤器、拦截器等等相互关联的概念。从实现方式上而言，微软官方的 .NET Remoting 提供了真实代理和透明代理的支持，我们熟悉的 WebService 和 WCF 均和这项技术息息相关，作为最早的分布式 RPC 解决方案，其本身更是与客户端的动态代理密不可分。或许，各位曾经接触过 Unity、Castle、AspectCore、PostSharp 等等这些支持 AOP 特性的库，那么，我们是否已经抵达了 AOP 的边界呢？事实上，如果你仔细研究过 Stub 和 Mock 这样两个术语，你就发现 AOP 的应用范围远比我们想象的宽广。今天这篇文章，我不打算再介绍一遍这些第三方库的“奇技淫巧”，我更想聊聊，如何通过 AOP 来简化一个缓存操作。
 缓存，一个面试时命中率100%的话题，曾记否？来自面试官的灵魂发问三连：缓存击穿、缓存穿透、缓存雪崩。与此同时，缓存是一个令人爱恨交加的东西，其一致性、持久化、高可用等等，均是实际应用中需要去考虑的东西。狭义的缓存主要指 Redis、Memcached 等分布式缓存系统，而广义的缓存则可以是 HTTP 响应缓存、EF/EF Core 查询缓存、二级缓存等等。我们都知道，使用缓存可以显著地提升软件性能，而究其本质，则是因为减少了和数据库交互的频次。于是，我们注意到，大多数的缓存代码，都是下面这样的风格：
 var cacheKey = &amp;#34;GetAllStudents&amp;#34;; var students = new List&amp;lt;Student&amp;gt;(); var cacheValue = distributedCache.GetString(cacheKey); if (string.IsNullOrEmpty(cacheValue)) { // 未命中缓存：从数据库查询数据 + 写缓存  students = repository.GetAll().ToList(); var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(students)); distributedCache.Set(cacheKey, bytes); } else { // 命中缓存：读缓存  students = JsonConvert.">

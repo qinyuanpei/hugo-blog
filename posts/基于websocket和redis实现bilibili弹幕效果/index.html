@@ -5,7 +5,7 @@
 <link rel=stylesheet href=/scss/style.min.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
 <script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="基于WebSocket和Redis实现Bilibili弹幕效果">
+<script src=https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js></script><meta property="og:title" content="基于WebSocket和Redis实现Bilibili弹幕效果">
 <meta property="og:description" content="OK，现在我们来一起看看最终的效果，如你所见，在视频播放过程中，我们可以通过视频下方的输入框发送弹幕，弹幕会首先经由Redis缓存起来，当到达一定的时间间隔以后，我们就会将消息推送到客户端，这样所有的客户端都会看到这条弹幕，而对于客户端来说，它在和服务端建立WebSocket连接以后，唯一要做的事情就是在onmessage回调中取得弹幕数据，并将其追加到弹幕数组中，关于弹幕绘制的细节，我们在本文的第三节已经做了相关说明，在此不再赘述;当客户端接收到服务端推送的消息后，我们通过Canvas API完成对弹幕的绘制，这样就可以实现一个基本的弹幕系统啦;当WebSocket完成握手以后，我们定时从消息队列中取出弹幕，并推送到所有客户端">
 <meta property="og:url" content="/posts/%E5%9F%BA%E4%BA%8Ewebsocket%E5%92%8Credis%E5%AE%9E%E7%8E%B0bilibili%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/">
 <meta property="og:site_name" content="飞鸿踏雪">

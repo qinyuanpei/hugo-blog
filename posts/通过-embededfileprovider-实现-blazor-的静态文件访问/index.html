@@ -9,7 +9,7 @@ app.UseSwaggerUI(c =&amp;gt; { // requires file to be added as an embedded resou
 <link rel=stylesheet href=/scss/style.min.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css>
 <script src=https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js></script><meta property="og:title" content="通过 EmbededFileProvider 实现 Blazor 的静态文件访问">
+<script src=https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js></script><meta property="og:title" content="通过 EmbededFileProvider 实现 Blazor 的静态文件访问">
 <meta property="og:description" content="重构我的 独立博客 ，是博主今年的计划之一，这个基于 Hexo 的静态博客，最早搭建于2014年，可以说是比女朋友更亲密的存在，陪伴着博主走过了毕业、求职以及此刻的而立之年。其间虽然尝试过像 Jekyll 和 Hugo 这样的静态博客生成器，可是考虑到模板、插件等周边生态，这个想法一直被搁置下来。直到最近，突然涌现出通过 Blazor 重写博客的想法，尤其是它对于 WebAssembly 的支持，而类似 Vue 和 React的组件化开发模式，在开发体验上有着同样不错的表现。所以，今天这篇博客就来聊聊在重写博客过程中的一点收获，即如何让 Blazor 访问本地的静态文件。
 从内嵌资源说起 首先，我们要引入一个概念，即：内嵌资源。我们平时接触的更多的是本地文件系统，或者是 FTP 、对象存储这类运行在远程服务器上的文件系统，这些都是非内嵌资源，所以，内嵌资源主要是指那些没有目录层级的文件资源，因为它会在编译的时候“嵌入”到动态链接库(DLL)中。一个典型的例子是Swagger，它在.NET Core平台下的实现是Swashbuckle.AspNetCore，它允许使用自定义的HTML页面。这里可以注意到，它使用到了GetManifestResourceStream()方法：
 app.UseSwaggerUI(c =&amp;gt; { // requires file to be added as an embedded resource  c.IndexStream = () =&amp;gt; GetType().Assembly .GetManifestResourceStream(&amp;#34;CustomUIIndex.Swagger.index.html&amp;#34;); }); 其实，这里使用的就是一个内嵌资源。关于内嵌资源，我们有两种方式来定义它：

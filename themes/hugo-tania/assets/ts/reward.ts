@@ -18,11 +18,24 @@ export let initialReward = function() {
             radios.forEach(radio => {
                 radio.classList.remove('platform-checked');
                 radio.style.background = 'url(/imgs/reward/radio2.jpg)';
-            })
+            });
 
             let radio = item.querySelector('.platform-radio-box');
             radio.classList.add('platform-checked');
             radio.style.background = 'url(/imgs/reward/radio1.jpg)';
+            let choiceId = radio.attributes['data-id'].value;
+
+            let qrcodes = document.querySelectorAll('.cy-reward-code img');
+            qrcodes.forEach(qrcode => {
+                let nodeType = choiceId + '-code';
+                if (qrcode.attributes['node-type'].value == nodeType){
+                    qrcode.style.display ='inline';
+                } else {
+                    qrcode.style.display ='none';
+                }
+            });
         })
     })
+
+    chioceItems[1].click();
 }

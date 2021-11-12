@@ -1,6 +1,7 @@
 import ThemeColorScheme from "ts/colorScheme"
 import { renderCopyButton } from "ts/copyButton"
 import { renderFootnotes } from "ts/footnotes"
+import { initialReward } from "ts/reward"
 
 let enableFootnotes = false
 if (document.currentScript) {
@@ -13,6 +14,7 @@ const init = () => {
         renderFootnotes()
     }
     renderCopyButton()
+    initialReward()
 }
 
 window.addEventListener('load', () => {

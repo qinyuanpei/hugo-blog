@@ -56,8 +56,12 @@ params:
 
 menu:
   header:
-    - name: Articles
+    - name: 文章
       url: "/articles/"
+    - name: 分类
+      url: "/categories"
+    - name: 标签
+      url: "/tags"
   footer:
     - name: RSS
       url: "/index.xml"

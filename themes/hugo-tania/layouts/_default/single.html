@@ -1,4 +1,4 @@
-{{ define "main" }}
+﻿{{ define "main" }}
 <div class="container">
     <article>
         <header class="article-header">
@@ -28,21 +28,22 @@
     <div class="article-post">
     {{ .Content }}
     </div>
+{{ partial "post-reward" . }}
 </div>
 
 <div class="container">
     {{ if .Section }}
     <nav class="flex container suggested">
         {{ with .PrevInSection }}
-        <a rel="prev" href="{{ .RelPermalink }}" title="Previous post (older)">
-            <span>Previous</span>
+        <a rel="prev" href="{{ .RelPermalink }}" title="上一篇">
+            <span>上一篇</span>
             {{ .Title }}
             </a>
         {{ end }}
         
         {{ with .NextInSection }}
-        <a rel="next" href="{{ .RelPermalink }}" title="Next post (newer)">
-            <span>Next</span>
+        <a rel="next" href="{{ .RelPermalink }}" title="下一篇">
+            <span>下一篇</span>
             {{ .Title }}
             </a> 
         {{ end }}

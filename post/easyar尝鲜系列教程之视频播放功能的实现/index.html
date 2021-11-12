@@ -1,0 +1,446 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<title>EasyAR 尝鲜系列教程之视频播放功能的实现 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="EasyAR 尝鲜系列教程之视频播放功能的实现 | 元培的部落格">
+<meta itemprop=name content="EasyAR 尝鲜系列教程之视频播放功能的实现 | 元培的部落格">
+<meta name=twitter:title content="EasyAR 尝鲜系列教程之视频播放功能的实现 | 元培的部落格">
+<meta name=application-name content="EasyAR 尝鲜系列教程之视频播放功能的实现 | 元培的部落格">
+<meta name=description content="这个增强 ImageTarget 是指在 ImageTarget 的基础上融入 VideoPlayerBehaviour 的功能，因为按照官方的示例来考虑，这两部分功能是独立的，博主希望让大家在制作识别图的时候完全忘记区别 ImageTarget 和 VideoTarget，这样我们可以更为专注地制作识别图，因为视频组件就只是设置参数这一件事情，完全可以一次性搞定，所以我们首先来定义一个 VideoTargetBaseBehaviour 类，一起来看代码：;博主这里不太理解 EasyAR 为什么不采用 MovieTexture 或者 Unity3D 中针对视频播放提供的相关插件，因为 VideoTarget 本质上就是把三维模型换成了可以播放的视频而已，所以大家在前面文章的基础上创建一个 ImageTarget 然后再其下面放置一个附加了 VideoPlayerBehaviour 的的子物体就可以了;public void ShowObjects(Transform trans)">
+<meta name=twitter:description content="这个增强 ImageTarget 是指在 ImageTarget 的基础上融入 VideoPlayerBehaviour 的功能，因为按照官方的示例来考虑，这两部分功能是独立的，博主希望让大家在制作识别图的时候完全忘记区别 ImageTarget 和 VideoTarget，这样我们可以更为专注地制作识别图，因为视频组件就只是设置参数这一件事情，完全可以一次性搞定，所以我们首先来定义一个 VideoTargetBaseBehaviour 类，一起来看代码：;博主这里不太理解 EasyAR 为什么不采用 MovieTexture 或者 Unity3D 中针对视频播放提供的相关插件，因为 VideoTarget 本质上就是把三维模型换成了可以播放的视频而已，所以大家在前面文章的基础上创建一个 ImageTarget 然后再其下面放置一个附加了 VideoPlayerBehaviour 的的子物体就可以了;public void ShowObjects(Transform trans) ">
+<meta itemprop=description content=" 这个增强 ImageTarget 是指在 ImageTarget 的基础上融入 VideoPlayerBehaviour 的功能，因为按照官方的示例来考虑，这两部分功能是独立的，博主希望让大家在制作识别图的时候完全忘记区别 ImageTarget 和 VideoTarget，这样我们可以更为专注地制作识别图，因为视频组件就只是设置参数这一件事情，完全可以一次性搞定，所以我们首先来定义一个 VideoTargetBaseBehaviour 类，一起来看代码：;博主这里不太理解 EasyAR 为什么不采用 MovieTexture 或者 Unity3D 中针对视频播放提供的相关插件，因为 VideoTarget 本质上就是把三维模型换成了可以播放的视频而已，所以大家在前面文章的基础上创建一个 ImageTarget 然后再其下面放置一个附加了 VideoPlayerBehaviour 的的子物体就可以了;public void ShowObjects(Transform trans) ">
+<meta property="og:description" content=" 这个增强 ImageTarget 是指在 ImageTarget 的基础上融入 VideoPlayerBehaviour 的功能，因为按照官方的示例来考虑，这两部分功能是独立的，博主希望让大家在制作识别图的时候完全忘记区别 ImageTarget 和 VideoTarget，这样我们可以更为专注地制作识别图，因为视频组件就只是设置参数这一件事情，完全可以一次性搞定，所以我们首先来定义一个 VideoTargetBaseBehaviour 类，一起来看代码：;博主这里不太理解 EasyAR 为什么不采用 MovieTexture 或者 Unity3D 中针对视频播放提供的相关插件，因为 VideoTarget 本质上就是把三维模型换成了可以播放的视频而已，所以大家在前面文章的基础上创建一个 ImageTarget 然后再其下面放置一个附加了 VideoPlayerBehaviour 的的子物体就可以了;public void ShowObjects(Transform trans) ">
+<meta property="og:type" content="article">
+<meta property="article:publisher" content="Hugo Tania">
+<meta property="og:article:published_time" content="2015-12-09T08:40:22Z">
+<meta property="article:published_time" content="2015-12-09T08:40:22Z">
+<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"EasyAR 尝鲜系列教程之视频播放功能的实现","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2015-12-09","description":"这个增强 ImageTarget 是指在 ImageTarget 的基础上融入 VideoPlayerBehaviour 的功能，因为按照官方的示例来考虑，这两部分功能是独立的，博主希望让大家在制作识别图的时候完全忘记区别 ImageTarget 和 VideoTarget，这样我们可以更为专注地制作识别图，因为视频组件就只是设置参数这一件事情，完全可以一次性搞定，所以我们首先来定义一个 VideoTargetBaseBehaviour 类，一起来看代码：;博主这里不太理解 EasyAR 为什么不采用 MovieTexture 或者 Unity3D 中针对视频播放提供的相关插件，因为 VideoTarget 本质上就是把三维模型换成了可以播放的视频而已，所以大家在前面文章的基础上创建一个 ImageTarget 然后再其下面放置一个附加了 VideoPlayerBehaviour 的的子物体就可以了;public void ShowObjects(Transform trans)","wordCount":572,"mainEntityOfPage":"True","dateModified":"2015-12-09","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/articles/>Articles</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>EasyAR 尝鲜系列教程之视频播放功能的实现</h1>
+<div class=post-meta>
+<div>
+By Hugo Tania | <time>December 09, 2015</time>
+| 3 minutes
+</div>
+<div class=tags>
+<a href=/tags/%E5%A2%9E%E5%BC%BA%E7%8E%B0%E5%AE%9E/>增强现实</a>
+<a href=/tags/easyar/>EasyAR</a>
+<a href=/tags/unity3d/>Unity3D</a>
+<a href=/tags/%E6%95%99%E7%A8%8B/>教程</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>各位朋友大家好，欢迎大家关注我的博客，我是秦元培，我的博客地址是<a href=http://qinyuanpei.com>http://qinyuanpei.com</a>。到现在为止，我们对 EasyAR 中的 ImageTarget 基本上可以说是驾轻就熟了，因此我们这个系列教程可以说是接近尾声了。博主第一次接触 AR 这个概念是在大学时候读到一本讲解计算机图形视觉的书籍里，相对 VR 技术目前华而不实的市场现状，AR 技术从实用性和成熟度都能得到较好的保证。可是大家都清楚这些技术背后都是建立在复杂而高深的图形学算法的基础上的，如果想学习 AR 技术请回归计算机图形学的本源，这就和学习游戏技术要追寻可编程渲染管线是一样的，所以这个系列完全是博主个人的兴趣使然，希望了解这个技术的可以进行更加深入的探索。这次我们来说说 VideoTarget 如何实现吧！</p>
+<h1 id=easyar-中对视频的支持>
+<a href=#easyar-%e4%b8%ad%e5%af%b9%e8%a7%86%e9%a2%91%e7%9a%84%e6%94%af%e6%8c%81 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+EasyAR 中对视频的支持
+</h1>
+<p>目前 EasyAR 对视频的支持主要是通过 VideoPlayerBehaviour 这个类，这个类继承自一个基类 VideoPlayerBaseBehaviour。我们可以将其理解为一个视频播放器组件，只要我们将这个组件添加到一个 GameObject 上，然后简单填写下参数就可以了。可是这个组件博主在 32 位操作系统下并没有看到实际的效果，虽然说都到了 2015 年了 64 位操作系统相对来说更为普及了，可是我觉得支持不支持 32 位操作系统更多的体现的是一家公司做产品的态度。既然暂时没有办法看到这里的具体效果，我们本着学习的态度对这个组件有所了解就是了。下面是这个组件的一张截图：</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/None.jpg alt=VideoPlayerBehaviour组件截图></p>
+<p>从图中我们可以看到这个组件相关参数的设置，这里选取的视频资源是 StreamingAssets 目录下的 video.mp4 这个文件，视频资源的 Stroge 同样支持 App、Assets、Absolute 这三种类型，和图片资源的 Stroge 是一样的，关于这三种类型的资源路径的问题，我这里不想再重复说了，这个看看文档就知道了。其次会涉及到视频播放方式和视频缩放的相关参数，这些基本上没什么理解上的难度，大家对照着文档反复尝试就知道各自的用途了。博主这里不太理解 EasyAR 为什么不采用 MovieTexture 或者 Unity3D 中针对视频播放提供的相关插件，因为 VideoTarget 本质上就是把三维模型换成了可以播放的视频而已，所以大家在前面文章的基础上创建一个 ImageTarget 然后再其下面放置一个附加了 VideoPlayerBehaviour 的的子物体就可以了。官方的示例项目中提供了两种方式的 VideoTarget 创建方式，即手动创建和动态创建。手动创建即我们这里提到的这种方式，而动态创建则是由程序在运行时期间创建。这两种方式本质上没有什么不同，需要注意的是 VideoPlayerBehaviour 有一个 EnableAutoPlay 的选项，该选项被选中后会启用自动播放，即当识别图被识别后自动播放视频、识别图未被识别则暂停播放视频。如果这个选项没有被选中，我们需要在 ITargetEventHandle 接口中动手来实现。</p>
+<h1 id=增强-imagetarget>
+<a href=#%e5%a2%9e%e5%bc%ba-imagetarget class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+增强 ImageTarget
+</h1>
+<p>这个增强 ImageTarget 是指在 ImageTarget 的基础上融入 VideoPlayerBehaviour 的功能，因为按照官方的示例来考虑，这两部分功能是独立的，博主希望让大家在制作识别图的时候完全忘记区别 ImageTarget 和 VideoTarget，这样我们可以更为专注地制作识别图，因为视频组件就只是设置参数这一件事情，完全可以一次性搞定，所以我们首先来定义一个 VideoTargetBaseBehaviour 类，一起来看代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>using</span> <span class=nn>UnityEngine</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Collections</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>EasyAR</span><span class=p>;</span>
+
+<span class=k>public</span> <span class=k>class</span> <span class=nc>VideoTargetBaseBehaviour</span> <span class=p>:</span> <span class=n>ImageTargetBehaviour</span><span class=p>,</span><span class=n>ITargetEventHandler</span>
+<span class=p>{</span>
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 视频播放模块
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>private</span> <span class=n>VideoPlayerBehaviour</span> <span class=n>videoPlayer</span><span class=p>;</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 视频文件路径
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>public</span> <span class=kt>string</span> <span class=n>VideoPath</span><span class=p>;</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 是否自动播放视频
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>public</span> <span class=kt>bool</span> <span class=n>VideoEnableAutoPlay</span> <span class=p>=</span> <span class=k>true</span><span class=p>;</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 是否允许视频循环
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>public</span> <span class=kt>bool</span> <span class=n>VideoEnableLoop</span> <span class=p>=</span> <span class=k>true</span><span class=p>;</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 视频类型
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>public</span> <span class=n>VideoPlayer</span><span class=p>.</span><span class=n>VideoType</span> <span class=n>VideoType</span> <span class=p>=</span> <span class=n>VideoPlayer</span><span class=p>.</span><span class=n>VideoType</span><span class=p>.</span><span class=n>TransparentSideBySide</span><span class=p>;</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 视频资源类型
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>public</span> <span class=n>StorageType</span> <span class=n>VideoStorage</span> <span class=p>=</span> <span class=n>StorageType</span><span class=p>.</span><span class=n>Assets</span><span class=p>;</span>
+
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 视频是否加载
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>private</span> <span class=kt>bool</span> <span class=n>isVideoLoaded</span><span class=p>;</span>
+
+    <span class=k>protected</span> <span class=k>override</span> <span class=k>void</span> <span class=n>Start</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=c1>//在Start方法中加载视频、隐藏模型
+</span><span class=c1></span>        <span class=k>base</span><span class=p>.</span><span class=n>Start</span><span class=p>();</span>
+        <span class=n>LoadVideo</span><span class=p>();</span>
+        <span class=n>HideObjects</span><span class=p>(</span><span class=n>transform</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 加载视频
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>private</span> <span class=k>void</span> <span class=n>LoadVideo</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=c1>//创建子物体VideoObject并为其添加视频组件
+</span><span class=c1></span>        <span class=n>GameObject</span> <span class=n>VideoObject</span> <span class=p>=</span> <span class=k>new</span> <span class=n>GameObject</span><span class=p>(</span><span class=s>&#34;VideoObject&#34;</span><span class=p>);</span>
+        <span class=n>videoPlayer</span> <span class=p>=</span> <span class=n>VideoObject</span><span class=p>.</span><span class=n>AddComponent</span><span class=p>&lt;</span><span class=n>VideoPlayerBehaviour</span><span class=p>&gt;();</span>
+        <span class=n>VideoObject</span><span class=p>.</span><span class=n>transform</span><span class=p>.</span><span class=n>SetParent</span><span class=p>(</span><span class=n>transform</span><span class=p>);</span>
+        <span class=n>VideoObject</span><span class=p>.</span><span class=n>transform</span><span class=p>.</span><span class=n>localPosition</span> <span class=p>=</span> <span class=n>Vector3</span><span class=p>.</span><span class=n>zero</span><span class=p>;</span>
+        <span class=n>VideoObject</span><span class=p>.</span><span class=n>transform</span><span class=p>.</span><span class=n>localRotation</span> <span class=p>=</span> <span class=n>Quaternion</span><span class=p>.</span><span class=n>identity</span><span class=p>;</span>
+        <span class=n>VideoObject</span><span class=p>.</span><span class=n>transform</span><span class=p>.</span><span class=n>localScale</span> <span class=p>=</span> <span class=n>Vector3</span><span class=p>.</span><span class=n>one</span><span class=p>;</span>
+
+        <span class=c1>//设置视频组件相关参数
+</span><span class=c1></span>        <span class=n>videoPlayer</span><span class=p>.</span><span class=n>Storage</span> <span class=p>=</span> <span class=n>VideoStorage</span><span class=p>;</span>
+        <span class=n>videoPlayer</span><span class=p>.</span><span class=n>Path</span> <span class=p>=</span> <span class=n>VideoPath</span><span class=p>;</span>
+        <span class=n>videoPlayer</span><span class=p>.</span><span class=n>EnableAutoPlay</span> <span class=p>=</span> <span class=n>VideoEnableAutoPlay</span><span class=p>;</span>
+        <span class=n>videoPlayer</span><span class=p>.</span><span class=n>EnableLoop</span> <span class=p>=</span> <span class=n>VideoEnableLoop</span><span class=p>;</span>
+        <span class=n>videoPlayer</span><span class=p>.</span><span class=n>Type</span> <span class=p>=</span> <span class=n>VideoType</span><span class=p>;</span>
+        <span class=n>videoPlayer</span><span class=p>.</span><span class=n>VideoReadyEvent</span><span class=p>+=</span><span class=n>videoPlayer_VideoReadyEvent</span><span class=p>;</span>
+        <span class=n>videoPlayer</span><span class=p>.</span><span class=n>VideoReachEndEvent</span><span class=p>+=</span><span class=n>videoPlayer_VideoReachEndEvent</span><span class=p>;</span>
+        <span class=n>videoPlayer</span><span class=p>.</span><span class=n>VideoErrorEvent</span><span class=p>+=</span><span class=n>videoPlayer_VideoErrorEvent</span><span class=p>;</span>
+        <span class=n>videoPlayer</span><span class=p>.</span><span class=n>Open</span><span class=p>();</span>
+
+        <span class=n>videoPlayer</span><span class=p>.</span><span class=n>Play</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=cp>#region 视频组件相关事件定义
+</span><span class=cp></span>
+    <span class=k>public</span> <span class=k>virtual</span> <span class=k>void</span> <span class=n>videoPlayer_VideoErrorEvent</span><span class=p>(</span><span class=kt>object</span> <span class=n>sender</span><span class=p>,</span> <span class=n>System</span><span class=p>.</span><span class=n>EventArgs</span> <span class=n>e</span><span class=p>)</span>
+    <span class=p>{</span>
+        
+    <span class=p>}</span>
+
+    <span class=k>public</span> <span class=k>virtual</span> <span class=k>void</span> <span class=n>videoPlayer_VideoReachEndEvent</span><span class=p>(</span><span class=kt>object</span> <span class=n>sender</span><span class=p>,</span> <span class=n>System</span><span class=p>.</span><span class=n>EventArgs</span> <span class=n>e</span><span class=p>)</span>
+    <span class=p>{</span>
+        
+    <span class=p>}</span>
+
+    
+    <span class=k>public</span> <span class=k>virtual</span> <span class=k>void</span> <span class=n>videoPlayer_VideoReadyEvent</span><span class=p>(</span><span class=kt>object</span> <span class=n>sender</span><span class=p>,</span> <span class=n>System</span><span class=p>.</span><span class=n>EventArgs</span> <span class=n>e</span><span class=p>)</span>
+    <span class=p>{</span>
+        
+    <span class=p>}</span>
+
+    <span class=cp>#endregion
+</span><span class=cp></span>
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 隐藏模型的方法
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;trans&#34;&gt;要隐藏的Transform&lt;/param&gt;
+</span><span class=c1></span>    <span class=k>void</span> <span class=n>HideObjects</span><span class=p>(</span><span class=n>Transform</span> <span class=n>trans</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>trans</span><span class=p>.</span><span class=n>childCount</span><span class=p>;</span> <span class=p>++</span><span class=n>i</span><span class=p>)</span>
+            <span class=n>HideObjects</span><span class=p>(</span><span class=n>trans</span><span class=p>.</span><span class=n>GetChild</span><span class=p>(</span><span class=n>i</span><span class=p>));</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>transform</span> <span class=p>!=</span> <span class=n>trans</span><span class=p>)</span>
+            <span class=n>gameObject</span><span class=p>.</span><span class=n>SetActive</span><span class=p>(</span><span class=k>false</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 显示模型的方法
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;trans&#34;&gt;要显示的Transform&lt;/param&gt;
+</span><span class=c1></span>    <span class=k>public</span> <span class=k>void</span> <span class=n>ShowObjects</span><span class=p>(</span><span class=n>Transform</span> <span class=n>trans</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>trans</span><span class=p>.</span><span class=n>childCount</span><span class=p>;</span> <span class=p>++</span><span class=n>i</span><span class=p>)</span>
+            <span class=n>ShowObjects</span><span class=p>(</span><span class=n>trans</span><span class=p>.</span><span class=n>GetChild</span><span class=p>(</span><span class=n>i</span><span class=p>));</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>transform</span> <span class=p>!=</span> <span class=n>trans</span><span class=p>)</span>
+            <span class=n>gameObject</span><span class=p>.</span><span class=n>SetActive</span><span class=p>(</span><span class=k>true</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 实现ITargetEventHandler接口中的OnTargetFound方法
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;target&#34;&gt;识别目标&lt;/param&gt;
+</span><span class=c1></span>    <span class=k>void</span> <span class=n>ITargetEventHandler</span><span class=p>.</span><span class=n>OnTargetFound</span><span class=p>(</span><span class=n>Target</span> <span class=n>target</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>videoPlayer</span><span class=p>)</span>
+            <span class=n>videoPlayer</span><span class=p>.</span><span class=n>Play</span><span class=p>();</span>
+        <span class=n>ShowObjects</span><span class=p>(</span><span class=n>transform</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 实现ITargetEventHandler接口中的OnTargetLost方法
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;target&#34;&gt;识别目标&lt;/param&gt;
+</span><span class=c1></span>    <span class=k>void</span> <span class=n>ITargetEventHandler</span><span class=p>.</span><span class=n>OnTargetLost</span><span class=p>(</span><span class=n>Target</span> <span class=n>target</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>videoPlayer</span><span class=p>)</span>
+            <span class=n>videoPlayer</span><span class=p>.</span><span class=n>Pause</span><span class=p>();</span>
+        <span class=n>HideObjects</span><span class=p>(</span><span class=n>transform</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 实现ITargetEventHandler接口中的OnTargetLoad方法
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;target&#34;&gt;识别目标&lt;/param&gt;
+</span><span class=c1></span>    <span class=k>void</span> <span class=n>ITargetEventHandler</span><span class=p>.</span><span class=n>OnTargetLoad</span><span class=p>(</span><span class=n>Target</span> <span class=n>target</span><span class=p>,</span> <span class=kt>bool</span> <span class=n>status</span><span class=p>)</span>
+    <span class=p>{</span>
+
+    <span class=p>}</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 实现ITargetEventHandler接口中的OnTargetUnload方法
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;target&#34;&gt;识别目标&lt;/param&gt;
+</span><span class=c1></span>    <span class=k>void</span> <span class=n>ITargetEventHandler</span><span class=p>.</span><span class=n>OnTargetUnload</span><span class=p>(</span><span class=n>Target</span> <span class=n>target</span><span class=p>,</span> <span class=kt>bool</span> <span class=n>status</span><span class=p>)</span>
+    <span class=p>{</span>
+
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在这段代码中博主采用了动态创建视频组件的方法，这样我们在制作 VideoTarget 的时候只需要按照以下步骤即可：</p>
+<ul>
+<li>在 Assets/EasyAR/Prefabs 目录下找到 EasyAR 这个预制体，添加 EasyARConfig 组件，然后填写 KEY。具体请参考系列教程第三篇<a href=http://qinyuanpei.com/2015/12/09/have-a-taste-of-easyar-03/>EasyAR 尝鲜系列教程之 ImageTarget 千呼万唤始出来</a>。</li>
+<li>在 Assets/EasyAR/Prefabs 目录中找到 ImageTarget 这个预制体，然后使用 VideoTargetBaseBehaviour 组件替换默认的 ImageTargetBehaviour 组件。下面是博主这里的参数配置截图</li>
+</ul>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fz68j6clw5j208t075jrn.jpg alt=我制作的VideoTarget></p>
+<p>这里博主继续选择 idback 这张图片，这种方法是博主喜欢的方法，大家可以按照个人喜欢的方式来实现，总而言之万变不离其宗，只需要掌握它的原理就好了。在文章中已经提到过这个组件在 32 位操作系统下无法正常工作，所以这篇文章就不给大家展示相关的截图了，本文暂时先写到这里等有时间测试成功了再来更新这篇文章。如果像博主这样对 Unity3D 比较熟悉的朋友，可以考虑使用 MovieTexture 或者其它的方式来替代官方目前的这个方案，好了，这篇文章就是这样了，希望大家喜欢!</p>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/post/c#%E4%B8%AD%E7%9A%84%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/ title="Previous post (older)">
+<span>Previous</span>
+C#中的扩展方法学习总结
+</a>
+<a rel=next href=/post/%E5%9C%A8unity3d%E4%B8%AD%E5%9F%BA%E4%BA%8E%E8%AE%A2%E9%98%85%E8%80%85%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6/ title="Next post (newer)">
+<span>Next</span>
+在 Unity3D 中基于订阅者模式实现事件机制
+</a>
+</nav>
+</div>
+<div class=container>
+<script src=https://giscus.app/client.js data-repo=WingLim/hugo-tania data-repo-id="MDEwOlJlcG9zaXRvcnkzMTYyNjQzMDc=" data-category=Comments data-category-id=DIC_kwDOEtnPc84B_WKP data-mapping=pathname data-reactions-enabled=1 data-emit-metadata=0 data-theme=light crossorigin=anonymous async></script>
+<script>function setGiscusTeheme(b){let a=document.querySelector('.giscus iframe');a&&a.contentWindow.postMessage({giscus:{setConfig:{theme:b}}},'https://giscus.app')}addEventListener('message',a=>{if(a.origin!=='https://giscus.app')return;setGiscusTeheme(document.documentElement.dataset.userColorScheme)}),window.addEventListener('onColorSchemeChange',a=>{setGiscusTeheme(a.detail)})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+</nav>
+</section>
+<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

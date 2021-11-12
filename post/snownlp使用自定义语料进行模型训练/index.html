@@ -1,0 +1,161 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<title>SnowNLP 使用自定义语料进行模型训练 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="SnowNLP 使用自定义语料进行模型训练 | 元培的部落格">
+<meta itemprop=name content="SnowNLP 使用自定义语料进行模型训练 | 元培的部落格">
+<meta name=twitter:title content="SnowNLP 使用自定义语料进行模型训练 | 元培的部落格">
+<meta name=application-name content="SnowNLP 使用自定义语料进行模型训练 | 元培的部落格">
+<meta name=description content="Hugo is Absurdly Fast!">
+<meta name=twitter:description content="Hugo is Absurdly Fast!">
+<meta itemprop=description content="Hugo is Absurdly Fast!">
+<meta property="og:description" content="Hugo is Absurdly Fast!">
+<meta property="og:type" content="article">
+<meta property="article:publisher" content="Hugo Tania">
+<meta property="og:article:published_time" content="2021-05-19T21:22:41Z">
+<meta property="article:published_time" content="2021-05-19T21:22:41Z">
+<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"SnowNLP 使用自定义语料进行模型训练","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2021-05-19","description":"","wordCount":113,"mainEntityOfPage":"True","dateModified":"2021-05-19","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/articles/>Articles</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>SnowNLP 使用自定义语料进行模型训练</h1>
+<div class=post-meta>
+<div>
+By Hugo Tania | <time>May 19, 2021</time>
+| 1 minutes
+</div>
+<div class=tags>
+<a href=/tags/nlp/>NLP</a>
+<a href=/tags/%E8%AE%AD%E7%BB%83/>训练</a>
+<a href=/tags/%E6%A8%A1%E5%9E%8B/>模型</a>
+<a href=/tags/%E6%83%85%E6%84%9F/>情感</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p><a href=https://github.com/isnowfy/snownlp>SnowNLP</a> 是一个功能强大的中文文本处理库，它囊括了中文分词、词性标注、情感分析、文本分类、关键字/摘要提取、<code>TF/IDF</code>、文本相似度等诸多功能，像<strong>隐马尔科夫模型</strong>、<strong>朴素贝叶斯</strong>、<code>TextRank</code>等算法均在这个库中有对应的应用。如果大家仔细观察过博主的博客，就会发现博主使用了摘要提取这一功能来增强博客的<code>SEO</code>，即通过自然语言处理(<strong>NLP</strong>)技术，提取每一篇文章中的摘要信息。因为 <a href=https://github.com/isnowfy/snownlp>SnowNLP</a> 本身使用的语料是电商网站评论，所以，当我们面对不同的使用场景时，它自带的这个模型难免会出现“水土不服”。因此，如果我们希望得到更接近实际的结果，最好的方案是使用自定义语料进行模型训练。值得庆幸的是，这一切在 <a href=https://github.com/isnowfy/snownlp>SnowNLP</a> 中实施起来非常简单，并不需要我们去钻研那些高深莫测的算法。至此，就引出了今天这篇博客的主题，即 SnowNLP 使用自定义语料进行模型训练。</p>
+<p>不知道大家是否还有印象，博主曾经在 <a href=https://blog.yuanpei.me/posts/2758545080/>《通过 Python 分析 2020 年全年微博热搜数据》</a> 这篇文章中提到过 SnowNLP 的模型训练。当时，博主采集了整个 2020 年的微博热搜话题，因为要体现整个一年里的情感变化，博主特意找了两份微博语料，并以此为基础训练出了一个模型文件。</p>
+<p><img loading=lazy src=https://i.loli.net/2021/01/26/gCcHX7vWlwsZhnI.jpg alt=2020全年微博热搜情感变化趋势></p>
+<p>那么，具体是怎么样做的呢？我们一起来看一下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=kn>from</span> <span class=nn>snownlp</span> <span class=kn>import</span> <span class=n>sentiment</span>
+<span class=n>sentiment</span><span class=o>.</span><span class=n>train</span><span class=p>(</span><span class=s1>&#39;./train/neg60000.txt&#39;</span><span class=p>,</span> <span class=s1>&#39;./train/pos60000.txt&#39;</span><span class=p>)</span>
+<span class=n>sentiment</span><span class=o>.</span><span class=n>save</span><span class=p>(</span><span class=s1>&#39;weibo.marshal&#39;</span><span class=p>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>千万不要怀疑你的眼睛，因为它真的只有短短的三行代码。简单来说，我们只需要准备一个“<strong>积极</strong>”的语料文件，一个“<strong>消极</strong>”的语料文件，它就可以训练出一个模型文件。特别注意的是，如果是在<code>Python 3.X</code>的版本下，最终生成的模型文件的扩展名将会是<code>.3</code>，下图是博主这里训练出的模型文件：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/05/20/EQnaXv3x6Vyfm7j.png alt="SnowNLP 使用自定义语料进行模型训练"></p>
+<p>好了，一旦训练出这个模型文件，我们就可以考虑替换掉 SnowNLP 的默认模型文件，我们可以在以下位置：<code>\Lib\site-packages\snownlp\sentiment</code> 找到下列文件。为了安全起见，我们首先将原来的模型文件重命名，然后再放入我们自己的模型文件。</p>
+<p><img loading=lazy src=https://i.loli.net/2021/05/20/C5QS3uhvt1liqXc.png alt="SnowNLP 使用自定义模型替换默认模型"></p>
+<p>此时，我们就可以利用训练好的模型，分析某一条微博的情感倾向。这里我选取了几条我的微博，看看这个情感倾向预测的结果如何：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=kn>from</span> <span class=nn>snownlp</span> <span class=kn>import</span> <span class=n>SnowNLP</span>
+
+<span class=n>s</span> <span class=o>=</span> <span class=n>SnowNLP</span><span class=p>(</span><span class=sa>u</span><span class=s1>&#39;我爱你，并不期待回声&#39;</span><span class=p>)</span>
+<span class=n>s</span><span class=o>.</span><span class=n>sentiments</span> <span class=c1># 0.8760737296091975</span>
+
+<span class=n>s</span> <span class=o>=</span> <span class=n>SnowNLP</span><span class=p>(</span><span class=sa>u</span><span class=s1>&#39;想找一个人，一起做老爷爷、老奶奶才做的事情，比如，替我拔一拔头上的白头发……[二哈] ​​&#39;</span><span class=p>)</span>
+<span class=n>s</span><span class=o>.</span><span class=n>sentiments</span> <span class=c1># 0.001629297651780881</span>
+
+<span class=n>s</span> <span class=o>=</span> <span class=n>SnowNLP</span><span class=p>(</span><span class=sa>u</span><span class=s1>&#39;如果两个人都不爱了，一别两宽，各生欢喜，其实是挺好的结局；可如果还有一个人爱着，对那个人来说，爱又是什么呢？&#39;</span><span class=p>)</span>
+<span class=n>s</span><span class=o>.</span><span class=n>sentiments</span> <span class=c1># 0.809651945221708</span>
+
+<span class=n>s</span> <span class=o>=</span> <span class=n>SnowNLP</span><span class=p>(</span><span class=sa>u</span><span class=s1>&#39;为了发张自拍，特意出来跑步，还有谁？[doge] ​​​&#39;</span><span class=p>)</span>
+<span class=n>s</span><span class=o>.</span><span class=n>sentiments</span> <span class=c1># 0.4041057894917053</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>有人说，双子座是一个白天自愈、晚上孤独的星座，我确信这是真的，因为从我出生的那一刻起，那种宏大宇宙中的孤独感就一直笼罩着我，用一句话来形容，大概就是“<strong>热闹是人家的，我什么都没有</strong>”，因为内心世界里的两个灵魂，从来没有一刻闲歇地在纠缠和撕裂。我一直都想了解一件事情，如果这些基于概率或者是公式的算法，都可以琢磨出人类某个时刻的心境，我们期望别人能懂自己是不是太过矫情，我们是真的了解自己吗？</p>
+<p>OK，说完微博话题这个场景，我们再来说说电影评论这个场景。回想今年过年的时候，一部<a href=https://movie.douban.com/subject/34841067/>《你好，李焕英》</a>，成为贺岁档电影中的一匹黑马，而相比之下，<a href=https://movie.douban.com/subject/27619748/>《唐人街探案 3》</a>则有点“<strong>滑铁卢</strong>”的感觉。为了搞清楚某一部电影真实的评价情况，此时，我们可以考虑使用 SnowNLP ，对影评的情感趋向进行打分。同样地，这里我们找了一部分影评语料，为 SnowNLP 训练一个单独的模型。接下来，我们不妨从豆瓣上抓取一定数量的影评，来验证下我们这里训练好的模型，这里以<a href=https://movie.douban.com/subject/27619748/>《唐人街探案 3》</a>为例：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/05/22/5Mo1ncNyEO2K69j.png alt=从豆瓣上抓取到的电影评论></p>
+<p>可以发现，这些影评的情感趋向介于 0 到 0.1 这个区间的数量最多，占到 160 以上，这意味着约有 30%的观众认为这部电影是个不折不扣的烂片。</p>
+<p><img loading=lazy src=https://i.loli.net/2021/05/22/1hvXtjciPlWBzD9.jpg alt=唐人街探案3豆瓣影评情感分布></p>
+<p>目前，<a href=https://movie.douban.com/subject/27619748/>《唐人街探案 3》</a> 在豆瓣上的评分只有 5.5 分，其中，2 星和 3 星的评价占到 70%以上。由于豆瓣接口的限制，我们大概只能抓到 500 条左右的影评信息，可即使如此，可以看出大家对这部电影的情绪多少有一点不满。博主当时看这个电影，最大的感受是里面充斥着太多强行搞笑的东西，例如开篇机场那一场打砸抢的戏份，我完全不明白它存在的意义是什么，虽然日本演员们的表演可圈可点，可在这样一个推理和叙事都非常脆弱的故事里，大概就剩下翻来覆去重复使用的搞笑伎俩啦，你敢说医院这场戏和第一部阿香家那场戏没有相似的地方吗？更不用说，医院这场戏大家都在评论里无限吐槽啦！</p>
+<p><img loading=lazy src=https://i.loli.net/2021/05/22/MRsAc76vgmTEK4z.png alt=豆瓣电影-唐人街探案3></p>
+<p>其实，对于情感，我一直不知道该怎么来讲，可能是程序员的这份理性，让我在维系亲密关系或者说的情感的时候，有时候会生出一种近乎漠然的、置身事外的错觉，换句话说，也许是那种被人称为“<strong>天性凉薄</strong>”的东西。前任同我讲，我最爱的人其实是我自己，并不是她。因为站在她的角度上来讲，她并没有感受到我给予她的爱。我该怎么回答这个问题呢？在一切看似理性的数学计算背后，人类这些极为在乎的情感到底又是什么形式？也许有一天，两个人的感情说变淡就突然变淡，不管我们曾经说过什么样的话，在那一刻都会变得苍白无力，逐年攀升的离婚率触目惊心，可我们每个人都像扑向火焰的飞蛾，在这爱与欲望无法随心所欲的世界里，被欲望裹挟着不断向前。人会变的绝情、冷漠，我们自以为那是成长，可那不过是心变硬了，可这是我们当初期待的长大吗？</p>
+<p><img loading=lazy src=https://i.loli.net/2021/06/08/HrQbtvcjeI1h9M3.png alt=欢迎来到无法随心所欲的爱与欲望的世界></p>
+<p>今天，听到袁隆平爷爷去世的消息，除了不断地提醒我们这代人已然老去这个事实以外，也许最大的体会应该是，我们在这个世界上追求的名利、身份和爱，最终都会无可避免地走向消亡，就如同我们身上这具躯壳一样，而真正能流传下去、泽被后世地，永远都是思想、是文化、是技术、是精神。佛家云：人死身灭，大概我们都不得不去接受这个残酷的事实，所以，请放下那些爱而不得、求而不得的执念吧，你一辈子不管遇见多少人，在某一个时候也许就会荡然无存，爱会消失、身会毁灭，这一切都是宇宙间的自然法则，与其去纠结那些“<strong>薛定谔态</strong>”的事物，不如多为这个世界做一点有意义的事情，正如尼采的那句名言，“<strong>对待生命你不妨大胆冒险一点, 因为无论如何你都要失去它</strong>”，我也许并不真正懂得人类的情感，因为它在理性面前毫无意义，世间万物毫无例外地走向那个坍塌的奇点，这难道不是一种荒凉的美感吗？</p>
+<p><img loading=lazy src=https://i.loli.net/2021/05/22/kjR2nVSHlDNrCLi.jpg alt=人的心情难道不是一个黑洞></p>
+<p>嘘，如果你读到这里，意外发现这是一篇水字数的博客，而这或许说明了一件事情，我的确是一个会懈怠、会疲倦的活生生的人。关于 SnowNLP 使用自定义语料进行模型训练的话题，这次我们就先写到这里，做数据挖掘的时候，有的人在乎的是最终的结果，而有的人享受的是整个过程，人类的情感或许是相似的，所以，学着去接受这个多样性有点多到奇葩的世界，学着去和平凡而普通的自己和解吧，欢迎大家在评论区交换想法或者观点，谢谢大家！</p>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/post/abp-vnext-%E7%9A%84%E5%AE%9E%E4%BD%93%E4%B8%8E%E6%9C%8D%E5%8A%A1%E6%89%A9%E5%B1%95%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB/ title="Previous post (older)">
+<span>Previous</span>
+ABP vNext 的实体与服务扩展技巧分享
+</a>
+<a rel=next href=/post/asp-net-core-grpc-%E6%8B%A6%E6%88%AA%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB/ title="Next post (newer)">
+<span>Next</span>
+ASP.NET Core gRPC 拦截器的使用技巧分享
+</a>
+</nav>
+</div>
+<div class=container>
+<script src=https://giscus.app/client.js data-repo=WingLim/hugo-tania data-repo-id="MDEwOlJlcG9zaXRvcnkzMTYyNjQzMDc=" data-category=Comments data-category-id=DIC_kwDOEtnPc84B_WKP data-mapping=pathname data-reactions-enabled=1 data-emit-metadata=0 data-theme=light crossorigin=anonymous async></script>
+<script>function setGiscusTeheme(b){let a=document.querySelector('.giscus iframe');a&&a.contentWindow.postMessage({giscus:{setConfig:{theme:b}}},'https://giscus.app')}addEventListener('message',a=>{if(a.origin!=='https://giscus.app')return;setGiscusTeheme(document.documentElement.dataset.userColorScheme)}),window.addEventListener('onColorSchemeChange',a=>{setGiscusTeheme(a.detail)})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+</nav>
+</section>
+<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

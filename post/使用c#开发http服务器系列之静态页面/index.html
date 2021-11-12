@@ -1,0 +1,493 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<title>使用 C#开发 HTTP 服务器系列之静态页面 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="使用 C#开发 HTTP 服务器系列之静态页面 | 元培的部落格">
+<meta itemprop=name content="使用 C#开发 HTTP 服务器系列之静态页面 | 元培的部落格">
+<meta name=twitter:title content="使用 C#开发 HTTP 服务器系列之静态页面 | 元培的部落格">
+<meta name=application-name content="使用 C#开发 HTTP 服务器系列之静态页面 | 元培的部落格">
+<meta name=description content="可以注意到在这里我们首先根据请求方法和请求地址来判断当前客户端是否在请求主页页面，然后我们判断在服务器目录下是否存在 index.html 文件，如果该文件存在就读取文件并返回给客户端，否则我们将返回给客户端一个 404 的状态，熟悉 Web 开发的朋友应该会知道这个状态码表示的是无法找到请求资源，类似地我们还可以想到的状态码有 200、501 等等，通常来讲，这些状态码的定义是这样的：;这里我的理解是这样的，对页面来讲服务器在读取它以后会返回给客户端，所以对客户端而言这部分响应是完全可见的，而页面中关联的 CSS 样式和 JavaScript 脚本则可能是通过浏览器缓存下载到本地，然后再根据相对路径引用并应用到整个页面中来的，而为了区分这些不同类型的资源，我们需要在响应报文中的 Content-Type 字段中指明内容的类型，所以现在我们就清楚了，首先在请求页面的时候存在大量关联资源，这些资源必须通过响应报文反馈给客户端，其次这些资源由不同的类型具体体现在响应报文的 Content-Type 字段中;* 链接形式 2:&#34;http://localhost:4050/assets/styles/&#34;表示访问指定页面资源，此时读取服务器目录下的/assets/styles/style.index 文件">
+<meta name=twitter:description content="可以注意到在这里我们首先根据请求方法和请求地址来判断当前客户端是否在请求主页页面，然后我们判断在服务器目录下是否存在 index.html 文件，如果该文件存在就读取文件并返回给客户端，否则我们将返回给客户端一个 404 的状态，熟悉 Web 开发的朋友应该会知道这个状态码表示的是无法找到请求资源，类似地我们还可以想到的状态码有 200、501 等等，通常来讲，这些状态码的定义是这样的：;这里我的理解是这样的，对页面来讲服务器在读取它以后会返回给客户端，所以对客户端而言这部分响应是完全可见的，而页面中关联的 CSS 样式和 JavaScript 脚本则可能是通过浏览器缓存下载到本地，然后再根据相对路径引用并应用到整个页面中来的，而为了区分这些不同类型的资源，我们需要在响应报文中的 Content-Type 字段中指明内容的类型，所以现在我们就清楚了，首先在请求页面的时候存在大量关联资源，这些资源必须通过响应报文反馈给客户端，其次这些资源由不同的类型具体体现在响应报文的 Content-Type 字段中;* 链接形式 2:&#34;http://localhost:4050/assets/styles/&#34;表示访问指定页面资源，此时读取服务器目录下的/assets/styles/style.index 文件 ">
+<meta itemprop=description content=" 可以注意到在这里我们首先根据请求方法和请求地址来判断当前客户端是否在请求主页页面，然后我们判断在服务器目录下是否存在 index.html 文件，如果该文件存在就读取文件并返回给客户端，否则我们将返回给客户端一个 404 的状态，熟悉 Web 开发的朋友应该会知道这个状态码表示的是无法找到请求资源，类似地我们还可以想到的状态码有 200、501 等等，通常来讲，这些状态码的定义是这样的：;这里我的理解是这样的，对页面来讲服务器在读取它以后会返回给客户端，所以对客户端而言这部分响应是完全可见的，而页面中关联的 CSS 样式和 JavaScript 脚本则可能是通过浏览器缓存下载到本地，然后再根据相对路径引用并应用到整个页面中来的，而为了区分这些不同类型的资源，我们需要在响应报文中的 Content-Type 字段中指明内容的类型，所以现在我们就清楚了，首先在请求页面的时候存在大量关联资源，这些资源必须通过响应报文反馈给客户端，其次这些资源由不同的类型具体体现在响应报文的 Content-Type 字段中;* 链接形式 2:&#34;http://localhost:4050/assets/styles/&#34;表示访问指定页面资源，此时读取服务器目录下的/assets/styles/style.index 文件 ">
+<meta property="og:description" content=" 可以注意到在这里我们首先根据请求方法和请求地址来判断当前客户端是否在请求主页页面，然后我们判断在服务器目录下是否存在 index.html 文件，如果该文件存在就读取文件并返回给客户端，否则我们将返回给客户端一个 404 的状态，熟悉 Web 开发的朋友应该会知道这个状态码表示的是无法找到请求资源，类似地我们还可以想到的状态码有 200、501 等等，通常来讲，这些状态码的定义是这样的：;这里我的理解是这样的，对页面来讲服务器在读取它以后会返回给客户端，所以对客户端而言这部分响应是完全可见的，而页面中关联的 CSS 样式和 JavaScript 脚本则可能是通过浏览器缓存下载到本地，然后再根据相对路径引用并应用到整个页面中来的，而为了区分这些不同类型的资源，我们需要在响应报文中的 Content-Type 字段中指明内容的类型，所以现在我们就清楚了，首先在请求页面的时候存在大量关联资源，这些资源必须通过响应报文反馈给客户端，其次这些资源由不同的类型具体体现在响应报文的 Content-Type 字段中;* 链接形式 2:&#34;http://localhost:4050/assets/styles/&#34;表示访问指定页面资源，此时读取服务器目录下的/assets/styles/style.index 文件 ">
+<meta property="og:type" content="article">
+<meta property="article:publisher" content="Hugo Tania">
+<meta property="og:article:published_time" content="2016-06-11T15:01:35Z">
+<meta property="article:published_time" content="2016-06-11T15:01:35Z">
+<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"使用 C#开发 HTTP 服务器系列之静态页面","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2016-06-11","description":"可以注意到在这里我们首先根据请求方法和请求地址来判断当前客户端是否在请求主页页面，然后我们判断在服务器目录下是否存在 index.html 文件，如果该文件存在就读取文件并返回给客户端，否则我们将返回给客户端一个 404 的状态，熟悉 Web 开发的朋友应该会知道这个状态码表示的是无法找到请求资源，类似地我们还可以想到的状态码有 200、501 等等，通常来讲，这些状态码的定义是这样的：;这里我的理解是这样的，对页面来讲服务器在读取它以后会返回给客户端，所以对客户端而言这部分响应是完全可见的，而页面中关联的 CSS 样式和 JavaScript 脚本则可能是通过浏览器缓存下载到本地，然后再根据相对路径引用并应用到整个页面中来的，而为了区分这些不同类型的资源，我们需要在响应报文中的 Content-Type 字段中指明内容的类型，所以现在我们就清楚了，首先在请求页面的时候存在大量关联资源，这些资源必须通过响应报文反馈给客户端，其次这些资源由不同的类型具体体现在响应报文的 Content-Type 字段中;* 链接形式 2:\"http://localhost:4050/assets/styles/\"表示访问指定页面资源，此时读取服务器目录下的/assets/styles/style.index 文件","wordCount":599,"mainEntityOfPage":"True","dateModified":"2016-06-11","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/articles/>Articles</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>使用 C#开发 HTTP 服务器系列之静态页面</h1>
+<div class=post-meta>
+<div>
+By Hugo Tania | <time>June 11, 2016</time>
+| 3 minutes
+</div>
+<div class=tags>
+<a href=/tags/http/>HTTP</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/>服务器</a>
+<a href=/tags/c#/>C#</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>各位朋友大家好，我是秦元培，欢迎大家关注我的博客，我的博客地址是<a href=http://qinyuanpei.com>http://qinyuanpei.com</a>。在这个系列文章的第一篇中，我们着重认识和了解了 HTTP 协议，并在此基础上实现了一个可交互的 Web 服务器，即当客户端访问该服务器的时候，服务器能够返回并输出一个简单的“Hello World”。现在这个服务器看起来非常简陋，为此我们需要在这个基础上继续开展工作。今天我们希望为这个服务器增加主页支持，即当我们访问这个服务器的时候，它可以向我们展示一个定制化的服务器主页。通常情况下网站的主页被定义为 index.html，而在动态网站技术中它可以被定义为 index.php。了解这些将有助于帮助我们认识 Web 技术的实质，为了方便我们这里的研究，我们以最简单的静态页面为例。</p>
+<h1 id=大意失荆州>
+<a href=#%e5%a4%a7%e6%84%8f%e5%a4%b1%e8%8d%86%e5%b7%9e class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+大意失荆州
+</h1>
+<p>首先我们可以认识到的一点是，网站主页是一个网站默认展示给访问者的页面，所以对服务器而言，它需要知道两件事情，第一客户端当前请求的这个页面是不是主页，第二服务端应该返回什么内容给客户端。对这两个问题，我们在目前设计的这个 Web 服务器中都可以找到答案的。因为 HTTP 协议中默认的请求方法是 GET，所以根据 HttpRequest 的实例我们可以非常容易的知道，当前请求的方法类型以及请求地址。我们来看一个简单的客户端请求报文：</p>
+<pre tabindex=0><code class=language-rfc data-lang=rfc>GET / HTTP/1.1
+Accept: text/html, application/xhtml+xml, image/jxr, */*
+Accept-Language: zh-Hans-CN,zh-Hans;q=0.5
+User-Agent: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586
+Accept-Encoding: gzip, deflate
+Host: localhost:4040
+Connection: Keep-Alive
+</code></pre><p>我们在这里可以非常清晰地看到，客户端当前发出的请求是 GET 类型，而其请求的地址是"/"，这表示请求页面为主页，而实际上我们将 Host 字段和这个地址组合起来，就能得到一个完整的地址，这正是我们在 HTML 结构中编写超链接的时候使用相对地址的原因。好了，在明白了这样两件事情具体的运作机理以后，下面我们来继续编写相关逻辑来实现如何向访问者展示一个网站主页。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>override</span> <span class=k>void</span> <span class=n>OnGet</span><span class=p>(</span><span class=n>HttpRequest</span> <span class=n>request</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>//判断请求类型和请求页面
+</span><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Method</span> <span class=p>==</span> <span class=s>&#34;GET&#34;</span> <span class=p>&amp;&amp;</span> <span class=n>request</span><span class=p>.</span><span class=n>URL</span> <span class=p>==</span> <span class=s>&#34;/&#34;</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>//构造响应报文
+</span><span class=c1></span>        <span class=n>HttpResponse</span> <span class=n>response</span><span class=p>;</span>
+
+        <span class=c1>//判断主页文件是否存在，如存在则读取主页文件否则返回404
+</span><span class=c1></span>        <span class=k>if</span> <span class=p>(!</span><span class=n>File</span><span class=p>.</span><span class=n>Exists</span><span class=p>(</span><span class=n>ServerRoot</span> <span class=p>+</span> <span class=s>&#34;index.html&#34;</span><span class=p>)){</span>
+            <span class=n>response</span> <span class=p>=</span> <span class=k>new</span> <span class=n>HttpResponse</span><span class=p>(</span><span class=s>&#34;&lt;html&gt;&lt;body&gt;&lt;h1&gt;404 - Not Found&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;&#34;</span><span class=p>,</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>);</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>StatusCode</span> <span class=p>=</span> <span class=s>&#34;404&#34;</span><span class=p>;</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>Content_Type</span> <span class=p>=</span> <span class=s>&#34;text/html&#34;</span><span class=p>;</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>Server</span> <span class=p>=</span> <span class=s>&#34;ExampleServer&#34;</span><span class=p>;</span>
+        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+            <span class=n>response</span> <span class=p>=</span> <span class=k>new</span> <span class=n>HttpResponse</span><span class=p>(</span><span class=n>File</span><span class=p>.</span><span class=n>ReadAllBytes</span><span class=p>(</span><span class=n>ServerRoot</span> <span class=p>+</span> <span class=s>&#34;index.html&#34;</span><span class=p>),</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>);</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>StatusCode</span> <span class=p>=</span> <span class=s>&#34;200&#34;</span><span class=p>;</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>Content_Type</span> <span class=p>=</span> <span class=s>&#34;text/html&#34;</span><span class=p>;</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>Server</span> <span class=p>=</span> <span class=s>&#34;ExampleServer&#34;</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=c1>//发送响应
+</span><span class=c1></span>        <span class=n>ProcessResponse</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Handler</span><span class=p>,</span> <span class=n>response</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以注意到在这里我们首先根据请求方法和请求地址来判断当前客户端是否在请求主页页面，然后我们判断在服务器目录下是否存在 index.html 文件，如果该文件存在就读取文件并返回给客户端，否则我们将返回给客户端一个 404 的状态，熟悉 Web 开发的朋友应该会知道这个状态码表示的是无法找到请求资源，类似地我们还可以想到的状态码有 200、501 等等，通常来讲，这些状态码的定义是这样的：</p>
+<ul>
+<li>1XX：指示信息-表示请求已接收，继续处理。</li>
+<li>2XX：成功-表示请求已被成功接受、理解和处理。</li>
+<li>3XX: 重定向-表示完成请求需要更进一步的操作。</li>
+<li>4XX：客户端错误-表示请求错误或者无法实现。</li>
+<li>5XX：服务端错误-表示服务器未提供正确的响应。</li>
+</ul>
+<p>具体来讲，常见的状态代码描述如下：</p>
+<table>
+<thead>
+<tr>
+<th>状态码</th>
+<th style=text-align:center>状态描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 OK</td>
+<td style=text-align:center>客户端请求成功</td>
+</tr>
+<tr>
+<td>400 Bad Request</td>
+<td style=text-align:center>客户端请求错误且不能被服务器所理解</td>
+</tr>
+<tr>
+<td>401 Unauthorized</td>
+<td style=text-align:center>请求未经授权需要使用 WWW-Authenticate 报头域</td>
+</tr>
+<tr>
+<td>403 Forbidden</td>
+<td style=text-align:center>服务器收到请求但拒绝提供服务</td>
+</tr>
+<tr>
+<td>404 Not Found</td>
+<td style=text-align:center>请求资源不存在</td>
+</tr>
+<tr>
+<td>500 Internal Server Error</td>
+<td style=text-align:center>服务器发生不可预期的错误</td>
+</tr>
+<tr>
+<td>503 Server Unavailable</td>
+<td style=text-align:center>服务器当前不能处理客户端的请求</td>
+</tr>
+</tbody>
+</table>
+<p>为了简化需求，我们这里假设服务器目录下只有一个主页文件 index.html，实际上像 IIS、Apache 等大型的服务器软件都是支持多个主页文件的，而且同时支持静态页面和动态页面，所以这里就涉及到一个优先级的问题，无论是在 Apache 还是 IIS 中我们可以找到对主页优先级设置的选项。所谓优先级，其实就是对这些主页文件重要性的一种排序，在实际设计的过程中，会优先读取优先级较高的主页文件，如该文件不存在则退而求其次，以此类推。在读取主页文件的时候，我们需要注意的一点是编码类型，因为无论是客户端还是服务端在其各自的头部信息里都声明了它可以接受的编码类型，所以服务器端在响应请求的时候应该注意和客户端保持一致，这样可以避免“鸡同鸭讲”问题的发生，进而提高沟通效率。我们这里在说技术，可是人何尝不是这样啊，我感觉我们生活和工作中 90%的时间都被用来沟通了，可是这恰恰说明了沟通的重要性啊。好了，下面我们来测试下我们编写的主页：</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fzixy9w5q6j211y0lcq5n.jpg alt=一个失败的尝试></p>
+<h1 id=龙潜在渊>
+<a href=#%e9%be%99%e6%bd%9c%e5%9c%a8%e6%b8%8a class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+龙潜在渊
+</h1>
+<p>咦？这个页面显示的结果怎么和我们期望的不一样啊，看起来这是一个因为样式丢失而引发的错误啊，不仅如此我们发现页面中的图片同样丢失了。首先我们检查下静态页面是否有问题，这个怎么可能嘛？因为这是博主采用 Hexo 生成的静态页面，所以排除页面本身的问题后，我们不得不开始重新思考我们的设计。我们静下心来思考这样一个问题：在浏览器加载一个页面的过程中难道只有静态页面和服务器发生交互吗？这显然不是啊，因为傻子都知道一个网页最起码有 HTML、CSS 和 JavaScript 三部分组成，所以我们决定在 Chrome 中仔细看看浏览器在加载网页的过程中都发生了什么。按下"F12"打开开发者工具对网页进行监听：</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fzixbba6clj211y0lcwjr.jpg alt=浏览器的小秘密></p>
+<p>WTF！感觉在这里懵逼了是不是？你没有想到服务器在这里会响应如此多的请求吧？所以我们自作聪明地认为只要响应静态页面的请求就好了，这完全就是在作死啊！这里我的理解是这样的，对页面来讲服务器在读取它以后会返回给客户端，所以对客户端而言这部分响应是完全可见的，而页面中关联的 CSS 样式和 JavaScript 脚本则可能是通过浏览器缓存下载到本地，然后再根据相对路径引用并应用到整个页面中来的，而为了区分这些不同类型的资源，我们需要在响应报文中的 Content-Type 字段中指明内容的类型，所以现在我们就清楚了，首先在请求页面的时候存在大量关联资源，这些资源必须通过响应报文反馈给客户端，其次这些资源由不同的类型具体体现在响应报文的 Content-Type 字段中。因此，我们在第一段代码的基础上进行修改和完善，最终编写出了下面的代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>override</span> <span class=k>void</span> <span class=n>OnGet</span><span class=p>(</span><span class=n>HttpRequest</span> <span class=n>request</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>if</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Method</span> <span class=p>==</span> <span class=s>&#34;GET&#34;</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>///获取客户端请求地址
+</span><span class=c1></span>
+        <span class=c1>///链接形式1:&#34;http://localhost:4050/assets/styles/style.css&#34;表示访问指定文件资源，
+</span><span class=c1></span>        <span class=c1>///此时读取服务器目录下的/assets/styles/style.css文件。
+</span><span class=c1></span>
+        <span class=c1>///链接形式2:&#34;http://localhost:4050/assets/styles/&#34;表示访问指定页面资源，
+</span><span class=c1></span>        <span class=c1>///此时读取服务器目录下的/assets/styles/style.index文件。
+</span><span class=c1></span>
+        <span class=c1>//当文件不存在时应返回404状态码
+</span><span class=c1></span>        <span class=kt>string</span> <span class=n>requestURL</span> <span class=p>=</span> <span class=n>request</span><span class=p>.</span><span class=n>URL</span><span class=p>;</span>
+        <span class=n>requestURL</span> <span class=p>=</span> <span class=n>requestURL</span><span class=p>.</span><span class=n>Replace</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>,</span> <span class=s>@&#34;\&#34;</span><span class=p>).</span><span class=n>Replace</span><span class=p>(</span><span class=s>&#34;\\..&#34;</span><span class=p>,</span> <span class=s>&#34;&#34;</span><span class=p>);</span>
+
+        <span class=c1>//判断地址中是否存在扩展名
+</span><span class=c1></span>        <span class=kt>string</span> <span class=n>extension</span> <span class=p>=</span> <span class=n>Path</span><span class=p>.</span><span class=n>GetExtension</span><span class=p>(</span><span class=n>requestURL</span><span class=p>);</span>
+
+        <span class=c1>//根据有无扩展名按照两种不同链接进行处
+</span><span class=c1></span>        <span class=kt>string</span> <span class=n>requestFile</span> <span class=p>=</span> <span class=kt>string</span><span class=p>.</span><span class=n>Empty</span><span class=p>;</span>
+        <span class=k>if</span><span class=p>(</span><span class=n>extension</span> <span class=p>!=</span> <span class=s>&#34;&#34;</span><span class=p>){</span>
+            <span class=n>requestFile</span> <span class=p>=</span> <span class=n>ServerRoot</span> <span class=p>+</span> <span class=n>requestURL</span><span class=p>;</span>
+        <span class=p>}</span><span class=k>else</span><span class=p>{</span>
+            <span class=n>requestFile</span> <span class=p>=</span> <span class=n>ServerRoot</span> <span class=p>+</span> <span class=n>requestURL</span> <span class=p>+</span> <span class=s>&#34;index.html&#34;</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=c1>//构造HTTP响应
+</span><span class=c1></span>        <span class=n>HttpResponse</span> <span class=n>response</span> <span class=p>=</span> <span class=n>ResponseWithFile</span><span class=p>(</span><span class=n>requestFile</span><span class=p>);</span>
+
+        <span class=c1>//发送响应
+</span><span class=c1></span>        <span class=n>ProcessResponse</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Handler</span><span class=p>,</span> <span class=n>response</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>注意到我在代码中写了两种不同形式的链接的分析：</p>
+<ul>
+<li>
+<p>链接形式 1: &ldquo;http://localhost:4050/assets/styles/style.css&rdquo; 表示访问指定文件资源，此时读取服务器目录下的 /assets/styles/style.css 文件。</p>
+</li>
+<li>
+<p>链接形式 2: &ldquo;http://localhost:4050/assets/styles/&rdquo; 表示访问指定页面资源，此时读取服务器目录下的 /assets/styles/style.index 文件。</p>
+</li>
+</ul>
+<p>首先我们判断这两种形式是根据扩展名来判断的，这样我们可以获得一个指向目标文件的地址 requestFile。这里提供一个辅助方法 ResponseWithFile，这是一个从文件中构造响应报文的方法，其返回类型是一个 HttpResponse，当文件不存在时将返回给客户端 404 的错误代码，我们一起来看它具体如何实现：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>/// &lt;summary&gt;
+</span><span class=c1>/// 使用文件来提供HTTP响应
+</span><span class=c1>/// &lt;/summary&gt;
+</span><span class=c1>/// &lt;param name=&#34;fileName&#34;&gt;文件名&lt;/param&gt;
+</span><span class=c1></span><span class=k>private</span> <span class=n>HttpResponse</span> <span class=n>ResponseWithFile</span><span class=p>(</span><span class=kt>string</span> <span class=n>fileName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>//准备HTTP响应报文
+</span><span class=c1></span>    <span class=n>HttpResponse</span> <span class=n>response</span><span class=p>;</span>
+
+    <span class=c1>//获取文件扩展名以判断内容类型
+</span><span class=c1></span>    <span class=kt>string</span> <span class=n>extension</span>  <span class=p>=</span> <span class=n>Path</span><span class=p>.</span><span class=n>GetExtension</span><span class=p>(</span><span class=n>fileName</span><span class=p>);</span>
+
+    <span class=c1>//获取当前内容类型
+</span><span class=c1></span>    <span class=kt>string</span> <span class=n>contentType</span> <span class=p>=</span> <span class=n>GetContentType</span><span class=p>(</span><span class=n>extension</span><span class=p>);</span>
+
+    <span class=c1>//如果文件不存在则返回404否则读取文件内容
+</span><span class=c1></span>    <span class=k>if</span> <span class=p>(!</span><span class=n>File</span><span class=p>.</span><span class=n>Exists</span><span class=p>(</span><span class=n>fileName</span><span class=p>)){</span>
+        <span class=n>response</span> <span class=p>=</span> <span class=k>new</span> <span class=n>HttpResponse</span><span class=p>(</span><span class=s>&#34;&lt;html&gt;&lt;body&gt;&lt;h1&gt;404 - Not Found&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;&#34;</span><span class=p>,</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>);</span>
+        <span class=n>response</span><span class=p>.</span><span class=n>StatusCode</span> <span class=p>=</span> <span class=s>&#34;404&#34;</span><span class=p>;</span>
+        <span class=n>response</span><span class=p>.</span><span class=n>Content_Type</span> <span class=p>=</span> <span class=s>&#34;text/html&#34;</span><span class=p>;</span>
+        <span class=n>response</span><span class=p>.</span><span class=n>Server</span> <span class=p>=</span> <span class=s>&#34;ExampleServer&#34;</span><span class=p>;</span>
+    <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+        <span class=n>response</span> <span class=p>=</span> <span class=k>new</span> <span class=n>HttpResponse</span><span class=p>(</span><span class=n>File</span><span class=p>.</span><span class=n>ReadAllBytes</span><span class=p>(</span><span class=n>fileName</span><span class=p>),</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>);</span>
+        <span class=n>response</span><span class=p>.</span><span class=n>StatusCode</span> <span class=p>=</span> <span class=s>&#34;200&#34;</span><span class=p>;</span>
+        <span class=n>response</span><span class=p>.</span><span class=n>Content_Type</span> <span class=p>=</span> <span class=n>contentType</span><span class=p>;</span>
+         <span class=n>response</span><span class=p>.</span><span class=n>Server</span> <span class=p>=</span> <span class=s>&#34;ExampleServer&#34;</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=p>/</span><span class=err>返回数据</span>
+    <span class=k>return</span> <span class=n>response</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>同样的，因为在响应报文中我们需要指明资源的类型，所以这里使用一个叫做 GetContentType 的辅助方法，该方法定义如下，这里仅仅选择了常见的 Content-Type 类型来实现，有兴趣的朋友可以自行了解更多的内容并在此基础上进行扩展：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>/// &lt;summary&gt;
+</span><span class=c1>/// 根据文件扩展名获取内容类型
+</span><span class=c1>/// &lt;/summary&gt;
+</span><span class=c1>/// &lt;param name=&#34;extension&#34;&gt;文件扩展名&lt;/param&gt;
+</span><span class=c1>/// &lt;returns&gt;&lt;/returns&gt;
+</span><span class=c1></span><span class=k>protected</span> <span class=kt>string</span> <span class=n>GetContentType</span><span class=p>(</span><span class=kt>string</span> <span class=n>extension</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=kt>string</span> <span class=n>reval</span> <span class=p>=</span> <span class=kt>string</span><span class=p>.</span><span class=n>Empty</span><span class=p>;</span>
+
+    <span class=k>if</span> <span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span><span class=p>(</span><span class=n>extension</span><span class=p>))</span>
+        <span class=k>return</span> <span class=k>null</span><span class=p>;</span>
+
+    <span class=k>switch</span> <span class=p>(</span><span class=n>extension</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>case</span> <span class=s>&#34;.htm&#34;</span><span class=p>:</span>
+            <span class=n>reval</span> <span class=p>=</span> <span class=s>&#34;text/html&#34;</span><span class=p>;</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=s>&#34;.html&#34;</span><span class=p>:</span>
+            <span class=n>reval</span> <span class=p>=</span> <span class=s>&#34;text/html&#34;</span><span class=p>;</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=s>&#34;.txt&#34;</span><span class=p>:</span>
+            <span class=n>reval</span> <span class=p>=</span> <span class=s>&#34;text/plain&#34;</span><span class=p>;</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=s>&#34;.css&#34;</span><span class=p>:</span>
+            <span class=n>reval</span> <span class=p>=</span> <span class=s>&#34;text/css&#34;</span><span class=p>;</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=s>&#34;.png&#34;</span><span class=p>:</span>
+            <span class=n>reval</span> <span class=p>=</span> <span class=s>&#34;image/png&#34;</span><span class=p>;</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=s>&#34;.gif&#34;</span><span class=p>:</span>
+            <span class=n>reval</span> <span class=p>=</span> <span class=s>&#34;image/gif&#34;</span><span class=p>;</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=s>&#34;.jpg&#34;</span><span class=p>:</span>
+            <span class=n>reval</span> <span class=p>=</span> <span class=s>&#34;image/jpg&#34;</span><span class=p>;</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=s>&#34;.jpeg&#34;</span><span class=p>:</span>
+            <span class=n>reval</span> <span class=p>=</span> <span class=s>&#34;image/jgeg&#34;</span><span class=p>;</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=s>&#34;.zip&#34;</span><span class=p>:</span>
+            <span class=n>reval</span> <span class=p>=</span> <span class=s>&#34;application/zip&#34;</span><span class=p>;</span>
+            <span class=k>break</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=k>return</span> <span class=n>reval</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=风雨过后终见彩虹>
+<a href=#%e9%a3%8e%e9%9b%a8%e8%bf%87%e5%90%8e%e7%bb%88%e8%a7%81%e5%bd%a9%e8%99%b9 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+风雨过后终见彩虹
+</h1>
+<p>好啦，到目前为止，关于静态 Web 服务器的编写我们基本上告一段落啦！其实这篇文章写的不是特别顺利，因为我几乎是在不断否认自我的情况下，一边调试一边写这篇文章的。整篇文章总结下来其实就两个点，第一，Web 服务器在加载一个页面的时候会发起无数个请求报文，除了页面相关的请求报文以外大部分都是和资源相关的请求，所以 HTML 页面的优化实际上就是从资源加载这个地方入手的。第二，不同的资源有不同的类型，具体表现在响应报文的 Content-Type 字段上，构造正确的 Content-Type 能让客户端了解到这是一个什么资源。好了，现在我们可以气定神闲的验证我们的劳动成果啦，这里我以我本地的 Hexo 生成的静态博客为例演示我的 Web 服务器，假设我的博客是存放在"D:\Hexo\public"这个路径下，所以我可以直接在 Web 服务器中设置我的服务器目录：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=n>ExampleServer</span> <span class=n>server</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ExampleServer</span><span class=p>(</span><span class=s>&#34;127.0.0.1&#34;</span><span class=p>,</span><span class=m>4050</span><span class=p>);</span>
+<span class=n>server</span><span class=p>.</span><span class=n>SetServerRoot</span><span class=p>(</span><span class=s>&#34;D:\\Hexo\\public&#34;</span><span class=p>);</span>
+<span class=n>server</span><span class=p>.</span><span class=n>Start</span><span class=p>();</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>现在打开浏览器就可以看到：</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fzix88y6xzj211y0lce81.jpg alt=Web服务器运行效果></p>
+<p>如此激动人心的时候，让我们踏歌长行、梦想永续，下期见！</p>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/post/%E6%89%AB%E6%8F%8F%E4%BA%8C%E7%BB%B4%E7%A0%81%E5%9C%A8%E7%A7%BB%E5%8A%A8%E8%AE%BE%E5%A4%87%E4%B8%8A%E6%B5%8F%E8%A7%88%E5%93%8D%E5%BA%94%E5%BC%8F%E9%A1%B5%E9%9D%A2/ title="Previous post (older)">
+<span>Previous</span>
+扫描二维码在移动设备上浏览响应式页面
+</a>
+<a rel=next href=/post/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E6%9B%B4%E7%AE%80%E5%8D%95%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/ title="Next post (newer)">
+<span>Next</span>
+使用 C#开发 HTTP 服务器系列之更简单的实现方式
+</a>
+</nav>
+</div>
+<div class=container>
+<script src=https://giscus.app/client.js data-repo=WingLim/hugo-tania data-repo-id="MDEwOlJlcG9zaXRvcnkzMTYyNjQzMDc=" data-category=Comments data-category-id=DIC_kwDOEtnPc84B_WKP data-mapping=pathname data-reactions-enabled=1 data-emit-metadata=0 data-theme=light crossorigin=anonymous async></script>
+<script>function setGiscusTeheme(b){let a=document.querySelector('.giscus iframe');a&&a.contentWindow.postMessage({giscus:{setConfig:{theme:b}}},'https://giscus.app')}addEventListener('message',a=>{if(a.origin!=='https://giscus.app')return;setGiscusTeheme(document.documentElement.dataset.userColorScheme)}),window.addEventListener('onColorSchemeChange',a=>{setGiscusTeheme(a.detail)})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+</nav>
+</section>
+<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

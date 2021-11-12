@@ -1,0 +1,580 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<title>在 Unity3D 中基于订阅者模式实现事件机制 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="在 Unity3D 中基于订阅者模式实现事件机制 | 元培的部落格">
+<meta itemprop=name content="在 Unity3D 中基于订阅者模式实现事件机制 | 元培的部落格">
+<meta name=twitter:title content="在 Unity3D 中基于订阅者模式实现事件机制 | 元培的部落格">
+<meta name=application-name content="在 Unity3D 中基于订阅者模式实现事件机制 | 元培的部落格">
+<meta name=description content="注意到在这个“通知中心”中，我们首先实现了单例模式，这样我们可以通过 Get 方法来获取该“通知中心”的唯一实例，其次这里利用一个字典来存储对所有事件的引用，这样保证外部可以通过 AddEventListener 和 RemoveEventListener 这两个方法来进行事件的添加和移除，对于添加的事件引用我们可以通过 DispatchEvent 方法来分发一个事件，事件的回调函数采用委托来实现，注意到这个委托需要一个 Notification 类型，对该类型简单定义如下：;public void DispatchEvent(string eventKey, GameObject sender, object param);public void DispatchEvent(string eventKey,object param)">
+<meta name=twitter:description content="注意到在这个“通知中心”中，我们首先实现了单例模式，这样我们可以通过 Get 方法来获取该“通知中心”的唯一实例，其次这里利用一个字典来存储对所有事件的引用，这样保证外部可以通过 AddEventListener 和 RemoveEventListener 这两个方法来进行事件的添加和移除，对于添加的事件引用我们可以通过 DispatchEvent 方法来分发一个事件，事件的回调函数采用委托来实现，注意到这个委托需要一个 Notification 类型，对该类型简单定义如下：;public void DispatchEvent(string eventKey, GameObject sender, object param);public void DispatchEvent(string eventKey,object param) ">
+<meta itemprop=description content=" 注意到在这个“通知中心”中，我们首先实现了单例模式，这样我们可以通过 Get 方法来获取该“通知中心”的唯一实例，其次这里利用一个字典来存储对所有事件的引用，这样保证外部可以通过 AddEventListener 和 RemoveEventListener 这两个方法来进行事件的添加和移除，对于添加的事件引用我们可以通过 DispatchEvent 方法来分发一个事件，事件的回调函数采用委托来实现，注意到这个委托需要一个 Notification 类型，对该类型简单定义如下：;public void DispatchEvent(string eventKey, GameObject sender, object param);public void DispatchEvent(string eventKey,object param) ">
+<meta property="og:description" content=" 注意到在这个“通知中心”中，我们首先实现了单例模式，这样我们可以通过 Get 方法来获取该“通知中心”的唯一实例，其次这里利用一个字典来存储对所有事件的引用，这样保证外部可以通过 AddEventListener 和 RemoveEventListener 这两个方法来进行事件的添加和移除，对于添加的事件引用我们可以通过 DispatchEvent 方法来分发一个事件，事件的回调函数采用委托来实现，注意到这个委托需要一个 Notification 类型，对该类型简单定义如下：;public void DispatchEvent(string eventKey, GameObject sender, object param);public void DispatchEvent(string eventKey,object param) ">
+<meta property="og:type" content="article">
+<meta property="article:publisher" content="Hugo Tania">
+<meta property="og:article:published_time" content="2016-01-15T12:30:41Z">
+<meta property="article:published_time" content="2016-01-15T12:30:41Z">
+<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"在 Unity3D 中基于订阅者模式实现事件机制","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2016-01-15","description":"注意到在这个“通知中心”中，我们首先实现了单例模式，这样我们可以通过 Get 方法来获取该“通知中心”的唯一实例，其次这里利用一个字典来存储对所有事件的引用，这样保证外部可以通过 AddEventListener 和 RemoveEventListener 这两个方法来进行事件的添加和移除，对于添加的事件引用我们可以通过 DispatchEvent 方法来分发一个事件，事件的回调函数采用委托来实现，注意到这个委托需要一个 Notification 类型，对该类型简单定义如下：;public void DispatchEvent(string eventKey, GameObject sender, object param);public void DispatchEvent(string eventKey,object param)","wordCount":690,"mainEntityOfPage":"True","dateModified":"2016-01-15","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/articles/>Articles</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>在 Unity3D 中基于订阅者模式实现事件机制</h1>
+<div class=post-meta>
+<div>
+By Hugo Tania | <time>January 15, 2016</time>
+| 4 minutes
+</div>
+<div class=tags>
+<a href=/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/>设计模式</a>
+<a href=/tags/%E6%B6%88%E6%81%AF/>消息</a>
+<a href=/tags/%E4%BA%8B%E4%BB%B6/>事件</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>各位朋友，大家好，欢迎大家关注我的博客，我是秦元培，我的博客地址是：<a href=http://qinyuanpei.com>http://qinyuanpei.com</a>。今天博主想和大家分享的是在 Unity3D 中基于订阅者模式实现消息传递机制，我们知道 Unity3D 中默认提供了一种消息传递机制 SendMessage，虽然 SendMessage 使用起来的确非常简单，可是它的这种简单是建立在付出一定的代价的基础上的。经常有朋友提及不同的模块间如何进行通信的问题，可能答案最终会落到<strong>单例模式</strong>、<strong>委托</strong>和<strong>事件机制</strong>这些关键词上，在这种情况下本文所探讨的内容可能会帮助你找到最终的答案。</p>
+<h1 id=从生活中得到的启示>
+<a href=#%e4%bb%8e%e7%94%9f%e6%b4%bb%e4%b8%ad%e5%be%97%e5%88%b0%e7%9a%84%e5%90%af%e7%a4%ba class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+从生活中得到的启示
+</h1>
+<p>我们知道通过在 Unity3D 中通过 GetComponent 就可以获得某个模块的实例，进而引用这个实例完成相关任务的调用。可是显然这种方法，就像我们随身带着现金去和不同的人进行交易，每次交易的时候都需要我们考虑现金的支入和支出问题，从安全性和耦合度两个方面进行考虑，这种方法在面对复杂的系统设计的时候，非常容易造成模块间的相互依赖，即会增加不同模块间的耦合度。为了解决这个问题，大家开始考虑单例模式，因为单例模式能够保证在全局内有一个唯一的实例，所以这种方式可以有效地降低模块间的直接引用。单例模式就像是我们在银行内办理了一个唯一的账户，这样我们在交易的时候只需要通过这个账户来进行控制资金的流向就可以了。单例模式确保了各个模块间的独立性，可是单例模式更多的是一种主动行为，即我们在需要的时候主动去调用这个模块，单例模式存在的问题是无法解决被调用方的反馈问题，除非被调用方主动地去调用调用方的模块实例。说到这里我们好像看到了一种新的模式，这就是我们下面要提到的事件机制。</p>
+<h1 id=订阅者模式和事件机制>
+<a href=#%e8%ae%a2%e9%98%85%e8%80%85%e6%a8%a1%e5%bc%8f%e5%92%8c%e4%ba%8b%e4%bb%b6%e6%9c%ba%e5%88%b6 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+订阅者模式和事件机制
+</h1>
+<p>首先这里要提到一种称为“订阅者模式”的设计模式，这种设计模式在《大话设计模式》这本书中称为“观察者模式”或者“发布-订阅（Publish/Subscribe）模式”，我们这里暂且叫做“订阅者模式”吧！该模式定义了一种一对多的依赖关系，让多个观察者对象同时监听某一个主题对象。这个对象在状态发生变化时会通知所有观察者对象，使它们能够自动更新自己。针对这个模式，我们可以考虑事件机制的实现，事件机制可以理解为在一个事件中心（Subject）保存有对所有事件（Observer）的引用，事件中心负责对这些事件进行分发，这样每个事件就可以通过回调函数的方式进行更新，这样就实现了一个事件机制。下面给出基本的代码实现：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Collections</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Collections.Generic</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>UnityEngine</span><span class=p>;</span>
+
+<span class=k>namespace</span> <span class=nn>UniEventDispatcher</span>
+<span class=p>{</span>
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 定义事件分发委托
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>public</span> <span class=k>delegate</span> <span class=k>void</span> <span class=n>OnNotification</span><span class=p>(</span><span class=n>Notification</span> <span class=n>notific</span><span class=p>);</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>///通知中心 
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>public</span> <span class=k>class</span> <span class=nc>NotificationCenter</span>
+    <span class=p>{</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 通知中心单例
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=k>static</span> <span class=n>NotificationCenter</span> <span class=n>instance</span><span class=p>=</span><span class=k>null</span><span class=p>;</span>
+        <span class=k>public</span> <span class=k>static</span> <span class=n>NotificationCenter</span> <span class=n>Get</span><span class=p>()</span>
+        <span class=p>{</span>
+            <span class=k>if</span><span class=p>(</span><span class=n>instance</span> <span class=p>==</span> <span class=k>null</span><span class=p>){</span>
+                <span class=n>instance</span> <span class=p>=</span> <span class=k>new</span> <span class=n>NotificationCenter</span><span class=p>();</span>
+                <span class=k>return</span> <span class=n>instance</span><span class=p>;</span>
+            <span class=p>}</span>
+            <span class=k>return</span> <span class=n>instance</span><span class=p>;</span>
+        <span class=p>}</span>
+
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 存储事件的字典
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span><span class=n>OnNotification</span><span class=p>&gt;</span> <span class=n>eventListeners</span> 
+            <span class=p>=</span> <span class=k>new</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=n>OnNotification</span><span class=p>&gt;();</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 注册事件
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;eventKey&#34;&gt;事件Key&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;eventListener&#34;&gt;事件监听器&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>AddEventListener</span><span class=p>(</span><span class=kt>string</span> <span class=n>eventKey</span><span class=p>,</span><span class=n>OnNotification</span> <span class=n>eventListener</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>if</span><span class=p>(!</span><span class=n>eventListeners</span><span class=p>.</span><span class=n>ContainsKey</span><span class=p>(</span><span class=n>eventKey</span><span class=p>)){</span>
+                <span class=n>eventListeners</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>eventKey</span><span class=p>,</span><span class=n>eventListener</span><span class=p>);</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 移除事件
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;eventKey&#34;&gt;事件Key&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>RemoveEventListener</span><span class=p>(</span><span class=kt>string</span> <span class=n>eventKey</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>if</span><span class=p>(!</span><span class=n>eventListeners</span><span class=p>.</span><span class=n>ContainsKey</span><span class=p>(</span><span class=n>eventKey</span><span class=p>))</span>
+                <span class=k>return</span><span class=p>;</span>
+
+            <span class=n>eventListeners</span><span class=p>[</span><span class=n>eventKey</span><span class=p>]</span> <span class=p>=</span><span class=k>null</span><span class=p>;</span>
+            <span class=n>eventListeners</span><span class=p>.</span><span class=n>Remove</span><span class=p>(</span><span class=n>eventKey</span><span class=p>);</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 分发事件
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;eventKey&#34;&gt;事件Key&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;notific&#34;&gt;通知&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>DispatchEvent</span><span class=p>(</span><span class=kt>string</span> <span class=n>eventKey</span><span class=p>,</span><span class=n>Notification</span> <span class=n>notific</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>if</span> <span class=p>(!</span><span class=n>eventListeners</span><span class=p>.</span><span class=n>ContainsKey</span><span class=p>(</span><span class=n>eventKey</span><span class=p>))</span>
+                <span class=k>return</span><span class=p>;</span>
+            <span class=n>eventListeners</span><span class=p>[</span><span class=n>eventKey</span><span class=p>](</span><span class=n>notific</span><span class=p>);</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 分发事件
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;eventKey&#34;&gt;事件Key&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;sender&#34;&gt;发送者&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;param&#34;&gt;通知内容&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>DispatchEvent</span><span class=p>(</span><span class=kt>string</span> <span class=n>eventKey</span><span class=p>,</span> <span class=n>GameObject</span> <span class=n>sender</span><span class=p>,</span> <span class=kt>object</span> <span class=n>param</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>if</span><span class=p>(!</span><span class=n>eventListeners</span><span class=p>.</span><span class=n>ContainsKey</span><span class=p>(</span><span class=n>eventKey</span><span class=p>))</span>
+                <span class=k>return</span><span class=p>;</span>
+            <span class=n>eventListeners</span><span class=p>[</span><span class=n>eventKey</span><span class=p>](</span><span class=k>new</span> <span class=n>Notification</span><span class=p>(</span><span class=n>sender</span><span class=p>,</span><span class=n>param</span><span class=p>));</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 分发事件
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;eventKey&#34;&gt;事件Key&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;param&#34;&gt;通知内容&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>DispatchEvent</span><span class=p>(</span><span class=kt>string</span> <span class=n>eventKey</span><span class=p>,</span><span class=kt>object</span> <span class=n>param</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>if</span><span class=p>(!</span><span class=n>eventListeners</span><span class=p>.</span><span class=n>ContainsKey</span><span class=p>(</span><span class=n>eventKey</span><span class=p>))</span>
+                <span class=k>return</span><span class=p>;</span>
+            <span class=n>eventListeners</span><span class=p>[</span><span class=n>eventKey</span><span class=p>](</span><span class=k>new</span> <span class=n>Notification</span><span class=p>(</span><span class=n>param</span><span class=p>));</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 是否存在指定事件的监听器
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=n>Boolean</span> <span class=n>HasEventListener</span><span class=p>(</span><span class=kt>string</span> <span class=n>eventKey</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=n>eventListeners</span><span class=p>.</span><span class=n>ContainsKey</span><span class=p>(</span><span class=n>eventKey</span><span class=p>);</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>注意到在这个“通知中心”中，我们首先实现了单例模式，这样我们可以通过 Get 方法来获取该“通知中心”的唯一实例，其次这里利用一个字典来存储对所有事件的引用，这样保证外部可以通过 AddEventListener 和 RemoveEventListener 这两个方法来进行事件的添加和移除，对于添加的事件引用我们可以通过 DispatchEvent 方法来分发一个事件，事件的回调函数采用委托来实现，注意到这个委托需要一个 Notification 类型，对该类型简单定义如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>UnityEngine</span><span class=p>;</span>
+
+<span class=k>namespace</span> <span class=nn>UniEventDispatcher</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=k>class</span> <span class=nc>Notification</span>
+    <span class=p>{</span>
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 通知发送者
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=n>GameObject</span> <span class=n>sender</span><span class=p>;</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 通知内容
+</span><span class=c1></span>        <span class=c1>/// 备注：在发送消息时需要装箱、解析消息时需要拆箱
+</span><span class=c1></span>        <span class=c1>/// 所以这是一个糟糕的设计，需要注意。
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=kt>object</span> <span class=n>param</span><span class=p>;</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 构造函数
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;sender&#34;&gt;通知发送者&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;param&#34;&gt;通知内容&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=n>Notification</span><span class=p>(</span><span class=n>GameObject</span> <span class=n>sender</span><span class=p>,</span> <span class=kt>object</span> <span class=n>param</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>sender</span> <span class=p>=</span> <span class=n>sender</span><span class=p>;</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>param</span> <span class=p>=</span> <span class=n>param</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 构造函数
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;param&#34;&gt;&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=n>Notification</span><span class=p>(</span><span class=kt>object</span> <span class=n>param</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>sender</span> <span class=p>=</span> <span class=k>null</span><span class=p>;</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>param</span> <span class=p>=</span> <span class=n>param</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 实现ToString方法
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;returns&gt;&lt;/returns&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=k>override</span> <span class=kt>string</span> <span class=n>ToString</span><span class=p>()</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;sender={0},param={1}&#34;</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=n>sender</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=n>param</span><span class=p>);</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对 Notification 的定义需要提供发送者和发送内容，这样可以保证所有的通知都按照这样的格式进行定义，如果有 Socket 开发经验的朋友可能会联想到通讯协议的定义，这里是比较相似啦，哈哈！</p>
+<h1 id=使用事件机制的一个示例>
+<a href=#%e4%bd%bf%e7%94%a8%e4%ba%8b%e4%bb%b6%e6%9c%ba%e5%88%b6%e7%9a%84%e4%b8%80%e4%b8%aa%e7%a4%ba%e4%be%8b class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+使用事件机制的一个示例
+</h1>
+<p>这里以一个简单的示例来验证事件机制的可行性，我们在场景中有一个球体，默认这个球体的颜色为白色，通过调整界面中的 RGB 数值，可以改变球体的颜色，在这个示例中 UI 是事件发送者，负责 UI 中 Slider 控件的数值发生变化时向球体发送消息，传递的数据类型是 Color 类型；球体为事件接收者，负责注册事件及接收到消息后的处理。因为代码较为简单，所以这里写在一个脚本中：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>using</span> <span class=nn>UnityEngine</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>UnityEngine.UI</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Collections</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>UniEventDispatcher</span><span class=p>;</span>
+
+<span class=k>public</span> <span class=k>class</span> <span class=nc>Example</span> <span class=p>:</span> <span class=n>MonoBehaviour</span> 
+<span class=p>{</span>
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// R数值的Slider
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>private</span> <span class=n>Slider</span> <span class=n>sliderR</span><span class=p>;</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// G数值的Slider
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>private</span> <span class=n>Slider</span> <span class=n>sliderG</span><span class=p>;</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// B数值的Slider
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=k>private</span> <span class=n>Slider</span> <span class=n>sliderB</span><span class=p>;</span>
+
+    <span class=k>void</span> <span class=n>Start</span> <span class=p>()</span> 
+    <span class=p>{</span>
+        <span class=c1>//在接收者中注册事件及其回调方法
+</span><span class=c1></span>        <span class=n>NotificationCenter</span><span class=p>.</span><span class=n>Get</span><span class=p>().</span><span class=n>AddEventListener</span><span class=p>(</span><span class=s>&#34;ChangeColor&#34;</span><span class=p>,</span> <span class=n>ChangeColor</span><span class=p>);</span>
+
+        <span class=c1>//在发送者中分发事件，这里以UI逻辑为例
+</span><span class=c1></span>        <span class=n>sliderR</span> <span class=p>=</span> <span class=n>GameObject</span><span class=p>.</span><span class=n>Find</span><span class=p>(</span><span class=s>&#34;Canvas/SliderR&#34;</span><span class=p>).</span><span class=n>GetComponent</span><span class=p>&lt;</span><span class=n>Slider</span><span class=p>&gt;();</span>
+        <span class=n>sliderG</span> <span class=p>=</span> <span class=n>GameObject</span><span class=p>.</span><span class=n>Find</span><span class=p>(</span><span class=s>&#34;Canvas/SliderG&#34;</span><span class=p>).</span><span class=n>GetComponent</span><span class=p>&lt;</span><span class=n>Slider</span><span class=p>&gt;();</span>
+        <span class=n>sliderB</span> <span class=p>=</span> <span class=n>GameObject</span><span class=p>.</span><span class=n>Find</span><span class=p>(</span><span class=s>&#34;Canvas/SliderB&#34;</span><span class=p>).</span><span class=n>GetComponent</span><span class=p>&lt;</span><span class=n>Slider</span><span class=p>&gt;();</span>
+        <span class=c1>//注册UI事件
+</span><span class=c1></span>        <span class=n>sliderR</span><span class=p>.</span><span class=n>onValueChanged</span><span class=p>.</span><span class=n>AddListener</span><span class=p>(</span><span class=n>OnValueChanged</span><span class=p>);</span>
+        <span class=n>sliderG</span><span class=p>.</span><span class=n>onValueChanged</span><span class=p>.</span><span class=n>AddListener</span><span class=p>(</span><span class=n>OnValueChanged</span><span class=p>);</span>
+        <span class=n>sliderB</span><span class=p>.</span><span class=n>onValueChanged</span><span class=p>.</span><span class=n>AddListener</span><span class=p>(</span><span class=n>OnValueChanged</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>public</span> <span class=k>void</span> <span class=n>OnValueChanged</span><span class=p>(</span><span class=kt>float</span> <span class=k>value</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>//获得RGB数值
+</span><span class=c1></span>        <span class=kt>float</span> <span class=n>r</span> <span class=p>=</span> <span class=n>sliderR</span><span class=p>.</span><span class=k>value</span><span class=p>;</span>
+        <span class=kt>float</span> <span class=n>g</span> <span class=p>=</span> <span class=n>sliderG</span><span class=p>.</span><span class=k>value</span><span class=p>;</span>
+        <span class=kt>float</span> <span class=n>b</span> <span class=p>=</span> <span class=n>sliderB</span><span class=p>.</span><span class=k>value</span><span class=p>;</span>
+        <span class=c1>//分发事件,注意和接收者协议一致
+</span><span class=c1></span>        <span class=n>NotificationCenter</span><span class=p>.</span><span class=n>Get</span><span class=p>().</span><span class=n>DispatchEvent</span><span class=p>(</span><span class=s>&#34;ChangeColor&#34;</span><span class=p>,</span> <span class=k>new</span> <span class=n>Color</span><span class=p>(</span><span class=n>r</span><span class=p>,</span> <span class=n>g</span><span class=p>,</span> <span class=n>b</span><span class=p>));</span>
+    <span class=p>}</span>
+
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 改变物体材质颜色
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;notific&#34;&gt;&lt;/param&gt;
+</span><span class=c1></span>    <span class=k>public</span> <span class=k>void</span> <span class=n>ChangeColor</span><span class=p>(</span><span class=n>Notification</span> <span class=n>notific</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>Debug</span><span class=p>.</span><span class=n>Log</span><span class=p>(</span><span class=n>notific</span><span class=p>.</span><span class=n>ToString</span><span class=p>());</span>
+        <span class=c1>//设置颜色
+</span><span class=c1></span>        <span class=n>renderer</span><span class=p>.</span><span class=n>material</span><span class=p>.</span><span class=n>color</span> <span class=p>=</span> <span class=p>(</span><span class=n>Color</span><span class=p>)</span><span class=n>notific</span><span class=p>.</span><span class=n>param</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>该示例运行效果如下：</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fzix8enrpvg20d108n0xz.jpg alt=事件机制的简单示例></p>
+<h1 id=小结>
+<a href=#%e5%b0%8f%e7%bb%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+小结
+</h1>
+<p>虽然目前这个事件机制在实现和使用上没有什么问题，可是从扩展性和可优化性上来考虑，这个设计目前存在以下问题：</p>
+<ul>
+<li>字符型的键名使用起来方便，可是对通知者和接收者由 1 个以上的人力来维护的时候双方需要通过沟通来确定键名，可以考虑使用 GameObject 或者 Transform 来替代现在的键名设计，可是这种设计带来的新问题是会增加不同模块间的 GameObject 或者 Transform 的相互引用。</li>
+<li>通知者和接收者在传递参数和接受参数的时候需要分别进行装箱和拆箱，所以这并非一个优秀的设计，同时需要双方保证传递的参数类型一致。解决方法是针对不同的类型对通知中心进行派生或者考虑对通知中心提供泛型约束，这样做的目的是使 Notification 中的通知内容变成具体的类型，这样就可以解决目前需要进行装箱和拆箱而带来的性能问题。</li>
+</ul>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/post/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8B%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%9E%E7%8E%B0/ title="Previous post (older)">
+<span>Previous</span>
+EasyAR 尝鲜系列教程之视频播放功能的实现
+</a>
+<a rel=next href=/post/%E6%89%AB%E6%8F%8F%E4%BA%8C%E7%BB%B4%E7%A0%81%E5%9C%A8%E7%A7%BB%E5%8A%A8%E8%AE%BE%E5%A4%87%E4%B8%8A%E6%B5%8F%E8%A7%88%E5%93%8D%E5%BA%94%E5%BC%8F%E9%A1%B5%E9%9D%A2/ title="Next post (newer)">
+<span>Next</span>
+扫描二维码在移动设备上浏览响应式页面
+</a>
+</nav>
+</div>
+<div class=container>
+<script src=https://giscus.app/client.js data-repo=WingLim/hugo-tania data-repo-id="MDEwOlJlcG9zaXRvcnkzMTYyNjQzMDc=" data-category=Comments data-category-id=DIC_kwDOEtnPc84B_WKP data-mapping=pathname data-reactions-enabled=1 data-emit-metadata=0 data-theme=light crossorigin=anonymous async></script>
+<script>function setGiscusTeheme(b){let a=document.querySelector('.giscus iframe');a&&a.contentWindow.postMessage({giscus:{setConfig:{theme:b}}},'https://giscus.app')}addEventListener('message',a=>{if(a.origin!=='https://giscus.app')return;setGiscusTeheme(document.documentElement.dataset.userColorScheme)}),window.addEventListener('onColorSchemeChange',a=>{setGiscusTeheme(a.detail)})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+</nav>
+</section>
+<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

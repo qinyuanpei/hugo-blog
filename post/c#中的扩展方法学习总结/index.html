@@ -1,0 +1,263 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<title>C#中的扩展方法学习总结 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="C#中的扩展方法学习总结 | 元培的部落格">
+<meta itemprop=name content="C#中的扩展方法学习总结 | 元培的部落格">
+<meta name=twitter:title content="C#中的扩展方法学习总结 | 元培的部落格">
+<meta name=application-name content="C#中的扩展方法学习总结 | 元培的部落格">
+<meta name=description content="我们使用扩展方法无非是因为它在逻辑层需要这样的功能，所以我们没有必要去改变抽象层的逻辑，因为这样会“污染”整个代码;/// <param name=&#34;str&#34;>4、第一个参数必须使用 this 关键字指定要使用扩展方法的类型</param>;为了解决这个问题，我们可以扩展出三个方法 SetPositionX、SetPositionY、SetPositionZ 来分别为 x、y、z 三个坐标分量进行赋值，我们继续在 SomeClass 这个类中添加方法：">
+<meta name=twitter:description content="我们使用扩展方法无非是因为它在逻辑层需要这样的功能，所以我们没有必要去改变抽象层的逻辑，因为这样会“污染”整个代码;/// <param name=&#34;str&#34;>4、第一个参数必须使用 this 关键字指定要使用扩展方法的类型</param>;为了解决这个问题，我们可以扩展出三个方法 SetPositionX、SetPositionY、SetPositionZ 来分别为 x、y、z 三个坐标分量进行赋值，我们继续在 SomeClass 这个类中添加方法： ">
+<meta itemprop=description content=" 我们使用扩展方法无非是因为它在逻辑层需要这样的功能，所以我们没有必要去改变抽象层的逻辑，因为这样会“污染”整个代码;/// <param name=&#34;str&#34;>4、第一个参数必须使用 this 关键字指定要使用扩展方法的类型</param>;为了解决这个问题，我们可以扩展出三个方法 SetPositionX、SetPositionY、SetPositionZ 来分别为 x、y、z 三个坐标分量进行赋值，我们继续在 SomeClass 这个类中添加方法： ">
+<meta property="og:description" content=" 我们使用扩展方法无非是因为它在逻辑层需要这样的功能，所以我们没有必要去改变抽象层的逻辑，因为这样会“污染”整个代码;/// <param name=&#34;str&#34;>4、第一个参数必须使用 this 关键字指定要使用扩展方法的类型</param>;为了解决这个问题，我们可以扩展出三个方法 SetPositionX、SetPositionY、SetPositionZ 来分别为 x、y、z 三个坐标分量进行赋值，我们继续在 SomeClass 这个类中添加方法： ">
+<meta property="og:type" content="article">
+<meta property="article:publisher" content="Hugo Tania">
+<meta property="og:article:published_time" content="2015-12-05T12:01:02Z">
+<meta property="article:published_time" content="2015-12-05T12:01:02Z">
+<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"C#中的扩展方法学习总结","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2015-12-05","description":"我们使用扩展方法无非是因为它在逻辑层需要这样的功能，所以我们没有必要去改变抽象层的逻辑，因为这样会“污染”整个代码;/// \u003cparam name=\"str\"\u003e4、第一个参数必须使用 this 关键字指定要使用扩展方法的类型\u003c/param\u003e;为了解决这个问题，我们可以扩展出三个方法 SetPositionX、SetPositionY、SetPositionZ 来分别为 x、y、z 三个坐标分量进行赋值，我们继续在 SomeClass 这个类中添加方法：","wordCount":276,"mainEntityOfPage":"True","dateModified":"2015-12-05","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/articles/>Articles</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>C#中的扩展方法学习总结</h1>
+<div class=post-meta>
+<div>
+By Hugo Tania | <time>December 05, 2015</time>
+| 2 minutes
+</div>
+<div class=tags>
+<a href=/tags/csharp/>CSharp</a>
+<a href=/tags/%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95/>扩展方法</a>
+<a href=/tags/unity3d/>Unity3D</a>
+<a href=/tags/%E6%8A%80%E5%B7%A7/>技巧</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>各位朋友大家好，我是秦元培，欢迎大家关注我的博客。最近偶然接触到了 C#中的扩展方法，觉得这个语法特性是一个不错的特性，因此决定在这里系统地对 C#中的扩展方法相关内容进行下总结和整理，因为博主觉得学习这件事情本身就是一个积累的过程，所以博主有时候会对现在的线上培训和视频教程这种“在线教育”感到反感。试想《射雕英雄传》中江南七怪远赴大漠传授郭靖武艺苦历十八载，何以难及全真教丹阳子马钰传授内功两年的积累？这里固然有郭靖愚笨木讷的天性和江南七怪武功低微的因素，可是在博主看来更重要的是强调了一个积累。想郭靖一生受益自全真教的玄门内功终成一代“为国为民”的侠之大者，则我辈需更加努力方可在这世间行走奔波。</p>
+<h1 id=什么是扩展方法>
+<a href=#%e4%bb%80%e4%b9%88%e6%98%af%e6%89%a9%e5%b1%95%e6%96%b9%e6%b3%95 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+什么是扩展方法
+</h1>
+<p>扩展方法从字面上理解是指扩展的方法，而对应到面向对象编程这个格局中则是指为一个类提供的扩展方法。按照我们通常的理解，我们首先需要获得某个类的源代码，然后在这个类代码中增加成员方法，这样就可以达到为一个类提供扩展方法的目的。可是不幸地是，这种方法在没有源代码的情况下就无法奏效了，而且我们人为地去改变源代码有可能会破坏整个代码的稳定性。那么有没有一种方法能在不改变源代码的前提下为某个类提供扩展方法呢？这就是我们今天要说的扩展方法，所以我们可以将扩展方法理解为在不改变源代码的前提下向外部提供扩展方法的一种方式。C#中的扩展方法实现起来是相对来说比较简单的，例如我们做在 Unity3D 游戏开发的时候，可能会用到 DOTween 这个插件。这个插件是 iTween 的作者重新编写一个动画插件，效率上比 iTween 有较大的提升。更为重要的一点是，它采用扩展方法这种实现方式，使得我们在调用这些 API 接口的时候难以感觉到我们是在使用一个插件，更像是在使用 Unity3D 的原生函数，所以当我们使用 DOTween + uGUI 这样的组合的时候，内心会感到无比的舒畅，一切都像是水到渠成一般。</p>
+<h1 id=扩展方法有哪些特点>
+<a href=#%e6%89%a9%e5%b1%95%e6%96%b9%e6%b3%95%e6%9c%89%e5%93%aa%e4%ba%9b%e7%89%b9%e7%82%b9 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+扩展方法有哪些特点
+</h1>
+<p>扩展方法在实现上和普通的面向对象编程是一样的，换句话说，我们只需要定义一个类，然后在里面添加并实现相应的方法即可。但是这里需要注意的地方有三点，第一，实现扩展方法的类必须是静态类且类的名称和实现扩展方法的类无关；第二、实现扩展方法的类方法必须是静态方法；第三、实现扩展方法的类方法的第一个参数必须是使用 this 关键字指明要实现扩展方法的类。例如，我们知道将一个合法字符串类型转换为整型，可以使用 int.parse()方法，假如我们希望为 string 类型扩展一个 ToInt 方法应该怎么办呢？我们一起来看下面的这段代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>/// &lt;summary&gt;
+</span><span class=c1>/// 1、定义一个静态类
+</span><span class=c1>/// 2、静态类的名称和要实现扩展方法的具体类无关
+</span><span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span><span class=k>public</span> <span class=k>static</span> <span class=k>class</span> <span class=nc>SomeClass</span>
+<span class=p>{</span>
+    <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>    <span class=c1>/// 3、实现一个具体的静态方法
+</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;str&#34;&gt;4、第一个参数必须使用this关键字指定要使用扩展方法的类型&lt;/param&gt;
+</span><span class=c1></span>    <span class=c1>/// &lt;returns&gt;&lt;/returns&gt;
+</span><span class=c1></span>    <span class=k>public</span> <span class=k>static</span> <span class=kt>int</span> <span class=n>ToInt</span><span class=p>(</span><span class=k>this</span> <span class=kt>string</span> <span class=n>str</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=kt>int</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=n>str</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>需要注意的是 C#支持扩展方法是从.NET3.5 版本开始，所以在编写扩展方法的时候请确保你的.NET 版本是否满足这一要求。提到版本问题，有很多朋友尤其是从 Unity5.0 以后开始学习 Unity3D 的朋友，常常会在我的博客中留言提到我的代码无法在新环境下运行等等类似地问题，我觉得这个世界上更新速度最快的当属 IT 技术了，大家使用新版本没有问题，可是有时候因为技术发展中的历史遗留问题例如 Python2.7 和 Python3、Unity4.X 和 Unity5.X，这个时候可能出现版本不兼容的问题，这个时候如果网络上的资源没有及时更新，建议大家还是及时查看官方的最新文档，因为在博主看来网络上的书籍或者相关文章都是用来参考的，古话说：尽信书不如无书，只有客观、冷静地判断知识的正确与否，我们方能学到真正有用的知识。</p>
+<p>好了，现在我们编写完这个扩展方法以后，就可以像下面这样使用扩展方法了：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=kt>string</span> <span class=n>str</span> <span class=p>=</span> <span class=s>&#34;1234&#34;</span><span class=p>;</span>
+<span class=kt>int</span> <span class=n>val</span> <span class=p>=</span> <span class=n>str</span><span class=p>.</span><span class=n>ToInt</span><span class=p>();</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这个示例向大家展示了如何编写一个无参数的扩展方法，那么当我们需要在扩展方法中传入参数的时候该怎么做呢？我们只需要在第一个参数后继续加入参数的声明就好了。例如我们在 Unity3D 中常常需要给一个 3D 物体设置坐标，通常我们可以通过下面的代码来实现：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=n>transform</span><span class=p>.</span><span class=n>position</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Vector3</span><span class=p>(</span><span class=m>1</span><span class=p>,</span><span class=m>1</span><span class=p>,</span><span class=m>1</span><span class=p>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这个代码到目前为止是比较简洁的，可是我们知道在 Unity3D 中除了 position 属性以外还有 localPosition 属性，如果我们的代码中再涉及坐标计算的话，我相信这个代码一定会变得非常的长。更有甚者，有时候我们只想改变三维坐标中的一个维度，可是我们必须给 transform.position 一个三维坐标，毫无意外地此时的代码会变得更长。为了解决这个问题，我们可以扩展出三个方法 SetPositionX、SetPositionY、SetPositionZ 来分别为 x、y、z 三个坐标分量进行赋值，我们继续在 SomeClass 这个类中添加方法：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>/// &lt;summary&gt;
+</span><span class=c1>/// 设置Tranform的X坐标
+</span><span class=c1>/// &lt;/summary&gt;
+</span><span class=c1>/// &lt;param name=&#34;tran&#34;&gt;当前Transform&lt;/param&gt;
+</span><span class=c1>/// &lt;param name=&#34;x&#34;&gt;X坐标&lt;/param&gt;
+</span><span class=c1></span><span class=k>public</span> <span class=k>static</span> <span class=k>void</span> <span class=n>SetPositionX</span><span class=p>(</span><span class=k>this</span> <span class=n>Transform</span> <span class=n>tran</span><span class=p>,</span> <span class=kt>float</span> <span class=n>x</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>tran</span><span class=p>.</span><span class=n>position</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Vector3</span><span class=p>(</span><span class=n>x</span><span class=p>,</span> <span class=n>tran</span><span class=p>.</span><span class=n>position</span><span class=p>.</span><span class=n>y</span><span class=p>,</span> <span class=n>tran</span><span class=p>.</span><span class=n>position</span><span class=p>.</span><span class=n>z</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=c1>/// &lt;summary&gt;
+</span><span class=c1>/// 设置Tranform的Y坐标
+</span><span class=c1>/// &lt;/summary&gt;
+</span><span class=c1>/// &lt;param name=&#34;tran&#34;&gt;当前Transform&lt;/param&gt;
+</span><span class=c1>/// &lt;param name=&#34;x&#34;&gt;Y坐标&lt;/param&gt;
+</span><span class=c1></span><span class=k>public</span> <span class=k>static</span> <span class=k>void</span> <span class=n>SetPositionY</span><span class=p>(</span><span class=k>this</span> <span class=n>Transform</span> <span class=n>tran</span><span class=p>,</span> <span class=kt>float</span> <span class=n>y</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>tran</span><span class=p>.</span><span class=n>position</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Vector3</span><span class=p>(</span><span class=n>tran</span><span class=p>.</span><span class=n>position</span><span class=p>.</span><span class=n>x</span><span class=p>,</span> <span class=n>y</span><span class=p>,</span> <span class=n>tran</span><span class=p>.</span><span class=n>position</span><span class=p>.</span><span class=n>z</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=c1>/// &lt;summary&gt;
+</span><span class=c1>/// 设置Tranform的Z坐标
+</span><span class=c1>/// &lt;/summary&gt;
+</span><span class=c1>/// &lt;param name=&#34;tran&#34;&gt;当前Transform&lt;/param&gt;
+</span><span class=c1>/// &lt;param name=&#34;x&#34;&gt;Z坐标&lt;/param&gt;
+</span><span class=c1></span><span class=k>public</span> <span class=k>static</span> <span class=k>void</span> <span class=n>SetPositionZ</span><span class=p>(</span><span class=k>this</span> <span class=n>Transform</span> <span class=n>tran</span><span class=p>,</span> <span class=kt>float</span> <span class=n>z</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>tran</span><span class=p>.</span><span class=n>position</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Vector3</span><span class=p>(</span><span class=n>tran</span><span class=p>.</span><span class=n>position</span><span class=p>.</span><span class=n>x</span><span class=p>,</span> <span class=n>tran</span><span class=p>.</span><span class=n>position</span><span class=p>.</span><span class=n>y</span><span class=p>,</span> <span class=n>z</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>同样的，我们现在可以直接为一个三维物体的坐标进行赋值：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=n>transform</span><span class=p>.</span><span class=n>SetPositionX</span><span class=p>(</span><span class=m>1.0f</span><span class=p>);</span>
+<span class=n>transform</span><span class=p>.</span><span class=n>SetPositionY</span><span class=p>(</span><span class=m>1.0f</span><span class=p>);</span>
+<span class=n>transform</span><span class=p>.</span><span class=n>SetPositionZ</span><span class=p>(</span><span class=m>1.0f</span><span class=p>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=使用扩展方法的利弊>
+<a href=#%e4%bd%bf%e7%94%a8%e6%89%a9%e5%b1%95%e6%96%b9%e6%b3%95%e7%9a%84%e5%88%a9%e5%bc%8a class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+使用扩展方法的利弊
+</h1>
+<p>扩展方法使用起来得心应手，所以我们这里来讨论下使用扩展方法的利弊。好处当然是自由而任性地使用扩展方法对类进行扩展，而且扩展方法在 Visual Studio 中的智能提示会以蓝色向下箭头进行标识。扩展方法的坏处则是要看设计扩展方法的人能否较好的驾驭这个特性啦，其实所有的技术都是一样的，我常常在游戏群里听到人鄙视 Unity3D 引擎，以 UnReal Engine4 为游戏引擎世界里的泰山北斗，我承认 UE4 的画面效果好，可是能真正用好这个引擎的人有多少呢？扩展方法在使用的时候应该遵守就近原则，即是在最小的范围内使用扩展方法，对具体类而非抽象类实现扩展方法。我们使用扩展方法无非是因为它在逻辑层需要这样的功能，所以我们没有必要去改变抽象层的逻辑，因为这样会“污染”整个代码。举一个简单的例子，我们知道.NET 中的基类是 object，如果我们对这个类进行扩展，毫无疑问它会影响所有继承自 object 的类，这样就会造成“污染”，显然是不可取的。</p>
+<h1 id=小结>
+<a href=#%e5%b0%8f%e7%bb%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+小结
+</h1>
+<ul>
+<li>在 C#中实现扩展方法的类必须是静态类且类的名称和实现扩展方法的类无关</li>
+<li>实现扩展方法的类方法必须是静态方法</li>
+<li>实现扩展方法的类方法的第一个参数必须是使用 this 关键字指明要实现扩展方法的类</li>
+<li>实现扩展方法应遵守就近原则，在最小的范围内使用扩展方法以避免造成“污染”</li>
+</ul>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/post/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8Bunity3d%E5%9C%BA%E6%99%AF%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91/ title="Previous post (older)">
+<span>Previous</span>
+Unity3D 游戏开发之 Unity3D 场景编辑器扩展开发
+</a>
+<a rel=next href=/post/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8B%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%9E%E7%8E%B0/ title="Next post (newer)">
+<span>Next</span>
+EasyAR 尝鲜系列教程之视频播放功能的实现
+</a>
+</nav>
+</div>
+<div class=container>
+<script src=https://giscus.app/client.js data-repo=WingLim/hugo-tania data-repo-id="MDEwOlJlcG9zaXRvcnkzMTYyNjQzMDc=" data-category=Comments data-category-id=DIC_kwDOEtnPc84B_WKP data-mapping=pathname data-reactions-enabled=1 data-emit-metadata=0 data-theme=light crossorigin=anonymous async></script>
+<script>function setGiscusTeheme(b){let a=document.querySelector('.giscus iframe');a&&a.contentWindow.postMessage({giscus:{setConfig:{theme:b}}},'https://giscus.app')}addEventListener('message',a=>{if(a.origin!=='https://giscus.app')return;setGiscusTeheme(document.documentElement.dataset.userColorScheme)}),window.addEventListener('onColorSchemeChange',a=>{setGiscusTeheme(a.detail)})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+</nav>
+</section>
+<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

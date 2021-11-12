@@ -1,0 +1,149 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<title>Referrer 还是 Referer? 一个迷人的错误 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="Referrer 还是 Referer? 一个迷人的错误 | 元培的部落格">
+<meta itemprop=name content="Referrer 还是 Referer? 一个迷人的错误 | 元培的部落格">
+<meta name=twitter:title content="Referrer 还是 Referer? 一个迷人的错误 | 元培的部落格">
+<meta name=application-name content="Referrer 还是 Referer? 一个迷人的错误 | 元培的部落格">
+<meta name=description content="既然要使用`Referer`这个错误的拼写，那就一直这样错下去好了，为什么特么又冒出来个`Referrer`，虽然它的拼写的确是对的，可不统一的写法还是会让人抓狂啊;说到这里，大家至少明白了一件事情，这个错误的`Referer`其实是指`Referrer`;有人说，使用 JavaScript 开发同构应用的体验非常好，恐怕从今天这篇博客以后要打个折扣，因为你刚刚在后端写完`referer`，转眼就要在前端写`referrer`，希望像博主这样的`伪全栈工程师`不会因此而精神分裂">
+<meta name=twitter:description content="既然要使用`Referer`这个错误的拼写，那就一直这样错下去好了，为什么特么又冒出来个`Referrer`，虽然它的拼写的确是对的，可不统一的写法还是会让人抓狂啊;说到这里，大家至少明白了一件事情，这个错误的`Referer`其实是指`Referrer`;有人说，使用 JavaScript 开发同构应用的体验非常好，恐怕从今天这篇博客以后要打个折扣，因为你刚刚在后端写完`referer`，转眼就要在前端写`referrer`，希望像博主这样的`伪全栈工程师`不会因此而精神分裂 ">
+<meta itemprop=description content=" 既然要使用`Referer`这个错误的拼写，那就一直这样错下去好了，为什么特么又冒出来个`Referrer`，虽然它的拼写的确是对的，可不统一的写法还是会让人抓狂啊;说到这里，大家至少明白了一件事情，这个错误的`Referer`其实是指`Referrer`;有人说，使用 JavaScript 开发同构应用的体验非常好，恐怕从今天这篇博客以后要打个折扣，因为你刚刚在后端写完`referer`，转眼就要在前端写`referrer`，希望像博主这样的`伪全栈工程师`不会因此而精神分裂 ">
+<meta property="og:description" content=" 既然要使用`Referer`这个错误的拼写，那就一直这样错下去好了，为什么特么又冒出来个`Referrer`，虽然它的拼写的确是对的，可不统一的写法还是会让人抓狂啊;说到这里，大家至少明白了一件事情，这个错误的`Referer`其实是指`Referrer`;有人说，使用 JavaScript 开发同构应用的体验非常好，恐怕从今天这篇博客以后要打个折扣，因为你刚刚在后端写完`referer`，转眼就要在前端写`referrer`，希望像博主这样的`伪全栈工程师`不会因此而精神分裂 ">
+<meta property="og:type" content="article">
+<meta property="article:publisher" content="Hugo Tania">
+<meta property="og:article:published_time" content="2019-12-04T17:22:33Z">
+<meta property="article:published_time" content="2019-12-04T17:22:33Z">
+<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"Referrer 还是 Referer? 一个迷人的错误","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2019-12-04","description":"既然要使用`Referer`这个错误的拼写，那就一直这样错下去好了，为什么特么又冒出来个`Referrer`，虽然它的拼写的确是对的，可不统一的写法还是会让人抓狂啊;说到这里，大家至少明白了一件事情，这个错误的`Referer`其实是指`Referrer`;有人说，使用 JavaScript 开发同构应用的体验非常好，恐怕从今天这篇博客以后要打个折扣，因为你刚刚在后端写完`referer`，转眼就要在前端写`referrer`，希望像博主这样的`伪全栈工程师`不会因此而精神分裂","wordCount":151,"mainEntityOfPage":"True","dateModified":"2019-12-04","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/articles/>Articles</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>Referrer 还是 Referer? 一个迷人的错误</h1>
+<div class=post-meta>
+<div>
+By Hugo Tania | <time>December 04, 2019</time>
+| 1 minutes
+</div>
+<div class=tags>
+<a href=/tags/http/>HTTP</a>
+<a href=/tags/%E5%8E%86%E5%8F%B2/>历史</a>
+<a href=/tags/referrer/>Referrer</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>诗人郑愁予曾经在一首诗中写道：<strong>我达达的马蹄是个美丽的错误，我不是归人，是个过客</strong>。而对我来说，十九岁之前的我，一样是个沉浸在诗歌中的文艺少年。十九岁之后的我，作为一名程序员，更多的是邂逅各种错误。可偏偏人类世界对待错误从来都不宽容，所以，<strong>错误本身既不美丽，亦不浪漫</strong>。接近中年的我，无论如何，都写不出年轻时令人惊艳的句子，这或许和我们面对错误时的不同心境，有着莫大的关联，而今天这篇博客，同样要从一个历史上的错误说起。</p>
+<h1 id=因拼写而怀疑人生>
+<a href=#%e5%9b%a0%e6%8b%bc%e5%86%99%e8%80%8c%e6%80%80%e7%96%91%e4%ba%ba%e7%94%9f class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+因拼写而怀疑人生
+</h1>
+<p>话说，博主这天做了一个非常“简单”的功能，它允许用户通过富文本编辑器来编写 HTML，而这些 HTML 会被插入到页面的特定位置，譬如用户可以为页脚的备案号添加一个超链接，当用户点击备案号的时候，就可以调转到工信部备案号查询的网站上。这个功能非常简单吧，因为这就是 HTML 中 a 标签的作用。博主快速了引入 UEditor，虽然这个项目百度都不再继续维护了，虽然它直接把跨域问题甩锅给使用者，可我还是完成了这个功能。相信你能感受到我的不情愿吧，显然这不是重点，因为剧情的反转才是……</p>
+<p>结果没高兴多久，测试同事就同我讲，客户提供的地址填进去以后，点击链接浏览器直接返回 4XX，可明明这个地址敲到浏览器里就能打开啊……我脑海中快速地浮现出那道经典的面试题，浏览器里敲完地址按下回车的瞬间到底发生了什么？习惯性怀疑人生后，我发现居然是因为 Referer 的问题，从我们站点调转到客户站点的时候携带了 Referer，虽然有很多种方法可以让浏览器禁止携带 Referer，但我还是被这种历史性的错误搞得怀疑人生。因为人生最难的事情，就是“揣着明白装糊涂”和“揣着糊涂装明白”，所谓“假作真时真亦假”。</p>
+<p>请注意区分<strong>Referer</strong>和<strong>Referrer</strong>这两个单词，眼尖的人会发现后者多了一个 r，这有点像什么呢，大概类似于 usr 和 user。我们总是不情愿地相信这是历史的错误，而固执地想要找到一种能自圆其说的理由。诚然，“前人栽树，后人乘凉”，可我实在不肯承认，这是一群卓越而智慧的先驱们，所创造出的某种高效简写。回顾一下，使用 Referer 的场合，基本都是在 HTTP 头部，最常见的场景就是防盗链，Nginx 能用 Referer 判断访问者来源，爬虫就能用 Referer 和 UserAgent 伪造访问者身份。那什么时候用 Referrer 呢？我目前发现是在 a 标签的 rel 属性里，例如下面的例子：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-HTML data-lang=HTML><span class=p>&lt;</span><span class=nt>a</span> <span class=na>rel</span><span class=o>=</span><span class=s>&#34;noreferrer&#34;</span> <span class=na>href</span><span class=o>=</span><span class=s>&#34;https://www.w3school.com.cn/tags/att_a_rel.asp&#34;</span><span class=p>&gt;</span>w3school<span class=p>&lt;/</span><span class=nt>a</span><span class=p>&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>除此之外，rel 属性还支持像 nofollow、friend、licence 这样的属性，详细地大家可以参考<a href=https://www.w3school.com.cn/tags/att_a_rel.asp>这里</a>。相信大家想到博主经历了什么了，没错，我就是按照平时的书写习惯写了 Referer，然后被 Web 标准委员会给疯狂地嘲讽了。那么，为什么表达同一个含义的词会有两种写法？为什么有时候要用 Referer，而有时候要用 Referrer? 这特么到底是怎么一回事儿……带着这些疑问，让我们一起回顾野蛮生长的 Web 标准，为什么要埋这样一个坑在这里。</p>
+<h1 id=后世不忘前世之锅>
+<a href=#%e5%90%8e%e4%b8%96%e4%b8%8d%e5%bf%98%e5%89%8d%e4%b8%96%e4%b9%8b%e9%94%85 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+后世不忘，前世之锅
+</h1>
+<p>故事要追溯到上个世纪 90 年代，当时 HTTP 协议中需要有一个用来表示页面或资源来源的请求头部，Philip Hallam-Baker 将这个请求头部定义为 Referer，并将其写入了<a href="https://datatracker.ietf.org/doc/rfc1945/?include_text=1">RFC1945</a>，这就是著名的 HTTP/1.0 协议。</p>
+<p><img loading=lazy src=https://i.loli.net/2019/12/07/GE2WydKMf6HSk5n.png alt=HTTP/1.0协议中定义的Referer></p>
+<p>然而这里发生一件有趣的事情，这个单词实际上是被作者给拼错了，即正确的拼写应该是<code>Referrer</code>。因为发现这个错误时为时已晚，大量的服务端和客户端都采用了这个错误的拼写，谁让它被写到了 HTTP 协议里呢？这其中就有像 Nginx 里的<code>ngx_http_referer_module</code>、Django 里的<code>HttpRequest.META.HTTP_REFERER</code>等等。考虑到这个错误波及的范围过大，HTTP 标准制定者奉决心将错就错，于是在接下来的<a href="https://datatracker.ietf.org/doc/rfc2616/?include_text=1">RFC2616</a>，即 HTTP/1.1 中，HTTP 标准制定者追加了针对这个错误的说明:</p>
+<p><img loading=lazy src=https://i.loli.net/2019/12/07/IwMpYPSls485CHx.png alt=HTTP/1.1协议中定义的Referer></p>
+<p>说到这里，大家至少明白了一件事情，这个错误的<code>Referer</code>其实是指<code>Referrer</code>。对于标准写错了这件事情，大家其实都能理解，因为只要是人就免不了会出错。可为什么不能一错到底呢？既然要使用<code>Referer</code>这个错误的拼写，那就一直这样错下去好了，为什么特么又冒出来个<code>Referrer</code>，虽然它的拼写的确是对的，可不统一的写法还是会让人抓狂啊！君不见<code>main</code>和<code>mian</code>傻傻分不清，君不见 C++里<code>false</code>与<code>flase</code>的神奇宏定义。假如没有今天这个事情，我完全不知道还有<code>Referrer</code>的存在啊，可都拼错多少年了，我都把假当作真了，你突然这样搞，我还是会感到手足无措的啊！就像<code>Configuration</code>这个单词，虽然博主英语并不算太好，可至少敢拍着胸脯说这个单词没写错，结果有次我写对了反而让测试给我提了 Bug，因为特么项目里定义的实际上是<code>Configuation</code>。你说，你这样让人崩溃不？</p>
+<p>那么，为什么会有<code>Referrer</code>这个正确的拼写呢？这就要说到<code>Referrer-Policy</code>这个 HTTP 头部。不错，这次你没有看错，标准制定老爷们这次终于写对了。顾名思义，这是一种用来告诉浏览器应该如何发送 Referer 的策略。常见的取值有：no-referrer、no-referrer-when-downgrade、origin、origin-when-cross-origin、same-origin、strict-origin、strict-origin-when-cross-origin、unsafe-url，关于它们的含义及用途，大家可以参考<a href=https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy>这里</a>。虽然我们经常吐槽 JavaScript 是一门垃圾语言，但是这一次，大家居然都非常齐心地统一了写法，譬如<code>DOM Level 2</code>里定义的 <code>document.referrer</code>、<code>Fetch API</code>中的<code>Request</code>接口的<code>referrer</code>属性等，这一次都写对了。而 Referrer-Policy 除了和 JavaScript 可以集成以外，同样可以和 HTML、CSS 集成。博主一开始遇到的问题，实际上就是和 HTML 集成的一个场景。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-HTML data-lang=HTML>//meta标签里的&#39;referrer&#39;
+<span class=p>&lt;</span><span class=nt>meta</span> <span class=na>name</span><span class=o>=</span><span class=s>&#34;referrer&#34;</span> <span class=na>content</span><span class=o>=</span><span class=s>&#34;origin&#34;</span><span class=p>&gt;</span>
+//出现在a, area, img, iframe, script, <span class=p>&lt;</span><span class=nt>link</span><span class=p>&gt;</span>等元素里的&#39;referrer&#39;
+<span class=p>&lt;</span><span class=nt>a</span> <span class=na>href</span><span class=o>=</span><span class=s>&#34;http://example.com&#34;</span> <span class=na>referrerpolicy</span><span class=o>=</span><span class=s>&#34;origin&#34;</span><span class=p>&gt;</span>
+//出现在a, area, link等标签的rel属性里的&#39;referrer&#39;
+<span class=p>&lt;</span><span class=nt>a</span> <span class=na>href</span><span class=o>=</span><span class=s>&#34;http://example.com&#34;</span> <span class=na>rel</span><span class=o>=</span><span class=s>&#34;noreferrer&#34;</span><span class=p>&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>而和 CSS 集成实际上就是 style 标签中的<code>referrerpolicy</code>属性，它默认是 no-referrer-when-downgrade，我们可以在返回一个 CSS 文件的时候设置响应流的<code>Referrer-Policy</code>，或者是设置 style 标签中的<code>referrerpolicy</code>属性，这个就不展开讲啦！</p>
+<h1 id=本文小结>
+<a href=#%e6%9c%ac%e6%96%87%e5%b0%8f%e7%bb%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+本文小结
+</h1>
+<p>通过这次被标准制定者按在地上摩擦的经历，居然无意中收获了这样一段"迷人"的历史。假如 JavaScript 这里为了兼容历史错误而使用<code>Referer</code>的话，可能博主就不会一边吐槽这个错误，一边又乖乖地滚去读 RFC2616。从这里可以得出一个结论：<strong>HTTP 请求中的 Referer 是一个典型的拼写错误，历史悠久，可以预见还会一直错下去，以后 Referer 变成一个专有名词也说不定。所以一般涉及到读取 HTTP 请求头的场景，我们需要用 Referer 这种错误拼写(后端)；除此之外一般都要用 Referrer 这种正确的拼写(前端)</strong>。有人说，使用 JavaScript 开发同构应用的体验非常好，恐怕从今天这篇博客以后要打个折扣，因为你刚刚在后端写完<code>referer</code>，转眼就要在前端写<code>referrer</code>，希望像博主这样的<code>伪全栈工程师</code>不会因此而精神分裂。实用主义者能用就行的策略，让这个错误在很多年以后还被人提起，假如这些标准制定者尚在人世的话，不知道会不会在浏览网页的时候，想起第一次起草<code>RFC1945</code>的那个下午。果然，历史还真是迷人啊！</p>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/post/valine%E6%90%AD%E9%85%8Dserver%E9%85%B1%E5%AE%9E%E7%8E%B0%E5%8D%9A%E5%AE%A2%E8%AF%84%E8%AE%BA%E6%8E%A8%E9%80%81/ title="Previous post (older)">
+<span>Previous</span>
+Valine 搭配 Server 酱实现博客评论推送
+</a>
+<a rel=next href=/post/webapiclient%E4%B8%AD%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%8E%E4%BD%BF%E7%94%A8/ title="Next post (newer)">
+<span>Next</span>
+WebApiClient 中动态路由的实现与使用
+</a>
+</nav>
+</div>
+<div class=container>
+<script src=https://giscus.app/client.js data-repo=WingLim/hugo-tania data-repo-id="MDEwOlJlcG9zaXRvcnkzMTYyNjQzMDc=" data-category=Comments data-category-id=DIC_kwDOEtnPc84B_WKP data-mapping=pathname data-reactions-enabled=1 data-emit-metadata=0 data-theme=light crossorigin=anonymous async></script>
+<script>function setGiscusTeheme(b){let a=document.querySelector('.giscus iframe');a&&a.contentWindow.postMessage({giscus:{setConfig:{theme:b}}},'https://giscus.app')}addEventListener('message',a=>{if(a.origin!=='https://giscus.app')return;setGiscusTeheme(document.documentElement.dataset.userColorScheme)}),window.addEventListener('onColorSchemeChange',a=>{setGiscusTeheme(a.detail)})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+</nav>
+</section>
+<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

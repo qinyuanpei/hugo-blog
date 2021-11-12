@@ -1,0 +1,583 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<title>ASP.NET Core gRPC 打通前端世界的尝试 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="ASP.NET Core gRPC 打通前端世界的尝试 | 元培的部落格">
+<meta itemprop=name content="ASP.NET Core gRPC 打通前端世界的尝试 | 元培的部落格">
+<meta name=twitter:title content="ASP.NET Core gRPC 打通前端世界的尝试 | 元培的部落格">
+<meta name=application-name content="ASP.NET Core gRPC 打通前端世界的尝试 | 元培的部落格">
+<meta name=description content="Hugo is Absurdly Fast!">
+<meta name=twitter:description content="Hugo is Absurdly Fast!">
+<meta itemprop=description content="Hugo is Absurdly Fast!">
+<meta property="og:description" content="Hugo is Absurdly Fast!">
+<meta property="og:type" content="article">
+<meta property="article:publisher" content="Hugo Tania">
+<meta property="og:article:published_time" content="2021-06-20T21:37:36Z">
+<meta property="article:published_time" content="2021-06-20T21:37:36Z">
+<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"ASP.NET Core gRPC 打通前端世界的尝试","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2021-06-20","description":"","wordCount":812,"mainEntityOfPage":"True","dateModified":"2021-06-20","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/articles/>Articles</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>ASP.NET Core gRPC 打通前端世界的尝试</h1>
+<div class=post-meta>
+<div>
+By Hugo Tania | <time>June 20, 2021</time>
+| 4 minutes
+</div>
+<div class=tags>
+<a href=/tags/grpc/>gRPC</a>
+<a href=/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/>微服务</a>
+<a href=/tags/%E5%89%8D%E7%AB%AF/>前端</a>
+<a href=/tags/web/>Web</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>在构建以 gRPC 为核心的微服务架构的过程中，我们逐渐接触到了 gRPC 的过滤器、健康检查、重试等方面的内容。虽然， Protocol Buffers 搭配 HTTP/2 ，在整个传输层上带来了显著的性能提升，可当这套微服务方案面对前后端分离的浪潮时，我们能明显地有点“<strong>水土不服</strong>”。其实，如果单单是以 Protocol Buffers 来作为 HTTP 通信的载体，通过 <a href=https://github.com/dcodeIO/protobuf.js>protobuf.js</a> 就可以实现前端的二进制化。考虑到 gRPC 实际的通信过程远比这个复杂，同时还要考虑<code>.proto</code>文件在前/后端共享的问题，所以，我们面对的其实是一个相当复杂的问题。现代的前端世界，是一个<code>React</code>、<code>Angular</code>和<code>Vue</code>三足鼎立的世界，如果这个世界不能和微服务的世界打通，我们面对的或许并不是一个真实的世界。因为博主注意到，项目中有一部分 gRPC 服务被封装为<code>Web API</code>并提供给前端，这说明大家都意识到了这个问题。所以，这篇博客想和大家分享的是，如何打通 gRPC 和 前端 两个不同的世界，这里介绍四种方式：<strong>gRPC-Web</strong>、<strong>gRpc-Gateway</strong>、<strong>封装 Web API</strong>、<strong>编写中间件</strong>，希望能给大家带来一点启发。</p>
+<h1 id=grpc-web>
+<a href=#grpc-web class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+gRPC-Web
+</h1>
+<p><a href=https://github.com/grpc-ecosystem/grpc-gateway>gRPC-Web</a> 是官方提供的一个方案，它的原理是利用命令行工具<code>ptotoc</code>及其插件<code>protoc-gen-grpc-web</code>来生成<code>.proto</code>对应的客户端代码，这些代码经过<code>webpack</code>这类打包工具处理以后，就可以在前端使用。所以，对于 gRPC-Web ，你可以从两个方面来考虑它：第一，它支持生成强类型的客户端代码；第二，它支持在非 HTTP/2 环境下使用 gRPC 。下面是一个基本的使用流程：</p>
+<p>首先，我们需要下载命令行工具：<a href=https://github.com/protocolbuffers/protobuf/releases>protoc</a> 及其插件：<a href=https://github.com/grpc/grpc-web/releases>protoc-gen-grpc-web</a>。</p>
+<p>此时，我们可以使用下面的命令来生成<code>JavaScript</code>版本的 gRPC 代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>protoc greetjs.proto <span class=se>\
+</span><span class=se></span>  --js_out<span class=o>=</span><span class=nv>import_style</span><span class=o>=</span>commonjs:. <span class=se>\
+</span><span class=se></span>  --grpc-web_out<span class=o>=</span><span class=nv>import_style</span><span class=o>=</span>commonjs,mode<span class=o>=</span>grpcwebtext:. <span class=se>\
+</span><span class=se></span>  --plugin<span class=o>=</span>protoc-gen-grpc-web<span class=o>=</span>C:<span class=se>\U</span>sers<span class=se>\P</span>ayne<span class=se>\g</span>o<span class=se>\b</span>in<span class=se>\p</span>rotoc-gen-grpc-web.exe
+</code></pre></td></tr></table>
+</div>
+</div><p>其中：</p>
+<ul>
+<li><code>--js_out</code> 和 <code>--grpc-web_out</code> 分别指定了我们要生成的<code>JavaScript</code>代码的模块化标准，这里使用的是 <a href=http://javascript.ruanyifeng.com/nodejs/module.html>CommonJS</a> 规范。</li>
+<li><code>mode=grpcwebtext</code> 指定 gRPC-Web 的数据传输方式。目前：支持两种方式，application/grpc-web-text(Base64 编码，文本格式) 和 application/grpc-web+proto(二进制格式)，前者支持 Unary Calls 和 Server Streaming Calls，后者只支持 Unary Calls。</li>
+</ul>
+<p>在这个例子中，会生成下面两个文件，它们分别定义了<code>客户端</code>和<code>消息</code>这两个部分：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/06/22/Yd9A5CEONkZgBjU.png alt="利用 protoc 生成 JavaScript 代码"></p>
+<p>此时，我们可以这样编写我们的逻辑代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=kd>var</span> <span class=nx>client</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>proto</span><span class=p>.</span><span class=nx>greet</span><span class=p>.</span><span class=nx>GreeterClient</span><span class=p>(</span><span class=s1>&#39;http://localhost:8000&#39;</span><span class=p>);</span>
+<span class=kd>var</span> <span class=nx>request</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>proto</span><span class=p>.</span><span class=nx>greet</span><span class=p>.</span><span class=nx>HelloRequest</span><span class=p>();</span>
+<span class=kd>var</span> <span class=nx>metadata</span> <span class=o>=</span> <span class=p>{</span> <span class=p>}</span>
+<span class=nx>request</span><span class=p>.</span><span class=nx>setName</span><span class=p>(</span><span class=s1>&#39;长安书小妆&#39;</span><span class=p>);</span>
+<span class=nx>client</span><span class=p>.</span><span class=nx>sayHello</span><span class=p>(</span><span class=nx>request</span><span class=p>,</span> <span class=nx>metadata</span><span class=p>,</span> <span class=kd>function</span><span class=p>(</span><span class=nx>error</span><span class=p>,</span> <span class=nx>response</span><span class=p>)</span> <span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=nx>error</span><span class=p>)</span> <span class=p>{</span>
+        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>error</span><span class=p>);</span>
+    <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>response</span><span class=p>.</span><span class=nx>getMessage</span><span class=p>());</span>
+    <span class=p>}</span>
+<span class=p>});</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果你更倾向于使用类型安全的 TypeScript，你还可以按下面的方式来生成代码：</p>
+<ul>
+<li><code>import_style=commonjs+dts</code>: CommonJS & .d.ts typings</li>
+<li><code>import_style=typescript</code>: 100% TypeScript</li>
+</ul>
+<p>更多的细节请参考官方文档：<a href=https://hub.fastgit.org/grpc/grpc-web#typescript-support>https://hub.fastgit.org/grpc/grpc-web#typescript-support</a></p>
+<p>接下来，对于 .NET 开发者而言， gRPC-Web 意味着我们只需要简单地配置下 ASP.NET Core 的中间件管道，就可以享受到上面提供的这些便利。因为 Visual Studio 会在编译<code>.proto</code>文件时，自动帮你生成这个客户端代码，我们可以将这一技术应用到单页面应用(<strong>SPA</strong>) 和 WebAssembly 中，最典型的例子莫过于微软的 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/blazor/?view=aspnetcore-5.0">Blazor</a>，它使得 gRPC 可以充当客户端与服务端间的信使。同样地，这里准备了相关的示例代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>void</span> <span class=n>ConfigureServices</span><span class=p>(</span><span class=n>IServiceCollection</span> <span class=n>services</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>services</span><span class=p>.</span><span class=n>AddGrpc</span><span class=p>();</span>
+<span class=p>}</span>
+
+<span class=k>public</span> <span class=k>void</span> <span class=n>Configure</span><span class=p>(</span><span class=n>IApplicationBuilder</span> <span class=n>app</span><span class=p>,</span> <span class=n>IWebHostEnvironment</span> <span class=n>env</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>// ...
+</span><span class=c1></span>    <span class=n>app</span><span class=p>.</span><span class=n>UseGrpcWeb</span><span class=p>();</span>
+    <span class=n>app</span><span class=p>.</span><span class=n>UseEndpoints</span><span class=p>(</span><span class=n>endpoints</span> <span class=p>=&gt;</span>
+    <span class=p>{</span>
+        <span class=n>endpoints</span><span class=p>.</span><span class=n>MapGrpcService</span><span class=p>&lt;</span><span class=n>GreeterService</span><span class=p>&gt;().</span><span class=n>EnableGrpcWeb</span><span class=p>();</span>
+    <span class=p>);</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果大家留意一下微软官方的 <a href=https://hub.fastgit.org/grpc/grpc-dotnet/blob/master/examples/Browser/Server/wwwroot/Scripts/index.js>示例项目</a>，就会发现和这里类似的东西，因为原理上一脉相承：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=kr>const</span> <span class=p>{</span> <span class=nx>HelloRequest</span><span class=p>,</span> <span class=nx>HelloReply</span> <span class=p>}</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;./greet_pb.js&#39;</span><span class=p>);</span>
+<span class=kr>const</span> <span class=p>{</span> <span class=nx>GreeterClient</span> <span class=p>}</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;./greet_grpc_web_pb.js&#39;</span><span class=p>);</span>
+
+<span class=kd>var</span> <span class=nx>client</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>GreeterClient</span><span class=p>(</span><span class=nb>window</span><span class=p>.</span><span class=nx>location</span><span class=p>.</span><span class=nx>origin</span><span class=p>);</span>
+
+<span class=kd>var</span> <span class=nx>nameInput</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s1>&#39;name&#39;</span><span class=p>);</span>
+<span class=kd>var</span> <span class=nx>sendInput</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s1>&#39;send&#39;</span><span class=p>);</span>
+<span class=kd>var</span> <span class=nx>streamInput</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s1>&#39;stream&#39;</span><span class=p>);</span>
+<span class=kd>var</span> <span class=nx>resultText</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s1>&#39;result&#39;</span><span class=p>);</span>
+
+<span class=c1>// Unary call
+</span><span class=c1></span><span class=nx>sendInput</span><span class=p>.</span><span class=nx>onclick</span> <span class=o>=</span> <span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
+    <span class=kd>var</span> <span class=nx>request</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>HelloRequest</span><span class=p>();</span>
+    <span class=nx>request</span><span class=p>.</span><span class=nx>setName</span><span class=p>(</span><span class=nx>nameInput</span><span class=p>.</span><span class=nx>value</span><span class=p>);</span>
+
+    <span class=nx>client</span><span class=p>.</span><span class=nx>sayHello</span><span class=p>(</span><span class=nx>request</span><span class=p>,</span> <span class=p>{},</span> <span class=p>(</span><span class=nx>err</span><span class=p>,</span> <span class=nx>response</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+        <span class=nx>resultText</span><span class=p>.</span><span class=nx>innerHTML</span> <span class=o>=</span> <span class=nx>htmlEscape</span><span class=p>(</span><span class=nx>response</span><span class=p>.</span><span class=nx>getMessage</span><span class=p>());</span>
+    <span class=p>});</span>
+<span class=p>};</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>gRPC-Web 在将 gRPC 带入前端世界的过程中，其实是牺牲了一部分重要特性的，譬如浏览器中无法实现 HTTP/2，相对应地，gRPC-Web 不再支持客户端流和双向流，依然支持服务端流，博主猜测可能是利用了服务端发送事件(<strong>Server Sent Event</strong>)。不过，这并不影响我们对这个项目的敬意，感谢它将 gRPC 带入了前端的世界。</p>
+<h1 id=grpc-gateway>
+<a href=#grpc-gateway class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+gRPC-Gateway
+</h1>
+<p><a href=https://github.com/grpc-ecosystem/grpc-gateway>gRPC-Gateway</a> 同样是命令行工具<code>protoc</code>的一个插件，其原理是，读取 gRPC 服务定义，并生成一个反向代理服务器，将 RESTful JSON API 转换为 gRPC 。而两者间的对应关系，则是通过<code>.proto</code>文件中的自定义选项来维护的。简单来说，就是在我们定义 gRPC 服务的同时，增加一组选项来表明这是一个 RESTful JSON API 。目前，这个插件只支持<code>Go</code>语言的代码生成。所以，如果想玩一玩这个插件，需要大家安装好<code>Go</code>的环境。</p>
+<p>首先，我们从 <a href=https://hub.fastgit.org/protocolbuffers/protobuf/releases/tag/v3.6.1>Github</a> 下载 Protocol Buffers 的编译器，它负责从从<code>.proto</code>文件生成代码。</p>
+<p>这里我们选择 Windows 版本，直接将其解压到一个非中文的路径下即可。</p>
+<p><img loading=lazy src=https://i.loli.net/2021/06/21/eTfGF9hI6cPSlwR.png alt="Protocol Buffers 的编译器"></p>
+<p>这里，我们需要配置下面两个环境变量：</p>
+<ul>
+<li>PATH：C:\Program Files\Protobuf\bin</li>
+<li>PROTOC_INCLUDE：C:\Program Files\Protobuf\include</li>
+</ul>
+<p>接下来，在<code>Go</code>环境中进行以下设置：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>go env -w <span class=nv>GO111MODULE</span><span class=o>=</span>on
+go env -w <span class=nv>GOPROXY</span><span class=o>=</span>https://goproxy.cn,direct
+go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway 
+go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger 
+go install github.com/golang/protobuf/protoc-gen-go
+</code></pre></td></tr></table>
+</div>
+</div><p>这样，我们就通过<code>Go</code>完成了<code>protoc</code>的插件的安装。此时，我们可以通过下面的命令来生成<code>Go</code>代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=c1># 生成Go的客户端代码</span>
+protoc --proto_path<span class=o>=</span>. <span class=se>\
+</span><span class=se></span>  --go_out<span class=o>=</span>. <span class=se>\
+</span><span class=se></span>  --plugin<span class=o>=</span>protoc-gen-go<span class=o>=</span>C:<span class=se>\U</span>sers<span class=se>\P</span>ayne<span class=se>\g</span>o<span class=se>\b</span>in<span class=se>\p</span>rotoc-gen-go.exe <span class=se>\
+</span><span class=se></span>  ./greet.proto 
+
+<span class=c1># 生成Go的反向代理服务器端代码</span>
+protoc <span class=se>\
+</span><span class=se></span>  -I C:<span class=se>\U</span>sers<span class=se>\P</span>ayne<span class=se>\g</span>o<span class=se>\p</span>kg<span class=se>\m</span>od<span class=se>\g</span>ithub.com<span class=se>\g</span>rpc-ecosystem<span class=se>\g</span>rpc-gateway@v1.9.0<span class=se>\t</span>hird_party<span class=se>\g</span>oogleapis<span class=se>\ \
+</span><span class=se></span>  --proto_path<span class=o>=</span>. <span class=se>\
+</span><span class=se></span>  --grpc-gateway_out<span class=o>=</span>. <span class=se>\
+</span><span class=se></span>  --plugin<span class=o>=</span>protoc-gen-grpc-gateway<span class=o>=</span>C:<span class=se>\U</span>sers<span class=se>\P</span>ayne<span class=se>\g</span>o<span class=se>\b</span>in<span class=se>\p</span>rotoc-gen-grpc-gateway.exe <span class=se>\
+</span><span class=se></span>  ./greet.proto 
+</code></pre></td></tr></table>
+</div>
+</div><p>此时，我们可以得到下面两个<code>.go</code>格式的文件：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/06/22/wHvUzr5OybAtfkS.png alt="通过 grpc-gateway 生成 Go 代码"></p>
+<p>关于反向代理服务器的观点的验证，大家可以从生成的第二个文件中去发现。</p>
+<p>而关于 <a href=https://github.com/grpc-ecosystem/grpc-gateway>gRPC-Gateway</a> 这个插件的使用，最直观的用法，其实应该来自<code>.proto</code>文件：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-plain data-lang=plain>syntax = &#34;proto3&#34;;
+
+// Go里面的包名，必选
+option go_package = &#34;grpc-gateway/hello-word&#34;;
+
+package greet;
+
+// Google的API注解相关的.proto文件，必选
+import &#34;Protos/google/api/annotations.proto&#34;;
+
+service Greeter {
+  rpc SayHello (HelloRequest) returns (HelloReply) {
+      option (google.api.http) = { 
+          post: &#34;/v1/greet/sayHello&#34;
+          body: &#34;*&#34; 
+      };
+  };
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>考虑到博主并不擅长<code>Go</code>这门语言，这里我们就不再对它做进一步的探索啦！事实上，我觉得这个方案非常糟糕，因为只要修改了<code>.proto</code>文件，这个代理服务器就要重新生成，更不用说只支持<code>Go</code>这一显著的缺点啦！</p>
+<h1 id=封装-web-api>
+<a href=#%e5%b0%81%e8%a3%85-web-api class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+封装 Web API
+</h1>
+<p>封装 Web API，这是一个非常朴实无华的方案，博主目前的公司就是采用这种方案，所以，你能想象得到，基本就是在控制器中调用客户端。唯一的弊病在于，这是一个非常低效的工作。当年，博主的前公司，就是风风火火地要这样替换掉 WCF，结果最终还是不了了之。所以说，世间没有银弹，历史不过是一次次地重复上演。下面是一个简单的示例：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>async</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>ActionResult</span><span class=p>&gt;</span> <span class=n>SayHello</span><span class=p>(</span><span class=n>HelloRequestDTO</span> <span class=n>requestDTO</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=kt>var</span> <span class=n>request</span> <span class=p>=</span> <span class=n>requestDTO</span><span class=p>.</span><span class=n>Adapt</span><span class=p>&lt;</span><span class=n>HelloRequest</span><span class=p>&gt;();</span>
+    <span class=kt>var</span> <span class=n>client</span> <span class=p>=</span> <span class=m>_</span><span class=n>serviceProvider</span><span class=p>.</span><span class=n>GetService</span><span class=p>&lt;</span><span class=n>Greeter</span><span class=p>.</span><span class=n>GreeterClient</span><span class=p>&gt;();</span>
+    <span class=kt>var</span> <span class=n>replay</span> <span class=p>=</span> <span class=k>await</span> <span class=n>client</span><span class=p>.</span><span class=n>SayHelloAsync</span><span class=p>(</span><span class=n>request</span><span class=p>);</span>
+    <span class=k>return</span> <span class=k>new</span> <span class=n>JsonResult</span><span class=p>(</span><span class=n>replay</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>而一旦做到这一层，其实我们是把一个未知的问题转化成一个已知的问题，这是数学家最常用的思路。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=kd>var</span> <span class=nx>headers</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Headers</span><span class=p>();</span>
+<span class=nx>headers</span><span class=p>.</span><span class=nx>append</span><span class=p>(</span><span class=s2>&#34;Content-Type&#34;</span><span class=p>,</span> <span class=s2>&#34;application/json&#34;</span><span class=p>);</span>
+
+<span class=kd>var</span> <span class=nx>options</span> <span class=o>=</span> <span class=p>{</span>
+   <span class=nx>method</span><span class=o>:</span> <span class=s1>&#39;POST&#39;</span><span class=p>,</span>
+   <span class=nx>headers</span><span class=o>:</span> <span class=nx>headers</span><span class=p>,</span>
+   <span class=nx>body</span><span class=o>:</span> <span class=nx>JSON</span><span class=p>.</span><span class=nx>stringify</span><span class=p>({</span><span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;长安书小妆&#39;</span><span class=p>}),</span>
+<span class=p>};</span>
+
+<span class=nx>fetch</span><span class=p>(</span><span class=s2>&#34;https://localhost:44372/Greet/SayHello&#34;</span><span class=p>,</span> <span class=nx>options</span><span class=p>)</span>
+   <span class=p>.</span><span class=nx>then</span><span class=p>(</span><span class=nx>response</span> <span class=p>=&gt;</span> <span class=nx>response</span><span class=p>.</span><span class=nx>json</span><span class=p>())</span>
+   <span class=p>.</span><span class=nx>then</span><span class=p>(</span><span class=nx>result</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>result</span><span class=p>))</span>
+   <span class=p>.</span><span class=k>catch</span><span class=p>(</span><span class=nx>error</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>error</span><span class=p>));</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>那么，下一个问题，你打算用 Fetch API 还是 Axios 呢？这个问题就交给前端的朋友啦！因为，我是一个伪全栈工程师(逃。</p>
+<h1 id=编写中间件>
+<a href=#%e7%bc%96%e5%86%99%e4%b8%ad%e9%97%b4%e4%bb%b6 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+编写中间件
+</h1>
+<p>其实，读到这里，你就会明白，这才是我真正要分享的内容，而此前种种，不过是我为了丰富这个话题而抛出的它山之石。既然觉得手写 Web API 太麻烦，那么我们能不能用一种新的思路来解决这个问题呢？这里说一下博主的思路，用户传入 JSON，经过中间件反序列化为<code>.proto</code>对应的类型，我们将这个类型传递给 gRPC 的客户端作为请求参数，等拿到结果以后，我们再将它序列化为 JSON 即可。这样，我们就实现了将一个 gRPC 服务转化为 Web API 的想法。下面是具体的代码，其实这个代码并不复杂，我最初打算用反射来解决，可惜 gRPC 生成的这个客户端方法重载实在太多啦，所以，我最后决定用下面的这种方式。当然啦，缺点就和 gRPC-Gateway 一样，每一个接口都要单独写，好处大概是代码量减少了好多。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>// 定义扩展方法：AddGrpcGateway
+</span><span class=c1></span><span class=k>public</span> <span class=k>static</span> <span class=k>void</span> <span class=n>AddGrpcGateway</span><span class=p>&lt;</span><span class=n>TClient</span><span class=p>,</span><span class=n>TRequest</span><span class=p>,</span><span class=n>TResponse</span><span class=p>&gt;(</span>
+  <span class=k>this</span> <span class=n>IApplicationBuilder</span> <span class=n>app</span><span class=p>,</span> 
+  <span class=kt>string</span> <span class=n>route</span><span class=p>,</span> 
+  <span class=n>Func</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=n>TRequest</span><span class=p>&gt;</span> <span class=n>requestBuilder</span><span class=p>,</span> 
+  <span class=n>Func</span><span class=p>&lt;</span><span class=n>TClient</span><span class=p>,</span><span class=n>TRequest</span><span class=p>,</span><span class=n>TResponse</span><span class=p>&gt;</span> <span class=n>responseBuilder</span>
+<span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>app</span><span class=p>.</span><span class=n>UseEndpoints</span><span class=p>(</span><span class=n>endpoints</span> <span class=p>=&gt;</span> <span class=n>endpoints</span><span class=p>.</span><span class=n>MapPost</span><span class=p>(</span><span class=n>route</span><span class=p>,</span> <span class=k>async</span> <span class=n>context</span> <span class=p>=&gt;</span>
+    <span class=p>{</span>
+        <span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>streamReader</span> <span class=p>=</span> <span class=k>new</span> <span class=n>StreamReader</span><span class=p>(</span><span class=n>context</span><span class=p>.</span><span class=n>Request</span><span class=p>.</span><span class=n>Body</span><span class=p>))</span>
+        <span class=p>{</span>
+            <span class=kt>var</span> <span class=n>client</span> <span class=p>=</span> <span class=p>(</span><span class=n>TClient</span><span class=p>)</span><span class=n>app</span><span class=p>.</span><span class=n>ApplicationServices</span><span class=p>.</span><span class=n>GetService</span><span class=p>(</span><span class=k>typeof</span><span class=p>(</span><span class=n>TClient</span><span class=p>));</span>
+
+            <span class=kt>var</span> <span class=n>payload</span> <span class=p>=</span> <span class=k>await</span> <span class=n>streamReader</span><span class=p>.</span><span class=n>ReadToEndAsync</span><span class=p>();</span>
+            <span class=kt>var</span> <span class=n>request</span> <span class=p>=</span> <span class=n>requestBuilder</span><span class=p>(</span><span class=n>payload</span><span class=p>);</span>
+
+            <span class=kt>var</span> <span class=n>reply</span> <span class=p>=</span> <span class=n>responseBuilder</span><span class=p>(</span><span class=n>client</span><span class=p>,</span> <span class=n>request</span><span class=p>);</span>
+            <span class=kt>var</span> <span class=n>response</span> <span class=p>=</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>SerializeObject</span><span class=p>(</span><span class=n>reply</span><span class=p>);</span>
+
+            <span class=k>await</span> <span class=n>context</span><span class=p>.</span><span class=n>Response</span><span class=p>.</span><span class=n>Body</span><span class=p>.</span><span class=n>WriteAsync</span><span class=p>(</span><span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>response</span><span class=p>));</span>
+            <span class=n>context</span><span class=p>.</span><span class=n>Response</span><span class=p>.</span><span class=n>StatusCode</span> <span class=p>=</span> <span class=m>200</span><span class=p>;</span>
+            <span class=n>context</span><span class=p>.</span><span class=n>Response</span><span class=p>.</span><span class=n>ContentType</span> <span class=p>=</span> <span class=s>&#34;application/json&#34;</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}));</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>从代码中可以看出，这个方案依赖 gRPC 的客户端代码，同时需要读取 HTTP 的请求体，所以，我们还需要下面的代码作为辅助：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>void</span> <span class=n>ConfigureServices</span><span class=p>(</span><span class=n>IServiceCollection</span> <span class=n>services</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>services</span><span class=p>.</span><span class=n>Configure</span><span class=p>&lt;</span><span class=n>KestrelServerOptions</span><span class=p>&gt;(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>AllowSynchronousIO</span> <span class=p>=</span> <span class=k>true</span><span class=p>);</span>
+    <span class=n>services</span><span class=p>.</span><span class=n>Configure</span><span class=p>&lt;</span><span class=n>IISServerOptions</span><span class=p>&gt;(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>AllowSynchronousIO</span> <span class=p>=</span> <span class=k>true</span><span class=p>);</span>
+    <span class=n>services</span><span class=p>.</span><span class=n>AddGrpcClient</span><span class=p>&lt;</span><span class=n>Greeter</span><span class=p>.</span><span class=n>GreeterClient</span><span class=p>&gt;(</span><span class=n>opt</span> <span class=p>=&gt;</span>
+    <span class=p>{</span>
+        <span class=n>opt</span><span class=p>.</span><span class=n>Address</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Uri</span><span class=p>(</span><span class=s>&#34;https://localhost:8001&#34;</span><span class=p>);</span>
+    <span class=p>});</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>接下来，我们通过中间件配置一个路由即可：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>// 建议放在 UseEndpoints() 方法下面
+</span><span class=c1></span><span class=n>app</span><span class=p>.</span><span class=n>AddGrpcGateway</span><span class=p>&lt;</span><span class=n>Greeter</span><span class=p>.</span><span class=n>GreeterClient</span><span class=p>,</span> <span class=n>HelloRequest</span><span class=p>,</span> <span class=n>HelloReply</span><span class=p>&gt;(</span>
+    <span class=n>route</span><span class=p>:</span> <span class=s>&#34;greet/SayHello&#34;</span><span class=p>,</span>
+    <span class=n>requestBuilder</span><span class=p>:</span> <span class=n>json</span> <span class=p>=&gt;</span> <span class=k>new</span> <span class=n>MessageParser</span><span class=p>&lt;</span><span class=n>HelloRequest</span><span class=p>&gt;(()</span> <span class=p>=&gt;</span> <span class=k>new</span> <span class=n>HelloRequest</span><span class=p>()).</span><span class=n>ParseJson</span><span class=p>(</span><span class=n>json</span><span class=p>),</span>
+    <span class=n>responseBuilder</span><span class=p>:</span> <span class=p>(</span><span class=n>client</span><span class=p>,</span> <span class=n>request</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=n>client</span><span class=p>.</span><span class=n>SayHelloAsync</span><span class=p>(</span><span class=n>request</span><span class=p>).</span><span class=n>ResponseAsync</span><span class=p>.</span><span class=n>Result</span>
+<span class=p>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>为了证明这个中间件真的有用，我们用 <a href=https://www.apifox.cn/>Apifox</a> 或者 <a href=https://www.postman.com/downloads/>Postman</a> 测试一下看看。</p>
+<p><img loading=lazy src=https://i.loli.net/2021/06/21/hEmSVqOCy9tBbdv.png alt="自定义中间件实现 gRPC 转 API 效果"></p>
+<p>此时，可以看到，这就真的和调用一个 Web API 一样，我们完全意识不到，这是一个 gRPC 服务。你觉得，这样子算是达到目的了吗？</p>
+<h1 id=本文小结>
+<a href=#%e6%9c%ac%e6%96%87%e5%b0%8f%e7%bb%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+本文小结
+</h1>
+<p>其实，本文完全是临时想起来决定要写的一篇文章，起因就是看到了项目中有人在手动地封装 gRPC 服务为 RESTful 服务，当时就在想有没有一种方案，可以让这个过程稍微好一点点。所以，你可以认为，我写这篇博客的初衷，原来就是为了炫耀我写的那几行代码。不过，人到了一定的阶段以后，不管是写作还是思考，都似乎越来越喜欢某种框架结构，这种体验就有点像是上学时候写论文一样，虽然你明确地知道自己在做什么，可当你真正要把你的思路或者过程复述出来的时候，你还是需要有一个“文献综述”的环节。我个人以为，这是一种由外及内的认知方法，通过内外世界的对比来寻找自我提升的突破口。对于本文而言，不管是 <a href=https://github.com/grpc-ecosystem/grpc-gateway>gRPC-Web</a> 还是 <a href=https://github.com/grpc-ecosystem/grpc-gateway>gRPC-Gateway</a>，从本质上来讲，它们都是 Protocol Buffers 工具链中的插件，在这个过程中发现了平时使用 gRPC 过程中被隐藏了的一部分细节，这些细节如果能和开发工具完美结合的话，就可以极大地提升我们在 gRPC 方面的开发效率，譬如 gRPC-Web 在 .NET 中的实现就利用了 MSBuild 的自定义编译任务，这就让底层的 Protocol Buffers 工具链、前端构建工具等对使用者来说是无感知的，从开发体验上就给人心旷神怡的感觉。我个人还是倾向于结合 ASP.NET Core 或者容器级别的 Envoy 来解决这个问题，我觉得应该还有更好的方案，希望大家可以在评论区写下你的想法。好啦，这篇博客就先写到这里，谢谢大家！</p>
+<h1 id=更新说明>
+<a href=#%e6%9b%b4%e6%96%b0%e8%af%b4%e6%98%8e class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+更新说明
+</h1>
+<p>截至 2021 年 6 月 25 日，基于中间件的方案已支持以下特性：自动注入客户端、自动配置路由。详情请参考：<a href=https://hub.fastgit.org/Regularly-Archive/2021/tree/master/src/GRPC.Logging/Grpc.Gateway>https://hub.fastgit.org/Regularly-Archive/2021/tree/master/src/GRPC.Logging/Grpc.Gateway</a>。在此方案下，只需要 4 行代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>void</span> <span class=n>ConfigureServices</span><span class=p>(</span><span class=n>IServiceCollection</span> <span class=n>services</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>services</span><span class=p>.</span><span class=n>Configure</span><span class=p>&lt;</span><span class=n>KestrelServerOptions</span><span class=p>&gt;(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>AllowSynchronousIO</span> <span class=p>=</span> <span class=k>true</span><span class=p>);</span>
+    <span class=n>services</span><span class=p>.</span><span class=n>Configure</span><span class=p>&lt;</span><span class=n>IISServerOptions</span><span class=p>&gt;(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>AllowSynchronousIO</span> <span class=p>=</span> <span class=k>true</span><span class=p>);</span>
+    <span class=n>services</span><span class=p>.</span><span class=n>AddGrpcClients</span><span class=p>(</span><span class=n>opt</span> <span class=p>=&gt;</span> <span class=n>opt</span><span class=p>.</span><span class=n>Address</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Uri</span><span class=p>(</span><span class=s>&#34;https://localhost:8001&#34;</span><span class=p>));</span>
+<span class=p>}</span>
+
+<span class=k>public</span> <span class=k>void</span> <span class=n>Configure</span><span class=p>(</span><span class=n>IApplicationBuilder</span> <span class=n>app</span><span class=p>,</span> <span class=n>IWebHostEnvironment</span> <span class=n>env</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>// ...     
+</span><span class=c1></span>    <span class=n>app</span><span class=p>.</span><span class=n>AddGrpcGateway</span><span class=p>();</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>以上！</p>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/post/efcore-%E5%AE%9E%E4%BD%93%E5%91%BD%E5%90%8D%E7%BA%A6%E5%AE%9A%E5%BA%93efcore.namingconventions/ title="Previous post (older)">
+<span>Previous</span>
+EFCore 实体命名约定库：EFCore.NamingConventions
+</a>
+<a rel=next href=/post/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/ title="Next post (newer)">
+<span>Next</span>
+ASP.NET Core 搭载 Envoy 实现微服务的反向代理
+</a>
+</nav>
+</div>
+<div class=container>
+<script src=https://giscus.app/client.js data-repo=WingLim/hugo-tania data-repo-id="MDEwOlJlcG9zaXRvcnkzMTYyNjQzMDc=" data-category=Comments data-category-id=DIC_kwDOEtnPc84B_WKP data-mapping=pathname data-reactions-enabled=1 data-emit-metadata=0 data-theme=light crossorigin=anonymous async></script>
+<script>function setGiscusTeheme(b){let a=document.querySelector('.giscus iframe');a&&a.contentWindow.postMessage({giscus:{setConfig:{theme:b}}},'https://giscus.app')}addEventListener('message',a=>{if(a.origin!=='https://giscus.app')return;setGiscusTeheme(document.documentElement.dataset.userColorScheme)}),window.addEventListener('onColorSchemeChange',a=>{setGiscusTeheme(a.detail)})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+</nav>
+</section>
+<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

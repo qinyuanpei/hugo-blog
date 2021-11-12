@@ -1,0 +1,303 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<title>在 Unity3D 中使用 uGUI 实现 3D 旋转特效 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="在 Unity3D 中使用 uGUI 实现 3D 旋转特效 | 元培的部落格">
+<meta itemprop=name content="在 Unity3D 中使用 uGUI 实现 3D 旋转特效 | 元培的部落格">
+<meta name=twitter:title content="在 Unity3D 中使用 uGUI 实现 3D 旋转特效 | 元培的部落格">
+<meta name=application-name content="在 Unity3D 中使用 uGUI 实现 3D 旋转特效 | 元培的部落格">
+<meta name=description content="好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：;其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧;所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦">
+<meta name=twitter:description content="好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：;其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧;所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦 ">
+<meta itemprop=description content=" 好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：;其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧;所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦 ">
+<meta property="og:description" content=" 好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：;其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧;所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦 ">
+<meta property="og:type" content="article">
+<meta property="article:publisher" content="Hugo Tania">
+<meta property="og:article:published_time" content="2016-07-10T14:29:33Z">
+<meta property="article:published_time" content="2016-07-10T14:29:33Z">
+<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"在 Unity3D 中使用 uGUI 实现 3D 旋转特效","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2016-07-10","description":"好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：;其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧;所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦","wordCount":394,"mainEntityOfPage":"True","dateModified":"2016-07-10","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/articles/>Articles</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>在 Unity3D 中使用 uGUI 实现 3D 旋转特效</h1>
+<div class=post-meta>
+<div>
+By Hugo Tania | <time>July 10, 2016</time>
+| 2 minutes
+</div>
+<div class=tags>
+<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>游戏开发</a>
+<a href=/tags/ugui/>uGUI</a>
+<a href=/tags/unity3d/>Unity3D</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>各位朋友大家好，欢迎大家关注我的博客，我是 Payne，我的博客地址是<a href=http://qinyuanpei.com>http://qinyuanpei.com</a>。最近一位朋友问我，如何在 Unity 引擎中实现类似《英雄联盟》中选择皮肤时的 3D 滚动视图效果，虽然我非常不喜欢这个游戏，可是大学四年在宿舍里被周围同学们耳濡目染，对这个游戏中常见英雄的口头禅还是颇为熟悉的，曾经在周围同学的“硝烟”和“噪杂”中熬夜编程，此时此刻想起来大概是最能让我怀念和骄傲的记忆了。剑圣说“你的剑就是我的剑”，伊泽瑞尔说“是时候表演真正的技术了”，杰斯说“为了更美好的明天而战”……或许曾经的某一瞬间，我们曾经有过类似的让你我疯狂着迷的人生信条，可是不管怎样，我希望我们可以将这些永远地铭刻在心里，如同心中栽种下一棵红莲，在黑夜中静静地等待开放，这样当此去经年亦或时过境迁的时候，我们不会说是时光抹去了你我年轻的棱角，因为我相信真正的棱角会因为磨砺而变得更加明亮，绝对不会因为此刻的苟且就变的麻木甚至迷茫。好了，喝完我这碗心灵鸡汤，下面我们来一起学习如何在 Unity3D 中使用 uGUI 实现 3D 滚动视图效果。</p>
+<h1 id=需求分析>
+<a href=#%e9%9c%80%e6%b1%82%e5%88%86%e6%9e%90 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+需求分析
+</h1>
+<p>首先，我们先来对这个需求进行分析，从这篇文章的题目我们获得的一个关键信息是，希望通过某种方式实现 3D 滚动特效。因此我们首先要解决的一个问题是，我们应该采用 2D 方式来实现还是采用 3D 方式来实现这种界面效果。我们假定这里希望实现的效果如下图所示，我们可以注意到从这张图片的设计初衷来看，它更像是一种介绍产品特性的文案设计，我们这里仅仅是想通过这张图告诉大家，我们需要实现一个什么样的效果。软件开发过程中最大的成本在我看来主要来自沟通。因为事实上对普通用户而言技术并不重要，重要的是能否实现用户想要的功能，可是大部分情形是用户并不知道自己想要什么，除非你将实际的产品放到用户眼前甚至手中。好了，在对需求有了一个基本的印象以后，我们来思考如何实现这个需求。</p>
+<p>具体来讲，我们有两种思路：</p>
+<ul>
+<li>其一是采用真实的 3D 来制作，即我们通过一个圆柱体或者是多棱柱将图片"粘贴"在不同的面上，通过对圆柱体或者多棱柱进行旋转，然后以真实的 3D 的形式来呈现给用户。</li>
+<li>其二是采用伪 3D 来制作，即我们通过在 2D 平面内对图片的层次进行合理化调整实现伪 3D 效果，配合插值、缩放等技巧来实现 2D 平面上的旋转，然后给用户一种视觉上的 3D 效果。</li>
+</ul>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fziy4xe3bqj20zk0m8grl.jpg alt=需求设定></p>
+<h1 id=核心原理>
+<a href=#%e6%a0%b8%e5%bf%83%e5%8e%9f%e7%90%86 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+核心原理
+</h1>
+<p>在这里我们选择采用伪 3D 来制作，为什么选择这种方案呢？因为它简单啊，哈哈。好了，我们现在将实际的需求进行抽象，我们会发现什么呢？我们注意到这本质上是一个曲线问题，我们可以将每个图片的中心用平滑的曲线连接起来，然后我们就得到了一条抛物线或者是圆锥曲线或者是贝塞尔曲线，在这里我们将其理解为什么样的曲线并不重要，因为这最终影响到的是曲线的平滑度问题，即细节上的调整。沿着这个思路，我们就意识到，这是一个根据曲线平均分布坐标点的过程，假设我们这里 5 张图片，并且曲线在中间位置可以找到一条垂直的对称轴，那么我们只需要将这 5 个点在水平方向上平均分布即可，事实上根据人类视觉的特点，这个距离应该是越来越小的，就像我们看到的一排并列的树木，越远的地方它们的间距会越来越小，而事实上它们的间距是一样的，根据这个特性我们可以表现出这种视觉上的纵深的感觉，在实际项目中它取决于美术设定和策划设定，我们这里就从最简单的情况开始分析。</p>
+<p>好了，在解决了精灵放置的这个问题以后，我们接下来要解决的是什么呢？答案是精灵的层级，因为层级能够帮助我们营造一种视觉上的层次感和立体感，比如在跑酷游戏中我们常常使用视差滚动这种技术来表现 3D 效果，以及传统的斜 45 度瓦片地图来实现 2.5D 效果都是使用 2D 来模拟 3D 效果的经典案例。所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦。</p>
+<h1 id=具体实现>
+<a href=#%e5%85%b7%e4%bd%93%e5%ae%9e%e7%8e%b0 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+具体实现
+</h1>
+<p>首先我们来搭建一个基本的场景，我们这里将一切浮华褪尽，我们可以看到在场景中有两个按钮，它们可以让我们当前选中的卡片，而界面底部的标签会显示我们当前选择的角色名称。虽然在这里采用触屏滑动的效果更好，可我们这里主要的目的是为了说明如何实现我们的思路，当引入这部分功能的设计以后，会增加大家在整体理解上的难度，所以我们这里以快速实现功能为主。注意到场景中的卡片此时都是相当“任性”地放置在界面上，这是因为我们稍后会采用算法计算每个卡片的实际位置，所以在这里完全可以忽略其“美观性”。</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fzixyfcuz1j20i90e7dld.jpg alt=场景展示></p>
+<p>这里，我们设定场景的大小为 800x460，那么在这种情况下，我们可以按照下面图中所示的曲线轨迹来构造一条曲线，考虑到椭圆方程比贝塞尔曲线更加简单易用，所以我们这里选择椭圆方程来作为场景中这些卡片排列的曲线方程。</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fzixbd5ajtj20kz0gtk0w.jpg alt=曲线方程></p>
+<p>此时以屏幕中心为原点构建平面直角坐标系，则这个椭圆是一个以长轴 2A=400、短轴 2B=640、中心在(0,320)上的椭圆。根据这个原理，我们可以将其代码实现分为三个步骤来实现。首先，我们将场景中的所有卡片存储在 GameObject 数组中，这里我们这里规定卡片的数目必须为奇数，然后我们从左到右依次计算每个卡片的位置和深度，这样就可以让卡片按照我们期望的方式进行排列啦。下面一起来看代码如何实现：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>//初始化精灵数组
+</span><span class=c1></span><span class=kt>int</span> <span class=n>childCount</span> <span class=p>=</span> <span class=n>transform</span><span class=p>.</span><span class=n>childCount</span><span class=p>;</span>
+<span class=c1>//计算两侧精灵数目
+</span><span class=c1></span><span class=n>halfSize</span> <span class=p>=</span> <span class=p>(</span><span class=n>childCount</span><span class=p>-</span><span class=m>1</span><span class=p>)</span> <span class=p>/</span> <span class=m>2</span><span class=p>;</span>
+<span class=c1>//初始化精灵
+</span><span class=c1></span><span class=n>sprites</span> <span class=p>=</span> <span class=k>new</span> <span class=n>GameObject</span><span class=p>[</span><span class=n>childCount</span><span class=p>];</span>
+<span class=k>for</span><span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>childCount</span><span class=p>;</span> <span class=n>i</span><span class=p>++)</span>
+<span class=p>{</span>
+   <span class=n>sprites</span><span class=p>[</span><span class=n>i</span><span class=p>]</span> <span class=p>=</span> <span class=n>transform</span><span class=p>.</span><span class=n>GetChild</span><span class=p>(</span><span class=n>i</span><span class=p>).</span><span class=n>gameObject</span><span class=p>;</span>
+   <span class=n>SetPosition</span><span class=p>(</span><span class=n>i</span><span class=p>);</span>
+   <span class=n>SetDeepin</span><span class=p>(</span><span class=n>i</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里 sprites 显然是一个 GameObject[],因为卡片的数目为奇数个，所以 halfSize 是指中间位置卡片的索引，这里需要两个辅助方法，SetPosition 和 SetDeepin，从名字我们就知道这两个方法分别是设置卡片位置和设置卡片深度。当我们提到代码注释的时候，好多人以代码自注释为理解逃避注释，孰不知这建立在命名规范的基础上，如果你连这点基本的要求都做不到，我建议你还是多写点注释、少写点代码。好了，这两个方法的实现细节如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>/// &lt;summary&gt;
+</span><span class=c1>/// 设置精灵位置
+</span><span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span><span class=k>private</span> <span class=k>void</span> <span class=n>SetPosition</span><span class=p>(</span><span class=kt>int</span> <span class=n>index</span><span class=p>)</span>
+<span class=p>{</span>
+   <span class=c1>//计算第index个精灵的角度
+</span><span class=c1></span>   <span class=kt>float</span> <span class=n>angle</span> <span class=p>=</span> <span class=m>0.0f</span><span class=p>;</span>
+   <span class=k>if</span> <span class=p>(</span><span class=n>index</span> <span class=p>&lt;</span> <span class=n>halfSize</span><span class=p>)</span> <span class=p>{</span>
+      <span class=n>angle</span> <span class=p>=</span> <span class=n>startAngle</span> <span class=p>-</span> <span class=p>(</span><span class=n>halfSize</span> <span class=p>-</span> <span class=n>index</span><span class=p>)</span> <span class=p>*</span> <span class=n>DeltaAngle</span><span class=p>;</span>
+   <span class=p>}</span> <span class=k>else</span> <span class=k>if</span> <span class=p>(</span><span class=n>index</span> <span class=p>&gt;</span> <span class=n>halfSize</span><span class=p>)</span> <span class=p>{</span>
+      <span class=n>angle</span> <span class=p>=</span> <span class=n>startAngle</span> <span class=p>+</span> <span class=p>(</span><span class=n>index</span> <span class=p>-</span> <span class=n>halfSize</span><span class=p>)</span> <span class=p>*</span> <span class=n>DeltaAngle</span><span class=p>;</span>
+   <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+      <span class=n>angle</span> <span class=p>=</span> <span class=n>startAngle</span><span class=p>;</span>
+   <span class=p>}</span>
+
+   <span class=c1>//计算第index个精灵的坐标
+</span><span class=c1></span>   <span class=kt>float</span> <span class=n>x</span> <span class=p>=</span> <span class=n>A</span><span class=p>*</span> <span class=n>Mathf</span><span class=p>.</span><span class=n>Cos</span><span class=p>((</span><span class=n>angle</span><span class=p>/</span><span class=m>180</span><span class=p>)</span> <span class=p>*</span> <span class=n>Mathf</span><span class=p>.</span><span class=n>PI</span><span class=p>)</span> <span class=p>+</span> <span class=n>Center</span><span class=p>.</span><span class=n>x</span><span class=p>;</span>
+   <span class=kt>float</span> <span class=n>y</span> <span class=p>=</span> <span class=n>B</span><span class=p>*</span> <span class=n>Mathf</span><span class=p>.</span><span class=n>Sin</span><span class=p>((</span><span class=n>angle</span><span class=p>/</span><span class=m>180</span><span class=p>)</span> <span class=p>*</span> <span class=n>Mathf</span><span class=p>.</span><span class=n>PI</span><span class=p>)</span> <span class=p>+</span> <span class=n>Center</span><span class=p>.</span><span class=n>y</span><span class=p>;</span>
+   <span class=n>Vector3</span> <span class=n>v3</span> <span class=p>=</span> <span class=n>Camera</span><span class=p>.</span><span class=n>main</span><span class=p>.</span><span class=n>WorldToScreenPoint</span><span class=p>(</span><span class=k>new</span> <span class=n>Vector3</span><span class=p>(</span><span class=n>x</span><span class=p>,</span><span class=n>y</span><span class=p>,</span><span class=m>0</span><span class=p>));</span>
+   <span class=n>v3</span> <span class=p>=</span> <span class=n>Camera</span><span class=p>.</span><span class=n>main</span><span class=p>.</span><span class=n>ScreenToWorldPoint</span><span class=p>(</span><span class=n>v3</span><span class=p>);</span>
+   <span class=n>Vector2</span> <span class=n>v2</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Vector2</span><span class=p>(</span><span class=n>v3</span><span class=p>.</span><span class=n>x</span><span class=p>,</span><span class=n>v3</span><span class=p>.</span><span class=n>y</span><span class=p>);</span>
+   <span class=n>sprites</span><span class=p>[</span><span class=n>index</span><span class=p>].</span><span class=n>GetComponent</span><span class=p>&lt;</span><span class=n>RectTransform</span><span class=p>&gt;().</span><span class=n>anchoredPosition</span> <span class=p>=</span> <span class=n>v2</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以注意到，在这里我们根据精灵索引 index 和两侧精灵数目 halfSize 的关系，按照 DeltaAngle 这个增量来计算每个精灵实际的角度，在此基础上结合椭圆的参数方程，我们可以非常容易地计算出每个精灵实际的位置，这样就可以保证精灵中心都在椭圆曲线上。好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>/// &lt;summary&gt;
+</span><span class=c1>/// 设置精灵深度
+</span><span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span><span class=k>private</span> <span class=k>void</span> <span class=n>SetDeepin</span><span class=p>(</span><span class=kt>int</span> <span class=n>index</span><span class=p>)</span>
+<span class=p>{</span>
+   <span class=c1>//计算精灵深度
+</span><span class=c1></span>   <span class=kt>int</span> <span class=n>deepin</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span>
+   <span class=k>if</span><span class=p>(</span><span class=n>index</span> <span class=p>&lt;</span> <span class=n>halfSize</span><span class=p>)</span> <span class=p>{</span>
+      <span class=n>deepin</span> <span class=p>=</span> <span class=n>index</span><span class=p>;</span>
+   <span class=p>}</span> <span class=k>else</span> <span class=k>if</span><span class=p>(</span><span class=n>index</span> <span class=p>&gt;</span> <span class=n>halfSize</span><span class=p>)</span> <span class=p>{</span>
+      <span class=n>deepin</span> <span class=p>=</span> <span class=n>sprites</span><span class=p>.</span><span class=n>Length</span> <span class=p>-</span> <span class=p>(</span><span class=m>1</span> <span class=p>+</span> <span class=n>index</span><span class=p>);</span>
+   <span class=p>}</span> <span class=k>else</span><span class=p>{</span>
+      <span class=n>deepin</span> <span class=p>=</span> <span class=n>halfSize</span><span class=p>;</span>
+   <span class=p>}</span>
+   <span class=n>sprites</span><span class=p>[</span><span class=n>index</span><span class=p>].</span><span class=n>GetComponent</span><span class=p>&lt;</span><span class=n>RectTransform</span><span class=p>&gt;().</span><span class=n>SetSiblingIndex</span><span class=p>(</span><span class=n>deepin</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>事实上，我在这里并不清楚 SetSiblingIndex 这个方法的真正作用:)，可是它的确能够实现我们想要的功能。有时候在维护一个古老的项目的时候，可能你会在代码中看到各种有趣的注释，而这些注释中有相当一些都充满了一种“形而上学”的味道在里面，我们不知道这个世界为什么会是这样，可是看起来它们都运行地非常良好。或许这就是这个世界的奇妙之处，无论我们是否想要尝试打破这些规则，这个世界上总是有些我们难以理解的东西存在，可是存在即合理，不是吗？理性思维的缺陷在于想要为一切问题找到一个答案，所以这次苏格拉没有底，我们就感性一次又何妨呢，这个问题就让它没有答案吧！</p>
+<p>现在，显然我们需要解决一个新的问题，就像上帝在我们关上一扇门的同时，会为我们开启一扇窗口。理论上任何问题都可以通过引入一个中间层来解决，而引入中间层的同时毫无疑问地引入了一个新的问题。在这里我们已经完成了让所有精灵按照椭圆曲线进行排布以及精灵的层级关系这两个问题，可是我们这是一个静态的过程啊，我们需要的是让它能够滚动起来，所以怎么解决这个问题呢？我们可以注意到的一点是，精灵的这种“滚动”效果，实际上是将数组中的第一个元素 sprites[0]或者最后一个元素 sprites[sprites.Length-1]，依次和数组中的第 i 个元素进行交换。比如精灵整体向右侧“滚动”，我们只需要从第一个元素开始依次和最后一个元素进行交换就可以啦，所以这里的实现实际上是：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>/// &lt;summary&gt;
+</span><span class=c1>/// 向后翻页
+</span><span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span><span class=k>public</span> <span class=k>void</span> <span class=n>OnNext</span><span class=p>()</span>
+<span class=p>{</span>
+   <span class=kt>int</span> <span class=n>length</span> <span class=p>=</span> <span class=n>sprites</span><span class=p>.</span><span class=n>Length</span><span class=p>;</span>
+   <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>length</span><span class=p>;</span> <span class=n>i</span><span class=p>++)</span>
+   <span class=p>{</span>
+      <span class=n>GameObject</span> <span class=n>temp</span> <span class=p>=</span> <span class=n>sprites</span><span class=p>[</span><span class=n>i</span><span class=p>];</span>
+      <span class=n>sprites</span><span class=p>[</span><span class=n>i</span><span class=p>]</span> <span class=p>=</span> <span class=n>sprites</span><span class=p>[</span><span class=n>length</span> <span class=p>-</span> <span class=m>1</span><span class=p>];</span>
+      <span class=n>sprites</span><span class=p>[</span><span class=n>length</span><span class=p>-</span><span class=m>1</span><span class=p>]</span> <span class=p>=</span> <span class=n>temp</span><span class=p>;</span>
+   <span class=p>}</span>
+
+   <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>length</span><span class=p>;</span> <span class=n>i</span><span class=p>++)</span>
+   <span class=p>{</span>
+      <span class=n>SetPosition</span><span class=p>(</span><span class=n>i</span><span class=p>);</span>
+      <span class=n>SetDeepin</span><span class=p>(</span><span class=n>i</span><span class=p>);</span>
+   <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>我们在对数组内的元素重新组织后，需要重新计算每个精灵的位置和深度。我这里在思考的一个问题是：精灵的位置和深度实际上是确定的，所以我们可以考虑将它们存储起来“复用”，这样可以减少每次的重复计算。其实，代码的优化和重构是一个需要时间来酝酿的过程，没有人能够在写代码的时候，就可以意识到代码中的瑕疵，而这种发现问题的眼光通常需要长时间的培养，这是我们之所以提倡不要过早优化的原因，除非你能够快速地找到代码中的优化点。好了，现在采用类似的思路，我们可以实现向前翻页的逻辑啦，这里的代码非常简单不再赘述。</p>
+<p>好了，现在我们可以看看到目前为止我们实现了一个怎样的功能吧！</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fzix8dwz8rg20l90gpb29.jpg alt=效果展示></p>
+<p>其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧！我认识的一位朋友使用 uGUI 中原生控件 ScrollRect 实现了类似的功能，感觉她还是非常厉害的啊，果然我不再从事 Unity 开发以后，我在这块的技术完全跟不上整个技术圈的节奏啊。</p>
+<h1 id=小结>
+<a href=#%e5%b0%8f%e7%bb%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+小结
+</h1>
+<p>本文介绍了一种基于曲线方程来构建伪 3D 效果的思路，主要借助椭圆的参数方程来计算精灵位置，使其实现按照椭圆曲线进行排布的效果，在此基础上配合层级调整、插值、缩放等技巧，在一定程度上可以实现 2D 平面内的伪 3D 旋转效果。因为博主身患拖延症晚期，所以这篇文章在拖延了很久以后，终于成功的成为了一个没有填完的坑，不过我相信掌握原理比获取代码更为重要，所以这篇文章更多的是希望能给大家提供相关思路，博主在这篇文章中没有实现的功能，各位读者有兴趣的话可以考虑自行实现，写完这篇文章表示心好累，好了，就这样吧,各位晚安！</p>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/post/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E5%AE%9E%E7%8E%B0get%E5%92%8Cpost/ title="Previous post (older)">
+<span>Previous</span>
+使用 C#开发 HTTP 服务器系列之实现 Get 和 Post
+</a>
+<a rel=next href=/post/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E6%94%AF%E6%8C%81https/ title="Next post (newer)">
+<span>Next</span>
+使用 C#开发 HTTP 服务器之支持 HTTPS
+</a>
+</nav>
+</div>
+<div class=container>
+<script src=https://giscus.app/client.js data-repo=WingLim/hugo-tania data-repo-id="MDEwOlJlcG9zaXRvcnkzMTYyNjQzMDc=" data-category=Comments data-category-id=DIC_kwDOEtnPc84B_WKP data-mapping=pathname data-reactions-enabled=1 data-emit-metadata=0 data-theme=light crossorigin=anonymous async></script>
+<script>function setGiscusTeheme(b){let a=document.querySelector('.giscus iframe');a&&a.contentWindow.postMessage({giscus:{setConfig:{theme:b}}},'https://giscus.app')}addEventListener('message',a=>{if(a.origin!=='https://giscus.app')return;setGiscusTeheme(document.documentElement.dataset.userColorScheme)}),window.addEventListener('onColorSchemeChange',a=>{setGiscusTeheme(a.detail)})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+</nav>
+</section>
+<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

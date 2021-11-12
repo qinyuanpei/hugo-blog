@@ -20,7 +20,7 @@
 <meta property="article:published_time" content="2021-06-07T15:19:11Z">
 <script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"ASP.NET Core gRPC 集成 Polly 实现优雅重试","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2021-06-07","description":"","wordCount":978,"mainEntityOfPage":"True","dateModified":"2021-06-07","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+<link rel=stylesheet href=/sass/main.min.7648d501c177b83451d6b38aafcb00921e8784a375d3290fd6d1866f5271204b.css>
 </head>
 <script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
 <body class=dark>
@@ -33,7 +33,9 @@
 </a>
 </div>
 <div class=flex>
-<a href=/articles/>Articles</a>
+<a href=/categories>分类</a>
+<a href=/articles/>文章</a>
+<a href=/tags>标签</a>
 <button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
 </button>
 </div>
@@ -631,15 +633,33 @@ By Hugo Tania | <time>June 07, 2021</time>
 </h1>
 <p>写完以后，突然发现这一篇的信息量有点爆炸，尤其是<code>CallInvoker</code>这一部分，需要花点时间去阅读 <a href=https://github.com/grpc/grpc-dotnet>gRPC</a> 的源代码。可对于博主而言，其实更加享受的是，探索 <code>gRPC</code> 重试方案的这个过程。起初，因为对拦截器更熟悉一点，所以，我最先想到的是基于拦截器的重试方案。经过博主一番验证以后，发现这是一个有缺陷的方案。这时候，我意外发现，官方提供了重试策略，可这个重试策略对于使用者来说是一个黑盒子。再后来，发现可以在 HttpClient 上做一点文章，虽然它针对的是“<strong>传输层</strong>”这个阶段。直到从网上查资料，意识到可以重写<code>CallInvoker</code>这个抽象类，这个时候终于找到了最完美的方案。所以，通过这个过程，大家可以发现，我这篇博客的写作过程，其实与我思考过程有着明显的不同。思考的过程中带入“<strong>先入为主</strong>”的意识，这让我的思考过程走了不少的弯路，而写作过程则是一个由浅入深、由表及里的顺序。也许，下一次遇到类似的问题，我会先了解一下官方有没有提供标准方案，这是我在写完这篇博客以后最大的一个感悟。好了，这篇博客就先写到这里啦，如果大家对文中的内容由意见或者建议，欢迎大家在评论区给我留言，谢谢大家！</p>
 </div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
 </div>
 <div class=container>
 <nav class="flex container suggested">
-<a rel=prev href=/post/asp-net-core-grpc-%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%E7%9A%84%E6%8E%A2%E7%B4%A2%E4%B8%8E%E5%AE%9E%E7%8E%B0/ title="Previous post (older)">
-<span>Previous</span>
+<a rel=prev href=/post/asp-net-core-grpc-%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%E7%9A%84%E6%8E%A2%E7%B4%A2%E4%B8%8E%E5%AE%9E%E7%8E%B0/ title=上一篇>
+<span>上一篇</span>
 ASP.NET Core gRPC 健康检查的探索与实现
 </a>
-<a rel=next href=/post/efcore-%E5%AE%9E%E4%BD%93%E5%91%BD%E5%90%8D%E7%BA%A6%E5%AE%9A%E5%BA%93efcore.namingconventions/ title="Next post (newer)">
-<span>Next</span>
+<a rel=next href=/post/efcore-%E5%AE%9E%E4%BD%93%E5%91%BD%E5%90%8D%E7%BA%A6%E5%AE%9A%E5%BA%93efcore.namingconventions/ title=下一篇>
+<span>下一篇</span>
 EFCore 实体命名约定库：EFCore.NamingConventions
 </a>
 </nav>
@@ -656,7 +676,7 @@ EFCore 实体命名约定库：EFCore.NamingConventions
 <a href=/index.xml>RSS</a>
 </nav>
 </section>
-<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+<script defer src=/ts/features.fca86326beef1a5bf47e9a2a995ee43797c7dc3a7eb2be541a89f6490e21eab8.js data-enable-footnotes=true></script>
 </footer>
 </body>
 </html>

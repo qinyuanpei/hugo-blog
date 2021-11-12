@@ -20,7 +20,7 @@
 <meta property="article:published_time" content="2019-11-06T18:15:14Z">
 <script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"Valine 搭配 Server 酱实现博客评论推送","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2019-11-06","description":"所以，说白了我们就是想利用它这个“云引擎”来调用 Server 酱的接口，幸运的是，LeanCloud 提供的 Hooks 目前是支持 Nodejs 的，所以，到这里思路就非常清晰了，我们给`Comment`这张表加一个`AfterSave`类型的 Hooks，在保存完以后调用 Server 酱接口推送评论信息即可;[Valine](https://valine.js.org/)是一个基于[LeanCloud](https://leancloud.cn)的评论系统，在很长的一段时间里，一直作为多说、[Gitalk](https://gitalk.github.io/)、[Gitment](https://github.com/imsun/gitment)等等的一个替代品，博主所使用的评论系统实际上就是 Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊;Valine 本身是利用 LeanCloud 的数据存储 SDK 来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能","wordCount":194,"mainEntityOfPage":"True","dateModified":"2019-11-06","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+<link rel=stylesheet href=/sass/main.min.7648d501c177b83451d6b38aafcb00921e8784a375d3290fd6d1866f5271204b.css>
 </head>
 <script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
 <body class=dark>
@@ -33,7 +33,9 @@
 </a>
 </div>
 <div class=flex>
-<a href=/articles/>Articles</a>
+<a href=/categories>分类</a>
+<a href=/articles/>文章</a>
+<a href=/tags>标签</a>
 <button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
 </button>
 </div>
@@ -136,15 +138,33 @@ By Hugo Tania | <time>November 06, 2019</time>
 <p><img loading=lazy src=https://i.loli.net/2019/11/07/BSsu4cPFe1ZvhGN.png alt=博客评论推送到手机上的展示效果></p>
 <p>如果大家想调整消息的格式，参考文章中给出的代码即可，每次调整完可以直接部署到线上，这是我在这个过程中体验到的 Serverless 的魅力，相比我们中华田园式的 996 敏捷开发，这种方式真的能缩短部署的周期。我还是那句话，敏捷开发是大家一起敏捷，不是只有开发苦哈哈地加班加点干活，快速交付的前提是基础设施完善，具备自动化测试、自动化部署的能力，让开发安心地写代码比什么都重要，就像 LeanCloud 里提供的云函数和 Hooks，开发写完代码就能自动部署，这是真正的敏捷、真正的灵活。好了，这篇博客就先写到这里。想试试博主能不能第一时间收到你们的留言？欢迎在博客评论区留下你的足迹，谢谢大家！</p>
 </div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
 </div>
 <div class=container>
 <nav class="flex container suggested">
-<a rel=prev href=/post/%E5%9C%A8wsl%E4%B8%AD%E4%BD%BF%E7%94%A8linux%E6%A1%8C%E9%9D%A2%E7%8E%AF%E5%A2%83%E7%9A%84%E5%B0%9D%E8%AF%95%E4%B8%8E%E6%80%BB%E7%BB%93/ title="Previous post (older)">
-<span>Previous</span>
+<a rel=prev href=/post/%E5%9C%A8wsl%E4%B8%AD%E4%BD%BF%E7%94%A8linux%E6%A1%8C%E9%9D%A2%E7%8E%AF%E5%A2%83%E7%9A%84%E5%B0%9D%E8%AF%95%E4%B8%8E%E6%80%BB%E7%BB%93/ title=上一篇>
+<span>上一篇</span>
 在 WSL 中使用 Linux 桌面环境的尝试与总结
 </a>
-<a rel=next href=/post/referrer%E8%BF%98%E6%98%AFreferer-%E4%B8%80%E4%B8%AA%E8%BF%B7%E4%BA%BA%E7%9A%84%E9%94%99%E8%AF%AF/ title="Next post (newer)">
-<span>Next</span>
+<a rel=next href=/post/referrer%E8%BF%98%E6%98%AFreferer-%E4%B8%80%E4%B8%AA%E8%BF%B7%E4%BA%BA%E7%9A%84%E9%94%99%E8%AF%AF/ title=下一篇>
+<span>下一篇</span>
 Referrer 还是 Referer? 一个迷人的错误
 </a>
 </nav>
@@ -161,7 +181,7 @@ Referrer 还是 Referer? 一个迷人的错误
 <a href=/index.xml>RSS</a>
 </nav>
 </section>
-<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+<script defer src=/ts/features.fca86326beef1a5bf47e9a2a995ee43797c7dc3a7eb2be541a89f6490e21eab8.js data-enable-footnotes=true></script>
 </footer>
 </body>
 </html>

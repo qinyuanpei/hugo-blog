@@ -20,7 +20,7 @@
 <meta property="article:published_time" content="2020-12-25T22:49:47Z">
 <script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"视频是不能 P 的系列：OpenCV 人脸检测","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2020-12-25","description":"","wordCount":484,"mainEntityOfPage":"True","dateModified":"2020-12-25","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+<link rel=stylesheet href=/sass/main.min.7648d501c177b83451d6b38aafcb00921e8784a375d3290fd6d1866f5271204b.css>
 </head>
 <script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
 <body class=dark>
@@ -33,7 +33,9 @@
 </a>
 </div>
 <div class=flex>
-<a href=/articles/>Articles</a>
+<a href=/categories>分类</a>
+<a href=/articles/>文章</a>
+<a href=/tags>标签</a>
 <button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
 </button>
 </div>
@@ -313,15 +315,33 @@ By Hugo Tania | <time>December 25, 2020</time>
 <p>这篇博客主要分享了 OpenCV 在人脸检测方面的简单应用，OpenCV 中的 CascadeClassifier 整合<strong>Haar</strong>、<strong>HOG</strong>和<strong>LBP</strong>三类特性算法，通过预置的模型文件可以实现不同程度的目标检测功能，而在人脸检测的基础上，我们可以通过训练来实现简单的人脸识别，正如今年爆发的新冠疫情让人脸识别出现新的挑战一样，虽然人脸识别的场景正在变得越来越复杂，可作为一个世界上最流行的计算机视觉库，OpenCV 中的各种模块、算法还是一如既往的经典。结合 imread()、resize()、cvtColor()等等的方法，我们可以将“狗头”表情贴到图片或者视频中的人脸区域，而这个思路可以为人脸遮挡相关的场景做一点探索。</p>
 <p>在一个流行美颜的时代，人们对于别人甚至自己的期望在无限拔高，像博主本人一直不怎么喜欢拍照，有时候我们埋怨别人没有把我们拍得好看一点，可那究竟是你眼中的自己还是别人眼中的自己呢？正如相亲的时候，人们总喜欢把最好的、美化过的一面展示给别人，因为只有这样才能让别人对你产生兴趣，可往往现实的落差会让这种来得快的兴趣消失得更快。所以，我想说，虽然在技术面前万物似乎皆可“PS”，可对于我们自己而言，你是否了解真正的自己呢？关于我博客的写作风格，我一直不确定是要用偏严谨还是偏活泼的方式来表达，因为眼看着被后浪们一点点超越，这实在是种难以言说的感觉，欢迎大家在评论区留下你对博客内容或者观点的想法，祝大家周末愉快，一个人一样要活得浪漫！</p>
 </div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
 </div>
 <div class=container>
 <nav class="flex container suggested">
-<a rel=prev href=/post/%E4%BD%9C%E4%B8%BA%E6%8A%80%E6%9C%AF%E5%AE%85%E7%9A%84%E6%88%91%E6%98%AF%E8%BF%99%E6%A0%B7%E8%BF%BD%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83%E7%9A%84/ title="Previous post (older)">
-<span>Previous</span>
+<a rel=prev href=/post/%E4%BD%9C%E4%B8%BA%E6%8A%80%E6%9C%AF%E5%AE%85%E7%9A%84%E6%88%91%E6%98%AF%E8%BF%99%E6%A0%B7%E8%BF%BD%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83%E7%9A%84/ title=上一篇>
+<span>上一篇</span>
 作为技术宅的我，是这样追鬼滅の刃的
 </a>
-<a rel=next href=/post/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%BA%E4%BD%A0%E7%9A%84python%E7%88%AC%E8%99%AB%E6%8F%90%E9%80%9F%E7%9A%84n%E7%A7%8D%E5%A7%BF%E5%8A%BF%E4%BD%A0%E4%BC%9A%E5%87%A0%E7%A7%8D/ title="Next post (newer)">
-<span>Next</span>
+<a rel=next href=/post/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%BA%E4%BD%A0%E7%9A%84python%E7%88%AC%E8%99%AB%E6%8F%90%E9%80%9F%E7%9A%84n%E7%A7%8D%E5%A7%BF%E5%8A%BF%E4%BD%A0%E4%BC%9A%E5%87%A0%E7%A7%8D/ title=下一篇>
+<span>下一篇</span>
 使用多线程为你的 Python 爬虫提速的 N 种姿势，你会几种？
 </a>
 </nav>
@@ -338,7 +358,7 @@ By Hugo Tania | <time>December 25, 2020</time>
 <a href=/index.xml>RSS</a>
 </nav>
 </section>
-<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+<script defer src=/ts/features.fca86326beef1a5bf47e9a2a995ee43797c7dc3a7eb2be541a89f6490e21eab8.js data-enable-footnotes=true></script>
 </footer>
 </body>
 </html>

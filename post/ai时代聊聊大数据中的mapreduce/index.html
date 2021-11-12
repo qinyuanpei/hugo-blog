@@ -20,7 +20,7 @@
 <meta property="article:published_time" content="2018-01-19T00:45:08Z">
 <script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"AI 时代：聊聊大数据中的 MapReduce","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2018-01-19","description":"因此，这些论文的问世直接催生了 Hadoop 的诞生，可以说今天主流的大数据框架如 Hadoop、Spark 等，无一不是受到 Google 这些论文的影响，而这正是 MapReduce 由来，其得名则是因为函数式编程中的两个内置函数: map()和 reduce();我们提到，MapReduce 之得名，其灵感来自函数式编程中的两个内置函数：map()和 reduce();通过梳理 Web 检索的一般流程，我们意识到，Web 检索可以分为两部分，即获取网页内容并建立索引、根据网页索引来处理查询关键字，从而引出了 Mapper 和 Reducer 两个基本的数据处理单元，MapReduce 是分治思想在大规模机器集群时代的集中体现，其中，Mapper 负责任务的划分，Reducer 负责结果的汇总","wordCount":337,"mainEntityOfPage":"True","dateModified":"2018-01-19","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+<link rel=stylesheet href=/sass/main.min.7648d501c177b83451d6b38aafcb00921e8784a375d3290fd6d1866f5271204b.css>
 </head>
 <script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
 <body class=dark>
@@ -33,7 +33,9 @@
 </a>
 </div>
 <div class=flex>
-<a href=/articles/>Articles</a>
+<a href=/categories>分类</a>
+<a href=/articles/>文章</a>
+<a href=/tags>标签</a>
 <button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
 </button>
 </div>
@@ -143,15 +145,33 @@ C#并行编程里的 PLINQ
 <p>今天 Google 发布了全新的 AI 服务工具 Cloud AutoML，从这个产品的名字就可以看出，这是一个试图将人工智能大众化的产品。目前 AI 是行业中不容置疑热点，国外的科技巨头如 Google、微软，国内的科技巨头如腾讯、阿里和百度等，无一不在积极布局 AI 的上下游产业链。最近 CSDN 发布了人工智能方向的发展规划，整个产品线的基本都在做战略上调整，我们这些曾经的老用户被新的社区 运营搞得非常郁闷，因为所有的资源都在向着人工智能和区块链倾斜。上周在知乎上看到一篇讽刺国内区块链发展乱象的<a href=https://zhuanlan.zhihu.com/p/32796998>文章</a>，大概就是说国人喜欢拿一个 Token 当做加密货币来买，实则连底层技术、分布账本、钱包等基础设施都没有。对于这一点我深有体会，任何新的商业模式在中国都火不过 1 年，譬如在 2017 年里被发扬广大的共享经济，有多少共享单车是靠技术和产品赢得市场的，我相信大部分都是沾了人口基数大的光。目前的人工智能，核心算法及技术都掌握在科技巨头手上。我们所追逐的人工智能，有多少是需要靠不断调整参数反复去训练来达到的呢？我觉得找到切实可靠的需求落脚点，比追逐一个又一个热点要更现实，我们大部分工程师都是在科学家工作的基础上做集成应用，所以拨开泡沫看清方向比盲目跟风更重要呀。</p>
 <p>这篇文章蹭了人工智能的热点，其实它对 MapReduce 并没有做多少深入的研究。我们从 Google 的业务场景着手分析，思考为什么 Google 需要 MapReduce，即提出 MapReduce 是为了解决一个什么样的问题？答案是为了适应 Google 在大规模 Web 检索业务方面的需要。通过梳理 Web 检索的一般流程，我们意识到，Web 检索可以分为两部分，即获取网页内容并建立索引、根据网页索引来处理查询关键字，从而引出了 Mapper 和 Reducer 两个基本的数据处理单元，MapReduce 是分治思想在大规模机器集群时代的集中体现，其中，Mapper 负责任务的划分，Reducer 负责结果的汇总。接下来，我们顺着函数式编程的思路，分析了函数式编程中的 map()和 reduce()，这两个核心的函数同 MapReduce 在思想上的一致性，这正是为了印证前文中 MapReduce 得名的由来。考虑到 C#中提供了 PLINQ，而在阅读《C#多线程编程》这本书时，同样提到了 MapReduce 这种并行计算模型，所以在这里将这两者进行结合，提供了一个通过并行计算统计单词频率的简单示例。以上就是这篇文章的所有内容了，如果大家对文章有什么意见或者建议，可以在文章评论区留言，这篇文章就是这样了，谢谢大家，晚安！</p>
 </div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
 </div>
 <div class=container>
 <nav class="flex container suggested">
-<a rel=prev href=/post/%E8%87%B4%E5%89%8D%E4%BB%BB%E6%84%BF%E4%BD%99%E7%94%9F%E5%90%84%E8%87%AA%E5%AE%89%E5%A5%BD/ title="Previous post (older)">
-<span>Previous</span>
+<a rel=prev href=/post/%E8%87%B4%E5%89%8D%E4%BB%BB%E6%84%BF%E4%BD%99%E7%94%9F%E5%90%84%E8%87%AA%E5%AE%89%E5%A5%BD/ title=上一篇>
+<span>上一篇</span>
 致前任：愿余生各自安好
 </a>
-<a rel=next href=/post/%E4%BD%BF%E7%94%A8unity%E6%A1%86%E6%9E%B6%E7%AE%80%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%8F%8A%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%E6%B5%81%E7%A8%8B/ title="Next post (newer)">
-<span>Next</span>
+<a rel=next href=/post/%E4%BD%BF%E7%94%A8unity%E6%A1%86%E6%9E%B6%E7%AE%80%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%8F%8A%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%E6%B5%81%E7%A8%8B/ title=下一篇>
+<span>下一篇</span>
 使用 Unity 框架简化应用程序异常处理及日志记录流程
 </a>
 </nav>
@@ -168,7 +188,7 @@ C#并行编程里的 PLINQ
 <a href=/index.xml>RSS</a>
 </nav>
 </section>
-<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+<script defer src=/ts/features.fca86326beef1a5bf47e9a2a995ee43797c7dc3a7eb2be541a89f6490e21eab8.js data-enable-footnotes=true></script>
 </footer>
 </body>
 </html>

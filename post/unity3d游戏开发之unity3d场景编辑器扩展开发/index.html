@@ -20,7 +20,7 @@
 <meta property="article:published_time" content="2015-10-13T12:59:01Z">
 <script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"Unity3D 游戏开发之 Unity3D 场景编辑器扩展开发","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2015-10-13","description":"注意到 DrawRotate()方法与 DrawPositin()及 DrawScale()方法在实现方式上略有不同，这是因为 Transform 组件的 Rotation 属性是一个 Quaternion 即四元数的结构，四元数是利用 x、y、z、w 四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的 API 接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过 Transform 的 eulerAngles 来实现，但是这种方式绘制的属性框大小和 EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新;此时如果我们给场景中的某个物体附加上该脚本，则我们在 Inspector 窗口可以看到 Example 类的实例 Example 将被序列化到编辑器面板中，同时我们可以注意到私有的 editable 字段并没有被序列化出来，这是因为**在 Unity3D 中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化**，这一点希望大家注意;在第一个示例中，可以注意到我们使用了 FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在 EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新","wordCount":683,"mainEntityOfPage":"True","dateModified":"2015-10-13","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.3f6a4a8e472d3947873046ff8c0e407f6ba137518d6997d75b8e461512d57d36.css>
+<link rel=stylesheet href=/sass/main.min.7648d501c177b83451d6b38aafcb00921e8784a375d3290fd6d1866f5271204b.css>
 </head>
 <script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
 <body class=dark>
@@ -33,7 +33,9 @@
 </a>
 </div>
 <div class=flex>
-<a href=/articles/>Articles</a>
+<a href=/categories>分类</a>
+<a href=/articles/>文章</a>
+<a href=/tags>标签</a>
 <button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
 </button>
 </div>
@@ -482,15 +484,33 @@ Editor 基类中的属性和方法
 </div><p>这里的 PatrolNPC 是一个可寻路 NPC 类，基本和这篇文章的内容无关，大家只要知道那个 Paths 字段是一个 Vector3[]就好啦，这样当我们在场景中编辑这些路径节点的时候，对应 NPC 的路径节点信息就会同步发生更新，这样我们就可以随心所欲地规划 NPC 的移动路径啦，哈哈。好了，今天的内容就是这样啦，写完熬到这个点真心不容易啊，大家晚安，这是这个小工具在场景编辑器中的效果，嘻嘻，感觉还是蛮不错的吧，反正我是很喜欢就对啦！</p>
 <p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fz68jsnh8kj20nn0hrnnk.jpg alt=路径节点编辑工具演示></p>
 </div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
 </div>
 <div class=container>
 <nav class="flex container suggested">
-<a rel=prev href=/post/%E5%9C%A8unity3d%E4%B8%AD%E5%8A%A0%E8%BD%BD%E5%A4%96%E9%83%A8%E5%9B%BE%E7%89%87%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%B3%95/ title="Previous post (older)">
-<span>Previous</span>
+<a rel=prev href=/post/%E5%9C%A8unity3d%E4%B8%AD%E5%8A%A0%E8%BD%BD%E5%A4%96%E9%83%A8%E5%9B%BE%E7%89%87%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%B3%95/ title=上一篇>
+<span>上一篇</span>
 在 Unity3D 中加载外部图片的两种方法
 </a>
-<a rel=next href=/post/c#%E4%B8%AD%E7%9A%84%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/ title="Next post (newer)">
-<span>Next</span>
+<a rel=next href=/post/c#%E4%B8%AD%E7%9A%84%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/ title=下一篇>
+<span>下一篇</span>
 C#中的扩展方法学习总结
 </a>
 </nav>
@@ -507,7 +527,7 @@ C#中的扩展方法学习总结
 <a href=/index.xml>RSS</a>
 </nav>
 </section>
-<script defer src=/ts/features.c81551cd4dbef120af278f16966a41142c02be9ff5d6a669be09820fbf047456.js data-enable-footnotes=true></script>
+<script defer src=/ts/features.fca86326beef1a5bf47e9a2a995ee43797c7dc3a7eb2be541a89f6490e21eab8.js data-enable-footnotes=true></script>
 </footer>
 </body>
 </html>

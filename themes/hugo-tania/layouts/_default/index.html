@@ -34,9 +34,9 @@
 <div class="container">
     <section>
         <h2>
-            Latest Articles
+            最新文章
             {{ range $archivesPage }}
-            <a class="section-button" href="{{ .RelPermalink }}">View all</a>
+            <a class="section-button" href="{{ .RelPermalink }}">浏览全部</a>
             {{ end }}
         </h2>
         <div class="posts">
@@ -55,7 +55,7 @@
     </section>
     {{ if gt (len $projects) 0}}
     <section>
-        <h2>Projects</h2>
+        <h2>最近项目</h2>
         <div class="projects">
             {{ range $projects.ByWeight }}
             <div class="project">
@@ -67,7 +67,7 @@
                     <div class="description">{{ .Params.description }}</div>
                 </div>
                 <div class="flex">
-                    <a href="{{ .Params.repo }}" class="button" target="_blank" rel="noreferrer">Source</a>
+                    <a href="{{ .Params.repo }}" class="button" target="_blank" rel="noreferrer">浏览</a>
                 </div>
             </div>
             {{ end }}

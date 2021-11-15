@@ -10,7 +10,7 @@ export let initialReward = function() {
 
     closeButton.addEventListener('click', () => {
         rewardBox.style.display ='none';
-    })
+    });
 
     chioceItems.forEach(item => {
         item.addEventListener('click', ()=> {
@@ -35,7 +35,7 @@ export let initialReward = function() {
                 }
             });
         })
-    })
-
+    });
+    
     chioceItems[1].click();
 }

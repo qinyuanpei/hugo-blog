@@ -20,6 +20,7 @@ params:
   siteName: "Hugo Tania is Amazing"
   siteDesc: "Hugo is Absurdly Fast!"
   author: "Hugo Tania"
+  avatar: "/imgs/avatar.jpg"
 
 
   # Limit how many categories filter show above search input.

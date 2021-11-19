@@ -57,3 +57,11 @@
         }
     }
 }
+
+@media screen and (max-width:800px) {
+    a {
+        &.button {
+            display: none;
+        }
+    }
+}

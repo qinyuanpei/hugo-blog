@@ -33,8 +33,10 @@
 {{ $works := .Site.Data.portfolio.items }}
 {{ $worksPage := first 1 (where .Site.RegularPages "Layout" "eq" "works")}}
 
+{{ $columns := .Site.Data.series }}
+
 <div class="container">
-    {{ partial "series/index.html" }}
+    {{ partial "series/index.html" $columns }}
     <section>
         <h2>
             最新文章
@@ -50,7 +52,7 @@
                         <time>{{ .Date.Format "Jan 02" }}</time>
                         <h3>{{ .Title }}</h3>
                     </div>
-                    <!--<div class="new-post">New!</div>-->
+                    <div class="new-post">New!</div>
                 </a>
             </div>
             {{ end }}

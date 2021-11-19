@@ -1,14 +1,17 @@
 [
     {
-        "cover":"https://blog.yuanpei.me/assets/images/columns/column_unity3d.png",
-        "link":"https://blog.csdn.net/qinyuanpei/category_1708629.html"
+        "cover": "https://blog.yuanpei.me/assets/images/columns/column_unity3d.png",
+        "link": "https://blog.csdn.net/qinyuanpei/category_1708629.html",
+        "alt": "Unity3D 游戏开发专栏"
     },
     {
         "cover":"https://blog.yuanpei.me/assets/images/columns/column_data_analyse.png",
-        "link":"https://blog.csdn.net/qinyuanpei/category_7444699.html"
+        "link":"https://blog.csdn.net/qinyuanpei/category_7444699.html",
+        "alt": "Python 数据挖掘专栏"
     },
     {
-        "cover":"/assets/images/columns/column_dotnet.png",
-        "link":"https://blog.csdn.net/qinyuanpei/category_10852603.html"
+        "cover":"https://blog.yuanpei.me/assets/images/columns/column_dotnet.png",
+        "link":"https://blog.csdn.net/qinyuanpei/category_10852603.html",
+        "alt": ".NET 源代码探案专栏"
     }
 ]

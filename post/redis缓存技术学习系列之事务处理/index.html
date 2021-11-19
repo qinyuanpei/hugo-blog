@@ -21,7 +21,7 @@
 <script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"Redis 缓存技术学习系列之事务处理","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2017-04-08","description":"在这个例子中，我们尝试在事务中对 Record_Count 做一个自增操作，这段代码在非并发的情况下是没有问题的，可是在并发的情况下，如果在执行 EXEC 命令前有一个用户修改了 Record_Count 的值，那么我们此时的结果就会比期望的结果小 1，现在我们有了 WATCH，Redis 就会对 Record_Count 进行监听，当 Redis 监听到该值发生变化的时候，这个事务就会被自动取消，进而避免造成冲突;Redis 中提供了一种称为 check-and-set 的机制，该机制主要通过 WATCH 命令来实现，其原理正是基于乐观锁的策略，Redis 会在执行 EXEC 命令前检查被监视的键对应的值是否发生变化，如果该值发生变化表明有人修改过这个键中存储的值，此时 Redis 将会自动取消当前事务;特别地，因为在 Redis 中命令是存储在一个队列中，所以，事务中的所有命令都会按顺序执行，并且在执行事务的过程中不会被客户端发送的其它命令中断","wordCount":203,"mainEntityOfPage":"True","dateModified":"2017-04-08","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=stylesheet href=/sass/main.min.96fbd631b4f7bc732b62b3bac895a5ebe0b03a9659fda7b5eed1cbdd848aa5a6.css>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@4.3.2/dist/css/swiper.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
 </head>
 <script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
 <body class=dark>

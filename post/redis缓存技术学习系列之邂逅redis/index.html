@@ -20,8 +20,9 @@
 <meta property="article:published_time" content="2017-03-30T23:31:40Z">
 <script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"Redis 缓存技术学习系列之邂逅 Redis","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2017-03-30","description":"​        好了，这就是这篇博客的内容了，自我感觉 Redis 中的内容相对分散，这种细小的知识点都隐藏在命令中，最初在介绍不同的数据类型的时候，在文章中均做了详细的介绍并辅以终端脚本，可是最后发现这样写下去还不如去看官方文档，像 Redis 这种即使学习了都不见得有机会使用的技术，当然我并不是说 Redis 不好啊，关系型数据库目前依然是主流的技术驱动力量，所以我觉得我们学习的时候最好是“观其大略”、“不求甚解”，首先注重整体知识体系上的理解，微枝末叶上的细节问题可以在使用的时候去查阅文档;我们知道 Redis 是一个键-值数据库，所以在了解了 Redis 中支持的数据类型，即“值”以后，现在让我们将关注点回归到“键”上面来，这是因为作为一个键-值数据库，键是我们从数据库中获取值的唯一方式，因此在这里说说 Redis 中那些和键有关的命令，这些命令基本都遵循下面的命名格式，常见的命令有：;Redis 是一个采用键-值存储方案的数据库，因而传统关系型数据库里的 SQL 在这里将不再适用","wordCount":260,"mainEntityOfPage":"True","dateModified":"2017-03-30","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.96fbd631b4f7bc732b62b3bac895a5ebe0b03a9659fda7b5eed1cbdd848aa5a6.css>
+<link rel=stylesheet href=/sass/main.min.9dc2201208e67d3e688e34dc2e2c4bd304c5e14136e61a45b3965c16916ca6f0.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
+<script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
 </head>
 <script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
 <body class=dark>

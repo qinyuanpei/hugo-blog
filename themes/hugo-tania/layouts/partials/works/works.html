@@ -1,11 +1,10 @@
-<div class="works-container" style="background-color: #fafafa">
+<div class="works-container">
     <div class="container">
         <section class="row">
             <div class="col-sm-10 col-sm-offset-1&#10;col-md-8 col-md-offset-2&#10;works-area">
-                {{ $works := .Site.Data }}
-                {{ printf "%#v" .Site.Data.portfolio }}
-                {{ range $works }}
-                {{ template "partials/works/work.html" . }}
+                {{ $items := . }}
+                {{ range (sort $items "date" "desc") }}
+                {{ template "partials/works/work-item.html" . }}
                 {{ end}}
             </div>
         </section>

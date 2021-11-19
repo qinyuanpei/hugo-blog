@@ -66,6 +66,10 @@ params:
       guest_info: nick,mail,link # Comment header info
       pageSize: 10 # comment list page size
       requiredFields: ['nick','mail']
+  
+  works:
+    - title:
+      
 
 menu:
   header:
@@ -75,6 +79,8 @@ menu:
       url: "/categories"
     - name: 标签
       url: "/tags"
+    - name: 实验室
+      url: "/works"
   footer:
     - name: RSS
       url: "/index.xml"

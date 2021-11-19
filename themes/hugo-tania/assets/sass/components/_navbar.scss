@@ -23,7 +23,7 @@ main {
     box-shadow: 0 3px 13px rgba(100, 110, 140, 0.1),
         0 2px 4px rgba(100, 110, 140, 0.15);
     z-index: 2;
-    padding: 0.5rem;
+    padding: 1.0rem;
 
     .flex {
         justify-content: space-between;
@@ -31,7 +31,6 @@ main {
 
     a {
         border-radius: 0.35rem;
-        margin: 0 0.05rem;
         color: rgba(255, 255, 255, 0.65);
         font-weight: 400;
         font-size: 0.85rem;
@@ -97,7 +96,7 @@ main {
         }
 
         a {
-            padding: 0.75rem 1.25rem;
+
             margin: 0 0.25rem;
             font-size: 1.2rem;
             font-weight: 400;

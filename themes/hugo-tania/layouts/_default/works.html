@@ -1,0 +1,20 @@
+{{ define "main" }}
+
+<header>
+    <div class="container">
+        <h1>{{ .Title }}</h1>
+        <p class="subtitle">{{ .Params.subtitle }}</p>
+    </div>
+</header>
+
+<section>
+    <div class="container">
+        {{ partial "works/works.html" }}
+    </div>
+</section>
+
+{{- $opts := dict "minify" hugo.IsProduction -}}
+{{ $search := resources.Get "ts/search.ts" | js.Build $opts | fingerprint }}
+<script async src="{{ $search.RelPermalink }}"></script>
+
+{{ end }}

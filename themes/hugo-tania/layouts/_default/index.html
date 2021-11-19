@@ -43,7 +43,7 @@
             {{ end }}
         </h2>
         <div class="posts">
-            {{ range $pages.Pages }}
+            {{ range first 5 $pages.Pages }}
             <div class="post">
                 <a href="{{ .RelPermalink }}">
                     <div class="post-row">

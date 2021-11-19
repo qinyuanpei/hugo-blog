@@ -2,7 +2,7 @@ baseurl: "https://example.com"
 languageCode: "en-us"
 title: "元培的部落格"
 theme: "hugo-tania"
-paginate: 6
+paginate: 10
 
 disqusShortname: https-hugo-tania-netlify-app
 

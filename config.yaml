@@ -19,8 +19,11 @@ params:
   
   siteName: "Hugo Tania is Amazing"
   siteDesc: "Hugo is Absurdly Fast!"
-  author: "Hugo Tania"
+  author: "飞鸿踏雪"
   avatar: "/imgs/avatar.jpg"
+
+  footer:
+    sinceYear: 2014
 
 
   # Limit how many categories filter show above search input.
@@ -84,6 +87,8 @@ menu:
   footer:
     - name: RSS
       url: "/index.xml"
+    - name: 站点地图
+      url: "/sitemap.xml"
 
 markup:
   highlight:

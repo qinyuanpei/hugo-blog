@@ -4,6 +4,7 @@
 <meta name=viewport content="width=device-width,initial-scale=1">
 <meta http-equiv=x-ua-compatible content="IE=edge">
 <meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
 <title>使用 C#开发 HTTP 服务器系列之实现 Get 和 Post | 元培的部落格</title>
 <meta property="og:site_name" content="Hugo Tania is Amazing">
 <meta property="og:title" content="使用 C#开发 HTTP 服务器系列之实现 Get 和 Post | 元培的部落格">
@@ -15,12 +16,12 @@
 <meta itemprop=description content=" &#34;分割该行数据以后就可以得到“num1=23&num2=12”这样的结果，这里我们使用一个方法 GetRequestParms 来返回参数字典，这样作做是为了复用方法，因为在处理 Post 请求的时候我们会继续使用这个方法;例如我们传递的两个参数 num1 和 num2 对应的数值分别是 12 和 24，那么在具体的请求报文中我们都能找到类似“num1=12&num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦;num1=23&num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了 ">
 <meta property="og:description" content=" &#34;分割该行数据以后就可以得到“num1=23&num2=12”这样的结果，这里我们使用一个方法 GetRequestParms 来返回参数字典，这样作做是为了复用方法，因为在处理 Post 请求的时候我们会继续使用这个方法;例如我们传递的两个参数 num1 和 num2 对应的数值分别是 12 和 24，那么在具体的请求报文中我们都能找到类似“num1=12&num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦;num1=23&num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了 ">
 <meta property="og:type" content="article">
-<meta property="article:publisher" content="Hugo Tania">
+<meta property="article:publisher" content="飞鸿踏雪">
 <meta property="og:article:published_time" content="2016-06-11T15:01:35Z">
 <meta property="article:published_time" content="2016-06-11T15:01:35Z">
-<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"使用 C#开发 HTTP 服务器系列之实现 Get 和 Post","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2016-06-11","description":"\"分割该行数据以后就可以得到“num1=23\u0026num2=12”这样的结果，这里我们使用一个方法 GetRequestParms 来返回参数字典，这样作做是为了复用方法，因为在处理 Post 请求的时候我们会继续使用这个方法;例如我们传递的两个参数 num1 和 num2 对应的数值分别是 12 和 24，那么在具体的请求报文中我们都能找到类似“num1=12\u0026num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦;num1=23\u0026num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了","wordCount":580,"mainEntityOfPage":"True","dateModified":"2016-06-11","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
+<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"使用 C#开发 HTTP 服务器系列之实现 Get 和 Post","author":{"@type":"Person","name":"飞鸿踏雪"},"datePublished":"2016-06-11","description":"\"分割该行数据以后就可以得到“num1=23\u0026num2=12”这样的结果，这里我们使用一个方法 GetRequestParms 来返回参数字典，这样作做是为了复用方法，因为在处理 Post 请求的时候我们会继续使用这个方法;例如我们传递的两个参数 num1 和 num2 对应的数值分别是 12 和 24，那么在具体的请求报文中我们都能找到类似“num1=12\u0026num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦;num1=23\u0026num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了","wordCount":580,"mainEntityOfPage":"True","dateModified":"2016-06-11","publisher":{"@type":"Organization","name":"飞鸿踏雪","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.9dc2201208e67d3e688e34dc2e2c4bd304c5e14136e61a45b3965c16916ca6f0.css>
+<link rel=stylesheet href=/sass/main.min.836ce9dc983f58e8a5fe1ade9f362de5ba081a586e7dfe01c63ebb0f872dffe6.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
 <script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
 </head>
@@ -54,7 +55,7 @@
 <h1>使用 C#开发 HTTP 服务器系列之实现 Get 和 Post</h1>
 <div class=post-meta>
 <div>
-By Hugo Tania | <time>June 11, 2016</time>
+By 飞鸿踏雪 | <time>June 11, 2016</time>
 | 3 minutes
 </div>
 <div class=tags>
@@ -420,7 +421,12 @@ num1=23&amp;num2=12
 <section class=container>
 <nav class=footer-links>
 <a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
 </nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021,
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
 </section>
 <script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
 </footer>

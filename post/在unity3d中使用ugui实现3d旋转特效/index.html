@@ -4,6 +4,7 @@
 <meta name=viewport content="width=device-width,initial-scale=1">
 <meta http-equiv=x-ua-compatible content="IE=edge">
 <meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
 <title>在 Unity3D 中使用 uGUI 实现 3D 旋转特效 | 元培的部落格</title>
 <meta property="og:site_name" content="Hugo Tania is Amazing">
 <meta property="og:title" content="在 Unity3D 中使用 uGUI 实现 3D 旋转特效 | 元培的部落格">
@@ -15,12 +16,12 @@
 <meta itemprop=description content=" 好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：;其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧;所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦 ">
 <meta property="og:description" content=" 好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：;其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧;所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦 ">
 <meta property="og:type" content="article">
-<meta property="article:publisher" content="Hugo Tania">
+<meta property="article:publisher" content="飞鸿踏雪">
 <meta property="og:article:published_time" content="2016-07-10T14:29:33Z">
 <meta property="article:published_time" content="2016-07-10T14:29:33Z">
-<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"在 Unity3D 中使用 uGUI 实现 3D 旋转特效","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2016-07-10","description":"好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：;其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧;所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦","wordCount":394,"mainEntityOfPage":"True","dateModified":"2016-07-10","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
+<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"在 Unity3D 中使用 uGUI 实现 3D 旋转特效","author":{"@type":"Person","name":"飞鸿踏雪"},"datePublished":"2016-07-10","description":"好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：;其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧;所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦","wordCount":394,"mainEntityOfPage":"True","dateModified":"2016-07-10","publisher":{"@type":"Organization","name":"飞鸿踏雪","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.9dc2201208e67d3e688e34dc2e2c4bd304c5e14136e61a45b3965c16916ca6f0.css>
+<link rel=stylesheet href=/sass/main.min.836ce9dc983f58e8a5fe1ade9f362de5ba081a586e7dfe01c63ebb0f872dffe6.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
 <script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
 </head>
@@ -54,7 +55,7 @@
 <h1>在 Unity3D 中使用 uGUI 实现 3D 旋转特效</h1>
 <div class=post-meta>
 <div>
-By Hugo Tania | <time>July 10, 2016</time>
+By 飞鸿踏雪 | <time>July 10, 2016</time>
 | 2 minutes
 </div>
 <div class=tags>
@@ -320,7 +321,12 @@ By Hugo Tania | <time>July 10, 2016</time>
 <section class=container>
 <nav class=footer-links>
 <a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
 </nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021,
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
 </section>
 <script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
 </footer>

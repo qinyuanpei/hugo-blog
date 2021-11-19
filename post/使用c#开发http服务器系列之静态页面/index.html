@@ -4,6 +4,7 @@
 <meta name=viewport content="width=device-width,initial-scale=1">
 <meta http-equiv=x-ua-compatible content="IE=edge">
 <meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
 <title>使用 C#开发 HTTP 服务器系列之静态页面 | 元培的部落格</title>
 <meta property="og:site_name" content="Hugo Tania is Amazing">
 <meta property="og:title" content="使用 C#开发 HTTP 服务器系列之静态页面 | 元培的部落格">
@@ -15,12 +16,12 @@
 <meta itemprop=description content=" 可以注意到在这里我们首先根据请求方法和请求地址来判断当前客户端是否在请求主页页面，然后我们判断在服务器目录下是否存在 index.html 文件，如果该文件存在就读取文件并返回给客户端，否则我们将返回给客户端一个 404 的状态，熟悉 Web 开发的朋友应该会知道这个状态码表示的是无法找到请求资源，类似地我们还可以想到的状态码有 200、501 等等，通常来讲，这些状态码的定义是这样的：;这里我的理解是这样的，对页面来讲服务器在读取它以后会返回给客户端，所以对客户端而言这部分响应是完全可见的，而页面中关联的 CSS 样式和 JavaScript 脚本则可能是通过浏览器缓存下载到本地，然后再根据相对路径引用并应用到整个页面中来的，而为了区分这些不同类型的资源，我们需要在响应报文中的 Content-Type 字段中指明内容的类型，所以现在我们就清楚了，首先在请求页面的时候存在大量关联资源，这些资源必须通过响应报文反馈给客户端，其次这些资源由不同的类型具体体现在响应报文的 Content-Type 字段中;* 链接形式 2:&#34;http://localhost:4050/assets/styles/&#34;表示访问指定页面资源，此时读取服务器目录下的/assets/styles/style.index 文件 ">
 <meta property="og:description" content=" 可以注意到在这里我们首先根据请求方法和请求地址来判断当前客户端是否在请求主页页面，然后我们判断在服务器目录下是否存在 index.html 文件，如果该文件存在就读取文件并返回给客户端，否则我们将返回给客户端一个 404 的状态，熟悉 Web 开发的朋友应该会知道这个状态码表示的是无法找到请求资源，类似地我们还可以想到的状态码有 200、501 等等，通常来讲，这些状态码的定义是这样的：;这里我的理解是这样的，对页面来讲服务器在读取它以后会返回给客户端，所以对客户端而言这部分响应是完全可见的，而页面中关联的 CSS 样式和 JavaScript 脚本则可能是通过浏览器缓存下载到本地，然后再根据相对路径引用并应用到整个页面中来的，而为了区分这些不同类型的资源，我们需要在响应报文中的 Content-Type 字段中指明内容的类型，所以现在我们就清楚了，首先在请求页面的时候存在大量关联资源，这些资源必须通过响应报文反馈给客户端，其次这些资源由不同的类型具体体现在响应报文的 Content-Type 字段中;* 链接形式 2:&#34;http://localhost:4050/assets/styles/&#34;表示访问指定页面资源，此时读取服务器目录下的/assets/styles/style.index 文件 ">
 <meta property="og:type" content="article">
-<meta property="article:publisher" content="Hugo Tania">
+<meta property="article:publisher" content="飞鸿踏雪">
 <meta property="og:article:published_time" content="2016-06-11T15:01:35Z">
 <meta property="article:published_time" content="2016-06-11T15:01:35Z">
-<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"使用 C#开发 HTTP 服务器系列之静态页面","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2016-06-11","description":"可以注意到在这里我们首先根据请求方法和请求地址来判断当前客户端是否在请求主页页面，然后我们判断在服务器目录下是否存在 index.html 文件，如果该文件存在就读取文件并返回给客户端，否则我们将返回给客户端一个 404 的状态，熟悉 Web 开发的朋友应该会知道这个状态码表示的是无法找到请求资源，类似地我们还可以想到的状态码有 200、501 等等，通常来讲，这些状态码的定义是这样的：;这里我的理解是这样的，对页面来讲服务器在读取它以后会返回给客户端，所以对客户端而言这部分响应是完全可见的，而页面中关联的 CSS 样式和 JavaScript 脚本则可能是通过浏览器缓存下载到本地，然后再根据相对路径引用并应用到整个页面中来的，而为了区分这些不同类型的资源，我们需要在响应报文中的 Content-Type 字段中指明内容的类型，所以现在我们就清楚了，首先在请求页面的时候存在大量关联资源，这些资源必须通过响应报文反馈给客户端，其次这些资源由不同的类型具体体现在响应报文的 Content-Type 字段中;* 链接形式 2:\"http://localhost:4050/assets/styles/\"表示访问指定页面资源，此时读取服务器目录下的/assets/styles/style.index 文件","wordCount":599,"mainEntityOfPage":"True","dateModified":"2016-06-11","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
+<script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"使用 C#开发 HTTP 服务器系列之静态页面","author":{"@type":"Person","name":"飞鸿踏雪"},"datePublished":"2016-06-11","description":"可以注意到在这里我们首先根据请求方法和请求地址来判断当前客户端是否在请求主页页面，然后我们判断在服务器目录下是否存在 index.html 文件，如果该文件存在就读取文件并返回给客户端，否则我们将返回给客户端一个 404 的状态，熟悉 Web 开发的朋友应该会知道这个状态码表示的是无法找到请求资源，类似地我们还可以想到的状态码有 200、501 等等，通常来讲，这些状态码的定义是这样的：;这里我的理解是这样的，对页面来讲服务器在读取它以后会返回给客户端，所以对客户端而言这部分响应是完全可见的，而页面中关联的 CSS 样式和 JavaScript 脚本则可能是通过浏览器缓存下载到本地，然后再根据相对路径引用并应用到整个页面中来的，而为了区分这些不同类型的资源，我们需要在响应报文中的 Content-Type 字段中指明内容的类型，所以现在我们就清楚了，首先在请求页面的时候存在大量关联资源，这些资源必须通过响应报文反馈给客户端，其次这些资源由不同的类型具体体现在响应报文的 Content-Type 字段中;* 链接形式 2:\"http://localhost:4050/assets/styles/\"表示访问指定页面资源，此时读取服务器目录下的/assets/styles/style.index 文件","wordCount":599,"mainEntityOfPage":"True","dateModified":"2016-06-11","publisher":{"@type":"Organization","name":"飞鸿踏雪","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.9dc2201208e67d3e688e34dc2e2c4bd304c5e14136e61a45b3965c16916ca6f0.css>
+<link rel=stylesheet href=/sass/main.min.836ce9dc983f58e8a5fe1ade9f362de5ba081a586e7dfe01c63ebb0f872dffe6.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
 <script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
 </head>
@@ -54,7 +55,7 @@
 <h1>使用 C#开发 HTTP 服务器系列之静态页面</h1>
 <div class=post-meta>
 <div>
-By Hugo Tania | <time>June 11, 2016</time>
+By 飞鸿踏雪 | <time>June 11, 2016</time>
 | 3 minutes
 </div>
 <div class=tags>
@@ -510,7 +511,12 @@ Connection: Keep-Alive
 <section class=container>
 <nav class=footer-links>
 <a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
 </nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021,
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
 </section>
 <script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
 </footer>

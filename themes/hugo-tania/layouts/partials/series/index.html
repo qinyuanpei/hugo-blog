@@ -1,0 +1,59 @@
+<section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+    <style>
+        .swiper-container {
+            width: 100%;
+            height: 100%;
+            
+        }
+        .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+            background: #fff;
+            
+            /* Center slide text vertically */
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+        }
+        </style>
+    <h2>
+        系列专栏
+    </h2>
+    
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"><image src="https://blog.yuanpei.me/assets/images/columns/column_unity3d.png"></image></div>
+            <div class="swiper-slide"><image src="https://blog.yuanpei.me/assets/images/columns/column_dotnet.png"></image></div>
+            <div class="swiper-slide"><image src="https://blog.yuanpei.me/assets/images/columns/column_data_analyse.png"></image></div>
+        </div>
+        <!-- Add Pagination -->
+        <div class="swiper-pagination"></div>
+        <!-- Add Arrows -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+
+    <!-- Initialize Swiper -->
+    <script>
+    var swiper = new Swiper('.swiper-container', {
+        pagination: '.swiper-pagination',
+        nextButton: '.swiper-button-next',
+        prevButton: '.swiper-button-prev',
+        paginationClickable: true,
+        spaceBetween: 30,
+        centeredSlides: true,
+        autoplay: 2500,
+        autoplayDisableOnInteraction: false
+    });
+    </script>
+</section>

@@ -34,11 +34,12 @@
 {{ $worksPage := first 1 (where .Site.RegularPages "Layout" "eq" "works")}}
 
 <div class="container">
+    {{ partial "series/index.html" }}
     <section>
         <h2>
             最新文章
             {{ range $archivesPage }}
-            <a class="section-button" href="{{ .RelPermalink }}">浏览全部</a>
+            <a class="section-button" href="{{ .RelPermalink }}">更多</a>
             {{ end }}
         </h2>
         <div class="posts">
@@ -60,7 +61,7 @@
         <h2>
         最近项目
         {{ range $worksPage }}
-            <a class="section-button" href="{{ .RelPermalink }}">浏览全部</a>
+            <a class="section-button" href="{{ .RelPermalink }}">更多</a>
         {{ end }}
         </h2>
         <div class="projects">

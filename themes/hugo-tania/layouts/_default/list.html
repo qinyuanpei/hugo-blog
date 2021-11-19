@@ -7,7 +7,7 @@
   <div class="container">
     <h1>{{ .Title }}</h1>
     <p class="subtitle">
-      <span class="count">{{ len .Pages }}</span> posts found.
+      共 <span class="count">{{ len .Pages }}</span> 篇文章
     </p>
   </div>
 </header>
@@ -43,12 +43,12 @@
     <nav class="pagination">
       {{- if $paginator.HasPrev}}
       <div class="prev-page">
-        <a href="{{ $paginator.Prev.URL }}">Previous Page</a>
+        <a href="{{ $paginator.Prev.URL }}">上一页</a>
       </div>
       {{ end }}
       {{- if $paginator.HasNext}}
       <div class="next-page">
-        <a href="{{ $paginator.Next.URL }}">Next Page</a>
+        <a href="{{ $paginator.Next.URL }}">下一页</a>
       </div>
       {{ end }}
     </nav>

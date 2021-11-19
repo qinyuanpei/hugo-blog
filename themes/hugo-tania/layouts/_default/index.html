@@ -6,6 +6,7 @@
             {{ with .Content }}
             {{ . }}
             {{ end }}
+            {{ .Site.Params.siteDesc }}
             <div class="bio-social">
                 {{ range $name, $path := $.Param "socialOptions" }}
                 {{ if (and $path (ne $name "email")) }}
@@ -52,7 +53,10 @@
                         <time>{{ .Date.Format "Jan 02" }}</time>
                         <h3>{{ .Title }}</h3>
                     </div>
-                    <div class="new-post">New!</div>
+                    {{ $thresholdDate := now.AddDate 0 0 -15 }}
+                    {{ if ge .Date $thresholdDate }}
+                        <div class="new-post">New!</div>
+                    {{ end }}
                 </a>
             </div>
             {{ end }}
@@ -77,7 +81,7 @@
                     <div class="description">{{ substr .description  0 50 }}...</div>
                 </div>
                 <div class="flex">
-                    <a href="{{ .link }}" class="button" target="_blank" rel="noreferrer">浏览</a>
+                    <a href="{{ .link }}" class="button" target="_blank" rel="noreferrer">查看</a>
                 </div>
             </div>
             {{ end }}

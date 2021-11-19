@@ -18,7 +18,7 @@ params:
   enableFootnotes: true
   
   siteName: "Hugo Tania is Amazing"
-  siteDesc: "Hugo is Absurdly Fast!"
+  siteDesc: "纵有疾风起，人生不言弃"
   author: "飞鸿踏雪"
   avatar: "/imgs/avatar.jpg"
 
@@ -78,12 +78,16 @@ menu:
   header:
     - name: 文章
       url: "/articles/"
+      sort: 0
     - name: 分类
       url: "/categories"
+      sort: 1
     - name: 标签
       url: "/tags"
+      sort: 2
     - name: 实验室
       url: "/works"
+      sort: 3
   footer:
     - name: RSS
       url: "/index.xml"

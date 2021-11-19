@@ -21,6 +21,7 @@
 <script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"使用 C#开发 HTTP 服务器系列之实现 Get 和 Post","author":{"@type":"Person","name":"Hugo Tania"},"datePublished":"2016-06-11","description":"\"分割该行数据以后就可以得到“num1=23\u0026num2=12”这样的结果，这里我们使用一个方法 GetRequestParms 来返回参数字典，这样作做是为了复用方法，因为在处理 Post 请求的时候我们会继续使用这个方法;例如我们传递的两个参数 num1 和 num2 对应的数值分别是 12 和 24，那么在具体的请求报文中我们都能找到类似“num1=12\u0026num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦;num1=23\u0026num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了","wordCount":580,"mainEntityOfPage":"True","dateModified":"2016-06-11","publisher":{"@type":"Organization","name":"Hugo Tania","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=stylesheet href=/sass/main.min.96fbd631b4f7bc732b62b3bac895a5ebe0b03a9659fda7b5eed1cbdd848aa5a6.css>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css>
 </head>
 <script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
 <body class=dark>

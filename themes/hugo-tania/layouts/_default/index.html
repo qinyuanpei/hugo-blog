@@ -2,6 +2,9 @@
 
 <div class="container">
     <section class="my">
+        <div class="avatar">
+            <img src="{{ .Site.Params.avatar }}"/>
+        </div>
         <div class="content">
             {{ with .Content }}
             {{ . }}

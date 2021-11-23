@@ -21,7 +21,7 @@
 <meta property="article:published_time" content="2016-01-15T12:30:41Z">
 <script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"在 Unity3D 中基于订阅者模式实现事件机制","author":{"@type":"Person","name":"飞鸿踏雪"},"datePublished":"2016-01-15","description":"注意到在这个“通知中心”中，我们首先实现了单例模式，这样我们可以通过 Get 方法来获取该“通知中心”的唯一实例，其次这里利用一个字典来存储对所有事件的引用，这样保证外部可以通过 AddEventListener 和 RemoveEventListener 这两个方法来进行事件的添加和移除，对于添加的事件引用我们可以通过 DispatchEvent 方法来分发一个事件，事件的回调函数采用委托来实现，注意到这个委托需要一个 Notification 类型，对该类型简单定义如下：;public void DispatchEvent(string eventKey, GameObject sender, object param);public void DispatchEvent(string eventKey,object param)","wordCount":690,"mainEntityOfPage":"True","dateModified":"2016-01-15","publisher":{"@type":"Organization","name":"飞鸿踏雪","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.7330223b99fa34948647b178a55493f170d5b4022446f138557450fef3fe3b0c.css>
+<link rel=stylesheet href=/sass/main.min.c048931a814ec810f04d01ce156061702ffbb22e65d346e21b90cd31640ca7ba.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
 <script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
 </head>
@@ -37,6 +37,7 @@
 </div>
 <div class=flex>
 <a href=/categories>分类</a>
+<a href=/friends>友链</a>
 <a href=/works>实验室</a>
 <a href=/archives>归档</a>
 <a href=/tags>标签</a>

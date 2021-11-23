@@ -13,14 +13,12 @@
             <div class="bio-social">
                 {{ range $name, $path := $.Param "socialOptions" }}
                 {{ if (and $path (ne $name "email")) }}
-                <a href="{{ $path | safeURL }}" target="_blank" rel="noreferrer" title="{{ $name }}"
-                    aria-label="{{ $name }}">
+                <a href="{{ $path | safeURL }}" target="_blank" rel="noreferrer">
                     {{ partial (print "svgs/social/" $name ".svg") (dict "width" 25 "height" 25) }}
                 </a>
                 {{ end }}
                 {{ if (and $path (eq $name "email")) }}
-                <a href="mailto:{{ $path | safeURL }}" target="_blank" rel="noreferrer" title="{{ $path }}"
-                    aria-label="{{ $name }}">
+                <a href="mailto:{{ $path | safeURL }}" target="_blank" rel="noreferrer">
                     {{ partial (print "svgs/social/" $name ".svg") (dict "width" 25 "height" 25) }}
                 </a>
                 {{ end }}
@@ -43,7 +41,7 @@
     {{ partial "series/index.html" $columns }}
     <section>
         <h2>
-            最新文章
+            文章
             {{ range $archivesPage }}
             <a class="section-button" href="{{ .RelPermalink }}">更多</a>
             {{ end }}
@@ -53,7 +51,7 @@
             <div class="post">
                 <a href="{{ .RelPermalink }}">
                     <div class="post-row">
-                        <time>{{ .Date.Format "Jan 02" }}</time>
+                        <time>{{ .Date.Format .Site.Params.dateFormat }}</time>
                         <h3>{{ .Title }}</h3>
                     </div>
                     {{ $thresholdDate := now.AddDate 0 0 -15 }}
@@ -68,7 +66,7 @@
     {{ if gt (len $works) 0}}
     <section>
         <h2>
-        最近项目
+        项目
         {{ range $worksPage }}
             <a class="section-button" href="{{ .RelPermalink }}">更多</a>
         {{ end }}

@@ -22,6 +22,8 @@ params:
   author: "飞鸿踏雪"
   avatar: "/imgs/avatar.jpg"
 
+  dateFormat: "2006-01-02"
+
   footer:
     sinceYear: 2014
 

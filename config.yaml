@@ -90,6 +90,9 @@ menu:
     - name: 实验室
       url: "/works"
       sort: 3
+    - name: 友链
+      url: "/friends"
+      sort: 4
   footer:
     - name: RSS
       url: "/index.xml"

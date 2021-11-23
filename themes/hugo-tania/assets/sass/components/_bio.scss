@@ -1,8 +1,7 @@
 .my {
-
     padding-top: 1.5rem;
     text-align: center;
-    
+
     a {
         border: none;
         margin-right: 1rem;
@@ -13,23 +12,26 @@
     }
 
     .icon {
-        fill: #8a8a8a
+        fill: #8a8a8a;
     }
 
     .icon:hover {
-        fill: #2c2c2c
+        fill: #2c2c2c;
     }
 
     .avatar {
-        display: block;
-        width: 90px;
-        height: 90px;
-        border: 2px solid #fff;
-        border-radius: 50%;
-        overflow: hidden;
-        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-        margin-bottom: .5rem;
-        text-align: center;
+        display: flex;
+        justify-content: center;
         align-items: center;
+        margin-top: 1.0rem;
+        margin-bottom: 0.5rem;
+
+        img {
+            width: 90px;
+            height: 90px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            overflow: hidden;
+        }
     }
 }

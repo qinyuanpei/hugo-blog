@@ -1,13 +1,11 @@
 .swiper-container {
     width: 100%;
     height: 100%;
-    
 }
 .swiper-slide {
     text-align: center;
     font-size: 18px;
-    background: #fff;
-    
+
     /* Center slide text vertically */
     display: -webkit-box;
     display: -ms-flexbox;
@@ -22,3 +20,11 @@
     -webkit-align-items: center;
     align-items: center;
 }
+
+// .swiper-button-prev {
+//     background-size: 75% 75%;
+// }
+
+// .swiper-button-next {
+//     background-size: 75% 75%;
+// }

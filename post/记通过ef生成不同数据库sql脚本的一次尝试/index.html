@@ -21,7 +21,7 @@
 <meta property="article:published_time" content="2018-09-17T09:42:23Z">
 <script defer type=application/ld+json>{"@context":"http://schema.org","@type":"Article","headline":"记通过 EF 生成不同数据库 SQL 脚本的一次尝试","author":{"@type":"Person","name":"飞鸿踏雪"},"datePublished":"2018-09-17","description":"好了，顺着这个思路，我们就会想到在 ORM 中添加拦截器或者是日志的方式，来获得由 ORM 生成的 SQL 语句，这里我们以 Entity Framework(以下简称 EF)为例，这是.NET 中最常见的 ORM，因为目前官方的 Web 开发框架有 ASP.NET 和 ASP.NET Core 两个版本，所以这里我们分别以 ASP.NET 和 ASP.NET Core 为例来说明具体的实现过程，相应地，我们分别使用了 EF6 和 EF Core 作为各自的 ORM;我们说过，ILoggerProvider 接口决定在什么情况下应该提供什么样的 Logger，我们注意到它提供了一个 CreateLogger()的方法，它会根据 categoryName 来返回不同的 Logger，而参数 categoryName 实际上等价与 nameof(FooController)，所以，到这里我们就会明白，为什么这里要判断 categoryName 了，它实际上起一个过滤的作用，因为我们只需要 SQL 相关的日志，它和 SQLGenLogger 中的 state 相对应，我们已经说过，这是博主试出来的;这篇文章主要介绍如何利用 EF 来生成不同数据库的 SQL 脚本，对 EF6 来说，需要继承 DbCommandInterecptor 类编写拦截器","wordCount":542,"mainEntityOfPage":"True","dateModified":"2018-09-17","publisher":{"@type":"Organization","name":"飞鸿踏雪","logo":{"@type":"imageObject","url":"https:\/\/example.com\/favicon.ico"}}}</script>
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.e85bf134e068b82330af3bfd4198c923fba89c192310097bdf6a7a9c43449306.css>
+<link rel=stylesheet href=/sass/main.min.7330223b99fa34948647b178a55493f170d5b4022446f138557450fef3fe3b0c.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
 <script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
 </head>
@@ -38,7 +38,7 @@
 <div class=flex>
 <a href=/categories>分类</a>
 <a href=/works>实验室</a>
-<a href=/articles/>文章</a>
+<a href=/archives>归档</a>
 <a href=/tags>标签</a>
 <button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
 </button>
@@ -55,7 +55,7 @@
 <h1>记通过 EF 生成不同数据库 SQL 脚本的一次尝试</h1>
 <div class=post-meta>
 <div>
-By 飞鸿踏雪 | <time>September 17, 2018</time>
+By 飞鸿踏雪 | <time>2018-09-17</time>
 | 3 minutes
 </div>
 <div class=tags>

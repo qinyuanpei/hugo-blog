@@ -24,6 +24,7 @@ params:
 
   dateFormat: "2006-01-02"
 
+
   footer:
     sinceYear: 2014
 
@@ -74,15 +75,11 @@ params:
       guest_info: nick,mail,link # Comment header info
       pageSize: 10 # comment list page size
       requiredFields: ['nick','mail']
-  
-  works:
-    - title:
-      
 
 menu:
   header:
-    - name: 文章
-      url: "/articles/"
+    - name: 归档
+      url: "/archives"
       sort: 0
     - name: 分类
       url: "/categories"

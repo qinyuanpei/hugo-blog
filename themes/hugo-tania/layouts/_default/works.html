@@ -8,10 +8,8 @@
 </header>
 
 <section>
-    <div class="container">
-        {{ $works := .Site.Data.portfolio.items }}
-        {{ partial "works/works.html" $works }}
-    </div>
+    {{ $works := .Site.Data.portfolio.items }}
+    {{ partial "works/works.html" $works }}
 </section>
 
 {{ end }}

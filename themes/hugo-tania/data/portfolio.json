@@ -3,7 +3,7 @@
       {
         "title": "FakeRPC",
         "date": "2021.06",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-fake-rpc.png",
         "subTitle": "",
         "description": "一个基于 ASP.NET Core 的轻量级 RPC 框架，因其通信建立在 HTTP 协议而非 TCP/IP 协议上，故不能称之为真正的 RPC 框架。由此得名：FakeRPC。",
@@ -17,7 +17,7 @@
       {
         "title": "Grpc-Gateway",
         "date": "2021.07",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-grpc-gateway.png",
         "subTitle": "",
         "description": "一个基于 ASP.NET Core 终结点路由打造的扩展，可以让你像调用一个 JSON API 一样调用 gRpc。",
@@ -31,7 +31,7 @@
       {
         "title": "半泽直树原著小说人物关系抽取",
         "date": "2020.12",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-graph-relation.png",
         "subTitle": "",
         "description": "基于共现理论提取《半泽直树》原著小说人物关系，技术栈为Python，辅助工具为Gephi",
@@ -45,7 +45,7 @@
       {
         "title": "WebGL交互案例(Demo)",
         "date": "2020.09",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-bmap-gl.png",
         "subTitle": "",
         "description": "基于WebGL的大量覆盖物交互案例，采用百度地图JavaScript API GL开发，经测试可支持8000到10000左右的点同屏展示",
@@ -59,7 +59,7 @@
       {
         "title": "The Matrix",
         "date": "2020.07",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-the-matrix.gif",
         "subTitle": "",
         "description": "黑客帝国经典数字雨动画",
@@ -73,7 +73,7 @@
       {
         "title": "访客信息&地理可视化",
         "date": "2020.03",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-visitor-map-visualization.png",
         "subTitle": "",
         "description": "访客信息&地理可视化，基于AntV的L7，访客数据来自个人博客：https://blog.yuanpei.me/",
@@ -87,7 +87,7 @@
       {
         "title": "LeanCloud-Counter",
         "date": "2019.09",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-leancloud-counter.png",
         "subTitle": "",
         "description": "基于LeanCloud的访问量统计工具，理论上可以接入任意站点，支持PV和UV统计、访客地理位置(https://api.ip.sb)、UserAgent(UAParser.js)等信息的统计功能。",
@@ -101,7 +101,7 @@
       {
         "title": "WallPaper",
         "date": "2019.01",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portolios-wallpaper.gif",
         "subTitle": "",
         "description": "一个基于Python的Windows下的壁纸更换工具，支持以扩展的方式从不同源上抓取壁纸。目前已支持以下站点：Unsplash、必应壁纸、WallHaven、国家地理。",
@@ -115,7 +115,7 @@
       {
         "title": "男女性择偶观数据分析",
         "date": "2018.03",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-weibo-analyse.jpg",
         "subTitle": "",
         "description": "一个使用Python + SQLite抓取并分析新浪微博数据的项目，通过抓取@西安月老牵线的微博来分析男女性的择偶观，使用朴素贝叶斯进行特征提取和文本分类，使用matplotlib对数据进行了可视化。",
@@ -129,7 +129,7 @@
       {
         "title": "微信好友数据分析",
         "date": "2017.12",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-wechat-analyse.jpg",
         "subTitle": "",
         "description": "一个使用itchat获取微信好友信息，然后通过Python进行数据分析及可视化的项目，该项目从性别、头像、签名、地区四个维度对好友信息进行分析，使用matplotlib及BDP个人版绘制相关图表。",
@@ -143,7 +143,7 @@
       {
         "title": "仙剑同人游戏(Demo)",
         "date": "2016.3",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-rpg-game-demo.jpg",
         "subTitle": "",
         "description": "一个由一群仙剑爱好者发起的同人游戏，剧情设定在《仙剑奇侠传四》结局前100年时间内，该Demo实现了一个RPG游戏中所具备的基本元素，譬如关卡系统、装备系统、背包系统、剧情系统等等。因为个人精力有限，该项目于2017年被迫中止。",
@@ -157,7 +157,7 @@
       {
         "title": "塔防小游戏(Demo)",
         "date": "2015.10",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portolios-td-game-demo.gif",
         "subTitle": "",
         "description": "该游戏是用使用《保卫萝卜》的素材制作的一款简单的塔防游戏，在这个游戏中实现一个基础的塔防游戏的框架,可以使用Unity3D的编辑器来编辑和生成地图、敌人寻路路径等，可以通过配置Xml文件来设置敌人的攻击序列，实现了防守单位的AI和防守单位的部署等功能。",
@@ -171,7 +171,7 @@
       {
         "title": "奔跑吧！妹子(Demo)",
         "date": "2015.9",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-running-girl.png",
         "subTitle": "",
         "description": "该游戏是使用开源项目Lufylegend中的游戏素材，利用Unity3D游戏引擎重新制作的跑酷游戏，在这个游戏中玩家将变成一个奔跑的妹子，向着终点不断奔跑，在奔跑的过程中可以收集金币和勋章，基本上实现了一个完整的跑酷游戏。",
@@ -185,7 +185,7 @@
       {
         "title": "贪吃蛇小游戏(Demo)",
         "date": "2014.6",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-snake-game.png",
         "subTitle": "",
         "description": "一个使用Love2D/Lua游戏引擎制作的贪吃蛇小游戏，其核心内容是将蛇的运动和数据结构联系起来，即将集合中的最后一个元素移动到首位，开发这个小游戏主要是为了学习Love2D引擎。事实证明，这是一个非常出色的2D游戏引擎。",
@@ -199,7 +199,7 @@
       {
         "title": "MetroPlayer",
         "date": "2011.9",
-        "icon": "📝",
+        "icon": "",
         "cover": "https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@master/assets/images/portfolios/portfolio-metro-music.png",
         "subTitle": "",
         "description": "一个使用C#开发的音乐播放器，具备一个音乐播放器的基本功能，可以按照用户的收听习惯智能地调整播放列表。通过该项目验证了两个想法:Xml4DB和JSON4DB，掌握了音频播放、歌词显示、ID3v1/ID3v2等技术。",

@@ -76,7 +76,9 @@
             <div class="project">
                 <div>
                     <a href="{{ .link }}" target="_blank" rel="noreferrer">
+                        {{ if .icon }}
                         <div class="icon">{{ .icon }}</div>
+                        {{ end }}
                         <h3>{{ .title }}</h3>
                     </a>
                     <div class="description">{{ substr .description  0 50 }}...</div>

@@ -93,6 +93,12 @@ menu:
     - name: 友链
       url: "/friends"
       sort: 4
+    - name: 读书
+      url: "/books"
+      sort: 5
+    - name: 观影
+      url: "/movies"
+      sort: 6
   footer:
     - name: RSS
       url: "/index.xml"

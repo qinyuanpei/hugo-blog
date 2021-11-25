@@ -16,7 +16,7 @@
 <meta itemprop=description content=" 对具体观察者而言，我们需要做的就是继承 Observer 类然后重写 Update 方法，在这里我们需要实现两个不同的类 EmailObserver 和 WechatObserver，它们分别来实现邮件和公众号接收到主题推送消息以后的逻辑，这里以 EmailObserver 为例，代码实现如下：;在这里，我们订阅的公众号称为&#34;主题&#34;，而我们则称为&#34;观察者&#34;或者&#34;订阅者&#34;，而这正是观察者模式又被称为&#34;发布-订阅模式&#34;的原因所在，这种定义了一种一对多的依赖关系，让多个观察者同时监听同一个主题对象，当该主题对象在状态发生变化时，会通知所有观察者对象并使其自动更新自己的设计模式就被称为&#34;观察者模式&#34;;这个场景可以看出&#34;推送模式&#34;让订阅者饱受消息骚扰，而为了解决这个问题，我们就有了&#34;拉取模式&#34;，此时主题仅仅是告诉观察者博客内容有更新，而更新的内容需要观察者自己去处理，这种模式大同小异，大家可以参照&#34;推送模式&#34;来自己实现 ">
 <meta property="og:description" content=" 对具体观察者而言，我们需要做的就是继承 Observer 类然后重写 Update 方法，在这里我们需要实现两个不同的类 EmailObserver 和 WechatObserver，它们分别来实现邮件和公众号接收到主题推送消息以后的逻辑，这里以 EmailObserver 为例，代码实现如下：;在这里，我们订阅的公众号称为&#34;主题&#34;，而我们则称为&#34;观察者&#34;或者&#34;订阅者&#34;，而这正是观察者模式又被称为&#34;发布-订阅模式&#34;的原因所在，这种定义了一种一对多的依赖关系，让多个观察者同时监听同一个主题对象，当该主题对象在状态发生变化时，会通知所有观察者对象并使其自动更新自己的设计模式就被称为&#34;观察者模式&#34;;这个场景可以看出&#34;推送模式&#34;让订阅者饱受消息骚扰，而为了解决这个问题，我们就有了&#34;拉取模式&#34;，此时主题仅仅是告诉观察者博客内容有更新，而更新的内容需要观察者自己去处理，这种模式大同小异，大家可以参照&#34;推送模式&#34;来自己实现 ">
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.30dfc79b16257ec78e2f14533e44eee3d74b63c4116ff3ab57f796a8390aa72a.css>
+<link rel=stylesheet href=/sass/main.min.1a52f9d37d8f2922420ea5bfdbaf53035c201a8b73db34608d1e62dfd4c0a49b.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
 <script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
 </head>
@@ -36,6 +36,8 @@
 <a href=/works>实验室</a>
 <a href=/archives>归档</a>
 <a href=/tags>标签</a>
+<a href=/movies>观影</a>
+<a href=/books>读书</a>
 <button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
 </button>
 </div>

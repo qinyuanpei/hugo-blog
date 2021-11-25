@@ -1,0 +1,562 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
+<title>ABP vNext 的实体与服务扩展技巧分享 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="ABP vNext 的实体与服务扩展技巧分享 | 元培的部落格">
+<meta itemprop=name content="ABP vNext 的实体与服务扩展技巧分享 | 元培的部落格">
+<meta name=twitter:title content="ABP vNext 的实体与服务扩展技巧分享 | 元培的部落格">
+<meta name=application-name content="ABP vNext 的实体与服务扩展技巧分享 | 元培的部落格">
+<meta name=description content="纵有疾风起，人生不言弃">
+<meta name=twitter:description content="纵有疾风起，人生不言弃">
+<meta itemprop=description content="纵有疾风起，人生不言弃">
+<meta property="og:description" content="纵有疾风起，人生不言弃">
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.30dfc79b16257ec78e2f14533e44eee3d74b63c4116ff3ab57f796a8390aa72a.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
+<script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/categories>分类</a>
+<a href=/friends>友链</a>
+<a href=/works>实验室</a>
+<a href=/archives>归档</a>
+<a href=/tags>标签</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>ABP vNext 的实体与服务扩展技巧分享</h1>
+<div class=post-meta>
+<div>
+By 飞鸿踏雪 | <time>2021-04-18</time>
+| 4 minutes
+</div>
+<div class=tags>
+<a href=/tags/abp/>ABP</a>
+<a href=/tags/%E6%89%A9%E5%B1%95/>扩展</a>
+<a href=/tags/%E5%AE%9E%E4%BD%93/>实体</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1/>服务</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>使用 <a href=https://github.com/abpframework/abp>ABP vNext</a> 有一个月左右啦，这中间最大的一个收获是：ABP vNext 的开发效率真的是非常好，只要你愿意取遵循它模块化、DDD 的设计思想。因为官方默认实现了身份、审计、权限、定时任务等等的模块，所以，ABP vNext 是一个开箱即用的解决方案。通过脚手架创建的项目，基本具备了一个专业项目该有的“<strong>五脏六腑</strong>”，而这可以让我们专注于业务原型的探索。例如，博主是尝试结合 <a href=https://www.antdv.com/docs/vue/introduce-cn/>Ant Design Vue</a> 来做一个通用的后台管理系统。话虽如此，我们在使用 ABP vNext 的过程中，还是希望可以针对性地对 ABP vNext 进行扩展，毕竟 ABP vNext 无法 100% 满足我们的使用要求。所以，在今天这篇博客中，我们就来说说 ABP vNext 中的扩展技巧，这里主要是指实体扩展和服务扩展这两个方面。我们经常在讲“<strong>开闭原则</strong>”，可扪心自问，我们每次修改代码的时候，是否真正做到了“<strong>对扩展开放，对修改关闭</strong>”呢？ 所以，在面对扩展这个话题时，我们不妨来一起看看 ABP vNext 中是如何实践“<strong>开闭原则</strong>”。</p>
+<h1 id=扩展实体>
+<a href=#%e6%89%a9%e5%b1%95%e5%ae%9e%e4%bd%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+扩展实体
+</h1>
+<p>首先，我们要说的是扩展实体，什么是实体呢？这其实是领域驱动设计(<strong>DDD</strong>)中的概念，相信对于实体、聚合根和值对象，大家早就耳熟能详了。在 ABP vNext 中，实体对应的类型为<code>Entity</code>，聚合根对应的类型为<code>AggregateRoot</code>。所以，你可以片面地认为，只要继承自<code>Entity</code>基类的类都是实体。通常，实体都会有一个唯一的标识(<strong>Id</strong>)，所以，订单、商品或者是用户，都属于实体的范畴。不过，按照业务边界上的不同，它们会在核心域、支撑域和通用域三者间频繁切换。而对于大多数系统而言，用户都将是一个通用的域。在 ABP vNext 中，其用户信息由<code>AbpUsers</code>表承载，它在架构上定义了<code>IUser</code>接口，借助于EF Core的表映射支持，我们所使用的<code>AppUser</code>本质上是映射到了<code>AbpUsers</code>表中。针对实体的扩展，在面向数据库编程的业务系统中，一个最典型的问题就是，我怎么样可以给<code>AppUser</code>添加字段。所以，下面我们以<code>AppUser</code>为例，来展示如何对实体进行扩展。</p>
+<p><img loading=lazy src=https://i.loli.net/2021/04/19/dtANSYQqyDz9blw.jpg alt="DDD 中的实体、聚合根与值对象"></p>
+<p>实际上，ABP vNext 中提供了2种方式，来解决实体扩展的问题，它们分别是：<strong>Extra Properties</strong> 和 <strong>基于 EF Core 的表映射</strong>。在 <a href=https://docs.abp.io/zh-Hans/abp/latest/Customizing-Application-Modules-Extending-Entities>官方文档</a> 中，我们会得到更加详细的信息，这里简单介绍一下就好：</p>
+<h2 id=extra-properties>
+<a href=#extra-properties class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+Extra Properties
+</h2>
+<p>对于第1种方式，它要求我们必须实现<code>IHasExtraProperties</code>接口，这样我们就可以使用<code>GetProperty()</code>和<code>SetProperty()</code>两个方法，其原理是，将这些扩展字段以<code>JSON</code>格式存储在<code>ExtraProperties</code>这个字段上。如果使用<code>MongoDB</code>这样的非关系型数据库，则这些扩展字段可以单独存储。参考示例如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>// 设置扩展字段
+</span><span class=c1></span><span class=kt>var</span> <span class=n>user</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>identityUserRepository</span><span class=p>.</span><span class=n>GetAsync</span><span class=p>(</span><span class=n>userId</span><span class=p>);</span>
+<span class=n>user</span><span class=p>.</span><span class=n>SetProperty</span><span class=p>(</span><span class=s>&#34;Title&#34;</span><span class=p>,</span> <span class=s>&#34;起风了，唯有努力生存&#34;</span><span class=p>);</span>
+<span class=k>await</span> <span class=m>_</span><span class=n>identityUserRepository</span><span class=p>.</span><span class=n>UpdateAsync</span><span class=p>(</span><span class=n>user</span><span class=p>);</span>
+
+<span class=c1>// 读取扩展字段
+</span><span class=c1></span><span class=kt>var</span> <span class=n>user</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>identityUserRepository</span><span class=p>.</span><span class=n>GetAsync</span><span class=p>(</span><span class=n>userId</span><span class=p>);</span>
+<span class=k>return</span> <span class=n>user</span><span class=p>.</span><span class=n>GetProperty</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;(</span><span class=s>&#34;Title&#34;</span><span class=p>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以想象得到，这种方式使用起来没有心智方面的困扰，主要问题是，这些扩展字段不利于关系型数据库的查询。其次，完全以字符串形式存在的键值对，难免存在数据类型的安全性问题。博主的上家公司，在面对这个问题时，采用的方案就是往数据库里加备用字段，从起初的5个，变成后来的10个，最后甚至变成20个，先不说这没完没了的加字段，代码中一直避不开的，其实是各种字符串的<strong>Parse</strong>/<strong>Convert</strong>，所以，大家可以自己去体会这其中的痛苦。</p>
+<h2 id=基于-ef-core-的表映射>
+<a href=#%e5%9f%ba%e4%ba%8e-ef-core-%e7%9a%84%e8%a1%a8%e6%98%a0%e5%b0%84 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+基于 EF Core 的表映射
+</h2>
+<p>对于第2种方式，主要指 EF Core 里的“<strong>表拆分</strong>”或者“<strong>表共享</strong>”，譬如，当我们希望单独创建一个实体<code>SysUser</code>来替代默认的<code>AppUser</code>时，这就是表拆分，因为同一张表中的数据，实际上是被<code>AppUser</code>和<code>SysUser</code>共享啦，或者，你可以将其理解为，EF Core配置两个不同的实体时，它们的<code>ToTable()</code>方法都指向了同一张表。这里唯一不同的是，ABP vNext 中提供了一部分方法用来处理问题，因为牵扯到数据库，所以，还是需要“迁移”。下面，我们以给<code>AppUser</code>扩展两个自定义字段为例：</p>
+<p>首先，我们给<code>AppUser</code>类增加两个新属性，<code>Avatar</code> 和 <code>Profile</code>:</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>AppUser</span> <span class=p>:</span> <span class=n>FullAuditedAggregateRoot</span><span class=p>&lt;</span><span class=n>Guid</span><span class=p>&gt;,</span> <span class=n>IUser</span>
+<span class=p>{</span>
+    <span class=c1>// ...
+</span><span class=c1></span>
+    <span class=k>public</span> <span class=k>virtual</span> <span class=kt>string</span> <span class=n>Profile</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>private</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>public</span> <span class=k>virtual</span> <span class=kt>string</span> <span class=n>Avatar</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>private</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+
+    <span class=c1>//  ...
+</span><span class=c1></span>
+</code></pre></td></tr></table>
+</div>
+</div><p>接下来，按照 EF Core 的“<strong>套路</strong>”，我们需要配置下这两个新加的字段：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=n>builder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>AppUser</span><span class=p>&gt;(</span><span class=n>b</span> <span class=p>=&gt;</span>
+<span class=p>{</span>
+    <span class=c1>// AbpUsers
+</span><span class=c1></span>    <span class=c1>// Sharing the same table &#34;AbpUsers&#34; with the IdentityUser
+</span><span class=c1></span>    <span class=n>b</span><span class=p>.</span><span class=n>ToTable</span><span class=p>(</span><span class=n>AbpIdentityDbProperties</span><span class=p>.</span><span class=n>DbTablePrefix</span> <span class=p>+</span> <span class=s>&#34;Users&#34;</span><span class=p>);</span> 
+
+    <span class=n>b</span><span class=p>.</span><span class=n>ConfigureByConvention</span><span class=p>();</span>
+    <span class=n>b</span><span class=p>.</span><span class=n>ConfigureAbpUser</span><span class=p>();</span>
+
+    <span class=c1>// Profile
+</span><span class=c1></span>    <span class=n>b</span><span class=p>.</span><span class=n>Property</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Profile</span><span class=p>)</span>
+      <span class=p>.</span><span class=n>HasMaxLength</span><span class=p>(</span><span class=n>AppUserConsts</span><span class=p>.</span><span class=n>MaxProfileLength</span><span class=p>)</span>
+      <span class=p>.</span><span class=n>HasColumnName</span><span class=p>(</span><span class=s>&#34;Profile&#34;</span><span class=p>);</span>
+    
+    <span class=c1>// Avatar
+</span><span class=c1></span>    <span class=n>b</span><span class=p>.</span><span class=n>Property</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Avatar</span><span class=p>)</span>
+      <span class=p>.</span><span class=n>HasMaxLength</span><span class=p>(</span><span class=n>AppUserConsts</span><span class=p>.</span><span class=n>MaxAvatarLength</span><span class=p>)</span>
+      <span class=p>.</span><span class=n>HasColumnName</span><span class=p>(</span><span class=s>&#34;Avatar&#34;</span><span class=p>);</span>
+<span class=p>});</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>接下来，通过<code>MapEfCoreProperty()</code>方法，将新字段映射到<code>IdentityUser</code>实体，你可以理解为，<code>AppUser</code>和<code>IdentityUser</code>同时映射到了<code>AbpUsers</code>这张表：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>// Avatar
+</span><span class=c1></span><span class=n>ObjectExtensionManager</span><span class=p>.</span><span class=n>Instance</span><span class=p>.</span><span class=n>MapEfCoreProperty</span><span class=p>&lt;</span><span class=n>IdentityUser</span><span class=p>,</span> <span class=kt>string</span><span class=p>&gt;(</span>
+    <span class=n>nameof</span><span class=p>(</span><span class=n>AppUser</span><span class=p>.</span><span class=n>Avatar</span><span class=p>),</span>
+    <span class=p>(</span><span class=n>entityBuilder</span><span class=p>,</span> <span class=n>propertyBuilder</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+    <span class=n>propertyBuilder</span><span class=p>.</span><span class=n>HasMaxLength</span><span class=p>(</span><span class=n>AppUserConsts</span><span class=p>.</span><span class=n>MaxAvatarLength</span><span class=p>);</span>
+<span class=p>});</span>
+
+<span class=c1>// Profile
+</span><span class=c1></span><span class=n>ObjectExtensionManager</span><span class=p>.</span><span class=n>Instance</span><span class=p>.</span><span class=n>MapEfCoreProperty</span><span class=p>&lt;</span><span class=n>IdentityUser</span><span class=p>,</span> <span class=kt>string</span><span class=p>&gt;(</span>
+      <span class=n>nameof</span><span class=p>(</span><span class=n>AppUser</span><span class=p>.</span><span class=n>Profile</span><span class=p>),</span>
+      <span class=p>(</span><span class=n>entityBuilder</span><span class=p>,</span> <span class=n>propertyBuilder</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+      <span class=n>propertyBuilder</span><span class=p>.</span><span class=n>HasMaxLength</span><span class=p>(</span><span class=n>AppUserConsts</span><span class=p>.</span><span class=n>MaxProfileLength</span><span class=p>);</span>
+<span class=p>});</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>既然，连数据库实体都做了扩展，那么，数据传输对象(<strong>DTO</strong>)有什么理由拒绝呢？</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=n>ObjectExtensionManager</span><span class=p>.</span><span class=n>Instance</span>
+    <span class=p>.</span><span class=n>AddOrUpdateProperty</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;(</span>
+        <span class=k>new</span><span class=p>[]</span>
+        <span class=p>{</span>
+            <span class=k>typeof</span><span class=p>(</span><span class=n>IdentityUserDto</span><span class=p>),</span>
+            <span class=k>typeof</span><span class=p>(</span><span class=n>IdentityUserCreateDto</span><span class=p>),</span>
+            <span class=k>typeof</span><span class=p>(</span><span class=n>IdentityUserUpdateDto</span><span class=p>),</span>
+            <span class=k>typeof</span><span class=p>(</span><span class=n>ProfileDto</span><span class=p>),</span>
+            <span class=k>typeof</span><span class=p>(</span><span class=n>UpdateProfileDto</span><span class=p>),</span>
+        <span class=p>},</span>
+        <span class=s>&#34;Avatar&#34;</span>
+    <span class=p>)</span>
+    <span class=p>.</span><span class=n>AddOrUpdateProperty</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;(</span>
+        <span class=k>new</span><span class=p>[]</span>
+        <span class=p>{</span>
+            <span class=k>typeof</span><span class=p>(</span><span class=n>IdentityUserDto</span><span class=p>),</span>
+            <span class=k>typeof</span><span class=p>(</span><span class=n>IdentityUserCreateDto</span><span class=p>),</span>
+            <span class=k>typeof</span><span class=p>(</span><span class=n>IdentityUserUpdateDto</span><span class=p>),</span>
+            <span class=k>typeof</span><span class=p>(</span><span class=n>ProfileDto</span><span class=p>),</span>
+            <span class=k>typeof</span><span class=p>(</span><span class=n>UpdateProfileDto</span><span class=p>)</span>
+        <span class=p>},</span>
+        <span class=s>&#34;Profile&#34;</span>
+    <span class=p>);</span>
+<span class=p>});</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>经过这一系列的“<strong>套路</strong>”，此时，我们会发现，新的字段已经生效：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/04/19/WExbQrs61ltcqzy.png alt="ABP vNext 实体扩展效果展示"></p>
+<h1 id=扩展服务>
+<a href=#%e6%89%a9%e5%b1%95%e6%9c%8d%e5%8a%a1 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+扩展服务
+</h1>
+<p>在 ABP vNext 中，我们还可以对服务进行扩展，得益于依赖注入的深入人心，我们可以非常容易地实现或者替换某一个接口，这里则指 ABP vNext 中的应用服务(ApplicationService)，例如，CrudAppService类可以帮助我们快速实现枯燥的增删改查，而我们唯一要做的，则是定义好实体的主键(<strong>Primary Key</strong>)、定义好实体的数据传输对象(<strong>DTO</strong>)。当我们发现 ABP vNext 中内置的模块或者服务，无法满足我们的使用要求时，我们就可以考虑对原有服务进行替换，或者是注入新的应用服务来扩展原有服务，这就是服务的扩展。在 ABP vNext 中，我们可以使用下面两种方法来对一个服务进行替换：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>// 通过[Dependency]和[ExposeServices]实现服务替换
+</span><span class=c1></span><span class=na>[Dependency(ReplaceServices = true)]</span>
+<span class=na>[ExposeServices(typeof(IIdentityUserAppService))]</span>
+<span class=k>public</span> <span class=k>class</span> <span class=nc>YourIdentityUserAppService</span> <span class=p>:</span> <span class=n>IIdentityUserAppService</span><span class=p>,</span> <span class=n>ITransientDependency</span>
+<span class=p>{</span>
+  <span class=c1>//...
+</span><span class=c1></span><span class=p>}</span>
+
+<span class=c1>// 通过ReplaceService实现服务替换
+</span><span class=c1></span><span class=n>context</span><span class=p>.</span><span class=n>Services</span><span class=p>.</span><span class=n>Replace</span><span class=p>(</span>
+    <span class=n>ServiceDescriptor</span><span class=p>.</span><span class=n>Transient</span><span class=p>&lt;</span><span class=n>IIdentityUserAppService</span><span class=p>,</span> <span class=n>YourIdentityUserAppService</span><span class=p>&gt;()</span>
+<span class=p>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里，博主准备的一个示例是，默认的用户查询接口，其返回信息中只有用户相关的字段，我们希望在其中增加角色、组织单元等关联信息，此时。我们可以考虑实现下面的应用服务：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>interface</span> <span class=n>IUserManageAppService</span>
+<span class=p>{</span>
+    <span class=n>Task</span><span class=p>&lt;</span><span class=n>PagedResultDto</span><span class=p>&lt;</span><span class=n>UserDetailQueryDto</span><span class=p>&gt;&gt;</span> <span class=n>GetUsersWithDetails</span><span class=p>(</span>
+      <span class=n>GetIdentityUsersInput</span> <span class=n>input</span>
+    <span class=p>);</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>首先，我们定义了<code>IUserManageAppService</code>接口，它含有一个分页查询的方法<code>GetUsersWithDetails()</code>。接下来，我们来考虑如何实现这个接口。需要说明的是，在 ABP vNext 中，仓储模式的支持由通用仓储接口<code>IRepository&lt;TEntity, TKey></code>提供，ABP vNext 会在<code>AddDefaultRepositories()</code>方法中为每一个聚合根注入对应的仓储。同样地，你可以按照个人喜好为指定的实体注入对应的仓储。由于ABP vNext 同时支持 <code>EF Core</code>、<code>Dapper</code> 和 <code>MongoDB</code>，所以，我们还可以使用<code>EfCoreRepository</code>、<code>DapperRepository</code> 以及 <code>MongoDbRepository</code>，它们都是<code>IRepository</code>的具体实现类。在下面的例子中，我们使用的是<code>EfCoreRepository</code>这个类。</p>
+<p>事实上，这里注入的<code>EfCoreIdentityUserRepository</code>、<code>EfCoreIdentityRoleRepository</code> 以及 <code>EfCoreOrganizationUnitRepository</code>，都是<code>EfCoreRepository</code>的子类，这使得我们可以复用 ABP vNext 中关于身份标识的一切基础设施，来实现不同于官方的业务逻辑，而这就是我们所说的服务的扩展。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=na>[Authorize(IdentityPermissions.Users.Default)]</span>
+<span class=k>public</span> <span class=k>class</span> <span class=nc>UserManageAppService</span> <span class=p>:</span> <span class=n>ApplicationService</span><span class=p>,</span> <span class=n>IUserManageAppService</span>
+<span class=p>{</span>
+    <span class=k>private</span> <span class=k>readonly</span> <span class=n>IdentityUserManager</span> <span class=m>_</span><span class=n>userManager</span><span class=p>;</span>
+    <span class=k>private</span> <span class=k>readonly</span> <span class=n>IOptions</span><span class=p>&lt;</span><span class=n>IdentityOptions</span><span class=p>&gt;</span> <span class=m>_</span><span class=n>identityOptions</span><span class=p>;</span>
+    <span class=k>private</span> <span class=k>readonly</span> <span class=n>EfCoreIdentityUserRepository</span> <span class=m>_</span><span class=n>userRepository</span><span class=p>;</span>
+    <span class=k>private</span> <span class=k>readonly</span> <span class=n>EfCoreIdentityRoleRepository</span> <span class=m>_</span><span class=n>roleRepository</span><span class=p>;</span>
+    <span class=k>private</span> <span class=k>readonly</span> <span class=n>EfCoreOrganizationUnitRepository</span> <span class=m>_</span><span class=n>orgRepository</span><span class=p>;</span>
+
+    <span class=k>public</span> <span class=n>UserManageAppService</span><span class=p>(</span>
+        <span class=n>IdentityUserManager</span> <span class=n>userManager</span><span class=p>,</span>
+        <span class=n>EfCoreIdentityRoleRepository</span> <span class=n>roleRepository</span><span class=p>,</span>
+        <span class=n>EfCoreIdentityUserRepository</span> <span class=n>userRepository</span><span class=p>,</span>
+        <span class=n>EfCoreOrganizationUnitRepository</span> <span class=n>orgRepository</span><span class=p>,</span>
+        <span class=n>IOptions</span><span class=p>&lt;</span><span class=n>IdentityOptions</span><span class=p>&gt;</span> <span class=n>identityOptions</span>
+    <span class=p>)</span>
+    <span class=p>{</span>
+        <span class=m>_</span><span class=n>userManager</span> <span class=p>=</span> <span class=n>userManager</span><span class=p>;</span>
+        <span class=m>_</span><span class=n>orgRepository</span> <span class=p>=</span> <span class=n>orgRepository</span><span class=p>;</span>
+        <span class=m>_</span><span class=n>userRepository</span> <span class=p>=</span> <span class=n>userRepository</span><span class=p>;</span>
+        <span class=m>_</span><span class=n>roleRepository</span> <span class=p>=</span> <span class=n>roleRepository</span><span class=p>;</span>
+        <span class=m>_</span><span class=n>identityOptions</span> <span class=p>=</span> <span class=n>identityOptions</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=na>
+</span><span class=na>    [Authorize(IdentityPermissions.Users.Default)]</span>
+    <span class=k>public</span> <span class=k>async</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>PagedResultDto</span><span class=p>&lt;</span><span class=n>UserDetailQueryDto</span><span class=p>&gt;&gt;</span> <span class=n>GetUsersWithDetails</span><span class=p>(</span>
+      <span class=n>GetIdentityUsersInput</span> <span class=n>input</span>
+    <span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>//Users
+</span><span class=c1></span>        <span class=kt>var</span> <span class=n>total</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>userRepository</span><span class=p>.</span><span class=n>GetCountAsync</span><span class=p>(</span><span class=n>input</span><span class=p>.</span><span class=n>Filter</span><span class=p>);</span>
+        <span class=kt>var</span> <span class=n>users</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>userRepository</span><span class=p>.</span><span class=n>GetListAsync</span><span class=p>(</span>
+          <span class=n>input</span><span class=p>.</span><span class=n>Sorting</span><span class=p>,</span> 
+          <span class=n>input</span><span class=p>.</span><span class=n>MaxResultCount</span><span class=p>,</span> 
+          <span class=n>input</span><span class=p>.</span><span class=n>SkipCount</span><span class=p>,</span> 
+          <span class=n>input</span><span class=p>.</span><span class=n>Filter</span><span class=p>,</span> 
+          <span class=n>includeDetails</span><span class=p>:</span> <span class=k>true</span>
+        <span class=p>);</span>
+
+        <span class=c1>//Roles
+</span><span class=c1></span>        <span class=kt>var</span> <span class=n>roleIds</span> <span class=p>=</span> <span class=n>users</span>
+          <span class=p>.</span><span class=n>SelectMany</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Roles</span><span class=p>)</span>
+          <span class=p>.</span><span class=n>Select</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>RoleId</span><span class=p>)</span>
+          <span class=p>.</span><span class=n>Distinct</span><span class=p>()</span>
+          <span class=p>.</span><span class=n>ToList</span><span class=p>();</span>
+        <span class=kt>var</span> <span class=n>roles</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>roleRepository</span>
+          <span class=p>.</span><span class=n>WhereIf</span><span class=p>(</span><span class=n>roleIds</span><span class=p>.</span><span class=n>Any</span><span class=p>(),</span> <span class=n>x</span> <span class=p>=&gt;</span> <span class=n>roleIds</span><span class=p>.</span><span class=n>Contains</span><span class=p>(</span><span class=n>x</span><span class=p>.</span><span class=n>Id</span><span class=p>))</span>
+          <span class=p>.</span><span class=n>ToListAsync</span><span class=p>();</span>
+
+        <span class=c1>//OrganizationUnits
+</span><span class=c1></span>        <span class=kt>var</span> <span class=n>orgIds</span> <span class=p>=</span> <span class=n>users</span>
+          <span class=p>.</span><span class=n>SelectMany</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>OrganizationUnits</span><span class=p>)</span>
+          <span class=p>.</span><span class=n>Select</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>OrganizationUnitId</span><span class=p>)</span>
+          <span class=p>.</span><span class=n>Distinct</span><span class=p>()</span>
+          <span class=p>.</span><span class=n>ToList</span><span class=p>();</span>
+        <span class=kt>var</span> <span class=n>orgs</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>orgRepository</span>
+          <span class=p>.</span><span class=n>WhereIf</span><span class=p>(</span><span class=n>orgIds</span><span class=p>.</span><span class=n>Any</span><span class=p>(),</span> <span class=n>x</span> <span class=p>=&gt;</span> <span class=n>orgIds</span><span class=p>.</span><span class=n>Contains</span><span class=p>(</span><span class=n>x</span><span class=p>.</span><span class=n>Id</span><span class=p>))</span>
+          <span class=p>.</span><span class=n>ToListAsync</span><span class=p>();</span>
+
+        <span class=kt>var</span> <span class=n>items</span> <span class=p>=</span> <span class=n>ObjectMapper</span><span class=p>.</span><span class=n>Map</span><span class=p>&lt;</span><span class=n>List</span><span class=p>&lt;</span><span class=n>Volo</span><span class=p>.</span><span class=n>Abp</span><span class=p>.</span><span class=n>Identity</span><span class=p>.</span><span class=n>IdentityUser</span><span class=p>&gt;,</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>UserDetailQueryDto</span><span class=p>&gt;&gt;(</span><span class=n>users</span><span class=p>);</span>
+
+        <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>item</span> <span class=k>in</span> <span class=n>items</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>role</span> <span class=k>in</span> <span class=n>item</span><span class=p>.</span><span class=n>Roles</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=kt>var</span> <span class=n>roleInfo</span> <span class=p>=</span> <span class=n>roles</span><span class=p>.</span><span class=n>FirstOrDefault</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Id</span> <span class=p>==</span> <span class=n>role</span><span class=p>.</span><span class=n>RoleId</span><span class=p>);</span>
+                <span class=k>if</span> <span class=p>(</span><span class=n>roleInfo</span> <span class=p>!=</span> <span class=k>null</span><span class=p>)</span>
+                    <span class=n>ObjectMapper</span><span class=p>.</span><span class=n>Map</span><span class=p>(</span><span class=n>roleInfo</span><span class=p>,</span> <span class=n>role</span><span class=p>);</span>
+            <span class=p>}</span>
+
+            <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>org</span> <span class=k>in</span> <span class=n>item</span><span class=p>.</span><span class=n>OrganizationUnits</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=kt>var</span> <span class=n>orgInfo</span> <span class=p>=</span> <span class=n>orgs</span><span class=p>.</span><span class=n>FirstOrDefault</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Id</span> <span class=p>==</span> <span class=n>org</span><span class=p>.</span><span class=n>OrganizationUnitId</span><span class=p>);</span>
+                <span class=k>if</span> <span class=p>(</span><span class=n>orgInfo</span> <span class=p>!=</span> <span class=k>null</span><span class=p>)</span>
+                    <span class=n>ObjectMapper</span><span class=p>.</span><span class=n>Map</span><span class=p>(</span><span class=n>orgInfo</span><span class=p>,</span> <span class=n>org</span><span class=p>);</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=k>new</span> <span class=n>PagedResultDto</span><span class=p>&lt;</span><span class=n>UserDetailQueryDto</span><span class=p>&gt;(</span><span class=n>total</span><span class=p>,</span> <span class=n>items</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里做一点补充说明，应用服务，即<code>ApplicationService</code>类，它集成了诸如<code>ObjectMapper</code>、<code>LoggerFactory</code>、<code>GuidGenerator</code>、国际化、<code>AsyncExecuter</code>等等的特性，继承该类可以让我们更加得心应手地编写代码。曾经，博主写过一篇关于“<strong>动态API</strong>”的<a href=https://blog.yuanpei.me/posts/4236649/>博客</a>，它可以为我们免去从 Service 到 Controller 的这一层封装，当时正是受到了ABP 框架的启发。当博主再次在 ABP vNext 中看到这个功能时，不免会感慨逝者如斯，而事实上，这个功能真的好用，真香！下面是经过改造以后的用户列表。考虑到，在上一篇博客里，博主已经同大家分享过分页查询方面的实现技巧，这里就不再展开讲啦！</p>
+<p><img loading=lazy src=https://i.loli.net/2021/04/19/B6SO8Wk4EVh3Pcx.png alt=对“用户服务”进行扩展></p>
+<h1 id=本文小结>
+<a href=#%e6%9c%ac%e6%96%87%e5%b0%8f%e7%bb%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+本文小结
+</h1>
+<p>我们时常说，"<strong>对修改关闭，对扩展开放</strong>"，"<strong>单一职责</strong>"，可惜这些原则最多就出现在面试环节。当你接触了真实的代码，你会发现"<strong>修改</strong>&ldquo;永远比&rdquo;<strong>扩展</strong>&ldquo;多，博主曾经就见到过，一个简单的方法因为频繁地&rdquo;<strong>打补丁</strong>"，最后变得面目全非。其实，有时候并不是维护代码的人，不愿意去"<strong>扩展</strong>"，而是写出可"<strong>扩展</strong>&ldquo;的代码会更困难一点，尤其是当所有人都不愿意去思考，一味地追求短平快，这无疑只会加速代码的腐烂。在这一点上，ABP vNext 提供了一种优秀的范例，这篇文章主要分享了 ABP vNext 中实体和服务的扩展技巧，<strong>实体扩展解决了如何为数据库表添加扩展字段的问题，服务扩展解决了如何为默认服务扩展功能的问题</strong>，尤其是后者，依赖注入在其中扮演着无比重要的角色。果然，这世上的事情，只有你真正在乎的时候，你才会愿意去承认，那些你曾经轻视过的东西，也许，它们是对的吧！好了，以上就是这篇博客的全部内容，欢迎大家在评论区留言，喜欢的话请记得点赞、收藏、一键三连。</p>
+</div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=/imgs/avatar.jpg>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/posts/abp-vnext-%E5%AF%B9%E6%8E%A5-ant-design-vue-%E5%AE%9E%E7%8E%B0%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2/ title=上一篇>
+<span>上一篇</span>
+ABP vNext 对接 Ant Design Vue 实现分页查询
+</a>
+<a rel=next href=/posts/snownlp%E4%BD%BF%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E8%AF%AD%E6%96%99%E8%BF%9B%E8%A1%8C%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83/ title=下一篇>
+<span>下一篇</span>
+SnowNLP 使用自定义语料进行模型训练
+</a>
+</nav>
+</div>
+<div class=container>
+<div id=comment></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://example.com/posts/abp-vnext-%E7%9A%84%E5%AE%9E%E4%BD%93%E4%B8%8E%E6%9C%8D%E5%8A%A1%E6%89%A9%E5%B1%95%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
+</nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021
+</div>
+<div class=footer-copyright>
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
+</section>
+<script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

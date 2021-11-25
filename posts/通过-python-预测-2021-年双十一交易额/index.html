@@ -1,0 +1,259 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
+<title>通过 Python 预测 2021 年双十一交易额 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="通过 Python 预测 2021 年双十一交易额 | 元培的部落格">
+<meta itemprop=name content="通过 Python 预测 2021 年双十一交易额 | 元培的部落格">
+<meta name=twitter:title content="通过 Python 预测 2021 年双十一交易额 | 元培的部落格">
+<meta name=application-name content="通过 Python 预测 2021 年双十一交易额 | 元培的部落格">
+<meta name=description content="纵有疾风起，人生不言弃">
+<meta name=twitter:description content="纵有疾风起，人生不言弃">
+<meta itemprop=description content="纵有疾风起，人生不言弃">
+<meta property="og:description" content="纵有疾风起，人生不言弃">
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.30dfc79b16257ec78e2f14533e44eee3d74b63c4116ff3ab57f796a8390aa72a.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
+<script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/categories>分类</a>
+<a href=/friends>友链</a>
+<a href=/works>实验室</a>
+<a href=/archives>归档</a>
+<a href=/tags>标签</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>通过 Python 预测 2021 年双十一交易额</h1>
+<div class=post-meta>
+<div>
+By 飞鸿踏雪 | <time>2021-10-26</time>
+| 2 minutes
+</div>
+<div class=tags>
+<a href=/tags/python/>Python</a>
+<a href=/tags/sklearn/>Sklearn</a>
+<a href=/tags/%E5%8F%8C%E5%8D%81%E4%B8%80/>双十一</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>突然间，十月以某种始料未及的方式结束了，也许是因为今年雨水变多的缘故，总觉得这个秋天过去得平平无奇，仿佛只有观音禅寺的满地银杏叶儿，真正地宣布着秋天的到来，直到看见朋友在朋友圈里借景抒怀，『 霜叶红于二月花 』，秋天终于没能迁就我的一厢情愿，我确信她真的来了。当然，秋天不单单会带来这些诗情画意的东西，更多的时候我们听到的是双十一、双十二，这些曾经由光棍节而催生出的营销活动，在过去的十多年间渐渐成为了一种文化现象，虽然我们的法定节日永远都只有那么几天，可这并不妨碍我们自己创造出无数的节日，从那一刻开始，每个节日都可以和购物产生联系，这种社会氛围让我们有了某种仪式感，比如，零点时为了抢购商品恨不得戳破屏幕。再比如，在复杂的满减、红包、优惠券算法中复习数学知识。可当时间节点来到 1202 年，你是否依然对剁手这件事情乐此不疲呢，在新一轮剁手行动开始前，让我们来试试通过 Python 预测一下今年的交易额，因为在这场狂欢过后，没有人会关心你买了什么，而那个朴实无华的数字，看起来总比真实的人类要生动得多。</p>
+<h1 id=思路说明>
+<a href=#%e6%80%9d%e8%b7%af%e8%af%b4%e6%98%8e class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+思路说明
+</h1>
+<p>其实，我一直觉得这个东西，完全不需要特意写一篇文章，因为用毕导的话说，这个东西我们在小学二年级就学过。相信只要我说出 <a href=https://ws.wiki.gaogevip.com/wiki/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95>最小二乘法</a> 和 <a href=https://zh.wikipedia.ryancray.com/zh-hans/%E7%B7%9A%E6%80%A7%E5%9B%9E%E6%AD%B8>线性回归</a> 这样两个关键词，各位就知道我在说什么了！博主从网上收集了从 2009 年至今历年双十一的交易额数据，如果我们将其绘制在二维坐标系内，就会得到一张散点图，而我们要做的事情，就是找到一条曲线或者方程，来对这些散点进行拟合，一旦我们确定了这样一条曲线或者方程，我们就可以预测某一年双十一的交易额。如图所示，是 2009 年至今历年双十一的交易额数据，在 Excel 中我们可以非常容易地得到对应的散点图：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/10/27/mf3h4oXLiswzPOq.png alt="在 Excel 中绘制散点图"></p>
+<p>如果有朋友做过化学或者生物实验，对接下来的事情应该不会感到陌生，通常我们会在这类图表中添加趋势线，由此得到一个公式，实际上这就是一个回归或者说拟合的过程，因为 Excel 内置了线性、指数型、对数型等多种曲线模型，所以，我们可以非常容易地切换到不同的曲线，而评估一个方程好坏与否的指标为 $R^2$，该值越接近 1 表示拟合效果越好，如图是博主在 Excel 中得到的一条拟合方程：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/10/27/D5xHLIfrJsZNi1B.png alt="在 Excel 中添加趋势线"></p>
+<p>那么，在 Python 中我们如何实现类似的效果呢？答案是 <a href=https://scikit-learn.org.cn/>scikit-learn</a>，这是 Python 中一个常用的机器学习算法库，主要覆盖了以下功能：<strong>分类</strong>、<strong>回归</strong>、<strong>聚类</strong>、<strong>数据降维</strong>、<strong>模型选择</strong> 和 <strong>数据预处理</strong>，我们这里主要利用了回归这部分的 <a href=https://scikit-learn.org.cn/view/394.html>LinearRegression</a> 类，顾名思义，它就是我们通常说的线性回归。事实上，这个线性并不是单指一元一次方程，因为我们还可以使用二次或者三次多项式，因为上面的 Excel 图表早已告诉我们，一元一次方程误差太大。</p>
+<h1 id=实现过程>
+<a href=#%e5%ae%9e%e7%8e%b0%e8%bf%87%e7%a8%8b class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+实现过程
+</h1>
+<p>OK，具体是如何实现的呢？首先，我们从 CSV 文件中加载数据，这个非常简单，利用 <a href=https://pandas.pydata.org/>Pandas</a> 库中的 read_csv() 方法即可：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>df</span> <span class=o>=</span> <span class=n>pd</span><span class=o>.</span><span class=n>read_csv</span><span class=p>(</span><span class=s1>&#39;./历年双十一交易额.csv&#39;</span><span class=p>,</span> <span class=n>index_col</span> <span class=o>=</span> <span class=mi>0</span><span class=p>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>接下来，我们使用下面的方法来获取 年份 和 交易额 这两列数据：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>year</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>(</span><span class=n>df</span><span class=o>.</span><span class=n>index</span><span class=o>.</span><span class=n>tolist</span><span class=p>())</span>
+<span class=n>sales</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>(</span><span class=n>df</span><span class=o>.</span><span class=n>Sales</span><span class=o>.</span><span class=n>tolist</span><span class=p>())</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>此时，我们可以非常容易地用 <a href=https://matplotlib.org>matplotlib</a> 库绘制出对应的图表：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>plt</span><span class=o>.</span><span class=n>scatter</span><span class=p>(</span><span class=n>year</span><span class=p>,</span> <span class=n>sales</span><span class=p>,</span> <span class=n>marker</span><span class=o>=</span><span class=s1>&#39;o&#39;</span><span class=p>)</span>
+<span class=n>plt</span><span class=o>.</span><span class=n>xlabel</span><span class=p>(</span><span class=s1>&#39;年份&#39;</span><span class=p>)</span>
+<span class=n>plt</span><span class=o>.</span><span class=n>ylabel</span><span class=p>(</span><span class=s1>&#39;交易额(亿)&#39;</span><span class=p>)</span>
+<span class=n>plt</span><span class=o>.</span><span class=n>title</span><span class=p>(</span><span class=s1>&#39;历年双十一交易额变化趋势&#39;</span><span class=p>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img loading=lazy src=https://i.loli.net/2021/10/27/wD2b8lhjmIsETeP.png alt="通过 matplotlib 绘制散点图"></p>
+<p>接下来，我们来看看如何对这组数据做线性回归，以一元一次方程为例：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>X</span> <span class=o>=</span> <span class=p>(</span><span class=n>year</span> <span class=o>-</span> <span class=mi>2008</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=mi>1</span><span class=p>)</span>
+<span class=n>X</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>concatenate</span><span class=p>([</span><span class=n>X</span><span class=p>],</span> <span class=n>axis</span><span class=o>=</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+<span class=n>Y</span> <span class=o>=</span> <span class=n>sales</span>
+<span class=n>lr</span> <span class=o>=</span> <span class=n>LinearRegression</span><span class=p>()</span>
+<span class=n>lr</span><span class=o>.</span><span class=n>fit</span><span class=p>(</span><span class=n>X</span><span class=p>,</span> <span class=n>Y</span><span class=p>)</span>
+<span class=nb>print</span><span class=p>(</span><span class=s1>&#39;方程系数：&#39;</span><span class=p>,</span> <span class=n>lr</span><span class=o>.</span><span class=n>coef_</span><span class=p>)</span>
+<span class=nb>print</span><span class=p>(</span><span class=s1>&#39;方程截距：&#39;</span><span class=p>,</span><span class=n>lr</span><span class=o>.</span><span class=n>intercept_</span><span class=p>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里，首先我们需要把 2009 到 2020 这个范围内的年份转化为更方便计算的 1、2、3 &mldr;，所以，每一个数都减去了 2008，这样我们就得到了横坐标 <code>X</code> 以及 纵坐标 <code>Y</code>。接下来，我们只需要将其传入 <code>fit()</code> 方法即可。有时候，你可能会看到下面这样的代码，即用于划分 <strong>训练集</strong> 和 <strong>测试集</strong> 的的代码片段：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>X_train</span><span class=p>,</span> <span class=n>X_test</span><span class=p>,</span> <span class=n>Y_train</span><span class=p>,</span> <span class=n>Y_test</span> <span class=o>=</span> <span class=n>train_test_split</span><span class=p>(</span><span class=n>X</span><span class=p>,</span> <span class=n>Y</span><span class=p>,</span> <span class=n>test_size</span><span class=o>=</span><span class=mf>0.3</span><span class=p>,</span> <span class=n>random_state</span><span class=o>=</span><span class=mi>0</span><span class=p>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>考虑到我们这里的样本数据本来就不多，毕竟，这股消费主义的风潮在中国刚刚流行了十二年，所以，我们要珍惜这份福报，就不划分 <strong>训练集</strong> 和 <strong>测试集</strong> 了(逃。此时，我们会得到两个重要的参数，即方程系数 <code>lr.coef_</code> 和 方程截取 <code>lr.intercept_</code>，而一旦有了这两个参数，我们就能确定一个线性方程，即传说中的 $y=ax+b$ :</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>f</span> <span class=o>=</span> <span class=k>lambda</span> <span class=n>x</span><span class=p>:</span> <span class=n>lr</span><span class=o>.</span><span class=n>coef_</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>*</span> <span class=n>x</span> <span class=o>+</span> <span class=n>lr</span><span class=o>.</span><span class=n>intercept_</span>
+<span class=nb>print</span><span class=p>(</span><span class=s1>&#39;2021年交易额预测：&#39;</span><span class=p>,</span> <span class=n>f</span><span class=p>(</span><span class=mi>13</span><span class=p>))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>此时，f(13) 就是 2021 年双十一的交易额，显然，这是一个预测值，大概是 3592 亿，这属实是有点离谱啦，都没能超过 2020 年的 4982 亿，我们前面提到过 $R^2$，在 <a href=https://scikit-learn.org.cn/>scikit-learn</a> 中我们使用下面的方法来计算它：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=nb>print</span><span class=p>(</span><span class=s1>&#39;R^2：&#39;</span><span class=p>,</span> <span class=n>lr</span><span class=o>.</span><span class=n>score</span><span class=p>(</span><span class=n>X_test</span><span class=p>,</span> <span class=n>Y_test</span><span class=p>))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>没错，<code>score()</code> 函数需要这样一组测试数据，我们利用前面划分 <strong>训练集</strong> 和 <strong>测试集</strong> 的方法就可以得到它。我们发现，这个值大概是 0.73，这要不离谱都说不过去，这一点我们从图上就可以看出来：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/10/27/UerVa9mZ5NSPwTC.png alt=历年双十一交易额变化趋势预测：一次方程></p>
+<p>这样显然不行啊，那怎么办呢？遥想古人利用“割圆术”无限逼近圆形进而计算出圆周率的这种执着，我们是不是可以通过提高“次数”来解决欠拟合的问题呢？换句话说，我们来试试一元二次方程，此时，我们只需要调整下横坐标 <code>X</code> 的构造过程：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>X</span> <span class=o>=</span> <span class=p>(</span><span class=n>year</span> <span class=o>-</span> <span class=mi>2008</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=mi>1</span><span class=p>)</span>
+<span class=n>X</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>concatenate</span><span class=p>([</span><span class=n>X</span><span class=o>**</span><span class=mi>2</span><span class=p>,</span> <span class=n>X</span><span class=p>],</span> <span class=n>axis</span><span class=o>=</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>简单来说，如果你需要构造一个 N 次多项式，那么，只需要由高到底依次写出来即可，所以，你可以想象得到，对于三次多项式，我们可以这样构造：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>X</span> <span class=o>=</span> <span class=p>(</span><span class=n>year</span> <span class=o>-</span> <span class=mi>2008</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=mi>1</span><span class=p>)</span>
+<span class=n>X</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>concatenate</span><span class=p>([</span><span class=n>X</span><span class=o>**</span><span class=mi>3</span><span class=p>,</span> <span class=n>X</span><span class=o>**</span><span class=mi>2</span><span class=p>,</span> <span class=n>X</span><span class=p>],</span> <span class=n>axis</span><span class=o>=</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对于二次多项式，我们可以得到下面的结果，其 $R^2$ 为 0.92，预测 2021 年双十一交易额为 5218 亿：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/10/27/1RF3LtQr4pTidb6.png alt=历年双十一交易额变化趋势预测：二次方程></p>
+<p>同理，对于三次多项式，我们可以得到下面的结果，其 $R^2$ 为 0.96，预测 2021 年双十一交易额为 6213 亿：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/10/27/DlHcQUIXf1pORob.png alt=历年双十一交易额变化趋势预测：三次方程></p>
+<p>整体上看，三次方程的拟合效果更好一点，达到了 0.96，但这个和大学时候做实验追求的 0.99 相比，多少有一点尴尬，屏幕前的你，是否想到了更好的曲线模型呢，我们常常说某某行业取得了指数级的增长，难道说指数模型更适合这个问题？关于这一点博主没能去亲自验证，因为看起来在 <a href=https://scikit-learn.org.cn/>scikit-learn</a> 中没有指数型函数的计算模型，可当博主在 Excel 中添加了指数型的趋势线以后，发现结果有点出人意料，因为它的 $R^2$ 只有 0.8314，而按这个方程计算出的交易额则约为2万多亿，好家伙，这都赶上恒大目前拖欠的债务了，想想就觉得离谱，指数型函数对应的曲线如下：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/10/27/ZBN5RgXiqUDLym3.png alt=历年双十一交易额变化趋势预测：指数函数></p>
+<p>此时此刻，坐在屏幕前的你，更倾向于选择那种计算模型呢，个人觉得三次方程更好一点，因为它的 $R^2$ 是目前最好的，当然，<a href=https://scikit-learn.org.cn/>scikit-learn</a> 还有类似可解释的方差分数、最大误差、平均绝对误差、均方误差、均方误差对数等等不同的指标，大家可以参考 <a href=http://scikit-learn.org.cn/view/93.html#3.3.4%20%E5%9B%9E%E5%BD%92%E6%8C%87%E6%A0%87>官方文档</a> 来做更进一步的探索，一切都只有等到下个月双十一过后方能揭晓，就让我们拭目以待！本文中使用的源代码，已更新至 <a href=https://hub.fastgit.org/Regularly-Archive/2021/tree/master/src/11.11>Github</a> 供大家参考，如果大家对博客中的内容有什么意见或者建议，欢迎大家在评论区积极留言，谢谢大家！</p>
+<h1 id=本文小结>
+<a href=#%e6%9c%ac%e6%96%87%e5%b0%8f%e7%bb%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+本文小结
+</h1>
+<p>恍惚中惊觉，十月份就这样结束了，这意味是 2021 年只剩下 60 多天。上了年纪的人总不免开始怀念，那些偷偷从树叶间隙里溜走的时光，去年的这个时候我在做些什么呢？大概刚刚追完「半泽直树」第二部吧！在疫情愈发常态化的日子里，人对于未来总有种难以言说的失控感，某君有言道，『不知道明天和意外哪一个先来』，虽然机器学习可以通过“训练”过去达到“预测”未来的目的，可人生并没有哪一个方程可以完美拟合，虽然这个世界早已为你规划好一条叫做“随大流”的路，一个人的过去、当下就像无数个离散的点，这些点构成了我们人生的轨迹，某种我们通常称之为回忆的东西，可这些点是否会向着预期的方向延伸，也许，永远没有人会知道答案，这个世界上有相当多的数字，譬如自然对数、圆周率、黄金分割比等等，都是前辈先哲从自然世界中寻找到的，可对于我们的人生而言，并没有这样明显的答案，所以，每次做数据分析的时候，我都有种奇怪的感觉，因为我不明白这些数字背后，到底和我们本身有着什么样的关联，可这个世界偶尔会感应到你的失落，当你听着「明年今日」，而心里想的是去年今日，我想，这一页可以翻过去，这篇文章可以结尾，这样就可以了吧&mldr;</p>
+</div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=/imgs/avatar.jpg>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/posts/grpc-%E6%90%AD%E9%85%8D-swagger-%E5%AE%9E%E7%8E%B0%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%96%87%E6%A1%A3%E5%8C%96/ title=上一篇>
+<span>上一篇</span>
+gRPC 搭配 Swagger 实现微服务文档化
+</a>
+</nav>
+</div>
+<div class=container>
+<div id=comment></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://example.com/posts/%E9%80%9A%E8%BF%87-python-%E9%A2%84%E6%B5%8B-2021-%E5%B9%B4%E5%8F%8C%E5%8D%81%E4%B8%80%E4%BA%A4%E6%98%93%E9%A2%9D/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
+</nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021
+</div>
+<div class=footer-copyright>
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
+</section>
+<script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

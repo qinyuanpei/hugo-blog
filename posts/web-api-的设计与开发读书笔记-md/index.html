@@ -1,0 +1,255 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
+<title>《Web API 的设计与开发》读书笔记 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="《Web API 的设计与开发》读书笔记 | 元培的部落格">
+<meta itemprop=name content="《Web API 的设计与开发》读书笔记 | 元培的部落格">
+<meta name=twitter:title content="《Web API 的设计与开发》读书笔记 | 元培的部落格">
+<meta name=application-name content="《Web API 的设计与开发》读书笔记 | 元培的部落格">
+<meta name=description content="- 指使用符合 RPC 风格的 XML 或 JSON + HTTP 接口的系统(不使用 SOAP);- 使用 HTTP;# 查询参数和路径的使用区别">
+<meta name=twitter:description content="- 指使用符合 RPC 风格的 XML 或 JSON + HTTP 接口的系统(不使用 SOAP);- 使用 HTTP;# 查询参数和路径的使用区别 ">
+<meta itemprop=description content=" - 指使用符合 RPC 风格的 XML 或 JSON + HTTP 接口的系统(不使用 SOAP);- 使用 HTTP;# 查询参数和路径的使用区别 ">
+<meta property="og:description" content=" - 指使用符合 RPC 风格的 XML 或 JSON + HTTP 接口的系统(不使用 SOAP);- 使用 HTTP;# 查询参数和路径的使用区别 ">
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.30dfc79b16257ec78e2f14533e44eee3d74b63c4116ff3ab57f796a8390aa72a.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
+<script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/categories>分类</a>
+<a href=/friends>友链</a>
+<a href=/works>实验室</a>
+<a href=/archives>归档</a>
+<a href=/tags>标签</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>《Web API 的设计与开发》读书笔记</h1>
+<div class=post-meta>
+<div>
+By 飞鸿踏雪 | <time>2019-05-28</time>
+| 1 minutes
+</div>
+<div class=tags>
+<a href=/tags/web-api/>Web API</a>
+<a href=/tags/rsetful/>RSETful</a>
+<a href=/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
+<a href=/tags/%E6%8F%90%E7%BA%B2/>提纲</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<h1 id=设计优美的-web-api>
+<a href=#%e8%ae%be%e8%ae%a1%e4%bc%98%e7%be%8e%e7%9a%84-web-api class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+设计优美的 Web API
+</h1>
+<p>易于使用、便于更改、健壮性好、不怕公开</p>
+<h1 id=rest-的两层含义>
+<a href=#rest-%e7%9a%84%e4%b8%a4%e5%b1%82%e5%90%ab%e4%b9%89 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+REST 的两层含义
+</h1>
+<ul>
+<li>指符合 Fielding 的 REST 架构风格的 Web 服务系统</li>
+<li>指使用符合 RPC 风格的 XML 或 JSON + HTTP 接口的系统(不使用 SOAP)</li>
+</ul>
+<h1 id=端点的基本设计>
+<a href=#%e7%ab%af%e7%82%b9%e7%9a%84%e5%9f%ba%e6%9c%ac%e8%ae%be%e8%ae%a1 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+端点的基本设计
+</h1>
+<ul>
+<li>短小便于输入的 URI-</li>
+<li>人可以读懂的 URI</li>
+<li>没有大小写混用的 URI</li>
+<li>修改方便的 URI</li>
+<li>不暴露服务端架构的 URI</li>
+<li>规则统一的 URI</li>
+</ul>
+<h1 id=http-方法和端点>
+<a href=#http-%e6%96%b9%e6%b3%95%e5%92%8c%e7%ab%af%e7%82%b9 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+HTTP 方法和端点
+</h1>
+<ul>
+<li>GET 获取资源</li>
+<li>POST 新增资源</li>
+<li>PUT 更新已有资源</li>
+<li>DELETE 删除资源</li>
+<li>PATCH 更新部分资源</li>
+</ul>
+<h1 id=查询参数和路径的使用区别>
+<a href=#%e6%9f%a5%e8%af%a2%e5%8f%82%e6%95%b0%e5%92%8c%e8%b7%af%e5%be%84%e7%9a%84%e4%bd%bf%e7%94%a8%e5%8c%ba%e5%88%ab class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+查询参数和路径的使用区别
+</h1>
+<ul>
+<li>表示唯一资源时，放在路径中</li>
+<li>当参数可以忽略时，放在查询参数中</li>
+</ul>
+<h1 id=restful-的设计级别>
+<a href=#restful-%e7%9a%84%e8%ae%be%e8%ae%a1%e7%ba%a7%e5%88%ab class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+RESTful 的设计级别
+</h1>
+<ul>
+<li>使用 HTTP</li>
+<li>引入资源的概念</li>
+<li>引入 HTTP 动词</li>
+<li>引入 HATEOAS</li>
+</ul>
+<h1 id=如何指定数据格式>
+<a href=#%e5%a6%82%e4%bd%95%e6%8c%87%e5%ae%9a%e6%95%b0%e6%8d%ae%e6%a0%bc%e5%bc%8f class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+如何指定数据格式
+</h1>
+<ul>
+<li>查询参数：url?format=xml</li>
+<li>扩展名：/url.json</li>
+<li>Accept 头部字段</li>
+</ul>
+<h1 id=让用户决定响应的内容>
+<a href=#%e8%ae%a9%e7%94%a8%e6%88%b7%e5%86%b3%e5%ae%9a%e5%93%8d%e5%ba%94%e7%9a%84%e5%86%85%e5%ae%b9 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+让用户决定响应的内容
+</h1>
+<ul>
+<li>GraphQL</li>
+</ul>
+<h1 id=通过状态码表示错误信息>
+<a href=#%e9%80%9a%e8%bf%87%e7%8a%b6%e6%80%81%e7%a0%81%e8%a1%a8%e7%a4%ba%e9%94%99%e8%af%af%e4%bf%a1%e6%81%af class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+通过状态码表示错误信息
+</h1>
+<p>1xx：消息
+2xx：成功
+3xx：重定向
+4xx：客户端原因造成的错误
+5xx：服务端原因造成的错误</p>
+<h1 id=缓存与-http-协议规范>
+<a href=#%e7%bc%93%e5%ad%98%e4%b8%8e-http-%e5%8d%8f%e8%ae%ae%e8%a7%84%e8%8c%83 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+缓存与 HTTP 协议规范
+</h1>
+<p>RFC7234：过期模型/验证模型
+过期模型：Cache-Control/Expires
+验证模型：Last-Modified/ETag
+Vary 首部：指定缓存单位
+Conent-Type/Accept：指定媒体类型</p>
+<h1 id=api-版本控制>
+<a href=#api-%e7%89%88%e6%9c%ac%e6%8e%a7%e5%88%b6 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+API 版本控制
+</h1>
+<ul>
+<li>在 URI 中嵌入版本号</li>
+<li>在查询字符串中加入版本信息</li>
+<li>通过媒体类型指定版本</li>
+</ul>
+<h1 id=api-安全问题>
+<a href=#api-%e5%ae%89%e5%85%a8%e9%97%ae%e9%a2%98 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+API 安全问题
+</h1>
+<ul>
+<li>推荐使用 HTTPS</li>
+<li>XSS/XSRF 注入漏洞</li>
+<li>返回正确的数据格式</li>
+<li>使用安全相关首部</li>
+<li>采用 KVS 实现访问限制</li>
+</ul>
+<h1 id=提供-api-文档>
+<a href=#%e6%8f%90%e4%be%9b-api-%e6%96%87%e6%a1%a3 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+提供 API 文档
+</h1>
+<ul>
+<li>API Blueprint</li>
+<li>API Console/Apigee</li>
+<li>提供 SDK</li>
+</ul>
+</div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=/imgs/avatar.jpg>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/posts/wsl%E4%B8%8Bdocker%E4%BD%BF%E7%94%A8%E8%B8%A9%E5%9D%91%E5%B0%8F%E8%AE%B0/ title=上一篇>
+<span>上一篇</span>
+WSL 下 Docker 使用踩坑小记
+</a>
+<a rel=next href=/posts/%E9%80%9A%E8%BF%87%E5%8A%A8%E6%80%81controller%E5%AE%9E%E7%8E%B0%E4%BB%8Ewcf%E5%88%B0web-api%E7%9A%84%E8%BF%81%E7%A7%BB/ title=下一篇>
+<span>下一篇</span>
+通过动态 Controller 实现从 WCF 到 Web API 的迁移.
+</a>
+</nav>
+</div>
+<div class=container>
+<div id=comment></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://example.com/posts/web-api-%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-md/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
+</nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021
+</div>
+<div class=footer-copyright>
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
+</section>
+<script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

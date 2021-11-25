@@ -1,0 +1,297 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
+<title>使用 C#开发 HTTP 服务器系列之更简单的实现方式 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="使用 C#开发 HTTP 服务器系列之更简单的实现方式 | 元培的部落格">
+<meta itemprop=name content="使用 C#开发 HTTP 服务器系列之更简单的实现方式 | 元培的部落格">
+<meta name=twitter:title content="使用 C#开发 HTTP 服务器系列之更简单的实现方式 | 元培的部落格">
+<meta name=application-name content="使用 C#开发 HTTP 服务器系列之更简单的实现方式 | 元培的部落格">
+<meta name=description content="其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型">
+<meta name=twitter:description content="其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型 ">
+<meta itemprop=description content=" 其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型 ">
+<meta property="og:description" content=" 其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型 ">
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.30dfc79b16257ec78e2f14533e44eee3d74b63c4116ff3ab57f796a8390aa72a.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
+<script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/categories>分类</a>
+<a href=/friends>友链</a>
+<a href=/works>实验室</a>
+<a href=/archives>归档</a>
+<a href=/tags>标签</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>使用 C#开发 HTTP 服务器系列之更简单的实现方式</h1>
+<div class=post-meta>
+<div>
+By 飞鸿踏雪 | <time>2016-06-11</time>
+| 2 minutes
+</div>
+<div class=tags>
+<a href=/tags/http/>HTTP</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/>服务器</a>
+<a href=/tags/c#/>C#</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>各位朋友大家好，我是秦元培，欢迎大家关注我的博客，我的博客地址是<a href=http://qinyuanpei.com>http://qinyuanpei.com</a>。到目前为止，我已经发布了 3 篇 HTTP 服务器开发的系列文章。对我个人而言，我非常享受这个从无到有的过程，或许我现在写的这个 Web 服务器有各种不完美的因素，可是当有一天我需要一个轻量级的服务器的时候，我在无形中是不是比别人多了一种选择呢？我们常常提到“不要重复造轮子”，可事实上这并不能成为我们“不造轮子”的理由，虽然我们有各种各样的服务器软件、有各种各样的服务端框架可以供我们选择，可是在动手写这个系列文章前，我对 Web 服务器的印象无非是因为我是用 LAWP(Linux + Apache + MySQL + PHP)搭建过 Wordpress 博客而已。虽然在对动态页面(如.aspx、.jsp、.php 等)的处理上，可能会和静态页面有所不同，但是我庆幸我了解了这个过程以及它的内部原理，这种跨语言、跨平台的设计思路是任何框架或者标准都无法告诉我的。或许有人会问我，为什么不在最开始的时候就选择更简单的实现方法，那么在这篇文章中你将会找到答案。</p>
+<h1 id=从原理说起>
+<a href=#%e4%bb%8e%e5%8e%9f%e7%90%86%e8%af%b4%e8%b5%b7 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+从原理说起
+</h1>
+<p>我们知道 HTTP 服务器其实是一个“服务端循环监听客户端请求然后响应客户端请求”的请求/响应模型，在这个模型中请求通常是由浏览器来发起的，而服务端负责响应客户端的请求。这是我们通常意义上的认识，可是当我们了解到 HTTP 协议的实质以后就会明白，不管是客户端还是服务端，从本质上来讲都是 Socket 通信，只要我们能够发送符合 HTTP 协议规范的报文就可以啦。</p>
+<p>所以我们立刻就能够想到无论是 Unity 引擎中的 WWW 还是.NET 平台下的 WebClient，它们之所以能够向服务器发起请求，无一例外地是它们都遵循了 HTTP 协议的规范。从这个角度来讲，人类社会存在各种各样的问题，本质上都是存在游离于规范以外的不公平的现象。还记得我们在这个系列中提到的请求报文和响应报文的结构是什么样的吗？此时此刻我们发自内心地向创造 HTTP 协议的先驱们致敬，因为这个协议我们构建起了连接人与人的社交网络，可是同样因为这个协议我们和人越来越远、和手机越来越近。</p>
+<p>HTTP 协议是一种无状态的应用层协议，这个无状态该怎么理解呢？我这里想借助聊天机器人这个实例来解释这个问题，我们都知道聊天机器人是一种问答型的程序，程序每次都可以根据提问者的问题给出，一个从人类角度来看完全合理的答案。然而从目前我了解到的聊天机器人的技术现状来看，具备自然语言理解的机器人程序基本没有，所以在这样的大背景下，机器人程序实际上是没有上下文理解的能力的。</p>
+<p>好了，现在我们回到 HTTP 协议，首先聊天机器人的问答模式是不是和 HTTP 协议中的请求/响应模式非常相似呢？其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢？所以综合下来，我们理解的无状态其实就是说 HTTP 请求和响应完全独立，即在客户端中不会存储服务端的响应，在服务端中同样不会存储客户端的请求。</p>
+<p>这样难免引发一个问题，如果我需要在不同请求和响应中保持状态该怎么做呢？这个在不同的服务器软件中有不同的技术实现，这里我们说一种最通用的 Cookie。Cookie 是存储在客户端中的一个数据，在发起下一轮请求时这个参数会被加入到参数列表中然后传递给服务器，服务器会对客户端传递的参数进行验证，以此来判断本轮请求和上轮请求间是否存在上下文联系。</p>
+<h1 id=两种不同的实现>
+<a href=#%e4%b8%a4%e7%a7%8d%e4%b8%8d%e5%90%8c%e7%9a%84%e5%ae%9e%e7%8e%b0 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+两种不同的实现
+</h1>
+<p>到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型。基于这两点考虑，我们这里提供两种快速实现 Web 服务器的具体思路，这是在我们理解了 HTTP 协议实质以后，从原理出发想到的解决方案，为什么我不建议在刚开始就学习这些东西呢？因为我觉得学习有时候其实就是一个不断开阔视野和思路的过程吧。好了，下面我们来说说这两种不同实现方式的具体思路吧！</p>
+<h2 id=基于-tcplistenertcpclienr-改进-socket>
+<a href=#%e5%9f%ba%e4%ba%8e-tcplistenertcpclienr-%e6%94%b9%e8%bf%9b-socket class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+基于 TcpListener/TcpClienr 改进 Socket
+</h2>
+<p>如果说使用 Socket 从头开始编写 HTTP 服务器是一个“刀耕火种”时代的缩影，那么使用 TcpListener/TcpClient 则是让我们开始进入“青铜铸犁”的农耕时代。和 Sokcet 相比，TcpListener/TcpClient 是.NET 对 Socket 的进一步封装，在这个体系下，TcpListener 负责监听和接收传入的连接请求，在该类中仅需要传入一个网络终端信息就可以完成服务端的初始化，而无需设置网络通信协议等细节性的内容。调用 Start 方法后即可以开始监听，这里我们使用 AcceptTcpClient 方法来阻塞进程直到接受到一个客户端请求为止，该方法将返回一个 TcpClient 对象，我们可以借助它完成和客户端的通信。下面我们来一起看基本的代码实现：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>void</span> <span class=n>Start</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>isRunning</span><span class=p>)</span>
+        <span class=k>return</span><span class=p>;</span>
+
+    <span class=c1>//创建TcpListener
+</span><span class=c1></span>    <span class=n>serverListener</span> <span class=p>=</span> <span class=k>new</span> <span class=n>TcpListener</span><span class=p>(</span><span class=n>IPAddress</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=n>ServerIP</span><span class=p>),</span> <span class=n>ServerPort</span><span class=p>);</span>
+    <span class=c1>//开始监听
+</span><span class=c1></span>    <span class=n>serverListener</span><span class=p>.</span><span class=n>Start</span><span class=p>(</span><span class=m>10</span><span class=p>);</span>
+    <span class=n>isRunning</span> <span class=p>=</span> <span class=k>true</span><span class=p>;</span>
+
+    <span class=c1>//输出服务器状态
+</span><span class=c1></span>    <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;Sever is running at http://{0}:{1}/.&#34;</span><span class=p>,</span> <span class=n>ServerIP</span><span class=p>,</span> <span class=n>ServerPort</span><span class=p>);</span>
+
+    <span class=k>while</span> <span class=p>(</span><span class=n>isRunning</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>//获取客户端连接
+</span><span class=c1></span>        <span class=n>TcpClient</span> <span class=n>acceptClient</span> <span class=p>=</span> <span class=n>serverListener</span><span class=p>.</span><span class=n>AcceptTcpClient</span><span class=p>();</span>
+
+        <span class=c1>//获取请求报文
+</span><span class=c1></span>        <span class=n>NetworkStream</span> <span class=n>netstream</span> <span class=p>=</span> <span class=n>acceptClient</span><span class=p>.</span><span class=n>GetStream</span><span class=p>();</span>
+
+        <span class=c1>//解析请求报文
+</span><span class=c1></span>        <span class=kt>byte</span><span class=p>[]</span> <span class=n>bytes</span> <span class=p>=</span> <span class=k>new</span> <span class=kt>byte</span><span class=p>[</span><span class=m>1024</span><span class=p>];</span>
+        <span class=kt>int</span> <span class=n>length</span> <span class=p>=</span> <span class=n>netstream</span><span class=p>.</span><span class=n>Read</span><span class=p>(</span><span class=n>bytes</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>bytes</span><span class=p>.</span><span class=n>Length</span><span class=p>);</span>
+        <span class=kt>string</span> <span class=n>requestString</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>bytes</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>length</span><span class=p>);</span>
+
+        <span class=c1>//以下为响应报文(略)
+</span><span class=c1></span>    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>我个人感觉这种形式和原生的 Socket 在实现上区别不是非常大，按照这种思路继续往下设计，我的 HttpRequest 和 HttpResponse 可能都需要进行改进，因为在我的设计中，我是在尽可能地隐藏 Socket 通信的细节，因为我不想让使用者觉察到他这是在使用 Socket 进行通信，这里细心的朋友可能会发现，这里的 TcpListener/TcpClient 都保留了常见的 Socket 用法如同步通信和异步通信的支持等，所以在使用 cpListener/TcpClient 其实没有必要纠结它的这套流程，如果你喜欢继续使用 Socket 通信的经验和方法就可以了。这里我们仅提供一种延伸思路。具体的代码实现大家顺着这个思路继续下去就好啦。</p>
+<h2 id=基于-httplistener-实现请求-响应模型>
+<a href=#%e5%9f%ba%e4%ba%8e-httplistener-%e5%ae%9e%e7%8e%b0%e8%af%b7%e6%b1%82-%e5%93%8d%e5%ba%94%e6%a8%a1%e5%9e%8b class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+基于 HttpListener 实现请求-响应模型
+</h2>
+<p>下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计。这个让我不喜欢的一点是它在设置服务器 IP 地址和端口的时候非常别扭，其思路和我的设计是非常相似的，下面我们来一起看代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>void</span> <span class=n>Listen</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(!</span><span class=n>HttpListener</span><span class=p>.</span><span class=n>IsSupported</span><span class=p>)</span>
+        <span class=k>throw</span> <span class=k>new</span> <span class=n>InvalidOperationException</span><span class=p>(</span>
+            <span class=s>&#34;请确保使用WindowsXP以上版本的Windows!&#34;</span><span class=p>);</span>
+
+    <span class=c1>//初始化Http监听器
+</span><span class=c1></span>    <span class=n>listener</span> <span class=p>=</span> <span class=k>new</span> <span class=n>HttpListener</span><span class=p>();</span>
+
+    <span class=c1>//初始化服务器URL
+</span><span class=c1></span>    <span class=kt>string</span><span class=p>[]</span> <span class=n>prefixes</span> <span class=p>=</span> <span class=k>new</span> <span class=kt>string</span><span class=p>[]</span> <span class=p>{</span> <span class=n>address</span> <span class=p>};</span>
+    <span class=k>foreach</span> <span class=p>(</span><span class=kt>string</span> <span class=n>prefix</span> <span class=k>in</span> <span class=n>prefixes</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>listener</span><span class=p>.</span><span class=n>Prefixes</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>prefix</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=c1>//开启服务器
+</span><span class=c1></span>    <span class=n>listener</span><span class=p>.</span><span class=n>Start</span><span class=p>();</span>
+
+    <span class=c1>//监听服务器
+</span><span class=c1></span>    <span class=k>while</span> <span class=p>(</span><span class=n>isActive</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>HttpListenerContext</span> <span class=n>context</span> <span class=p>=</span> <span class=n>listener</span><span class=p>.</span><span class=n>GetContext</span><span class=p>();</span>
+        <span class=n>HttpListenerRequest</span> <span class=n>request</span> <span class=p>=</span> <span class=n>context</span><span class=p>.</span><span class=n>Request</span><span class=p>;</span>
+        <span class=n>HttpListenerResponse</span> <span class=n>response</span> <span class=p>=</span> <span class=n>context</span><span class=p>.</span><span class=n>Response</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>HttpMethod</span> <span class=p>==</span> <span class=s>&#34;GET&#34;</span><span class=p>)</span> <span class=p>{</span>
+            <span class=n>OnGetRequest</span><span class=p>(</span><span class=n>request</span><span class=p>,</span> <span class=n>response</span><span class=p>);</span>
+        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+            <span class=n>OnPostRequest</span><span class=p>(</span><span class=n>request</span><span class=p>,</span> <span class=n>response</span><span class=p>);</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>好了，现在这个东西就非常简单了，因为我们只需要继承 HttpServerBase 这个类然后重写相关方法就可以了，而请求报文和响应报文中的相关属性都在 HttpListenerRequest 和 HttpListenerResponse 这两个类中封装好了，我们直接使用就好了。在没有写这个系列文章前，可能我会对这种方案充满好奇，可是当我了解到这一切的实质以后，我反而更加喜欢使用我设计的 HTTP 服务器了，因为这些东西在我看来区别真的可以忽略。</p>
+<h1 id=one-more-thing>
+<a href=#one-more-thing class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+One More Thing
+</h1>
+<p>关于今天本文中提到的两种方案，我都是作为 HTTP 服务器开发延伸出来的内容来写出来给大家看,所以这块儿内容我都是点到为止不打算给出完整的实现，如果有兴趣的朋友可以顺着我这个思路区继续改进。这个系列文章中的示例代码主要来自我的项目<a href=https://github.com/qinyuanpei/HttpServer>HttpServer</a>，大家到我的 GIthub 上去了解更多细节。到目前为止我觉得 HTTP 服务器快发这块儿我能写的内容都基本上写完了，因为是一边写代码一边写博客，所以有时候博客中如果有写得不好或者写的不明白的地方，希望大家能够谅解，同时希望大家在博客中给我积极留言，下一篇我想简单写一下 RESTful API 的相关问题，写完这一篇整个系列就结束了，我还是想说写文章真的很累啊，希望大家继续支持，下期见。</p>
+</div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=/imgs/avatar.jpg>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E9%9D%99%E6%80%81%E9%A1%B5%E9%9D%A2/ title=上一篇>
+<span>上一篇</span>
+使用 C#开发 HTTP 服务器系列之静态页面
+</a>
+<a rel=next href=/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E5%AE%9E%E7%8E%B0get%E5%92%8Cpost/ title=下一篇>
+<span>下一篇</span>
+使用 C#开发 HTTP 服务器系列之实现 Get 和 Post
+</a>
+</nav>
+</div>
+<div class=container>
+<div id=comment></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://example.com/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E6%9B%B4%E7%AE%80%E5%8D%95%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
+</nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021
+</div>
+<div class=footer-copyright>
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
+</section>
+<script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

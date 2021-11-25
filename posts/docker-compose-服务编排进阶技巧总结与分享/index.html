@@ -1,0 +1,709 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
+<title>你不可不知的容器编排进阶技巧 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="你不可不知的容器编排进阶技巧 | 元培的部落格">
+<meta itemprop=name content="你不可不知的容器编排进阶技巧 | 元培的部落格">
+<meta name=twitter:title content="你不可不知的容器编排进阶技巧 | 元培的部落格">
+<meta name=application-name content="你不可不知的容器编排进阶技巧 | 元培的部落格">
+<meta name=description content="纵有疾风起，人生不言弃">
+<meta name=twitter:description content="纵有疾风起，人生不言弃">
+<meta itemprop=description content="纵有疾风起，人生不言弃">
+<meta property="og:description" content="纵有疾风起，人生不言弃">
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.30dfc79b16257ec78e2f14533e44eee3d74b63c4116ff3ab57f796a8390aa72a.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
+<script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/categories>分类</a>
+<a href=/friends>友链</a>
+<a href=/works>实验室</a>
+<a href=/archives>归档</a>
+<a href=/tags>标签</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>你不可不知的容器编排进阶技巧</h1>
+<div class=post-meta>
+<div>
+By 飞鸿踏雪 | <time>2021-08-14</time>
+| 3 minutes
+</div>
+<div class=tags>
+<a href=/tags/docker/>Docker</a>
+<a href=/tags/%E5%AE%B9%E5%99%A8/>容器</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E7%BC%96%E6%8E%92/>服务编排</a>
+<a href=/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/>云原生</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>在团队内推广<code>Docker Compose</code>有段时间啦，值得庆幸的是，最终落地效果还不错，因为说到底，大家都不大喜欢，那一长串复杂而枯燥的命令行参数。对我而言，最为重要的一点，团队内使用的技术变得更加透明化、标准化，因为每个微服务的配置信息都写在<code>docker-compose.yml</code>文件中，任何人都可以快速地构建出一套可用的服务，而不是每次都要去找具体的某一个人。我想说，这其实是一个信息流如何在团队内流动的问题。也许，我们有文档或者<code>Wiki</code>，可新人能不能快速融入其中，这才是检验信息流是否流动的唯一标准。就这样，团队从刀耕火种的<code>Docker</code>时代，进入到使用服务编排的<code>Docker Compose</code>时代。接下来，能否进入<code>K8S</code>甚至是云原生的时代，我终究不得而知。今天我想聊聊，在使用<code>Docker Compose</code>的过程中，我们遇到的诸如容器的<strong>启动顺序</strong>、<strong>网络模式</strong>、<strong>健康检查</strong>这类问题，我有一点<code>Docker Compose</code>的进阶使用技巧想和大家分享。</p>
+<h1 id=容器的启动顺序>
+<a href=#%e5%ae%b9%e5%99%a8%e7%9a%84%e5%90%af%e5%8a%a8%e9%a1%ba%e5%ba%8f class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+容器的启动顺序
+</h1>
+<p>使用服务编排以后，大家最关心的问题是，如果服务间存在依赖关系，那么如何保证容器的启动顺序？我承认，这是一个真实存在的问题，譬如，你的应用依赖某个数据库，理论上数据库要先启动，抑或者是像<code>Redis</code>、<code>Kafka</code>、<code>Envoy</code>这样的基础设施，总是要优先于应用服务本身启动。</p>
+<p><img loading=lazy src=https://i.loli.net/2021/08/15/LnAh6GSdMJ2NkVx.png alt=假如章鱼的这些脚互相影响会怎么样？></p>
+<p>熟悉<code>Docker Compose</code>的同学，也许会想到<code>depends_on</code>这个选项，可如果大家亲自去尝试过就会知道，这终究只是我们的一厢情愿。为什么呢？因为这个<code>depends_on</code>主要是看目标容器是不是处于<code>running</code>的状态，所以，在大多数情况下，我们会注意到<code>Docker Compose</code>并不是按我们期望的顺序去启动的，因为目标容器在某一瞬间的确已经是<code>running</code>的状态了，那这样简直太尴尬了有木有啊！我们从一个简单的例子开始：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.8&#34;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>redis_server</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>redis:latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>&gt;</span><span class=sd>
+</span><span class=sd>      /bin/bash -c &#39;
+</span><span class=sd>      sleep 5;
+</span><span class=sd>      echo &#34;sleep over&#34;;&#39;</span><span class=w>      
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>backend</span><span class=w>
+</span><span class=w>  </span><span class=nt>city_service</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w> </span><span class=l>CityService/</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>city_service</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=s2>&#34;8081:80&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>backend</span><span class=w>
+</span><span class=w>    </span><span class=nt>depends_on</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>redis_server</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>backend</span><span class=p>:</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>可以注意到，为了证明<code>city_service</code>服务不会等待<code>redis_server</code>服务，我故意让子弹飞了一会儿，结果如何呢？我们一起来看看：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/08/15/BqDRtbJkpVcno3s.png alt=" Docker Compose 启动顺序：一厢情愿"></p>
+<p>果然，我没有骗各位，<code>city_service</code>服务不会等待<code>redis_server</code>服务。我们知道，<code>Redis</code>提供的命令行接口中，有一个<code>PING</code>命令，当<code>Redis</code>可以正常连接的时候，它会返回一个<code>PONG</code>，也许，这就是乒乓球的魅力所在。基于这个想法，我们继续修改<code>docker-compose.yml</code>文件：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.8&#34;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>redis_server</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>redis:latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>backend</span><span class=w>
+</span><span class=w>  </span><span class=nt>city_service</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w> </span><span class=l>CityService/</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>city_service</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=s2>&#34;8081:80&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>backend</span><span class=w>
+</span><span class=w>    </span><span class=nt>depends_on</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>redis_server</span><span class=w>
+</span><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>&gt;</span><span class=sd>
+</span><span class=sd>      /bin/bash -c &#39;
+</span><span class=sd>      while ! nc -z redis_server 6379;
+</span><span class=sd>      do
+</span><span class=sd>        echo &#34;wait for redis_server&#34;;
+</span><span class=sd>        sleep 1;
+</span><span class=sd>      done;
+</span><span class=sd>
+</span><span class=sd>      echo &#34;redis_server is ready!&#34;;
+</span><span class=sd>      echo &#34;start city_service here&#34;;
+</span><span class=sd>      &#39;</span><span class=w>      
+</span><span class=w></span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>backend</span><span class=p>:</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>这里，我们用了一种取巧的方法，<code>Ubuntu</code>中的<code>nc</code>命令可以对指定主机、指定端口进行检测，换言之，我们简单粗暴的认为，只要<code>6379</code>这个端口可以访问，就认为<code>Redis</code>准备就绪啦，因为我们没有办法在<code>city_service</code>这个容器中调用<code>redis-cli</code>，这个做法本身并不严谨，我们这里更多的是验证想法：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/08/15/Hhx4R7obZL5FBrv.png alt="Docker Compose 启动顺序：检测 Redis"></p>
+<p>可以注意到，此时，<code>city_service</code>服务会等待<code>redis_server</code>服务，直到<code>redis_server</code>服务就绪。所以，要解决服务编排时，容器的启动顺序的问题，本质上就是把需要等待的服务、端口以及当前服务的启动命令，统一到容器的入口中。为此，官方提供了 <a href=https://github.com/vishnubob/wait-for-it>wait-for-it</a> 这个方案，官方关于容器启动顺序的文档，可以参考：<a href=https://docs.docker.com/compose/startup-order/>Startup Order</a>。对于上面的例子，我们可以这样改写<code>docker-compose.yml</code>文件：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.8&#34;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>redis_server</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>redis:latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>backend</span><span class=w>
+</span><span class=w>  </span><span class=nt>city_service</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w> </span><span class=l>CityService/</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>city_service</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=s2>&#34;8081:80&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>backend</span><span class=w>
+</span><span class=w>    </span><span class=nt>depends_on</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>redis_server</span><span class=w>
+</span><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/wait-for-it.sh&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;redis_server:6379&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;--&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;dotnet&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;CityService.dll&#34;</span><span class=p>]</span><span class=w>
+</span><span class=w></span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>backend</span><span class=p>:</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>此时，启动容器时的效果如下，因为这个方案依赖 <a href=http://netcat.sourceforge.net/>Netcat</a> 这样一个工具，所以，我们的容器中还需要加入这个工具，此时，可以使用下面的脚本片段：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-dockerfile data-lang=dockerfile><span class=k>FROM</span><span class=s> debian:buster-slim as wait-for-it</span><span class=err>
+</span><span class=err></span><span class=k>RUN</span> apt-get update <span class=o>&amp;&amp;</span> apt-get install -y <span class=s2>&#34;wait-for-it&#34;</span><span class=err>
+</span><span class=err></span><span class=k>COPY</span> --from<span class=o>=</span>wait-for-it /usr/bin/wait-for-it .<span class=err>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>不过，不太明白为什么这里一直提示路径不对：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/08/16/jgbwuVHeJNvG5BY.png alt="Docker Compose 启动顺序：wait-for-it.sh"></p>
+<p>个人建议，最好将这个语句写在<code>Dockerfile</code>，或者试提供一个类似于<code>entrypoint.sh</code>的脚本文件。关于这个方案的更多细节，大家可以参考<a href=https://docs.docker.com/compose/startup-order/>官方文档</a>，写这篇文章的时候，我不由得感慨：<code>Shell</code>脚本真的是太难学了(逃……。所以，点到为止。刚刚提到过，我个人觉得这种主机 + 端口号的检测方式不够严谨，因为一个端口可以<code>PING</code>通，并不代表服务一定是可用的，所以，在接下来的内容里，我会介绍基于健康检查的思路。</p>
+<h1 id=容器的健康检查>
+<a href=#%e5%ae%b9%e5%99%a8%e7%9a%84%e5%81%a5%e5%ba%b7%e6%a3%80%e6%9f%a5 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+容器的健康检查
+</h1>
+<p>不知道大家有没有这样的经历，就是你明明看到一个容器的状态变成<code>Up</code> ，可对应的微服务就是死活调不通。面对来自前端同事的戏谑与嘲讽，你不禁仰天长叹一声，开始在容器里翻箱倒柜，一通操作如虎。过了许久，你终于发现是容器内部出现了始料不及的错误。看来，容器状态显示为<code>Up</code>，并不代表容器内的服务就是可用的啊！果然，还是需要一种机制来判断容器内的服务是否可用啊！等等，这不就是传说中的健康检查？恭喜你，答对了！</p>
+<p><img loading=lazy src=https://i.loli.net/2021/08/15/fplPBvICiEOYsKR.jpg alt=" Docker 经典集装箱形象"></p>
+<p>在<code>Docker</code>及<code>Docker Compse</code>中，均原生支持 <a href=https://docs.docker.com/engine/reference/builder/#healthcheck>健康检查</a> 机制，一旦一个容器指定了<code>HEALTHCHECK</code>选项，<code>Docker</code>会定时检查容器内的服务是否可用。我们都知道，一个普通的 Docker 容器，无非是开始、运行中、停止这样三种状态，而提供了<code>HEALTHCHECK</code>选项的<code>Docker</code>容器，会在这个基础上增加健康(<strong>healthy</strong>)和非健康(<strong>unhealthy</strong>)两种状态，所以，我们应该用这两个状态来判断容器内的服务是否可用。下面是一个指定了<code>HEALTHCHECK</code>选项的容器示例：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-dockerfile data-lang=dockerfile><span class=k>FROM</span><span class=s> FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim</span><span class=err>
+</span><span class=err></span><span class=k>EXPOSE</span><span class=s> 80</span><span class=err>
+</span><span class=err></span><span class=k>EXPOSE</span><span class=s> 443</span><span class=err>
+</span><span class=err></span><span class=k>WORKDIR</span><span class=s> /app</span><span class=err>
+</span><span class=err></span><span class=k>COPY</span> /app/publish .<span class=err>
+</span><span class=err></span><span class=k>ENTRYPOINT</span> <span class=p>[</span><span class=s2>&#34;dotnet&#34;</span><span class=p>,</span> <span class=s2>&#34;CityService.dll&#34;</span><span class=p>]</span><span class=err>
+</span><span class=err>HEALTHCHECK --interval=5s --timeout=3s \
+</span><span class=err>  </span><span class=k>CMD</span> curl -fs http://localhost:80/city <span class=o>||</span> <span class=nb>exit</span> <span class=m>1</span><span class=err>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>可以注意到，<code>Docker</code>原生的健康机制，需要通过<code>CMD</code>的方式来执行一个命令行，如果该命令行返回 0 ，则表示成功；返回 1，则表示失败。</p>
+<p>此处，我们还可以配置以下三个参数，<code>--interval=&lt;间隔></code>表示健康检查的间隔，默认为 30 秒；<code>--timeout=&lt;时长></code>表示健康检查命令超时时间，超过该时间即表示<code>unhealthy</code>，默认为 30 秒；<code>--retries=&lt;次数></code>表示连续失败的次数，超过该次数即表示<code>unhealthy</code>。对于我们这里的<code>ASP.NET Core</code>应用而言，如果程序正常启动，显然这个地址是可以调通的，我们可以用这个来作为一个“探针”。</p>
+<p><img loading=lazy src=https://i.loli.net/2021/08/14/QnuPZ8vsCYKbVHm.png alt=" Docker 健康检查：healthy "></p>
+<p>我们可以注意到，在容器启动的第 14 秒，其状态为：<code>health：starting</code>。而等到容器启动的第 16 秒，其状态则为：<code>healthy</code>，这表明我们的服务是健康的。此时此刻，如果我们耍点小心思，让<code>curl</code>去访问一个不存在的地址会怎么样呢？可以注意到，此时状态变成了：<code>unhealthy</code>:</p>
+<p><img loading=lazy src=https://i.loli.net/2021/08/14/oNtX8G7UAqEDIzS.png alt="Docker 健康检查：unhealthy "></p>
+<p><code>HEALTHCHECK</code>指令除了可以直接写在<code>Dockerfile</code>中以外，还可以直接附加到<code>docker run</code>命令上，还是以上面的项目作为示例：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>docker run  --name city_service -d -p 8081:80  city_service <span class=se>\
+</span><span class=se></span>--health-cmd<span class=o>=</span><span class=s2>&#34;curl -fs http://localhost:80/city || exit 1&#34;</span> <span class=se>\
+</span><span class=se></span>--health-interval<span class=o>=</span>3s <span class=se>\
+</span><span class=se></span>--health-timeout<span class=o>=</span>5s <span class=se>\
+</span><span class=se></span>--health-retries<span class=o>=</span><span class=m>3</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>甚至，我们还可以使用下面的命令来查询容器的健康状态：<code>docker inspect --format='{{json .State.Health}}' &lt;ContainerID></code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=p>{</span>
+  <span class=nt>&#34;Status&#34;</span><span class=p>:</span> <span class=s2>&#34;unhealthy&#34;</span><span class=p>,</span>
+  <span class=nt>&#34;FailingStreak&#34;</span><span class=p>:</span> <span class=mi>5</span><span class=p>,</span>
+  <span class=nt>&#34;Log&#34;</span><span class=p>:</span> <span class=p>[{</span>
+	<span class=nt>&#34;Start&#34;</span><span class=p>:</span> <span class=s2>&#34;2021-08-14T15:27:50.3325424Z&#34;</span><span class=p>,</span>
+	<span class=nt>&#34;End&#34;</span><span class=p>:</span> <span class=s2>&#34;2021-08-14T15:27:50.3813102Z&#34;</span><span class=p>,</span>
+	<span class=nt>&#34;ExitCode&#34;</span><span class=p>:</span> <span class=mi>1</span><span class=p>,</span>
+	<span class=nt>&#34;Output&#34;</span><span class=p>:</span> <span class=s2>&#34;&#34;</span>
+  <span class=p>}]</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>不过，我个人感觉这个<code>curl</code>的写法非常别扭，尤其是当我试图在<code>docker-compose</code>中写类似命令的时候，我觉得稍微复杂一点的健康检查，还是交给脚本语言来实现吧！例如，下面是官方提供的针对<code>MongoDB</code>的健康检查的脚本<code>docker-healthcheck.sh</code>：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=cp>#!/bin/bash
+</span><span class=cp></span><span class=nb>set</span> -eo pipefail 
+<span class=nv>host</span><span class=o>=</span><span class=s2>&#34;</span><span class=k>$(</span>hostname --ip-address <span class=o>||</span> <span class=nb>echo</span> <span class=s1>&#39;127.0.0.1&#39;</span><span class=k>)</span><span class=s2>&#34;</span> 
+<span class=k>if</span> mongo --quiet <span class=s2>&#34;</span><span class=nv>$host</span><span class=s2>/test&#34;</span> --eval <span class=s1>&#39;quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)&#39;</span><span class=p>;</span> <span class=k>then</span> 
+   <span class=nb>exit</span> <span class=m>0</span>
+<span class=k>fi</span> 
+   <span class=nb>exit</span> <span class=m>1</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>此时，<code>HEALTHCHECK</code>可以简化为：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-dockerfile data-lang=dockerfile><span class=err>HEALTHCHECK --interval=5s --timeout=3s \
+</span><span class=err>  </span><span class=k>CMD</span> bin/bash docker-healthcheck.sh<span class=err>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>更多的示例，请参考：<a href=https://github.com/docker-library/healthcheck/>docker-library/healthcheck/</a> 以及 <a href=https://github.com/rodrigobdz/docker-compose-healthchecks>rodrigobdz/docker-compose-healthchecks</a>。</p>
+<p>其实，对于容器的启动顺序问题，我们还可以借助检查检查的思路来解决，因为<code>depends_on</code>并不会等待目标容器进入<code>ready</code>状态，而是等目标容器进入<code>running</code>状态。这样，就回到了我们一开始描述的现象：一个容器明明都变为<code>Up</code>状态了，可为什么接口就是死活调不通呢？因为我们无法界定这样一个<code>ready</code>状态。考虑到<code>depends_on</code>可以指定<code>condition</code>，此时，我们可以这样编写<code>docker-compose.yml</code>文件：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.8&#34;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>redis_server</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>redis:latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>healthcheck</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>test</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;CMD&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;redis-cli&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;ping&#34;</span><span class=p>]</span><span class=w>
+</span><span class=w>      </span><span class=nt>interval</span><span class=p>:</span><span class=w> </span><span class=l>1s</span><span class=w>
+</span><span class=w>      </span><span class=nt>timeout</span><span class=p>:</span><span class=w> </span><span class=l>3s</span><span class=w>
+</span><span class=w>      </span><span class=nt>retries</span><span class=p>:</span><span class=w> </span><span class=m>30</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>backend</span><span class=w>
+</span><span class=w>  </span><span class=nt>city_service</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w> </span><span class=l>CityService/</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>city_service</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=s2>&#34;8081:80&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>backend</span><span class=w>
+</span><span class=w>    </span><span class=nt>depends_on</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>redis_server</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>condition</span><span class=p>:</span><span class=w> </span><span class=l>service_healthy</span><span class=w>
+</span><span class=w></span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>backend</span><span class=p>:</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>简单来说，我们使用了<code>Redis</code>内置的命令对<code>redis_server</code>服务进行健康检查，而<code>city_service</code>服务则依赖于<code>redis_server</code>服务的健康状态，只有当<code>Redis</code>准备就绪了以后，<code>city_service</code>才会开始启动。下面是实际启动过程的截图，看看是不是和我们想的一样：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/08/15/HKvjmoCdznlW6FV.png alt=" Docker 健康检查：容器启动顺序"></p>
+<p>果然，奇怪的知识有增加了呢，我们唯一需要解决的问题，就是怎么给某一个服务做健康检查，以上！</p>
+<h1 id=容器的网络模式>
+<a href=#%e5%ae%b9%e5%99%a8%e7%9a%84%e7%bd%91%e7%bb%9c%e6%a8%a1%e5%bc%8f class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+容器的网络模式
+</h1>
+<p>接下来，我们来说说<code>Docker</code>里的网络模式，特别是当我们使用<code>docker-compose</code>来编排一组服务的时候，假设我们有一个目录<code>app</code>，在这个牡蛎里我们放置了服务编排文件<code>docker-compose.yml</code>，默认情况下，<code>Docker-Compose</code>会创建一个一个名为<code>app_default</code>的网络，并且这个网络是<code>bridge</code>，即网桥模式的一个网络。什么是网桥模式呢？你可能会感到困惑，而这要从<code>Docker</code>中的网络模式开始说起，这里简单下常用的几种：</p>
+<ul>
+<li>host 模式，或叫做主机模式，可以认为容器和主机使用相同的端口进行访问，因为容器和主机在同一个网络下，此模式下，意味着通过<code>-p</code>绑定的端口失效，因为所有容器都使用主机的网络，所以容器间可以相互通信，此模式通过<code>--network=host</code>指定。</li>
+<li>bridge 模式，或叫做网桥模式，这是<code>Docker</code>中默认的网络设置，此模式下，容器和主机有各自的 IP/端口号，两者之间通过一个虚拟网桥进行通信，虚拟网桥的作用类似于物理交换机。因此，不同容器间的网络是相互隔离的，此模式通过<code>--network=bridge</code>指定。</li>
+<li>none 模式，通俗讲就是无网络模式，意味着容器是一个封闭的环境，无法通过主机访问外部的网络，这种模式在那种讲究保密性质、封闭式开发的场合应该会有一点用，可这都 2021 年了，难道你还能把互联网上的软件全部下载下来吗？此模式通过<code>--network=none</code>指定。</li>
+<li>container 模式，或叫做共享模式，通俗来讲，就是指一个容器共享某个已经存在的容器的<code>Network Namespace</code>，此时，该容器将不会拥有属于自己的 IP/端口号等资源，因为这种模式可以节约一定的网络资源，此模式通过<code>--network=&lt;Container_ID>/&lt;Container_Name></code>指定。</li>
+</ul>
+<p>为了帮助大家理解和区分这四种模式，博主绘制了下面的图示来补充说明：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/08/16/DJq3CBrmktaRNex.png alt=容器的网络模式(主机、容器、网桥)示意图></p>
+<p>通过以上的图文信息反复加深印象，相信大家可以找出点规律：</p>
+<ul>
+<li>如果你的容器网络与主机网络不需要隔离，那么选择主机模式(<strong>host</strong>)</li>
+<li>如果你的应用运行在不同的容器里，并且这些容器间需要相互通信，那么选择网桥模式(<strong>bridge</strong>)</li>
+<li>如果你的应用需要运行在一个隔绝外界网络的环境中，那么选择无网络模式(<strong>none</strong>)</li>
+<li>如果你希望在节省网络资源的同时，实现不同容器间的通信，那么选择容器模式(<strong>container</strong>)</li>
+</ul>
+<p>以上四种网络模式，除了可以在<code>docker run</code>的时候指定以外，我们还可以在<code>docker-compose.yml</code>文件中指定。例如，下面表示的是一个主机模式的容器：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.8&#39;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>cache_server</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w> </span><span class=l>.</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>cache_server</span><span class=w>
+</span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>always</span><span class=w>
+</span><span class=w>    </span><span class=nt>network_mode</span><span class=p>:</span><span class=w> </span><span class=l>host</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>大多数情况下，我们只需要连接到<code>docker0</code>这个虚拟网卡即可，而如果你想为某个容器或者一组容器单独建立这样一张网卡，此时，就不得不提到<code>Docker</code>中的自定义网络功能，我们一起来看下面的示例：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>// 创建一个网络：test-network
+docker network create test-network
+// 创建一个Nginx的容器：nginx_8087，使用网络：test-network
+docker run -d --name nginx_8087 --network test-network -p 8087:80 nginx:latest
+// 创建一个Nginx的容器：nginx_8088
+docker run -d --name nginx_8088 -p 8088:80 nginx:latest
+// 连接容器：nginx_8088 至网络：test-network
+docker network connect test-network nginx_8088
+</code></pre></td></tr></table>
+</div>
+</div><p>接下来，通过下面的命令，我们可以拿到两个容器的 ID，在此基础上我们看一下两个容器各自分配的 IP 是多少：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>docker ps -a
+docker inspect --format<span class=o>=</span><span class=s1>&#39;{{.NetworkSettings.IPAddress}}&#39;</span> &lt;ContainerID&gt;
+</code></pre></td></tr></table>
+</div>
+</div><p>此时，我们会发现一个有趣的现象，<code>nginx_8087</code>这个容器，可以获得 IP 地址<code>172.17.0.2</code>，而<code>nginx_8088</code>则无法获得 IP 地址，这是为什么呢？这其实就是我们前面提到过的容器模式(<strong>container</strong>)，此时，<code>nginx_8088</code>这个容器实际上是和<code>nginx_8087</code>共享一个<code>Network Namespace</code>，即使它们有各自的文件系统。同样地，我们可以使用下面的命令来让容器从某个网络中断开：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>// 断开容器：nginx_8088 至网络：test-network
+docker network disconnect test-network nginx_8088
+// 删除网络
+docker network rm test-network
+</code></pre></td></tr></table>
+</div>
+</div><p>是否觉得手动维护容器的网络非常痛苦？幸好，我们还有<code>Docker-Compose</code>可以用，上面两个<code>Nginx</code>的容器我们可以这样维护：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.8&#34;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>nginx_8087</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx:latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>nginx_8087</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=m>8087</span><span class=p>:</span><span class=m>80</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>test-network</span><span class=w>
+</span><span class=w>  </span><span class=nt>nginx_8088</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx:latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>nginx_8088</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=m>8088</span><span class=p>:</span><span class=m>80</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>test-network</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>test-network</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>driver</span><span class=p>:</span><span class=w> </span><span class=l>bridge</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>此时，我们可以注意到，<code>Docker Compose</code>会创建两个网络，即<code>network_mode_default</code>和<code>network_mode_test-network</code>：</p>
+<p><img loading=lazy src=https://i.loli.net/2021/08/16/Sgsbpt1huUlmTQM.png alt="Docker Compose 中使用自定义网络"></p>
+<p>这说明默认网络依然存在，如果我们希望完全地使用自定义网络，此时，我们可以这样修改服务编排文件：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>default</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>driver</span><span class=p>:</span><span class=w> </span><span class=l>host</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>这表示默认网络会采用主机模式，相应地，你需要修改<code>nginx_8087</code>和<code>nginx_8088</code>两个容器的<code>network</code>选项，使其指向<code>default</code>。</p>
+<p>除此之外，你还可以使用<code>external</code>指向一个已经存在的网络：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>default</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>external</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>    </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>a-existing-network</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>在<code>Docker</code>中，每个容器都会分配<code>IP</code>，因为这个<code>IP</code>总是不固定的，所以，如果我们希望像虚拟机那样使用一个静态<code>IP</code>的话，可以考虑下面的做法：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.8&#34;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>nginx_8087</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx:latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>nginx_8087</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=m>8087</span><span class=p>:</span><span class=m>80</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>test-network</span><span class=w>
+</span><span class=w>          </span><span class=nt>ipv4_address</span><span class=p>:</span><span class=w> </span><span class=m>172.2.0.10</span><span class=w>
+</span><span class=w>  </span><span class=nt>nginx_8088</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx:latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>nginx_8088</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=m>8088</span><span class=p>:</span><span class=m>80</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>test-network</span><span class=w>
+</span><span class=w>          </span><span class=nt>ipv4_address</span><span class=p>:</span><span class=w> </span><span class=m>172.2.0.11</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>test-network</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>driver</span><span class=p>:</span><span class=w> </span><span class=l>bridge</span><span class=w>
+</span><span class=w>    </span><span class=nt>config</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>subnet</span><span class=p>:</span><span class=w> </span><span class=m>172.2.0.0</span><span class=l>/24</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>关于<code>Docker</code>及<code>Docker Compose</code>中的网络驱动，如 <a href=https://docs.docker.com/network/macvlan/>macvlan</a>、<a href=https://docs.docker.com/network/overlay/>overlay</a> 等等，这些显然是更加深入的话题，考虑到篇幅，不在这里做进一步的展开，对此感兴趣的朋友可以参考官方文档：<a href=https://docs.docker.com/network/>Networking Overview</a> 以及 <a href=https://docs.docker.com/compose/networking/>Networking in Compose</a>。博主写这篇文章的想法，主要是源于团队内落地<code>Docker-Compose</code>时的一次经历，当时有台虚拟机偶尔会出现<code>IP</code>被篡改的情况，而罪魁祸首居然是<code>Docker-Compose</code>，虽然最终用主机模式勉强解决了这个问题，可终究留下了难以言说的疑问，此刻，大概能稍微对<code>Docker</code>的网络有点了解。果然，越靠近底层，就是越是抽象、越是难以理解。</p>
+<h1 id=文本小结>
+<a href=#%e6%96%87%e6%9c%ac%e5%b0%8f%e7%bb%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+文本小结
+</h1>
+<p>本文分享了<code>Docker</code>及<code>Docker-Compose</code>中的进阶使用技巧，主要探索了服务编排场景下容器的启动顺序、健康检查、网络模式三类问题。默认情况下，<code>Docker-Compose</code>的<code>depends_on</code>选项，取决于容器是否处于<code>running</code>状态，因此，当我们有多个服务需要启动时，实际上启动顺序并不会受到<code>depends_on</code>选项的影响，因为此时容器都是<code>running</code>的状态。为了解决这个问题，官方提供了 <a href=https://github.com/vishnubob/wait-for-it>wait-for-it</a> 的方案，这是一种利用 <a href=http://netcat.sourceforge.net/>Netcat</a> 对<code>TCP</code>和<code>UDP</code>进行检测的机制，当检测条件被满足的时候，它会执行由用户指定的启动脚本。从这里看，其实已经有了一点健康检查的影子，而官方的健康检查，则允许用户使用更加自由的命令或者脚本去实现检测逻辑，所以，从这个角度上来讲，<code>HEALTHCHECK</code>结合<code>depends_on</code>，这才是实现容器启动顺序控制的终极方案。<code>Docker</code>的网络是一个相对复杂的概念，所以，这里就是简单的介绍了下常见的四种网络模式，更深入的话题比如网络驱动等，还需要花时间去做进一步的探索。本文示例以上传至<a href=https://github.com/Regularly-Archive/2021/tree/master/src/DockerTips>Github</a>，供大家参考。好了，以上就是这篇博客的全部内容啦，谢谢大家！</p>
+</div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=/imgs/avatar.jpg>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0-grpc-%E6%9C%8D%E5%8A%A1%E4%BB%A3%E7%90%86/ title=上一篇>
+<span>上一篇</span>
+ASP.NET Core 搭载 Envoy 实现 gRPC 服务代理
+</a>
+<a rel=next href=/posts/ssltls%E5%8A%A0%E5%AF%86%E4%BC%A0%E8%BE%93%E4%B8%8E%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F/ title=下一篇>
+<span>下一篇</span>
+SSL/TLS 加密传输与数字证书的前世今生
+</a>
+</nav>
+</div>
+<div class=container>
+<div id=comment></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://example.com/posts/docker-compose-%E6%9C%8D%E5%8A%A1%E7%BC%96%E6%8E%92%E8%BF%9B%E9%98%B6%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93%E4%B8%8E%E5%88%86%E4%BA%AB/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
+</nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021
+</div>
+<div class=footer-copyright>
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
+</section>
+<script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

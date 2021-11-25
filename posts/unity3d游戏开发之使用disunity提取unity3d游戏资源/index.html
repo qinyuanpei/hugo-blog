@@ -1,0 +1,293 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
+<title>Unity3D 游戏开发之使用 disunity 提取 Unity3D 游戏资源 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="Unity3D 游戏开发之使用 disunity 提取 Unity3D 游戏资源 | 元培的部落格">
+<meta itemprop=name content="Unity3D 游戏开发之使用 disunity 提取 Unity3D 游戏资源 | 元培的部落格">
+<meta name=twitter:title content="Unity3D 游戏开发之使用 disunity 提取 Unity3D 游戏资源 | 元培的部落格">
+<meta name=application-name content="Unity3D 游戏开发之使用 disunity 提取 Unity3D 游戏资源 | 元培的部落格">
+<meta name=description content="好了，下面我们再来看看怎么提取这个模型文件对应的贴图，在游戏目录/assetbundles/NPC/Texture/下有一个名为 s049_1.unity3d_1D2446B9 的文件，这就是 s049 这个模型对应的贴图了;下面我们就来尝试解析这个文件，不过游戏制作方对 config 文件夹下的内容进行了加密，因为在这个文件夹下面是两个 AssetBundle 文件，博主尝试用 extract 和 bundle-extract 两个命令进行解析，可是得到的只是些文本文件，对我们继续研究没有什么帮助;这个工具呢，博主在[Unity3D 游戏开发之反编译 AssetBundle 提取游戏资源](http://www.qinyuanpei.com/2015/04/02/unity3d-development-with-assetbundle/)这篇文章中其实已经提到过了，不过因为有些朋友对如何使用这个工具依然存在问题，所以博主决定特地写一篇文章来讲解如何使用 disunity 来提取 Unity3D 游戏中的素材">
+<meta name=twitter:description content="好了，下面我们再来看看怎么提取这个模型文件对应的贴图，在游戏目录/assetbundles/NPC/Texture/下有一个名为 s049_1.unity3d_1D2446B9 的文件，这就是 s049 这个模型对应的贴图了;下面我们就来尝试解析这个文件，不过游戏制作方对 config 文件夹下的内容进行了加密，因为在这个文件夹下面是两个 AssetBundle 文件，博主尝试用 extract 和 bundle-extract 两个命令进行解析，可是得到的只是些文本文件，对我们继续研究没有什么帮助;这个工具呢，博主在[Unity3D 游戏开发之反编译 AssetBundle 提取游戏资源](http://www.qinyuanpei.com/2015/04/02/unity3d-development-with-assetbundle/)这篇文章中其实已经提到过了，不过因为有些朋友对如何使用这个工具依然存在问题，所以博主决定特地写一篇文章来讲解如何使用 disunity 来提取 Unity3D 游戏中的素材 ">
+<meta itemprop=description content=" 好了，下面我们再来看看怎么提取这个模型文件对应的贴图，在游戏目录/assetbundles/NPC/Texture/下有一个名为 s049_1.unity3d_1D2446B9 的文件，这就是 s049 这个模型对应的贴图了;下面我们就来尝试解析这个文件，不过游戏制作方对 config 文件夹下的内容进行了加密，因为在这个文件夹下面是两个 AssetBundle 文件，博主尝试用 extract 和 bundle-extract 两个命令进行解析，可是得到的只是些文本文件，对我们继续研究没有什么帮助;这个工具呢，博主在[Unity3D 游戏开发之反编译 AssetBundle 提取游戏资源](http://www.qinyuanpei.com/2015/04/02/unity3d-development-with-assetbundle/)这篇文章中其实已经提到过了，不过因为有些朋友对如何使用这个工具依然存在问题，所以博主决定特地写一篇文章来讲解如何使用 disunity 来提取 Unity3D 游戏中的素材 ">
+<meta property="og:description" content=" 好了，下面我们再来看看怎么提取这个模型文件对应的贴图，在游戏目录/assetbundles/NPC/Texture/下有一个名为 s049_1.unity3d_1D2446B9 的文件，这就是 s049 这个模型对应的贴图了;下面我们就来尝试解析这个文件，不过游戏制作方对 config 文件夹下的内容进行了加密，因为在这个文件夹下面是两个 AssetBundle 文件，博主尝试用 extract 和 bundle-extract 两个命令进行解析，可是得到的只是些文本文件，对我们继续研究没有什么帮助;这个工具呢，博主在[Unity3D 游戏开发之反编译 AssetBundle 提取游戏资源](http://www.qinyuanpei.com/2015/04/02/unity3d-development-with-assetbundle/)这篇文章中其实已经提到过了，不过因为有些朋友对如何使用这个工具依然存在问题，所以博主决定特地写一篇文章来讲解如何使用 disunity 来提取 Unity3D 游戏中的素材 ">
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.30dfc79b16257ec78e2f14533e44eee3d74b63c4116ff3ab57f796a8390aa72a.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
+<script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/categories>分类</a>
+<a href=/friends>友链</a>
+<a href=/works>实验室</a>
+<a href=/archives>归档</a>
+<a href=/tags>标签</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>Unity3D 游戏开发之使用 disunity 提取 Unity3D 游戏资源</h1>
+<div class=post-meta>
+<div>
+By 飞鸿踏雪 | <time>2015-04-03</time>
+| 2 minutes
+</div>
+<div class=tags>
+<a href=/tags/%E7%A9%B9%E4%B9%8B%E6%89%89/>穹之扉</a>
+<a href=/tags/unity3d/>Unity3D</a>
+<a href=/tags/disunity/>disunity</a>
+<a href=/tags/%E5%8F%8D%E7%BC%96%E8%AF%91/>反编译</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>  各位朋友，大家好，我是秦元培。今天博主想和分享的是使用 disunity 提取 Unity3D 游戏素材。这个工具呢，博主在<a href=http://www.qinyuanpei.com/2015/04/02/unity3d-development-with-assetbundle/>Unity3D 游戏开发之反编译 AssetBundle 提取游戏资源</a>这篇文章中其实已经提到过了，不过因为有些朋友对如何使用这个工具依然存在问题，所以博主决定特地写一篇文章来讲解如何使用 disunity 来提取 Unity3D 游戏中的素材。</p>
+<h1 id=准备工作>
+<a href=#%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+准备工作
+</h1>
+<ul>
+<li><a href=https://github.com/ata4/disunity>disunity</a>:负责对 Unity3D 的数据文件进行解包</li>
+<li><a href=http://www.unity3d.com>Unity3D</a>:负责将导出的数据文件显示出来</li>
+<li><a href=http://www.blender.org/>Bleander</a>或者 3DsMax:负责 Unity3D 数据文件的转换处理，二选一即可。个人推荐 Blender。</li>
+<li>Java:负责为 disunity 提供编译环境</li>
+</ul>
+<h1 id=测试文件>
+<a href=#%e6%b5%8b%e8%af%95%e6%96%87%e4%bb%b6 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+测试文件
+</h1>
+<ul>
+<li>《新仙剑 OL》<a href=http://pan.baidu.com/s/1gd5tSzD>下载</a></li>
+<li>《轩辕剑 6 外传穹之扉》</li>
+<li>《雨血前传:蜃楼》<a href=http://pan.baidu.com/s/1dDwA6qt>下载</a></li>
+</ul>
+<h1 id=提取流程>
+<a href=#%e6%8f%90%e5%8f%96%e6%b5%81%e7%a8%8b class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+提取流程
+</h1>
+<p>  好了，在确定做好所有的准备工作后，我们就可以正式开始今天的内容了！</p>
+<h2 id=编译-disunity>
+<a href=#%e7%bc%96%e8%af%91-disunity class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+编译 disunity
+</h2>
+<p>  虽然我们可以从 disunity 的项目主页中下载 release 版本，不过为了保险起见，博主依然建议大家自行编译 disunity。编译的方法是在命令行中切换到 disunity 的目录，然后执行命令:</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell>java -jar disunity.jar
+</code></pre></td></tr></table>
+</div>
+</div><p>  如果大家的 Java 环境没有任何问题的话，那么接下来我们就应该可以看到:</p>
+<pre tabindex=0><code class=language-Sheel data-lang=Sheel>[Info] DisUnity v0.3.4
+</code></pre><p>  以及各种关于这个工具的使用方法和参数选项。那么好了，现在我们就来熟悉下 disunity 这个工具的常用命令。disunity 命令的基本形式是:</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-plain data-lang=plain>disunity [CommandName] [CommandOptions]
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=disunity-命令>
+<a href=#disunity-%e5%91%bd%e4%bb%a4 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+disunity 命令
+</h2>
+<ul>
+<li>dump:将一个二进制的对象转化成人类可以阅读的文本信息。</li>
+<li>dump-struct:将一个二进制的对象转化为结构化的信息。</li>
+<li>extract:将 Unity3D 的数据文件转化为常见的文本、声音、图片等信息。</li>
+<li>extract-raw:将 Unity3D 的数据文件转化为可序列化的对象，在 extract 命令不被支持的情况下使用。</li>
+<li>extract-txt:和 dump 命令类似输出转换结果到命令行。</li>
+<li>extract-struct:和 dump-struct 命令类似输出转换结果到命令行。</li>
+<li>info:输出 Unity3D 的数据文件和 AssetBundle 文件的变量信息。</li>
+<li>bundle-extract:释放所有的被打包到 AssetBundle 中的文件。</li>
+<li>bundle-inject:将从 AssetBundle 中打包的文件重新打包</li>
+</ul>
+<p>  暂时先介绍这些，因为其它的命令我们基本用不到，如果需要深入研究这些命令，可以参考 disunity 项目中的 README.md 文件。</p>
+<h2 id=解析新仙剑-ol-的-assetbundle-文件>
+<a href=#%e8%a7%a3%e6%9e%90%e6%96%b0%e4%bb%99%e5%89%91-ol-%e7%9a%84-assetbundle-%e6%96%87%e4%bb%b6 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+解析《新仙剑 OL 》的 AssetBundle 文件
+</h2>
+<p>  这里我们以游戏目录/assetbundles/NPC/Models/下的 s049.unity3d_CC9026FB 为例来讲解游戏模型的提取。</p>
+<h3 id=模型文件提取>
+<a href=#%e6%a8%a1%e5%9e%8b%e6%96%87%e4%bb%b6%e6%8f%90%e5%8f%96 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+模型文件提取
+</h3>
+<p>  首先我们将这个文件的扩展名改为 s049.unity3d，因为这是它原始的扩展名，是 Unity3D 中导出 AssetBundle 的一种文件格式。好了，我们将这个文件放在一个无中文路径的目录下，这里以 C:\Users\Robin\Desktop 即桌面为例。注意首先进入 disunity 的目录，然后执行命令：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell>disunity extract C:<span class=se>\U</span>sers<span class=se>\R</span>obin<span class=se>\D</span>esktop<span class=se>\s</span>049.unity3d
+</code></pre></td></tr></table>
+</div>
+</div><p>  接下来会在桌面生成一个名为 s049 的文件夹，在这个文件夹中找到 Mesh 的子文件夹，会得到一个 s049.obj 的文件，这个文件就是我们提取到的模型文件。</p>
+<h3 id=模型贴图提取>
+<a href=#%e6%a8%a1%e5%9e%8b%e8%b4%b4%e5%9b%be%e6%8f%90%e5%8f%96 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+模型贴图提取
+</h3>
+<p>好了，下面我们再来看看怎么提取这个模型文件对应的贴图，在游戏目录/assetbundles/NPC/Texture/下有一个名为 s049_1.unity3d_1D2446B9 的文件，这就是 s049 这个模型对应的贴图了。同样地，我们将其重命名为 s049_1.unity3d 然后执行命令：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell>disunity extract C:<span class=se>\U</span>sers<span class=se>\R</span>obin<span class=se>\D</span>esktop<span class=se>\s</span>049_1.unity3d
+</code></pre></td></tr></table>
+</div>
+</div><p>  接下来在桌面上生成一个名为 s049_1 的文件夹，在这个文件夹中找到 Texture2D 的子文件夹，会得到一个名为 s049_1.dds 的贴图文件，这就是我们要提取的模型 s049 的贴图文件。</p>
+<h3 id=将模型和贴图合并>
+<a href=#%e5%b0%86%e6%a8%a1%e5%9e%8b%e5%92%8c%e8%b4%b4%e5%9b%be%e5%90%88%e5%b9%b6 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+将模型和贴图合并
+</h3>
+<p>我们打开 Blender 并将 s049.obj 文件导入，然后将场景中默认的灯光和摄像机都删除，因为我们只需要一个模型文件，我们发现在 Blender 中已经可以看到模型了，因为 Unity3D 中使用的是 FBX 模型，所以我们这里将模型文件导出为 FBX 备用。因为 Unity3D 可以识别 dds 类型的贴图，所以对贴图我们不用做任何处理。</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fz05jg3u49j20s50gz0to.jpg alt=童年林月如的模型></p>
+<p>  打开 Unity3D 将童年林月如的模型和贴图一起导入，将童年林月如的模型拖入到游戏场景中，因为模型的尺寸没有经过调整，所以模型刚开始可能会比较小，我们可以在 Unity3D 进行局部的调整。接下来我们会发现模型没有贴图，只要选择这个模型然后在属性窗口为它附上 s049_1.dds 的贴图文件即可。下面是童年林月如的模型导入 Unity3D 以后的效果:</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fz05d13ddij20ax0bpdgo.jpg alt=童年林月如导入Unity3D后的效果></p>
+<h2 id=解析新仙剑-ol的-assets-文件>
+<a href=#%e8%a7%a3%e6%9e%90%e6%96%b0%e4%bb%99%e5%89%91-ol%e7%9a%84-assets-%e6%96%87%e4%bb%b6 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+解析《新仙剑 OL》的 assets 文件
+</h2>
+<p>  和 AssetBundle 不同，assets 文件是整个 Unity3D 项目中项目资源的打包集合，比如说 Asset 文件下的资源都会被打包到这里，所以说解析 assets 文件可能会有更大的收获吧！因为所有的 Unity3D 游戏都会有这样的文件，而 AssetBundle 文件只有在使用了这项技术的游戏项目中才有。比如说在 Unity3D 中有一个重要的 Resource 文件夹，这个文件夹打包后被被打包成 resources.assets 文件。这里我们以 xianjian_Data/resources.assets 文件为例。首先执行命名:</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell>disunity extract C:<span class=se>\U</span>sers<span class=se>\R</span>obin<span class=se>\D</span>esktop<span class=se>\r</span>esources.assets
+</code></pre></td></tr></table>
+</div>
+</div><p>  接下来会在桌面生成一个 resources 的文件夹，打开这个文件夹我们会发现三个子文件夹，分别是 Shader、TextAsset 和 Texture2D。解析的结果似乎有点失望，不过在 TextAsset 文件夹下我们会找到一个叫做 ResourceFiles.txt 的文件，这是一个纯文本文件，我们可以直接打开，打开后我们发现它的内容是一个 Xml 文件，并且在这个 Xml 文件中定义了游戏中使用的各种资源的路径，不过这些资源都是以 AssetBundle 的形式来定义的。这说明什么呢？这说明《新仙剑 OL》的场景和界面资源是通过动态加载的方式加载到游戏当中的，而这些资源则是通过这个 Xml 文件来配置和管理的，这符合我们平时在 Unity3D 游戏开发中的观点和方法。通过这个文件，我们找到了 assetbundles/config/movieconfig.unity3d 这个文件，这是一个负责维护游戏中场景过场动画的文件。下面我们就来尝试解析这个文件，不过游戏制作方对 config 文件夹下的内容进行了加密，因为在这个文件夹下面是两个 AssetBundle 文件，博主尝试用 extract 和 bundle-extract 两个命令进行解析，可是得到的只是些文本文件，对我们继续研究没有什么帮助。那么好了，现在我们能够进行解析的只有 xinjian_Data/sharedassets0.assets 文件了：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell>disunity extract C:<span class=se>\U</span>sers<span class=se>\R</span>obin<span class=se>\D</span>esktop<span class=se>\s</span>haredassets0.assets
+</code></pre></td></tr></table>
+</div>
+</div><p>  这个解出来的话是些没有什么用的贴图文件，看来如果要提取音乐或者图片的话，还需要进行更加深入的研究才行啊。</p>
+<h2 id=解析雨血前传蜃楼的-assets-文件>
+<a href=#%e8%a7%a3%e6%9e%90%e9%9b%a8%e8%a1%80%e5%89%8d%e4%bc%a0%e8%9c%83%e6%a5%bc%e7%9a%84-assets-%e6%96%87%e4%bb%b6 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+解析《雨血前传.蜃楼》的 assets 文件
+</h2>
+<p>  因为解析《新仙剑 OL》的 assets 文件没有得到什么有用的东西，所以我们接下来来尝试解析《雨血前传.蜃楼》的 assets 文件。这款游戏是博主比较喜欢的一款游戏，基于 Unity3DY 引擎，而且这款游戏是作为 Unity3D 官方范例来推广的，因此研究这款游戏对我们提高 Unity3D 的资源打包机制会比较有帮助。好了，我们直接上手：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell>disunity extract C:<span class=se>\U</span>sers<span class=se>\R</span>obin<span class=se>\D</span>esktop<span class=se>\r</span>esources.assets
+</code></pre></td></tr></table>
+</div>
+</div><p>  哈哈，这款游戏果然没有让我们失望，我们得到了什么呢？</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fz01yhmincj20ur0cdqan.jpg alt=蜃楼中各种Boss的头像></p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fz01tz1bvqj208w050mxb.jpg alt=蜃楼中游戏连招视频1></p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fyzcu600c0j208w0500sp.jpg alt=蜃楼中游戏连招视频2></p>
+<h1 id=总结>
+<a href=#%e6%80%bb%e7%bb%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+总结
+</h1>
+<ul>
+<li>不同的游戏采用的资源配置方案都不同，不过一般可以从 resources.assets 这个文件入手作为突破点。</li>
+<li>如果能拿到游戏中数据配置方案，对于我们提取游戏中的素材会有较大的帮助，因为这样方向性会更强些。</li>
+<li>通过 AssetBundle 动态加载到场景中最好还是采用一个配置表来进行配置，这样便于我们管理和维护整个游戏项目。</li>
+<li>如果没有服务器段的干预，理论上只要修改了本地的 AssetBundle 文件就可以实现对游戏内容和数据的更改，换句话说，可以做外挂和修改器。</li>
+</ul>
+</div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=/imgs/avatar.jpg>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/posts/c#%E4%B8%ADsocket%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%BC%82%E6%AD%A5%E5%AE%9E%E7%8E%B0/ title=上一篇>
+<span>上一篇</span>
+C#中 Socket 通信编程的异步实现
+</a>
+<a rel=next href=/posts/%E5%9C%A8windows%E4%B8%8B%E4%BD%BF%E7%94%A8visual-studio%E7%BC%96%E8%AF%91lua5.3/ title=下一篇>
+<span>下一篇</span>
+在Windows下使用Visual Studio编译Lua5.3
+</a>
+</nav>
+</div>
+<div class=container>
+<div id=comment></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://example.com/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E4%BD%BF%E7%94%A8disunity%E6%8F%90%E5%8F%96unity3d%E6%B8%B8%E6%88%8F%E8%B5%84%E6%BA%90/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
+</nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021
+</div>
+<div class=footer-copyright>
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
+</section>
+<script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

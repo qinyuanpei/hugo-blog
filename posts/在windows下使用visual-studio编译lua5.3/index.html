@@ -1,0 +1,200 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
+<title>在Windows下使用Visual Studio编译Lua5.3 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="在Windows下使用Visual Studio编译Lua5.3 | 元培的部落格">
+<meta itemprop=name content="在Windows下使用Visual Studio编译Lua5.3 | 元培的部落格">
+<meta name=twitter:title content="在Windows下使用Visual Studio编译Lua5.3 | 元培的部落格">
+<meta name=application-name content="在Windows下使用Visual Studio编译Lua5.3 | 元培的部落格">
+<meta name=description content="```Lua;* 编译项目会得到一个Luac.exe文件，这就是我们编译得到的Lua解释器;* 在同一个解决方案下继续创建VC++项目，项目命名为Lua，项目类型为控制台应用程序、需设置预编译头">
+<meta name=twitter:description content="```Lua;* 编译项目会得到一个Luac.exe文件，这就是我们编译得到的Lua解释器;* 在同一个解决方案下继续创建VC++项目，项目命名为Lua，项目类型为控制台应用程序、需设置预编译头 ">
+<meta itemprop=description content=" ```Lua;* 编译项目会得到一个Luac.exe文件，这就是我们编译得到的Lua解释器;* 在同一个解决方案下继续创建VC++项目，项目命名为Lua，项目类型为控制台应用程序、需设置预编译头 ">
+<meta property="og:description" content=" ```Lua;* 编译项目会得到一个Luac.exe文件，这就是我们编译得到的Lua解释器;* 在同一个解决方案下继续创建VC++项目，项目命名为Lua，项目类型为控制台应用程序、需设置预编译头 ">
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.30dfc79b16257ec78e2f14533e44eee3d74b63c4116ff3ab57f796a8390aa72a.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
+<script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/categories>分类</a>
+<a href=/friends>友链</a>
+<a href=/works>实验室</a>
+<a href=/archives>归档</a>
+<a href=/tags>标签</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>在Windows下使用Visual Studio编译Lua5.3</h1>
+<div class=post-meta>
+<div>
+By 飞鸿踏雪 | <time>2015-04-16</time>
+| 1 minutes
+</div>
+<div class=tags>
+<a href=/tags/lua/>Lua</a>
+<a href=/tags/%E7%BC%96%E8%AF%91/>编译</a>
+<a href=/tags/visual-studio/>Visual Studio</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>  Lua5.3已经发布好长时间了，可是因为<a href=http://files.luaforge.net/releases/luaforwindows/luaforwindows>LuaForWindows</a>的Lua版本无法和官方保持一致，所以想尝试下编译Lua5.3的源代码，因为作为一名合格的程序员，是应该要懂得编译原理的相关内容的啊(可是我真的没有学过编译原理啊!&mldr;..)。好了，那么今天博主将在文章中和大家分享自己编译Lua5.3的过程，希望能够对大家学习和使用Lua有些帮助吧！</p>
+<p>  我们知道Lua由三部分组成，即</p>
+<ul>
+<li>Lua链接库</li>
+<li>Lua解释器</li>
+<li>Lua编译器</li>
+</ul>
+<p>  因此，对于Lua源代码的编译主要就是编译Lua链接库、Lua解释器和Lua编译器</p>
+<h1 id=编译lua链接库>
+<a href=#%e7%bc%96%e8%af%91lua%e9%93%be%e6%8e%a5%e5%ba%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+编译Lua链接库
+</h1>
+<ul>
+<li>使用Visual Studio创建一个VC++项目，项目命名为Lua53，项目类型为静态库、不设置预编译头。</li>
+<li>删除Visual Studio自动创建的.cpp文件及其对应的.h文件。</li>
+<li>将下载的Lua代码解压，将src目录下的全部文件拷贝到项目中，然后删除lua.c、luac.c和lua.hpp这三个文件。</li>
+<li>编译项目会得到一个Lua53.lib的文件，这就是我们编译得到的Lua链接库。</li>
+</ul>
+<h1 id=编译lua解释器>
+<a href=#%e7%bc%96%e8%af%91lua%e8%a7%a3%e9%87%8a%e5%99%a8 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+编译Lua解释器
+</h1>
+<p>  我们知道Lua解释器是一个可以直接运行Lua代码的可执行文件，因此</p>
+<ul>
+<li>在同一个解决方案下继续创建VC++项目，项目命名为Lua，项目类型为控制台应用程序、需设置预编译头。</li>
+<li>删除Visual Studio自动创建的.cpp文件及其对应的.h文件。</li>
+<li>将下载的Lua代码解压，将src目录下的全部文件拷贝到项目中，然后删除luac.c这个文件。</li>
+<li>设置当前项目依赖于Lua53项目</li>
+<li>编译项目会得到一个Lua.exe文件，这就是我们编译得到的Lua解释器。</li>
+</ul>
+<p>  运行该程序，我们可以看到下面的结果：</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fz01zxszfqj20it0cdt8t.jpg alt=Lua解释器程序></p>
+<p>  好了，现在我们来写一个简单的Lua程序：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-Lua data-lang=Lua><span class=n>io.write</span><span class=p>(</span><span class=s2>&#34;Hello I get a powerful program language called Lua </span><span class=se>\n</span><span class=s2>&#34;</span><span class=p>)</span>
+<span class=n>io.write</span><span class=p>(</span><span class=n>string.format</span><span class=p>(</span><span class=s2>&#34;This Lua is %s and now is %s </span><span class=se>\n</span><span class=s2>&#34;</span><span class=p>,</span><span class=n>_VERSION</span><span class=p>,</span><span class=n>os.date</span><span class=p>()))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>  程序运行结果为：</p>
+<blockquote>
+<p>Hello I get a powerful program language called Lua
+This Lua is Lua5.3 and now is 04/16/15 16:06:43</p>
+</blockquote>
+<h1 id=编译lua编译器>
+<a href=#%e7%bc%96%e8%af%91lua%e7%bc%96%e8%af%91%e5%99%a8 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+编译Lua编译器
+</h1>
+<p>  和Lua类似地，</p>
+<ul>
+<li>在同一个解决方案下继续创建VC++项目，项目命名为Lua，项目类型为控制台应用程序、需设置预编译头。</li>
+<li>删除Visual Studio自动创建的.cpp文件及其对应的.h文件。</li>
+<li>将下载的Lua代码解压，将src目录下的全部文件拷贝到项目中，然后删除lua.c这个文件。</li>
+<li>设置当前项目依赖于Lua53项目</li>
+<li>编译项目会得到一个Luac.exe文件，这就是我们编译得到的Lua解释器。</li>
+</ul>
+<p>  使用Lua编译器需要在环境变量中增加对Lua编译器路径地引用，比如Luac.exe放在D:\Program Files\Lua\build\这个目录下，就在PATH这个变量中增加：</p>
+<pre tabindex=0><code>D:\Program Files\Lua\build;
+</code></pre><p>  因为每个人的Lua编译器存放的位置都不同，所以这个就不再赘述了。</p>
+<p>  好了，今天的内容就是这样了。</p>
+<h1 id=链接>
+<a href=#%e9%93%be%e6%8e%a5 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+链接
+</h1>
+<ul>
+<li><a href=http://pan.baidu.com/s/1hqs1fX6>本文编译的Lua</a></li>
+<li><a href=http://joedf.users.sourceforge.net/luabuilds/>官方编译的Lua</a></li>
+</ul>
+</div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=/imgs/avatar.jpg>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E4%BD%BF%E7%94%A8disunity%E6%8F%90%E5%8F%96unity3d%E6%B8%B8%E6%88%8F%E8%B5%84%E6%BA%90/ title=上一篇>
+<span>上一篇</span>
+Unity3D 游戏开发之使用 disunity 提取 Unity3D 游戏资源
+</a>
+<a rel=next href=/posts/%E5%9C%A8sublime-text3%E4%B8%8B%E5%AE%89%E8%A3%85package-control/ title=下一篇>
+<span>下一篇</span>
+在Sublime Text3下安装Package Control
+</a>
+</nav>
+</div>
+<div class=container>
+<div id=comment></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://example.com/posts/%E5%9C%A8windows%E4%B8%8B%E4%BD%BF%E7%94%A8visual-studio%E7%BC%96%E8%AF%91lua5.3/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
+</nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021
+</div>
+<div class=footer-copyright>
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
+</section>
+<script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

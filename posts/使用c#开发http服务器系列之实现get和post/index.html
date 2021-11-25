@@ -1,0 +1,432 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
+<title>使用 C#开发 HTTP 服务器系列之实现 Get 和 Post | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="使用 C#开发 HTTP 服务器系列之实现 Get 和 Post | 元培的部落格">
+<meta itemprop=name content="使用 C#开发 HTTP 服务器系列之实现 Get 和 Post | 元培的部落格">
+<meta name=twitter:title content="使用 C#开发 HTTP 服务器系列之实现 Get 和 Post | 元培的部落格">
+<meta name=application-name content="使用 C#开发 HTTP 服务器系列之实现 Get 和 Post | 元培的部落格">
+<meta name=description content="&#34;分割该行数据以后就可以得到“num1=23&num2=12”这样的结果，这里我们使用一个方法 GetRequestParms 来返回参数字典，这样作做是为了复用方法，因为在处理 Post 请求的时候我们会继续使用这个方法;例如我们传递的两个参数 num1 和 num2 对应的数值分别是 12 和 24，那么在具体的请求报文中我们都能找到类似“num1=12&num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦;num1=23&num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了">
+<meta name=twitter:description content="&#34;分割该行数据以后就可以得到“num1=23&num2=12”这样的结果，这里我们使用一个方法 GetRequestParms 来返回参数字典，这样作做是为了复用方法，因为在处理 Post 请求的时候我们会继续使用这个方法;例如我们传递的两个参数 num1 和 num2 对应的数值分别是 12 和 24，那么在具体的请求报文中我们都能找到类似“num1=12&num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦;num1=23&num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了 ">
+<meta itemprop=description content=" &#34;分割该行数据以后就可以得到“num1=23&num2=12”这样的结果，这里我们使用一个方法 GetRequestParms 来返回参数字典，这样作做是为了复用方法，因为在处理 Post 请求的时候我们会继续使用这个方法;例如我们传递的两个参数 num1 和 num2 对应的数值分别是 12 和 24，那么在具体的请求报文中我们都能找到类似“num1=12&num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦;num1=23&num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了 ">
+<meta property="og:description" content=" &#34;分割该行数据以后就可以得到“num1=23&num2=12”这样的结果，这里我们使用一个方法 GetRequestParms 来返回参数字典，这样作做是为了复用方法，因为在处理 Post 请求的时候我们会继续使用这个方法;例如我们传递的两个参数 num1 和 num2 对应的数值分别是 12 和 24，那么在具体的请求报文中我们都能找到类似“num1=12&num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦;num1=23&num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了 ">
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.30dfc79b16257ec78e2f14533e44eee3d74b63c4116ff3ab57f796a8390aa72a.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
+<script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/categories>分类</a>
+<a href=/friends>友链</a>
+<a href=/works>实验室</a>
+<a href=/archives>归档</a>
+<a href=/tags>标签</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>使用 C#开发 HTTP 服务器系列之实现 Get 和 Post</h1>
+<div class=post-meta>
+<div>
+By 飞鸿踏雪 | <time>2016-06-11</time>
+| 3 minutes
+</div>
+<div class=tags>
+<a href=/tags/http/>HTTP</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/>服务器</a>
+<a href=/tags/c#/>C#</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>各位朋友大家好，我是秦元培，欢迎大家关注我的博客，我的博客地址是<a href=http://qinyuanpei.com>http://qinyuanpei.com</a>。在我们这个 Web 服务器有了一个基本的门面以后，我们是时候来用它做点实际的事情了。还记得我们最早提到 HTTP 协议的用途是什么吗？它叫超文本传输协议啊，所以我们必须考虑让我们的服务器能够接收到客户端传来的数据。因为我们目前完成了大部分的工作，所以对数据传输这个问题我们这里选择以最简单的 GET 和 POST 为例来实现，这样我们今天的重点就落实在 Get 和 Post 的实现这个问题上来。而从原理上来讲，无论 Get 方式请求还是 Post 方式请求，我们都可以在请求报文中获得其请求参数，不同的是前者出现在请求行中，而后者出现在消息体中。例如我们传递的两个参数 num1 和 num2 对应的数值分别是 12 和 24，那么在具体的请求报文中我们都能找到类似“num1=12&num2=24”这样的字符结构，所以只要针对这个字符结构进行解析，就可以获得客户端传递给服务器的参数啦。</p>
+<h1 id=实现-get-请求>
+<a href=#%e5%ae%9e%e7%8e%b0-get-%e8%af%b7%e6%b1%82 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+实现 Get 请求
+</h1>
+<p>首先我们来实现 Get 请求，Get 是 HTTP 协议中默认的请求类型，我们平时访问网页、请求资源实际上都是通过 Get 方式实现的。Get 方式请求需要通过类似“?id=001&option=10”这样的形式附加在 URL 上，因此 Get 方式对浏览器来说是透明的，即用户可以通过浏览器地址栏知道，这个过程中传递了哪些参数以及这些参数的值分别是什么。而由于浏览器的限制，我们通过这种方式请求的时候能够传递的参数数目和长度都是有限的，而且当参数中存在中文数值的时候还需要对其进行编码。Get 方式请求相对简单，我们下面来看看它的请求报文：</p>
+<pre tabindex=0><code class=language-rfc data-lang=rfc>GET /?num1=23&amp;num2=12 HTTP/1.1
+Accept: text/html, application/xhtml+xml, image/jxr, */*
+Accept-Language: zh-Hans-CN,zh-Hans;q=0.5
+User-Agent: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586
+Accept-Encoding: gzip, deflate
+Host: localhost:4040
+Connection: Keep-Alive
+Cookie: _ga=GA1.1.1181222800.1463541781
+</code></pre><p>此时我们可以注意到在请求报文第一行，即请求行中出现了“/?num1=23&num2=12”这样的字样，这就是客户端传递给服务器的参数，我们很容易想到只需要将这个字段串中的“键”和“值”都解析出来，服务器就可以对这些数据进行处理然后返回给客户端了。所以下面我们通过这样的方式来实现，我们为 HtttpRequest 类增加了一个 Parms 属性，它是一个键和值均为字符串类型的字典，我们使用这个字典来存储和管理客户端传递来的参数。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>//获取请求参数
+</span><span class=c1></span><span class=k>if</span> <span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>Method</span> <span class=p>==</span> <span class=s>&#34;GET&#34;</span> <span class=p>&amp;&amp;</span> <span class=k>this</span><span class=p>.</span><span class=n>URL</span><span class=p>.</span><span class=n>Contains</span><span class=p>(</span><span class=sc>&#39;?&#39;</span><span class=p>))</span>
+    <span class=k>this</span><span class=p>.</span><span class=n>Params</span> <span class=p>=</span> <span class=n>GetRequestParams</span><span class=p>(</span><span class=n>lines</span><span class=p>[</span><span class=m>0</span><span class=p>].</span><span class=n>Split</span><span class=p>(</span><span class=sc>&#39; &#39;</span><span class=p>)[</span><span class=m>1</span><span class=p>].</span><span class=n>Split</span><span class=p>(</span><span class=sc>&#39;?&#39;</span><span class=p>)[</span><span class=m>1</span><span class=p>]);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>显然我们首先需要判断请求类型是否为 GET 以及请求中是否带有参数，其方法是判断请求地址中是否含有“?&ldquo;字符。这里的 lines 是指将报文信息按行分割以后的数组，显然请求地址在第一行，所以我们根据“?&ldquo;分割该行数据以后就可以得到“num1=23&num2=12”这样的结果，这里我们使用一个方法 GetRequestParms 来返回参数字典，这样作做是为了复用方法，因为在处理 Post 请求的时候我们会继续使用这个方法。该方法定义如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp> <span class=c1>/// &lt;summary&gt;
+</span><span class=c1>/// 从内容中解析请求参数并返回一个字典
+</span><span class=c1>/// &lt;/summary&gt;
+</span><span class=c1>/// &lt;param name=&#34;content&#34;&gt;使用&amp;连接的参数字符串&lt;/param&gt;
+</span><span class=c1>/// &lt;returns&gt;如果存在参数则返回参数否则返回null&lt;/returns&gt;
+</span><span class=c1></span><span class=k>protected</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>string</span><span class=p>&gt;</span> <span class=n>GetRequestParams</span><span class=p>(</span><span class=kt>string</span> <span class=n>content</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>//防御编程
+</span><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span><span class=p>(</span><span class=n>content</span><span class=p>))</span>
+        <span class=k>return</span> <span class=k>null</span><span class=p>;</span>
+
+    <span class=c1>//按照&amp;对字符进行分割
+</span><span class=c1></span>    <span class=kt>string</span><span class=p>[]</span> <span class=n>reval</span> <span class=p>=</span> <span class=n>content</span><span class=p>.</span><span class=n>Split</span><span class=p>(</span><span class=sc>&#39;&amp;&#39;</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>reval</span><span class=p>.</span><span class=n>Length</span> <span class=p>&lt;=</span> <span class=m>0</span><span class=p>)</span>
+        <span class=k>return</span> <span class=k>null</span><span class=p>;</span>
+
+    <span class=c1>//将结果添加至字典
+</span><span class=c1></span>    <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>string</span><span class=p>&gt;</span> <span class=n>dict</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>string</span><span class=p>&gt;();</span>
+    <span class=k>foreach</span> <span class=p>(</span><span class=kt>string</span> <span class=n>val</span> <span class=k>in</span> <span class=n>reval</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>string</span><span class=p>[]</span> <span class=n>kv</span> <span class=p>=</span> <span class=n>val</span><span class=p>.</span><span class=n>Split</span><span class=p>(</span><span class=sc>&#39;=&#39;</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>kv</span><span class=p>.</span><span class=n>Length</span> <span class=p>&lt;=</span> <span class=m>1</span><span class=p>)</span>
+            <span class=n>dict</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>kv</span><span class=p>[</span><span class=m>0</span><span class=p>],</span> <span class=s>&#34;&#34;</span><span class=p>);</span>
+        <span class=n>dict</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>kv</span><span class=p>[</span><span class=m>0</span><span class=p>],</span><span class=n>kv</span><span class=p>[</span><span class=m>1</span><span class=p>]);</span>
+    <span class=p>}</span>
+
+    <span class=c1>//返回字典
+</span><span class=c1></span>    <span class=k>return</span> <span class=n>dict</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=实现-post-请求>
+<a href=#%e5%ae%9e%e7%8e%b0-post-%e8%af%b7%e6%b1%82 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+实现 Post 请求
+</h1>
+<p>Post 请求相对 Get 请求比较安全，因为它克服了 Get 请求参数长度的限制问题，而且由于它的参数是存放在消息体中的，所以在传递参数的时候对用户而言是不可见的，我们平时接触到的网站登录都是这种类型，而复杂点的网站会通过验证码、Cookie 等形式来避免爬虫程序模拟登录，在 Web 开发中 Post 请求可以由一个表单发起，可以由爬虫程序如 HttpWebRequest、WebClient 等发起，下面我们重点来分析它的请求报文：</p>
+<pre tabindex=0><code class=language-rfc data-lang=rfc>POST / HTTP/1.1
+Accept: text/html, application/xhtml+xml, image/jxr, */*
+Accept-Language: zh-Hans-CN,zh-Hans;q=0.5
+User-Agent: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586
+Accept-Encoding: gzip, deflate
+Host: localhost:4040
+Connection: Keep-Alive
+Cookie: _ga=GA1.1.1181222800.1463541781
+
+num1=23&amp;num2=12
+</code></pre><p>我们可以注意到此时请求行的请求方法变成了 POST，而在报文结尾增加了一行内容，我们称其为“消息体”，这是一个可选的内容，请注意它前面有一个空行。所以，当我们处理一个 Posst 请求的时候，通过最后一行就可以解析出客户端传递过来的参数，和 Get 请求相同，我们这里继续使用 GetRequestParams 来完成解析。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>if</span> <span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>Method</span> <span class=p>==</span> <span class=s>&#34;POST&#34;</span><span class=p>)</span>
+    <span class=k>this</span><span class=p>.</span><span class=n>Params</span> <span class=p>=</span> <span class=n>GetRequestParams</span><span class=p>(</span><span class=n>lines</span><span class=p>[</span><span class=n>lines</span><span class=p>.</span><span class=n>Length</span><span class=p>-</span><span class=m>1</span><span class=p>]);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=实例>
+<a href=#%e5%ae%9e%e4%be%8b class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+实例
+</h1>
+<p>现在我们来完成一个简单地实例，服务器自然由我们这里设计的这个服务器来完成咯，而客户端则由 Unity 来完成因为 Unity 有简单的 WWW 可以使用。首先来编写服务端，这个继承 HttpServer 就好了，我们主要来写这里的方法：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Collections.Generic</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Linq</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Text</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Threading.Tasks</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>HttpServerLib</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.IO</span><span class=p>;</span>
+
+<span class=k>namespace</span> <span class=nn>HttpServer</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=k>class</span> <span class=nc>ExampleServer</span> <span class=p>:</span> <span class=n>HttpServerLib</span><span class=p>.</span><span class=n>HttpServer</span>
+    <span class=p>{</span>
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 构造函数
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;ipAddress&#34;&gt;IP地址&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;port&#34;&gt;端口号&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=n>ExampleServer</span><span class=p>(</span><span class=kt>string</span> <span class=n>ipAddress</span><span class=p>,</span> <span class=kt>int</span> <span class=n>port</span><span class=p>)</span>
+            <span class=p>:</span> <span class=k>base</span><span class=p>(</span><span class=n>ipAddress</span><span class=p>,</span> <span class=n>port</span><span class=p>)</span>
+        <span class=p>{</span>
+
+        <span class=p>}</span>
+
+        <span class=k>public</span> <span class=k>override</span> <span class=k>void</span> <span class=n>OnPost</span><span class=p>(</span><span class=n>HttpRequest</span> <span class=n>request</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=c1>//获取客户端传递的参数
+</span><span class=c1></span>            <span class=kt>int</span> <span class=n>num1</span> <span class=p>=</span> <span class=kt>int</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Params</span><span class=p>[</span><span class=s>&#34;num1&#34;</span><span class=p>]);</span>
+            <span class=kt>int</span> <span class=n>num2</span> <span class=p>=</span> <span class=kt>int</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Params</span><span class=p>[</span><span class=s>&#34;num2&#34;</span><span class=p>]);</span>
+
+            <span class=c1>//设置返回信息
+</span><span class=c1></span>            <span class=kt>string</span> <span class=n>content</span> <span class=p>=</span> <span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;这是通过Post方式返回的数据:num1={0},num2={1}&#34;</span><span class=p>,</span><span class=n>num1</span><span class=p>,</span><span class=n>num2</span><span class=p>);</span>
+
+            <span class=c1>//构造响应报文
+</span><span class=c1></span>            <span class=n>HttpResponse</span> <span class=n>response</span> <span class=p>=</span> <span class=k>new</span> <span class=n>HttpResponse</span><span class=p>(</span><span class=n>content</span><span class=p>,</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>);</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>StatusCode</span> <span class=p>=</span> <span class=s>&#34;200&#34;</span><span class=p>;</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>Content_Type</span> <span class=p>=</span> <span class=s>&#34;text/html; charset=UTF-8&#34;</span><span class=p>;</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>Server</span> <span class=p>=</span> <span class=s>&#34;ExampleServer&#34;</span><span class=p>;</span>
+
+            <span class=c1>//发送响应
+</span><span class=c1></span>            <span class=n>ProcessResponse</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Handler</span><span class=p>,</span> <span class=n>response</span><span class=p>);</span>
+        <span class=p>}</span>
+
+        <span class=k>public</span> <span class=k>override</span> <span class=k>void</span> <span class=n>OnGet</span><span class=p>(</span><span class=n>HttpRequest</span> <span class=n>request</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=c1>//获取客户端传递的参数
+</span><span class=c1></span>            <span class=kt>int</span> <span class=n>num1</span> <span class=p>=</span> <span class=kt>int</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Params</span><span class=p>[</span><span class=s>&#34;num1&#34;</span><span class=p>]);</span>
+            <span class=kt>int</span> <span class=n>num2</span> <span class=p>=</span> <span class=kt>int</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Params</span><span class=p>[</span><span class=s>&#34;num2&#34;</span><span class=p>]);</span>
+
+            <span class=c1>//设置返回信息
+</span><span class=c1></span>            <span class=kt>string</span> <span class=n>content</span> <span class=p>=</span> <span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;这是通过Get方式返回的数据:num1={0},num2={1}&#34;</span><span class=p>,</span><span class=n>num1</span><span class=p>,</span><span class=n>num2</span><span class=p>);</span>
+
+            <span class=c1>//构造响应报文
+</span><span class=c1></span>            <span class=n>HttpResponse</span> <span class=n>response</span> <span class=p>=</span> <span class=k>new</span> <span class=n>HttpResponse</span><span class=p>(</span><span class=n>content</span><span class=p>,</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>);</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>StatusCode</span> <span class=p>=</span> <span class=s>&#34;200&#34;</span><span class=p>;</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>Content_Type</span> <span class=p>=</span> <span class=s>&#34;text/html; charset=UTF-8&#34;</span><span class=p>;</span>
+            <span class=n>response</span><span class=p>.</span><span class=n>Server</span> <span class=p>=</span> <span class=s>&#34;ExampleServer&#34;</span><span class=p>;</span>
+
+            <span class=c1>//发送响应
+</span><span class=c1></span>            <span class=n>ProcessResponse</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Handler</span><span class=p>,</span> <span class=n>response</span><span class=p>);</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>因为这里需要对 Get 和 Post 进行响应，所以我们这里对 OnGet 和 OnPost 两个方法进行了重写，这里的处理方式非常简单，按照一定格式返回数据即可。下面我们来说说 Unity 作为客户端这边要做的工作。WWW 是 Unity3D 中提供的一个简单的 HTTP 协议的封装类，它和.NET 平台下的 WebClient、HttpWebRequest/HttpWebResponse 类似，都可以处理常见的 HTTP 请求如 Get 和 Post 这两种请求方式。</p>
+<p>WWW 的优势主要是简单易用和支持协程，尤其是 Unity3D 中的协程（Coroutine）这个特性，如果能够得到良好的使用，常常能够起到事倍功半的效果。因为 WWW 强调的是以 HTTP 短链接为主的易用性，所以相应地在超时、Cookie 等 HTTP 头部字段支持的完整性上无法和 WebClient、HttpWebRequest/HttpWebRespons 相提并论，当我们需要更复杂的 HTTP 协议支持的时候，选择在 WebClient、HttpWebRequest/HttpWebResponse 上进行深度定制将会是一个不错的选择。我们这里需要的是发起一个简单的 HTTP 请求，所以使用 WWW 完全可以满足我们的要求，首先我们来看在 Unity3D 中如何发起一个 Get 请求，这里给出一个简单的代码示例：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>//采用GET方式请求数据
+</span><span class=c1></span><span class=n>IEnumerator</span> <span class=n>Get</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>WWW</span> <span class=n>www</span> <span class=p>=</span> <span class=k>new</span> <span class=n>WWW</span> <span class=p>(</span><span class=s>&#34;http://127.0.0.1:4040/?num1=12&amp;num2=23&#34;</span><span class=p>);</span>
+    <span class=k>yield</span> <span class=k>return</span> <span class=n>www</span><span class=p>;</span>
+    <span class=n>Debug</span><span class=p>.</span><span class=n>Log</span><span class=p>(</span><span class=n>www</span><span class=p>.</span><span class=n>text</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>现在我们是需要使用 StartCoroutine 调用这个方法就可以啦！同样地，对于 Post 请求，我们这里采用一个 WWWForm 来封装参数，而在网页开发中我们通常都是借助表单来向服务器传递参数的，这里给出同样简单的代码示例：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=c1>//采用POST方式请求数据
+</span><span class=c1></span><span class=n>IEnumerator</span> <span class=n>Post</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>WWWForm</span> <span class=n>form</span> <span class=p>=</span> <span class=k>new</span> <span class=n>WWWForm</span> <span class=p>();</span>
+    <span class=n>form</span><span class=p>.</span><span class=n>AddField</span> <span class=p>(</span><span class=s>&#34;num1&#34;</span><span class=p>,</span> <span class=m>12</span><span class=p>);</span>
+    <span class=n>form</span><span class=p>.</span><span class=n>AddField</span> <span class=p>(</span><span class=s>&#34;num2&#34;</span><span class=p>,</span> <span class=m>23</span><span class=p>);</span>
+    <span class=n>WWW</span> <span class=n>www</span> <span class=p>=</span> <span class=k>new</span> <span class=n>WWW</span> <span class=p>(</span><span class=s>&#34;http://127.0.0.1:4040/&#34;</span><span class=p>,</span> <span class=n>form</span><span class=p>);</span>
+    <span class=k>yield</span> <span class=k>return</span> <span class=n>www</span><span class=p>;</span>
+    <span class=n>Debug</span><span class=p>.</span><span class=n>Log</span> <span class=p>(</span><span class=n>www</span><span class=p>.</span><span class=n>text</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>而运行这个实例，我们可以得到下面的结果：</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fzix87avuaj20dj05974c.jpg alt=测试结果></p>
+<p>都是谁告诉你做服务器开发一定要用 Java 的啊，现在我们可以写出自己的服务器了，本篇结束，下期见！</p>
+</div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=/imgs/avatar.jpg>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E6%9B%B4%E7%AE%80%E5%8D%95%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/ title=上一篇>
+<span>上一篇</span>
+使用 C#开发 HTTP 服务器系列之更简单的实现方式
+</a>
+<a rel=next href=/posts/%E5%9C%A8unity3d%E4%B8%AD%E4%BD%BF%E7%94%A8ugui%E5%AE%9E%E7%8E%B03d%E6%97%8B%E8%BD%AC%E7%89%B9%E6%95%88/ title=下一篇>
+<span>下一篇</span>
+在 Unity3D 中使用 uGUI 实现 3D 旋转特效
+</a>
+</nav>
+</div>
+<div class=container>
+<div id=comment></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://example.com/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E5%AE%9E%E7%8E%B0get%E5%92%8Cpost/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
+</nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021
+</div>
+<div class=footer-copyright>
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
+</section>
+<script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

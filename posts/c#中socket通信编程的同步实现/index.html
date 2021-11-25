@@ -1,0 +1,1121 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=theme-color content="dark">
+<meta name=generator content="Hugo 0.89.4">
+<title>C#中 Socket 通信编程的同步实现 | 元培的部落格</title>
+<meta property="og:site_name" content="Hugo Tania is Amazing">
+<meta property="og:title" content="C#中 Socket 通信编程的同步实现 | 元培的部落格">
+<meta itemprop=name content="C#中 Socket 通信编程的同步实现 | 元培的部落格">
+<meta name=twitter:title content="C#中 Socket 通信编程的同步实现 | 元培的部落格">
+<meta name=application-name content="C#中 Socket 通信编程的同步实现 | 元培的部落格">
+<meta name=description content="服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听">
+<meta name=twitter:description content="服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听 ">
+<meta itemprop=description content=" 服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听 ">
+<meta property="og:description" content=" 服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听 ">
+<link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=stylesheet href=/sass/main.min.30dfc79b16257ec78e2f14533e44eee3d74b63c4116ff3ab57f796a8390aa72a.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
+<script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
+</head>
+<script>(function(){const b='ThemeColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.userColorScheme='dark':document.documentElement.dataset.userColorScheme='light'})()</script>
+<body class=dark>
+<nav class=navbar>
+<div class=container>
+<div class=flex>
+<div>
+<a class=brand href=/>
+元培的部落格
+</a>
+</div>
+<div class=flex>
+<a href=/categories>分类</a>
+<a href=/friends>友链</a>
+<a href=/works>实验室</a>
+<a href=/archives>归档</a>
+<a href=/tags>标签</a>
+<button id=dark-mode-button><svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<div class=container>
+<article>
+<header class=article-header>
+<div class=thumb>
+<div>
+<h1>C#中 Socket 通信编程的同步实现</h1>
+<div class=post-meta>
+<div>
+By 飞鸿踏雪 | <time>2015-03-15</time>
+| 7 minutes
+</div>
+<div class=tags>
+<a href=/tags/socket/>Socket</a>
+<a href=/tags/%E9%80%9A%E4%BF%A1/>通信</a>
+<a href=/tags/%E5%90%8C%E6%AD%A5/>同步</a>
+<a href=/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/>多线程</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+</article>
+<div class=article-post>
+<p>本文通过分析和总结 C#中 Socket 通信编程的关键技术，按照同步实现的方式实现了一个简单的 Socket 聊天程序，目的是通过这个程序来掌握 Socket 编程，为进一步开发 Unity3D 网络游戏打下一个坚实的基础。</p>
+<h1 id=socket-编程基础>
+<a href=#socket-%e7%bc%96%e7%a8%8b%e5%9f%ba%e7%a1%80 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+Socket 编程基础
+</h1>
+<p>关于 Socket 编程基础部分的内容，主要是了解和掌握.NET 框架下为 Socket 编程提供的相关类和接口方法。.NET 中常见的网络相关的 API 都集中在 System.Net 和 System.Net.Socket 这两个命名空间下，大家可以通过 MSDN 去了解这两个命名空间下相关的类和方法。这里援引一位朋友总结的一篇文章<a href=http://www.cnblogs.com/sunev/archive/2012/08/05/2604189.html>http://www.cnblogs.com/sunev/archive/2012/08/05/2604189.html</a>，大家可以从这里获得更为直观的认识。</p>
+<h1 id=什么是-socket-编程的同步实现>
+<a href=#%e4%bb%80%e4%b9%88%e6%98%af-socket-%e7%bc%96%e7%a8%8b%e7%9a%84%e5%90%8c%e6%ad%a5%e5%ae%9e%e7%8e%b0 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+什么是 Socket 编程的同步实现
+</h1>
+<p>本文的目的是按照同步实现的方式来实现一个简单的 Socket 聊天程序，因此在解决这个问题前，我们首先来看看什么是 Socket 编程的同步实现。所谓 Socket 编程的同步实现就是指按照同步过程的方法来实现 Socket 通信。从编程来说，我们常用的方法或者函数都是同步过程。因为当我们调用一个方法或者函数的时候我们能够立即得到它的返回值。可是我们知道在 Socket 通信中，我们不能保证时时刻刻连接都通畅、更不能够保证时时刻刻都有数据收发，因为我们就需要不断去读取相应的值来确定整个过程的状态。这就是 Socket 编程的同步实现了，下面我们来看具体的实现过程。</p>
+<h1 id=如何实现-socket-同步通信>
+<a href=#%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0-socket-%e5%90%8c%e6%ad%a5%e9%80%9a%e4%bf%a1 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+如何实现 Socket 同步通信
+</h1>
+<h2 id=服务端>
+<a href=#%e6%9c%8d%e5%8a%a1%e7%ab%af class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+服务端
+</h2>
+<p>服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端。</p>
+<h3 id=基本流程>
+<a href=#%e5%9f%ba%e6%9c%ac%e6%b5%81%e7%a8%8b class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+基本流程
+</h3>
+<ul>
+<li>创建套接字</li>
+<li>绑定套接字的 IP 和端口号——Bind()</li>
+<li>将套接字处于监听状态等待客户端的连接请求——Listen()</li>
+<li>当请求到来后，接受请求并返回本次会话的套接字——Accept()</li>
+<li>使用返回的套接字和客户端通信——Send()/Receive()</li>
+<li>返回，再次等待新的连接请求</li>
+<li>关闭套接字</li>
+</ul>
+<h3 id=代码示例>
+<a href=#%e4%bb%a3%e7%a0%81%e7%a4%ba%e4%be%8b class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+代码示例
+</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span><span class=lnt>162
+</span><span class=lnt>163
+</span><span class=lnt>164
+</span><span class=lnt>165
+</span><span class=lnt>166
+</span><span class=lnt>167
+</span><span class=lnt>168
+</span><span class=lnt>169
+</span><span class=lnt>170
+</span><span class=lnt>171
+</span><span class=lnt>172
+</span><span class=lnt>173
+</span><span class=lnt>174
+</span><span class=lnt>175
+</span><span class=lnt>176
+</span><span class=lnt>177
+</span><span class=lnt>178
+</span><span class=lnt>179
+</span><span class=lnt>180
+</span><span class=lnt>181
+</span><span class=lnt>182
+</span><span class=lnt>183
+</span><span class=lnt>184
+</span><span class=lnt>185
+</span><span class=lnt>186
+</span><span class=lnt>187
+</span><span class=lnt>188
+</span><span class=lnt>189
+</span><span class=lnt>190
+</span><span class=lnt>191
+</span><span class=lnt>192
+</span><span class=lnt>193
+</span><span class=lnt>194
+</span><span class=lnt>195
+</span><span class=lnt>196
+</span><span class=lnt>197
+</span><span class=lnt>198
+</span><span class=lnt>199
+</span><span class=lnt>200
+</span><span class=lnt>201
+</span><span class=lnt>202
+</span><span class=lnt>203
+</span><span class=lnt>204
+</span><span class=lnt>205
+</span><span class=lnt>206
+</span><span class=lnt>207
+</span><span class=lnt>208
+</span><span class=lnt>209
+</span><span class=lnt>210
+</span><span class=lnt>211
+</span><span class=lnt>212
+</span><span class=lnt>213
+</span><span class=lnt>214
+</span><span class=lnt>215
+</span><span class=lnt>216
+</span><span class=lnt>217
+</span><span class=lnt>218
+</span><span class=lnt>219
+</span><span class=lnt>220
+</span><span class=lnt>221
+</span><span class=lnt>222
+</span><span class=lnt>223
+</span><span class=lnt>224
+</span><span class=lnt>225
+</span><span class=lnt>226
+</span><span class=lnt>227
+</span><span class=lnt>228
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Collections.Generic</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Text</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Net</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Net.Sockets</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Threading</span><span class=p>;</span>
+
+<span class=k>namespace</span> <span class=nn>TCPLib</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=k>class</span> <span class=nc>TCPServer</span>
+    <span class=p>{</span>
+        <span class=k>private</span> <span class=kt>byte</span><span class=p>[]</span> <span class=n>result</span> <span class=p>=</span> <span class=k>new</span> <span class=kt>byte</span><span class=p>[</span><span class=m>1024</span><span class=p>];</span>
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 最大的监听数量
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=kt>int</span> <span class=n>maxClientCount</span><span class=p>;</span>
+        <span class=k>public</span> <span class=kt>int</span> <span class=n>MaxClientCount</span>
+        <span class=p>{</span>
+            <span class=k>get</span> <span class=p>{</span> <span class=k>return</span> <span class=n>maxClientCount</span><span class=p>;</span> <span class=p>}</span>
+            <span class=k>set</span> <span class=p>{</span> <span class=n>maxClientCount</span> <span class=p>=</span> <span class=k>value</span><span class=p>;</span> <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// IP地址
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=kt>string</span> <span class=n>ip</span><span class=p>;</span>
+        <span class=k>public</span> <span class=kt>string</span> <span class=n>IP</span>
+        <span class=p>{</span>
+            <span class=k>get</span> <span class=p>{</span> <span class=k>return</span> <span class=n>ip</span><span class=p>;</span> <span class=p>}</span>
+            <span class=k>set</span> <span class=p>{</span> <span class=n>ip</span> <span class=p>=</span> <span class=k>value</span><span class=p>;</span> <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 端口号
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=kt>int</span> <span class=n>port</span><span class=p>;</span>
+        <span class=k>public</span> <span class=kt>int</span> <span class=n>Port</span>
+        <span class=p>{</span>
+            <span class=k>get</span> <span class=p>{</span> <span class=k>return</span> <span class=n>port</span><span class=p>;</span> <span class=p>}</span>
+            <span class=k>set</span> <span class=p>{</span> <span class=n>port</span> <span class=p>=</span> <span class=k>value</span><span class=p>;</span> <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 客户端列表
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Socket</span><span class=p>&gt;</span> <span class=n>mClientSockets</span><span class=p>;</span>
+        <span class=k>public</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Socket</span><span class=p>&gt;</span> <span class=n>ClientSockets</span>
+        <span class=p>{</span>
+            <span class=k>get</span> <span class=p>{</span> <span class=k>return</span> <span class=n>mClientSockets</span><span class=p>;</span> <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// IP终端
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=n>IPEndPoint</span> <span class=n>ipEndPoint</span><span class=p>;</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 服务端Socket
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=n>Socket</span> <span class=n>mServerSocket</span><span class=p>;</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 当前客户端Socket
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=n>Socket</span> <span class=n>mClientSocket</span><span class=p>;</span>
+        <span class=k>public</span> <span class=n>Socket</span> <span class=n>ClientSocket</span> 
+        <span class=p>{</span>
+            <span class=k>get</span> <span class=p>{</span> <span class=k>return</span> <span class=n>mClientSocket</span><span class=p>;</span>  <span class=p>}</span>
+            <span class=k>set</span> <span class=p>{</span> <span class=n>mClientSocket</span> <span class=p>=</span> <span class=k>value</span><span class=p>;</span> <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 构造函数
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;port&#34;&gt;端口号&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;count&#34;&gt;监听的最大树目&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=n>TCPServer</span><span class=p>(</span><span class=kt>int</span> <span class=n>port</span><span class=p>,</span> <span class=kt>int</span> <span class=n>count</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>ip</span> <span class=p>=</span> <span class=n>IPAddress</span><span class=p>.</span><span class=n>Any</span><span class=p>.</span><span class=n>ToString</span><span class=p>();</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>port</span> <span class=p>=</span> <span class=n>port</span><span class=p>;</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>maxClientCount</span><span class=p>=</span><span class=n>count</span><span class=p>;</span>
+
+            <span class=k>this</span><span class=p>.</span><span class=n>mClientSockets</span> <span class=p>=</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Socket</span><span class=p>&gt;();</span>
+
+            <span class=c1>//初始化IP终端
+</span><span class=c1></span>            <span class=k>this</span><span class=p>.</span><span class=n>ipEndPoint</span> <span class=p>=</span> <span class=k>new</span> <span class=n>IPEndPoint</span><span class=p>(</span><span class=n>IPAddress</span><span class=p>.</span><span class=n>Any</span><span class=p>,</span> <span class=n>port</span><span class=p>);</span>
+            <span class=c1>//初始化服务端Socket
+</span><span class=c1></span>            <span class=k>this</span><span class=p>.</span><span class=n>mServerSocket</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Socket</span><span class=p>(</span><span class=n>AddressFamily</span><span class=p>.</span><span class=n>InterNetwork</span><span class=p>,</span> <span class=n>SocketType</span><span class=p>.</span><span class=n>Stream</span><span class=p>,</span> <span class=n>ProtocolType</span><span class=p>.</span><span class=n>Tcp</span><span class=p>);</span>
+            <span class=c1>//端口绑定
+</span><span class=c1></span>            <span class=k>this</span><span class=p>.</span><span class=n>mServerSocket</span><span class=p>.</span><span class=n>Bind</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>ipEndPoint</span><span class=p>);</span>
+            <span class=c1>//设置监听数目
+</span><span class=c1></span>            <span class=k>this</span><span class=p>.</span><span class=n>mServerSocket</span><span class=p>.</span><span class=n>Listen</span><span class=p>(</span><span class=n>maxClientCount</span><span class=p>);</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 构造函数
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;ip&#34;&gt;ip地址&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;port&#34;&gt;端口号&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;count&#34;&gt;监听的最大数目&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=n>TCPServer</span><span class=p>(</span><span class=kt>string</span> <span class=n>ip</span><span class=p>,</span><span class=kt>int</span> <span class=n>port</span><span class=p>,</span><span class=kt>int</span> <span class=n>count</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>ip</span> <span class=p>=</span> <span class=n>ip</span><span class=p>;</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>port</span> <span class=p>=</span> <span class=n>port</span><span class=p>;</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>maxClientCount</span> <span class=p>=</span> <span class=n>count</span><span class=p>;</span>
+
+            <span class=k>this</span><span class=p>.</span><span class=n>mClientSockets</span> <span class=p>=</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Socket</span><span class=p>&gt;();</span>
+
+            <span class=c1>//初始化IP终端
+</span><span class=c1></span>            <span class=k>this</span><span class=p>.</span><span class=n>ipEndPoint</span> <span class=p>=</span> <span class=k>new</span> <span class=n>IPEndPoint</span><span class=p>(</span><span class=n>IPAddress</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=n>ip</span><span class=p>),</span> <span class=n>port</span><span class=p>);</span>
+            <span class=c1>//初始化服务端Socket
+</span><span class=c1></span>            <span class=k>this</span><span class=p>.</span><span class=n>mServerSocket</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Socket</span><span class=p>(</span><span class=n>AddressFamily</span><span class=p>.</span><span class=n>InterNetwork</span><span class=p>,</span> <span class=n>SocketType</span><span class=p>.</span><span class=n>Stream</span><span class=p>,</span> <span class=n>ProtocolType</span><span class=p>.</span><span class=n>Tcp</span><span class=p>);</span>
+            <span class=c1>//端口绑定
+</span><span class=c1></span>            <span class=k>this</span><span class=p>.</span><span class=n>mServerSocket</span><span class=p>.</span><span class=n>Bind</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>ipEndPoint</span><span class=p>);</span>
+            <span class=c1>//设置监听数目
+</span><span class=c1></span>            <span class=k>this</span><span class=p>.</span><span class=n>mServerSocket</span><span class=p>.</span><span class=n>Listen</span><span class=p>(</span><span class=n>maxClientCount</span><span class=p>);</span>
+
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 定义一个Start方法将构造函数中的方法分离出来
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>Start</span><span class=p>()</span>
+        <span class=p>{</span>
+            <span class=c1>//创建服务端线程，实现客户端连接请求的循环监听
+</span><span class=c1></span>            <span class=kt>var</span> <span class=n>mServerThread</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>ListenClientConnect</span><span class=p>);</span>
+            <span class=c1>//服务端线程开启
+</span><span class=c1></span>            <span class=n>mServerThread</span><span class=p>.</span><span class=n>Start</span><span class=p>();</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 监听客户端链接
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=k>void</span> <span class=n>ListenClientConnect</span><span class=p>()</span>
+        <span class=p>{</span>
+            <span class=c1>//设置循环标志位
+</span><span class=c1></span>            <span class=kt>bool</span> <span class=n>flag</span> <span class=p>=</span> <span class=k>true</span><span class=p>;</span>
+            <span class=k>while</span> <span class=p>(</span><span class=n>flag</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=c1>//获取连接到服务端的客户端
+</span><span class=c1></span>                <span class=k>this</span><span class=p>.</span><span class=n>ClientSocket</span> <span class=p>=</span> <span class=k>this</span><span class=p>.</span><span class=n>mServerSocket</span><span class=p>.</span><span class=n>Accept</span><span class=p>();</span>
+                <span class=c1>//将获取到的客户端添加到客户端列表
+</span><span class=c1></span>                <span class=k>this</span><span class=p>.</span><span class=n>mClientSockets</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>ClientSocket</span><span class=p>);</span>
+                <span class=c1>//向客户端发送一条消息
+</span><span class=c1></span>                <span class=k>this</span><span class=p>.</span><span class=n>SendMessage</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;客户端{0}已成功连接到服务器&#34;</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=n>ClientSocket</span><span class=p>.</span><span class=n>RemoteEndPoint</span><span class=p>));</span>
+                <span class=c1>//创建客户端消息线程，实现客户端消息的循环监听
+</span><span class=c1></span>                <span class=kt>var</span> <span class=n>mReveiveThread</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>ReceiveClient</span><span class=p>);</span>
+                <span class=c1>//注意到ReceiveClient方法传入了一个参数
+</span><span class=c1></span>                <span class=c1>//实际上这个参数就是此时连接到服务器的客户端
+</span><span class=c1></span>                <span class=c1>//即ClientSocket
+</span><span class=c1></span>                <span class=n>mReveiveThread</span><span class=p>.</span><span class=n>Start</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>ClientSocket</span><span class=p>);</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 接收客户端消息的方法
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=k>void</span> <span class=n>ReceiveClient</span><span class=p>(</span><span class=kt>object</span> <span class=n>obj</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=c1>//获取当前客户端
+</span><span class=c1></span>            <span class=c1>//因为每次发送消息的可能并不是同一个客户端，所以需要使用var来实例化一个新的对象
+</span><span class=c1></span>            <span class=c1>//可是我感觉这里用局部变量更好一点
+</span><span class=c1></span>            <span class=kt>var</span> <span class=n>mClientSocket</span> <span class=p>=</span> <span class=p>(</span><span class=n>Socket</span><span class=p>)</span><span class=n>obj</span><span class=p>;</span>
+            <span class=c1>// 循环标志位
+</span><span class=c1></span>            <span class=kt>bool</span> <span class=n>flag</span> <span class=p>=</span> <span class=k>true</span><span class=p>;</span>
+            <span class=k>while</span> <span class=p>(</span><span class=n>flag</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=k>try</span>
+                <span class=p>{</span>
+                    <span class=c1>//获取数据长度
+</span><span class=c1></span>                    <span class=kt>int</span> <span class=n>receiveLength</span> <span class=p>=</span> <span class=n>mClientSocket</span><span class=p>.</span><span class=n>Receive</span><span class=p>(</span><span class=n>result</span><span class=p>);</span>
+                    <span class=c1>//获取客户端消息
+</span><span class=c1></span>                    <span class=kt>string</span> <span class=n>clientMessage</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>result</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>receiveLength</span><span class=p>);</span>
+                    <span class=c1>//服务端负责将客户端的消息分发给各个客户端
+</span><span class=c1></span>                    <span class=k>this</span><span class=p>.</span><span class=n>SendMessage</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;客户端{0}发来消息:{1}&#34;</span><span class=p>,</span><span class=n>mClientSocket</span><span class=p>.</span><span class=n>RemoteEndPoint</span><span class=p>,</span><span class=n>clientMessage</span><span class=p>));</span>
+
+                <span class=p>}</span>
+                <span class=k>catch</span> <span class=p>(</span><span class=n>Exception</span> <span class=n>e</span><span class=p>)</span>
+                <span class=p>{</span>
+                    <span class=c1>//从客户端列表中移除该客户端
+</span><span class=c1></span>                    <span class=k>this</span><span class=p>.</span><span class=n>mClientSockets</span><span class=p>.</span><span class=n>Remove</span><span class=p>(</span><span class=n>mClientSocket</span><span class=p>);</span>
+                    <span class=c1>//向其它客户端告知该客户端下线
+</span><span class=c1></span>                    <span class=k>this</span><span class=p>.</span><span class=n>SendMessage</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;服务器发来消息:客户端{0}从服务器断开,断开原因:{1}&#34;</span><span class=p>,</span><span class=n>mClientSocket</span><span class=p>.</span><span class=n>RemoteEndPoint</span><span class=p>,</span><span class=n>e</span><span class=p>.</span><span class=n>Message</span><span class=p>));</span>
+                    <span class=c1>//断开连接
+</span><span class=c1></span>                    <span class=n>mClientSocket</span><span class=p>.</span><span class=n>Shutdown</span><span class=p>(</span><span class=n>SocketShutdown</span><span class=p>.</span><span class=n>Both</span><span class=p>);</span>
+                    <span class=n>mClientSocket</span><span class=p>.</span><span class=n>Close</span><span class=p>();</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=p>}</span>
+            <span class=p>}</span>
+            
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 向所有的客户端群发消息
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;msg&#34;&gt;message&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>SendMessage</span><span class=p>(</span><span class=kt>string</span> <span class=n>msg</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=c1>//确保消息非空以及客户端列表非空
+</span><span class=c1></span>            <span class=k>if</span> <span class=p>(</span><span class=n>msg</span> <span class=p>==</span> <span class=kt>string</span><span class=p>.</span><span class=n>Empty</span> <span class=p>||</span> <span class=k>this</span><span class=p>.</span><span class=n>mClientSockets</span><span class=p>.</span><span class=n>Count</span> <span class=p>&lt;=</span> <span class=m>0</span><span class=p>)</span> <span class=k>return</span><span class=p>;</span>
+            <span class=c1>//向每一个客户端发送消息
+</span><span class=c1></span>            <span class=k>foreach</span> <span class=p>(</span><span class=n>Socket</span> <span class=n>s</span> <span class=k>in</span> <span class=k>this</span><span class=p>.</span><span class=n>mClientSockets</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=p>(</span><span class=n>s</span> <span class=k>as</span> <span class=n>Socket</span><span class=p>).</span><span class=n>Send</span><span class=p>(</span><span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>msg</span><span class=p>));</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 向指定的客户端发送消息
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;ip&#34;&gt;ip&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;port&#34;&gt;port&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;msg&#34;&gt;message&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>SendMessage</span><span class=p>(</span><span class=kt>string</span> <span class=n>ip</span><span class=p>,</span><span class=kt>int</span> <span class=n>port</span><span class=p>,</span><span class=kt>string</span> <span class=n>msg</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=c1>//构造出一个终端地址
+</span><span class=c1></span>            <span class=n>IPEndPoint</span> <span class=m>_</span><span class=n>IPEndPoint</span> <span class=p>=</span> <span class=k>new</span> <span class=n>IPEndPoint</span><span class=p>(</span><span class=n>IPAddress</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=n>ip</span><span class=p>),</span> <span class=n>port</span><span class=p>);</span>
+            <span class=c1>//遍历所有客户端
+</span><span class=c1></span>            <span class=k>foreach</span> <span class=p>(</span><span class=n>Socket</span> <span class=n>s</span> <span class=k>in</span> <span class=n>mClientSockets</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=k>if</span> <span class=p>(</span><span class=m>_</span><span class=n>IPEndPoint</span> <span class=p>==</span> <span class=p>(</span><span class=n>IPEndPoint</span><span class=p>)</span><span class=n>s</span><span class=p>.</span><span class=n>RemoteEndPoint</span><span class=p>)</span>
+                <span class=p>{</span>
+                    <span class=n>s</span><span class=p>.</span><span class=n>Send</span><span class=p>(</span><span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>msg</span><span class=p>));</span>
+                <span class=p>}</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>好了，现在我们已经编写好了一个具备接收和发送数据能力的服务端程序。现在我们来尝试让服务端运行起来：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Collections.Generic</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Text</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>TCPLib</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Net</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Net.Sockets</span><span class=p>;</span>
+
+<span class=k>namespace</span> <span class=nn>TCPLib.Test</span>
+<span class=p>{</span>
+    <span class=k>class</span> <span class=nc>Program</span>
+    <span class=p>{</span>
+        <span class=k>static</span> <span class=k>void</span> <span class=n>Main</span><span class=p>(</span><span class=kt>string</span><span class=p>[]</span> <span class=n>args</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=c1>//指定IP和端口号及最大监听数目的方式
+</span><span class=c1></span>            <span class=n>TCPLib</span><span class=p>.</span><span class=n>TCPServer</span> <span class=n>s1</span> <span class=p>=</span> <span class=k>new</span> <span class=n>TCPServer</span><span class=p>(</span><span class=s>&#34;127.0.0.1&#34;</span><span class=p>,</span> <span class=m>6001</span><span class=p>,</span> <span class=m>10</span><span class=p>);</span>
+            <span class=c1>//指定端口号及最大监听数目的方式
+</span><span class=c1></span>            <span class=n>TCPLib</span><span class=p>.</span><span class=n>TCPServer</span> <span class=n>s2</span> <span class=p>=</span> <span class=k>new</span> <span class=n>TCPServer</span><span class=p>(</span><span class=m>6001</span><span class=p>,</span> <span class=m>10</span><span class=p>);</span>
+           
+            <span class=c1>//执行Start方法
+</span><span class=c1></span>            <span class=n>s1</span><span class=p>.</span><span class=n>Start</span><span class=p>();</span>
+        
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>现在我们来看看编写客户端 Socket 程序的基本流程</p>
+<h2 id=客户端>
+<a href=#%e5%ae%a2%e6%88%b7%e7%ab%af class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+客户端
+</h2>
+<p>客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听。</p>
+<h3 id=基本流程-1>
+<a href=#%e5%9f%ba%e6%9c%ac%e6%b5%81%e7%a8%8b-1 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+基本流程
+</h3>
+<ul>
+<li>创建套接字保证与服务器的端口一致</li>
+<li>向服务器发出连接请求——Connect()</li>
+<li>和服务器端进行通信——Send()/Receive()</li>
+<li>关闭套接字</li>
+</ul>
+<h3 id=代码示例-1>
+<a href=#%e4%bb%a3%e7%a0%81%e7%a4%ba%e4%be%8b-1 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+代码示例
+</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Collections.Generic</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Text</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Net</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Net.Sockets</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Threading</span><span class=p>;</span>
+
+<span class=k>namespace</span> <span class=nn>TCPLib</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=k>class</span> <span class=nc>TCPClient</span>
+    <span class=p>{</span>
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 定义数据
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=kt>byte</span><span class=p>[]</span> <span class=n>result</span> <span class=p>=</span> <span class=k>new</span> <span class=kt>byte</span><span class=p>[</span><span class=m>1024</span><span class=p>];</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 客户端IP
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=kt>string</span> <span class=n>ip</span><span class=p>;</span>
+        <span class=k>public</span> <span class=kt>string</span> <span class=n>IP</span>
+        <span class=p>{</span>
+            <span class=k>get</span> <span class=p>{</span> <span class=k>return</span> <span class=n>ip</span><span class=p>;</span> <span class=p>}</span>
+            <span class=k>set</span> <span class=p>{</span> <span class=n>ip</span> <span class=p>=</span> <span class=k>value</span><span class=p>;</span> <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 客户端端口号
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=kt>int</span> <span class=n>port</span><span class=p>;</span>
+        <span class=k>public</span> <span class=kt>int</span> <span class=n>Port</span>
+        <span class=p>{</span>
+            <span class=k>get</span> <span class=p>{</span> <span class=k>return</span> <span class=n>port</span><span class=p>;</span> <span class=p>}</span>
+            <span class=k>set</span> <span class=p>{</span> <span class=n>port</span> <span class=p>=</span> <span class=k>value</span><span class=p>;</span> <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// IP终端
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=n>IPEndPoint</span> <span class=n>ipEndPoint</span><span class=p>;</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 客户端Socket
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=n>Socket</span> <span class=n>mClientSocket</span><span class=p>;</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 是否连接到了服务器
+</span><span class=c1></span>        <span class=c1>/// 默认为flase
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=kt>bool</span> <span class=n>isConnected</span> <span class=p>=</span> <span class=k>false</span><span class=p>;</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 构造函数
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;ip&#34;&gt;IP地址&lt;/param&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;port&#34;&gt;端口号&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=n>TCPClient</span><span class=p>(</span><span class=kt>string</span> <span class=n>ip</span><span class=p>,</span> <span class=kt>int</span> <span class=n>port</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>ip</span><span class=p>=</span><span class=n>ip</span><span class=p>;</span>
+            <span class=k>this</span><span class=p>.</span><span class=n>port</span><span class=p>=</span><span class=n>port</span><span class=p>;</span>
+            <span class=c1>//初始化IP终端
+</span><span class=c1></span>            <span class=k>this</span><span class=p>.</span><span class=n>ipEndPoint</span> <span class=p>=</span> <span class=k>new</span> <span class=n>IPEndPoint</span><span class=p>(</span><span class=n>IPAddress</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>ip</span><span class=p>),</span> <span class=k>this</span><span class=p>.</span><span class=n>port</span><span class=p>);</span>
+            <span class=c1>//初始化客户端Socket
+</span><span class=c1></span>            <span class=n>mClientSocket</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Socket</span><span class=p>(</span><span class=n>AddressFamily</span><span class=p>.</span><span class=n>InterNetwork</span><span class=p>,</span> <span class=n>SocketType</span><span class=p>.</span><span class=n>Stream</span><span class=p>,</span> <span class=n>ProtocolType</span><span class=p>.</span><span class=n>Tcp</span><span class=p>);</span>
+
+        <span class=p>}</span>
+
+        <span class=k>public</span> <span class=k>void</span> <span class=n>Start</span><span class=p>()</span>
+        <span class=p>{</span>
+            <span class=c1>//创建一个线程以不断连接服务器
+</span><span class=c1></span>            <span class=kt>var</span> <span class=n>mConnectThread</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>ConnectToServer</span><span class=p>);</span>
+            <span class=c1>//开启线程
+</span><span class=c1></span>            <span class=n>mConnectThread</span><span class=p>.</span><span class=n>Start</span><span class=p>();</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 连接到服务器
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=k>void</span> <span class=n>ConnectToServer</span><span class=p>()</span>
+        <span class=p>{</span>
+            <span class=c1>//当没有连接到服务器时开始连接
+</span><span class=c1></span>            <span class=k>while</span> <span class=p>(!</span><span class=n>isConnected</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=k>try</span>
+                <span class=p>{</span>
+                    <span class=c1>//开始连接
+</span><span class=c1></span>                    <span class=n>mClientSocket</span><span class=p>.</span><span class=n>Connect</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>ipEndPoint</span><span class=p>);</span>
+                    <span class=k>this</span><span class=p>.</span><span class=n>isConnected</span> <span class=p>=</span> <span class=k>true</span><span class=p>;</span>
+                <span class=p>}</span>
+                <span class=k>catch</span> <span class=p>(</span><span class=n>Exception</span> <span class=n>e</span><span class=p>)</span>
+                <span class=p>{</span>
+                    <span class=c1>//输出Debug信息
+</span><span class=c1></span>                    <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;因为一个错误的发生，暂时无法连接到服务器，错误信息为:{0}&#34;</span><span class=p>,</span><span class=n>e</span><span class=p>.</span><span class=n>Message</span><span class=p>));</span>
+                    <span class=k>this</span><span class=p>.</span><span class=n>isConnected</span> <span class=p>=</span> <span class=k>false</span><span class=p>;</span>
+                <span class=p>}</span>
+
+                <span class=c1>//等待5秒钟后尝试再次连接
+</span><span class=c1></span>                <span class=n>Thread</span><span class=p>.</span><span class=n>Sleep</span><span class=p>(</span><span class=m>5000</span><span class=p>);</span>
+                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;正在尝试重新连接...&#34;</span><span class=p>);</span>
+            <span class=p>}</span>
+
+            <span class=c1>//连接成功后
+</span><span class=c1></span>            <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;连接服务器成功，现在可以和服务器进行会话了&#34;</span><span class=p>);</span>
+            <span class=c1>//创建一个线程以监听数据接收
+</span><span class=c1></span>            <span class=kt>var</span> <span class=n>mReceiveThread</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>ReceiveMessage</span><span class=p>);</span>
+            <span class=c1>//开启线程
+</span><span class=c1></span>            <span class=n>mReceiveThread</span><span class=p>.</span><span class=n>Start</span><span class=p>();</span>
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 因为客户端只接受来自服务器的数据
+</span><span class=c1></span>        <span class=c1>/// 因此这个方法中不需要参数
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=k>private</span> <span class=k>void</span> <span class=n>ReceiveMessage</span><span class=p>()</span>
+        <span class=p>{</span>
+            <span class=c1>//设置循环标志位
+</span><span class=c1></span>            <span class=kt>bool</span> <span class=n>flag</span> <span class=p>=</span> <span class=k>true</span><span class=p>;</span>
+            <span class=k>while</span> <span class=p>(</span><span class=n>flag</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=k>try</span>
+                <span class=p>{</span>
+                    <span class=c1>//获取数据长度
+</span><span class=c1></span>                    <span class=kt>int</span> <span class=n>receiveLength</span> <span class=p>=</span> <span class=k>this</span><span class=p>.</span><span class=n>mClientSocket</span><span class=p>.</span><span class=n>Receive</span><span class=p>(</span><span class=n>result</span><span class=p>);</span>
+                    <span class=c1>//获取服务器消息
+</span><span class=c1></span>                    <span class=kt>string</span> <span class=n>serverMessage</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>result</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>receiveLength</span><span class=p>);</span>
+                    <span class=c1>//输出服务器消息
+</span><span class=c1></span>                    <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=n>serverMessage</span><span class=p>);</span>
+                <span class=p>}</span>
+                <span class=k>catch</span> <span class=p>(</span><span class=n>Exception</span> <span class=n>e</span><span class=p>)</span>
+                <span class=p>{</span>
+                    <span class=c1>//停止消息接收
+</span><span class=c1></span>                    <span class=n>flag</span> <span class=p>=</span> <span class=k>false</span><span class=p>;</span>
+                    <span class=c1>//断开服务器
+</span><span class=c1></span>                    <span class=k>this</span><span class=p>.</span><span class=n>mClientSocket</span><span class=p>.</span><span class=n>Shutdown</span><span class=p>(</span><span class=n>SocketShutdown</span><span class=p>.</span><span class=n>Both</span><span class=p>);</span>
+                    <span class=c1>//关闭套接字
+</span><span class=c1></span>                    <span class=k>this</span><span class=p>.</span><span class=n>mClientSocket</span><span class=p>.</span><span class=n>Close</span><span class=p>();</span>
+
+                    <span class=c1>//重新尝试连接服务器
+</span><span class=c1></span>                    <span class=k>this</span><span class=p>.</span><span class=n>isConnected</span> <span class=p>=</span> <span class=k>false</span><span class=p>;</span>
+                    <span class=n>ConnectToServer</span><span class=p>();</span>
+                <span class=p>}</span>
+            <span class=p>}</span>
+            
+        <span class=p>}</span>
+
+        <span class=c1>/// &lt;summary&gt;
+</span><span class=c1></span>        <span class=c1>/// 发送消息
+</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;msg&#34;&gt;消息文本&lt;/param&gt;
+</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>SendMessage</span><span class=p>(</span><span class=kt>string</span> <span class=n>msg</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>if</span><span class=p>(</span><span class=n>msg</span><span class=p>==</span><span class=kt>string</span><span class=p>.</span><span class=n>Empty</span> <span class=p>||</span> <span class=k>this</span><span class=p>.</span><span class=n>mClientSocket</span><span class=p>==</span><span class=k>null</span><span class=p>)</span> <span class=k>return</span><span class=p>;</span>
+
+            <span class=n>mClientSocket</span><span class=p>.</span><span class=n>Send</span><span class=p>(</span><span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>msg</span><span class=p>));</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>同样地，我们现在来运行客户端程序，这样客户端就可以和服务端进行通信了：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Collections.Generic</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Text</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>TCPLib</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Net</span><span class=p>;</span>
+<span class=k>using</span> <span class=nn>System.Net.Sockets</span><span class=p>;</span>
+
+<span class=k>namespace</span> <span class=nn>TCPLib.Test</span>
+<span class=p>{</span>
+    <span class=k>class</span> <span class=nc>Program</span>
+    <span class=p>{</span>
+        <span class=k>static</span> <span class=k>void</span> <span class=n>Main</span><span class=p>(</span><span class=kt>string</span><span class=p>[]</span> <span class=n>args</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=c1>//保证端口号和服务端一致
+</span><span class=c1></span>            <span class=n>TCPLib</span><span class=p>.</span><span class=n>TCPClient</span> <span class=n>c</span> <span class=p>=</span> <span class=k>new</span> <span class=n>TCPClient</span><span class=p>(</span><span class=s>&#34;127.0.0.1&#34;</span><span class=p>,</span><span class=m>6001</span><span class=p>);</span>
+            <span class=c1>//执行Start方法
+</span><span class=c1></span>            <span class=n>c</span><span class=p>.</span><span class=n>Start</span><span class=p>();</span>
+            <span class=k>while</span><span class=p>(</span><span class=k>true</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=c1>//读取客户端输入的消息
+</span><span class=c1></span>                <span class=kt>string</span> <span class=n>msg</span> <span class=p>=</span> <span class=n>Console</span><span class=p>.</span><span class=n>ReadLine</span><span class=p>();</span>
+                <span class=c1>//发送消息到服务端
+</span><span class=c1></span>                <span class=n>c</span><span class=p>.</span><span class=n>SendMessage</span><span class=p>(</span><span class=n>msg</span><span class=p>);</span>
+            <span class=p>}</span>
+        
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>注意要先运行服务端的程序、再运行客户端的程序，不然程序会报错，嘿嘿！好了，下面是今天的效果演示图：</p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fz01tlahhdj211y0lcgnz.jpg alt=聊天窗口效果演示></p>
+<p><img loading=lazy src=https://ww1.sinaimg.cn/large/4c36074fly1fyzctms5wsj211y0lc7ez.jpg alt=客户端下线效果演示></p>
+<h1 id=总结>
+<a href=#%e6%80%bb%e7%bb%93 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>
+总结
+</h1>
+<p>今天我们基本上写出了一个可以使用的用例，不过这个例子目前还存在以下问题：</p>
+<ul>
+<li>
+<p>这里仅仅实现了发送字符串的功能，如何让这个程序支持更多的类型，从基础的 int、float、double、string、single 等类型到 structure、class 甚至是二进制文件的类型？</p>
+</li>
+<li>
+<p>如何让这个用例更具有扩展性，我们发现所有的 Socket 编程流程都是一样的，唯一不同就是在接收到数据以后该如何去处理，因为能不能将核心功能和自定义功能分离开来？</p>
+</li>
+<li>
+<p>在今天的这个用例中，数据传输的缓冲区大小我们人为设定为 1024，那么如果碰到比这个设定更大的数据类型，这个用例该怎么来写？</p>
+</li>
+</ul>
+<p>好了，这就是今天的内容了，希望大家喜欢，同时希望大家关注我的博客！</p>
+<p><strong>2016 年 1 月 24 日更新</strong>：
+要解决“支持更多类型的问题”，可以从两种思路来考虑，即实现所有类型到 byte[]类型的转换或者是实现所有类型到 string 类型的转换，对于第二种思路我们通常称之为序列化，序列化可以解决所有类型到 string 类型的转换问题，唯一可能需要考量的一个部分就是缓冲区的大小问题。</p>
+<p>要解决“将核心功能和自定义功能分离”这个问题，可以考虑使用委托机制来实现，委托机制可以理解为一个函数的指针，在需要将函数的控制权交给用户来处理的场景中，委托都是一种有效而明智的选择。</p>
+</div>
+<div id=cyReward role=cylabs data-use=reward>
+<div class=cy-reward>
+<a id=cy-reward-click class="cy-reward-btn cy-reward-btn-red">赏</a>
+</div>
+<div id=cy-reward-pop class=cy-reward-pop>
+<div node-type=cy-close-btn class=cy-close-btn></div> <img class=cy-avatar src=/imgs/avatar.jpg>
+<div class=cy-reward-title>感谢你的支持，我会继续努力！</div>
+<div node-type=cy-reward-code class=cy-reward-code> <img node-type=alipay-code style=display:none src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/alipay.jpg>
+<img node-type=weichat-code src=https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master//assets/images/wechat.png style=display:inline> </div>
+<div class=cy-reward-txt>扫码打赏，建议金额1-10元</div>
+<div node-type=platform-choice class="platform-choice clearfix">
+<div class=platform-item> <span node-type=check-platform data-id=alipay class=platform-radio-box></span> <span class="platform-logo alipay"></span> </div>
+<div class=platform-item> <span node-type=check-platform data-id=weichat class="platform-radio-box platform-checked"></span> <span class="platform-logo weichat"></span>
+</div>
+</div>
+<p class=power-cy> <a href=http://changyan.kuaizhan.com style=text-decoration:none;color:#d1d1d1 target=_blank>Copied By 畅言云评</a><br> 提醒：打赏金额将直接进入对方账号，无法退款，请您谨慎操作。 </p>
+</div>
+</div>
+</div>
+<div class=container>
+<nav class="flex container suggested">
+<a rel=prev href=/posts/%E4%BD%BF%E7%94%A8unity3d%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B9%B8%E8%BF%90%E8%BD%AC%E7%9B%98/ title=上一篇>
+<span>上一篇</span>
+使用 Unity3D 创建一个幸运转盘
+</a>
+<a rel=next href=/posts/c#%E4%B8%ADsocket%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%BC%82%E6%AD%A5%E5%AE%9E%E7%8E%B0/ title=下一篇>
+<span>下一篇</span>
+C#中 Socket 通信编程的异步实现
+</a>
+</nav>
+</div>
+<div class=container>
+<div id=comment></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://example.com/posts/c#%E4%B8%ADsocket%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%90%8C%E6%AD%A5%E5%AE%9E%E7%8E%B0/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+</div>
+</main>
+</main>
+<footer class="footer flex">
+<section class=container>
+<nav class=footer-links>
+<a href=/index.xml>RSS</a>
+<a href=/sitemap.xml>站点地图</a>
+</nav>
+<div class=footer-copyright>
+飞鸿踏雪 &copy; 2014 - 2021
+</div>
+<div class=footer-copyright>
+Powered by <a ref=https://gohugo.io>Hugo 0.89.4</a> Theme by <a href=https://github.com/WingLim/hugo-tania>Tania</a>
+</div>
+</section>
+<script defer src=/ts/features.0acb2fae01d96a518164b182e26ba07aab0e29cb39ac5e3c2c312f96295349d8.js data-enable-footnotes=true></script>
+</footer>
+</body>
+</html>

@@ -31,7 +31,7 @@ header {
         flex-direction: column;
     }
 
-    // 
+    //
     h1 {
         font-weight: 400;
         font-size: 2rem;
@@ -75,8 +75,8 @@ header {
 .article-post {
     margin-bottom: 2rem;
     font-family: var(--article-font-family);
-    
-    img{
+
+    img {
         border-radius: 5px;
         display: block;
         margin-left: auto;
@@ -87,22 +87,28 @@ header {
         font-size: 1rem;
     }
 
-    // 
+    //
     h1 {
         font-size: 1.5rem;
     }
 
     a {
-        box-shadow: 0px -2px 0px rgba(189, 195, 199, 0.5) inset;
-        transition: all .3s ease;
+        color: #ff4081;
+        border-bottom: 1px dotted #ffa6c4;
+        border-bottom-style: dotted;
+        word-break: break-all;
 
         &:hover {
-            box-shadow: 0px -10px 0px rgba(189, 195, 199, 0.7) inset;
+            text-decoration: none;
+            border-bottom-style: solid;
+            opacity: .7;
         }
     }
 
     code {
         overflow-x: auto;
+        color: #ff4081;
+        margin: 0 4px;
     }
 
     @for $i from 1 through 6 {
@@ -152,14 +158,14 @@ header {
         right: 5px;
         background: #424242;
         border: none;
-        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.04),0px 2px 6px rgba(0, 0, 0, 0.04),0px 0px 1px rgba(0, 0, 0, 0.04);;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.04), 0px 2px 6px rgba(0, 0, 0, 0.04), 0px 0px 1px rgba(0, 0, 0, 0.04);
         border-radius: 4px;
         padding: 8px 16px;
         color: rgba(255, 255, 255, 0.9);
         cursor: pointer;
         font-size: 14px;
         opacity: 0;
-        transition: opacity .3s ease;
+        transition: opacity 0.3s ease;
     }
 }
 

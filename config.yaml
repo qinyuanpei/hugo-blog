@@ -1,6 +1,6 @@
 baseurl: "https://example.com"
 languageCode: "en-us"
-title: "元培的部落格"
+title: "素履独行"
 theme: "hugo-tania"
 paginate: 10
 
@@ -8,7 +8,7 @@ disqusShortname: https-hugo-tania-netlify-app
 
 params:
   # Emoji will show before the blog title on site navbar.
-  titleEmoji:
+  titleEmoji: 🪶
 
   # Logo will show before the blog title on site navbar.
   titleLogo: 

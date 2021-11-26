@@ -81,3 +81,80 @@
     display: block;
 }
 
+.bmdb-list {
+    display: flex;
+    justify-content: center;
+}
+
+.bmdb-ul {
+    margin-left: -2%;
+    margin-right: -2%;
+    margin-bottom: 0;
+    padding: 0;
+    background: none;
+    line-height: 100%;
+    list-style: none;
+}
+
+
+.bmdb-li {
+    list-style: none;
+    float: left;
+    width: 16%;
+    display: block;
+    font-size: 13px;
+    padding: 0;
+    margin-left: 2%;
+    margin-right: 2%;
+    margin-bottom: 20px;
+}
+
+.bmdb-link, .bmdb-link:focus, .bmdb-link:hover {
+    text-decoration: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.bmdb-cover {
+    position: relative;
+    min-height: 189.443px;
+    overflow: hidden;
+    background-color: #fafafa;
+}
+
+.bmdb-cover-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 189.443px;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.bmdb-info {
+    height: 45px;
+    overflow: hidden;
+}
+
+.bmdb-title {
+    display: -webkit-box;
+    font-size: 13px;
+    padding: 10px 0 0;
+    color: #494949;
+    line-height: 15px;
+    overflow: hidden;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    font-weight: 400;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.bmdb-rank {
+    height: 16px;
+    font-size: 12px;
+    padding-top: 3px;
+}

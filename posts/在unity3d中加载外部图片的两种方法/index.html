@@ -5,18 +5,18 @@
 <meta http-equiv=x-ua-compatible content="IE=edge">
 <meta name=theme-color content="dark">
 <meta name=generator content="Hugo 0.89.4">
-<title>在 Unity3D 中加载外部图片的两种方法 | 元培的部落格</title>
+<title>在 Unity3D 中加载外部图片的两种方法 | 素履独行</title>
 <meta property="og:site_name" content="Hugo Tania is Amazing">
-<meta property="og:title" content="在 Unity3D 中加载外部图片的两种方法 | 元培的部落格">
-<meta itemprop=name content="在 Unity3D 中加载外部图片的两种方法 | 元培的部落格">
-<meta name=twitter:title content="在 Unity3D 中加载外部图片的两种方法 | 元培的部落格">
-<meta name=application-name content="在 Unity3D 中加载外部图片的两种方法 | 元培的部落格">
+<meta property="og:title" content="在 Unity3D 中加载外部图片的两种方法 | 素履独行">
+<meta itemprop=name content="在 Unity3D 中加载外部图片的两种方法 | 素履独行">
+<meta name=twitter:title content="在 Unity3D 中加载外部图片的两种方法 | 素履独行">
+<meta name=application-name content="在 Unity3D 中加载外部图片的两种方法 | 素履独行">
 <meta name=description content="现在我们运行程序可以发现两种方式均可以让图片加载进来，为了对比两种方式在执行效率上的高低，我们在脚本中加入了相关代码，通过对比可以发现使用 IO 方式加载一张 227k 的图片需要的时间为 0s，而使用 WWW 方式加载需要 0.0185s，因此传统的 IO 方式具有更高的效率，建议大家在遇到这类问题时尽可能地使用这种方式;经过博主的研究发现，这种方式加载外部图片相对于使用 WWW 加载外部图片效率更高，所以如果大家遇到类似的需求，博主个人推荐大家使用这种方式进行加载;/// 以 WWW 方式进行加载">
 <meta name=twitter:description content="现在我们运行程序可以发现两种方式均可以让图片加载进来，为了对比两种方式在执行效率上的高低，我们在脚本中加入了相关代码，通过对比可以发现使用 IO 方式加载一张 227k 的图片需要的时间为 0s，而使用 WWW 方式加载需要 0.0185s，因此传统的 IO 方式具有更高的效率，建议大家在遇到这类问题时尽可能地使用这种方式;经过博主的研究发现，这种方式加载外部图片相对于使用 WWW 加载外部图片效率更高，所以如果大家遇到类似的需求，博主个人推荐大家使用这种方式进行加载;/// 以 WWW 方式进行加载 ">
 <meta itemprop=description content=" 现在我们运行程序可以发现两种方式均可以让图片加载进来，为了对比两种方式在执行效率上的高低，我们在脚本中加入了相关代码，通过对比可以发现使用 IO 方式加载一张 227k 的图片需要的时间为 0s，而使用 WWW 方式加载需要 0.0185s，因此传统的 IO 方式具有更高的效率，建议大家在遇到这类问题时尽可能地使用这种方式;经过博主的研究发现，这种方式加载外部图片相对于使用 WWW 加载外部图片效率更高，所以如果大家遇到类似的需求，博主个人推荐大家使用这种方式进行加载;/// 以 WWW 方式进行加载 ">
 <meta property="og:description" content=" 现在我们运行程序可以发现两种方式均可以让图片加载进来，为了对比两种方式在执行效率上的高低，我们在脚本中加入了相关代码，通过对比可以发现使用 IO 方式加载一张 227k 的图片需要的时间为 0s，而使用 WWW 方式加载需要 0.0185s，因此传统的 IO 方式具有更高的效率，建议大家在遇到这类问题时尽可能地使用这种方式;经过博主的研究发现，这种方式加载外部图片相对于使用 WWW 加载外部图片效率更高，所以如果大家遇到类似的需求，博主个人推荐大家使用这种方式进行加载;/// 以 WWW 方式进行加载 ">
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.7b25771a8bcfa24cb7a1ec76e7fd39639716ef2838952f6a201ec01b8ffcfa3b.css>
+<link rel=stylesheet href=/sass/main.min.599771ab141071c5d41a40a82845c564f0f87d8544c845fd2039ee06bcbcd078.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
 <script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
 </head>
@@ -27,7 +27,10 @@
 <div class=flex>
 <div>
 <a class=brand href=/>
-元培的部落格
+<span class=emoji>
+🪶
+</span>
+素履独行
 </a>
 </div>
 <div class=flex>

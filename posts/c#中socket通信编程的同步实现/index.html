@@ -5,18 +5,18 @@
 <meta http-equiv=x-ua-compatible content="IE=edge">
 <meta name=theme-color content="dark">
 <meta name=generator content="Hugo 0.89.4">
-<title>C#中 Socket 通信编程的同步实现 | 元培的部落格</title>
+<title>C#中 Socket 通信编程的同步实现 | 素履独行</title>
 <meta property="og:site_name" content="Hugo Tania is Amazing">
-<meta property="og:title" content="C#中 Socket 通信编程的同步实现 | 元培的部落格">
-<meta itemprop=name content="C#中 Socket 通信编程的同步实现 | 元培的部落格">
-<meta name=twitter:title content="C#中 Socket 通信编程的同步实现 | 元培的部落格">
-<meta name=application-name content="C#中 Socket 通信编程的同步实现 | 元培的部落格">
+<meta property="og:title" content="C#中 Socket 通信编程的同步实现 | 素履独行">
+<meta itemprop=name content="C#中 Socket 通信编程的同步实现 | 素履独行">
+<meta name=twitter:title content="C#中 Socket 通信编程的同步实现 | 素履独行">
+<meta name=application-name content="C#中 Socket 通信编程的同步实现 | 素履独行">
 <meta name=description content="服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听">
 <meta name=twitter:description content="服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听 ">
 <meta itemprop=description content=" 服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听 ">
 <meta property="og:description" content=" 服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听 ">
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.7b25771a8bcfa24cb7a1ec76e7fd39639716ef2838952f6a201ec01b8ffcfa3b.css>
+<link rel=stylesheet href=/sass/main.min.599771ab141071c5d41a40a82845c564f0f87d8544c845fd2039ee06bcbcd078.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
 <script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
 </head>
@@ -27,7 +27,10 @@
 <div class=flex>
 <div>
 <a class=brand href=/>
-元培的部落格
+<span class=emoji>
+🪶
+</span>
+素履独行
 </a>
 </div>
 <div class=flex>

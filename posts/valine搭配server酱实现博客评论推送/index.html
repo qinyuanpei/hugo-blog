@@ -5,18 +5,18 @@
 <meta http-equiv=x-ua-compatible content="IE=edge">
 <meta name=theme-color content="dark">
 <meta name=generator content="Hugo 0.89.4">
-<title>Valine 搭配 Server 酱实现博客评论推送 | 元培的部落格</title>
+<title>Valine 搭配 Server 酱实现博客评论推送 | 素履独行</title>
 <meta property="og:site_name" content="Hugo Tania is Amazing">
-<meta property="og:title" content="Valine 搭配 Server 酱实现博客评论推送 | 元培的部落格">
-<meta itemprop=name content="Valine 搭配 Server 酱实现博客评论推送 | 元培的部落格">
-<meta name=twitter:title content="Valine 搭配 Server 酱实现博客评论推送 | 元培的部落格">
-<meta name=application-name content="Valine 搭配 Server 酱实现博客评论推送 | 元培的部落格">
+<meta property="og:title" content="Valine 搭配 Server 酱实现博客评论推送 | 素履独行">
+<meta itemprop=name content="Valine 搭配 Server 酱实现博客评论推送 | 素履独行">
+<meta name=twitter:title content="Valine 搭配 Server 酱实现博客评论推送 | 素履独行">
+<meta name=application-name content="Valine 搭配 Server 酱实现博客评论推送 | 素履独行">
 <meta name=description content="所以，说白了我们就是想利用它这个“云引擎”来调用 Server 酱的接口，幸运的是，LeanCloud 提供的 Hooks 目前是支持 Nodejs 的，所以，到这里思路就非常清晰了，我们给`Comment`这张表加一个`AfterSave`类型的 Hooks，在保存完以后调用 Server 酱接口推送评论信息即可;[Valine](https://valine.js.org/)是一个基于[LeanCloud](https://leancloud.cn)的评论系统，在很长的一段时间里，一直作为多说、[Gitalk](https://gitalk.github.io/)、[Gitment](https://github.com/imsun/gitment)等等的一个替代品，博主所使用的评论系统实际上就是 Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊;Valine 本身是利用 LeanCloud 的数据存储 SDK 来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能">
 <meta name=twitter:description content="所以，说白了我们就是想利用它这个“云引擎”来调用 Server 酱的接口，幸运的是，LeanCloud 提供的 Hooks 目前是支持 Nodejs 的，所以，到这里思路就非常清晰了，我们给`Comment`这张表加一个`AfterSave`类型的 Hooks，在保存完以后调用 Server 酱接口推送评论信息即可;[Valine](https://valine.js.org/)是一个基于[LeanCloud](https://leancloud.cn)的评论系统，在很长的一段时间里，一直作为多说、[Gitalk](https://gitalk.github.io/)、[Gitment](https://github.com/imsun/gitment)等等的一个替代品，博主所使用的评论系统实际上就是 Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊;Valine 本身是利用 LeanCloud 的数据存储 SDK 来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能 ">
 <meta itemprop=description content=" 所以，说白了我们就是想利用它这个“云引擎”来调用 Server 酱的接口，幸运的是，LeanCloud 提供的 Hooks 目前是支持 Nodejs 的，所以，到这里思路就非常清晰了，我们给`Comment`这张表加一个`AfterSave`类型的 Hooks，在保存完以后调用 Server 酱接口推送评论信息即可;[Valine](https://valine.js.org/)是一个基于[LeanCloud](https://leancloud.cn)的评论系统，在很长的一段时间里，一直作为多说、[Gitalk](https://gitalk.github.io/)、[Gitment](https://github.com/imsun/gitment)等等的一个替代品，博主所使用的评论系统实际上就是 Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊;Valine 本身是利用 LeanCloud 的数据存储 SDK 来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能 ">
 <meta property="og:description" content=" 所以，说白了我们就是想利用它这个“云引擎”来调用 Server 酱的接口，幸运的是，LeanCloud 提供的 Hooks 目前是支持 Nodejs 的，所以，到这里思路就非常清晰了，我们给`Comment`这张表加一个`AfterSave`类型的 Hooks，在保存完以后调用 Server 酱接口推送评论信息即可;[Valine](https://valine.js.org/)是一个基于[LeanCloud](https://leancloud.cn)的评论系统，在很长的一段时间里，一直作为多说、[Gitalk](https://gitalk.github.io/)、[Gitment](https://github.com/imsun/gitment)等等的一个替代品，博主所使用的评论系统实际上就是 Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊;Valine 本身是利用 LeanCloud 的数据存储 SDK 来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能 ">
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.7b25771a8bcfa24cb7a1ec76e7fd39639716ef2838952f6a201ec01b8ffcfa3b.css>
+<link rel=stylesheet href=/sass/main.min.599771ab141071c5d41a40a82845c564f0f87d8544c845fd2039ee06bcbcd078.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
 <script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
 </head>
@@ -27,7 +27,10 @@
 <div class=flex>
 <div>
 <a class=brand href=/>
-元培的部落格
+<span class=emoji>
+🪶
+</span>
+素履独行
 </a>
 </div>
 <div class=flex>

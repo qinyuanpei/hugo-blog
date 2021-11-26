@@ -5,18 +5,18 @@
 <meta http-equiv=x-ua-compatible content="IE=edge">
 <meta name=theme-color content="dark">
 <meta name=generator content="Hugo 0.89.4">
-<title>记通过 EF 生成不同数据库 SQL 脚本的一次尝试 | 元培的部落格</title>
+<title>记通过 EF 生成不同数据库 SQL 脚本的一次尝试 | 素履独行</title>
 <meta property="og:site_name" content="Hugo Tania is Amazing">
-<meta property="og:title" content="记通过 EF 生成不同数据库 SQL 脚本的一次尝试 | 元培的部落格">
-<meta itemprop=name content="记通过 EF 生成不同数据库 SQL 脚本的一次尝试 | 元培的部落格">
-<meta name=twitter:title content="记通过 EF 生成不同数据库 SQL 脚本的一次尝试 | 元培的部落格">
-<meta name=application-name content="记通过 EF 生成不同数据库 SQL 脚本的一次尝试 | 元培的部落格">
+<meta property="og:title" content="记通过 EF 生成不同数据库 SQL 脚本的一次尝试 | 素履独行">
+<meta itemprop=name content="记通过 EF 生成不同数据库 SQL 脚本的一次尝试 | 素履独行">
+<meta name=twitter:title content="记通过 EF 生成不同数据库 SQL 脚本的一次尝试 | 素履独行">
+<meta name=application-name content="记通过 EF 生成不同数据库 SQL 脚本的一次尝试 | 素履独行">
 <meta name=description content="好了，顺着这个思路，我们就会想到在 ORM 中添加拦截器或者是日志的方式，来获得由 ORM 生成的 SQL 语句，这里我们以 Entity Framework(以下简称 EF)为例，这是.NET 中最常见的 ORM，因为目前官方的 Web 开发框架有 ASP.NET 和 ASP.NET Core 两个版本，所以这里我们分别以 ASP.NET 和 ASP.NET Core 为例来说明具体的实现过程，相应地，我们分别使用了 EF6 和 EF Core 作为各自的 ORM;我们说过，ILoggerProvider 接口决定在什么情况下应该提供什么样的 Logger，我们注意到它提供了一个 CreateLogger()的方法，它会根据 categoryName 来返回不同的 Logger，而参数 categoryName 实际上等价与 nameof(FooController)，所以，到这里我们就会明白，为什么这里要判断 categoryName 了，它实际上起一个过滤的作用，因为我们只需要 SQL 相关的日志，它和 SQLGenLogger 中的 state 相对应，我们已经说过，这是博主试出来的;这篇文章主要介绍如何利用 EF 来生成不同数据库的 SQL 脚本，对 EF6 来说，需要继承 DbCommandInterecptor 类编写拦截器">
 <meta name=twitter:description content="好了，顺着这个思路，我们就会想到在 ORM 中添加拦截器或者是日志的方式，来获得由 ORM 生成的 SQL 语句，这里我们以 Entity Framework(以下简称 EF)为例，这是.NET 中最常见的 ORM，因为目前官方的 Web 开发框架有 ASP.NET 和 ASP.NET Core 两个版本，所以这里我们分别以 ASP.NET 和 ASP.NET Core 为例来说明具体的实现过程，相应地，我们分别使用了 EF6 和 EF Core 作为各自的 ORM;我们说过，ILoggerProvider 接口决定在什么情况下应该提供什么样的 Logger，我们注意到它提供了一个 CreateLogger()的方法，它会根据 categoryName 来返回不同的 Logger，而参数 categoryName 实际上等价与 nameof(FooController)，所以，到这里我们就会明白，为什么这里要判断 categoryName 了，它实际上起一个过滤的作用，因为我们只需要 SQL 相关的日志，它和 SQLGenLogger 中的 state 相对应，我们已经说过，这是博主试出来的;这篇文章主要介绍如何利用 EF 来生成不同数据库的 SQL 脚本，对 EF6 来说，需要继承 DbCommandInterecptor 类编写拦截器 ">
 <meta itemprop=description content=" 好了，顺着这个思路，我们就会想到在 ORM 中添加拦截器或者是日志的方式，来获得由 ORM 生成的 SQL 语句，这里我们以 Entity Framework(以下简称 EF)为例，这是.NET 中最常见的 ORM，因为目前官方的 Web 开发框架有 ASP.NET 和 ASP.NET Core 两个版本，所以这里我们分别以 ASP.NET 和 ASP.NET Core 为例来说明具体的实现过程，相应地，我们分别使用了 EF6 和 EF Core 作为各自的 ORM;我们说过，ILoggerProvider 接口决定在什么情况下应该提供什么样的 Logger，我们注意到它提供了一个 CreateLogger()的方法，它会根据 categoryName 来返回不同的 Logger，而参数 categoryName 实际上等价与 nameof(FooController)，所以，到这里我们就会明白，为什么这里要判断 categoryName 了，它实际上起一个过滤的作用，因为我们只需要 SQL 相关的日志，它和 SQLGenLogger 中的 state 相对应，我们已经说过，这是博主试出来的;这篇文章主要介绍如何利用 EF 来生成不同数据库的 SQL 脚本，对 EF6 来说，需要继承 DbCommandInterecptor 类编写拦截器 ">
 <meta property="og:description" content=" 好了，顺着这个思路，我们就会想到在 ORM 中添加拦截器或者是日志的方式，来获得由 ORM 生成的 SQL 语句，这里我们以 Entity Framework(以下简称 EF)为例，这是.NET 中最常见的 ORM，因为目前官方的 Web 开发框架有 ASP.NET 和 ASP.NET Core 两个版本，所以这里我们分别以 ASP.NET 和 ASP.NET Core 为例来说明具体的实现过程，相应地，我们分别使用了 EF6 和 EF Core 作为各自的 ORM;我们说过，ILoggerProvider 接口决定在什么情况下应该提供什么样的 Logger，我们注意到它提供了一个 CreateLogger()的方法，它会根据 categoryName 来返回不同的 Logger，而参数 categoryName 实际上等价与 nameof(FooController)，所以，到这里我们就会明白，为什么这里要判断 categoryName 了，它实际上起一个过滤的作用，因为我们只需要 SQL 相关的日志，它和 SQLGenLogger 中的 state 相对应，我们已经说过，这是博主试出来的;这篇文章主要介绍如何利用 EF 来生成不同数据库的 SQL 脚本，对 EF6 来说，需要继承 DbCommandInterecptor 类编写拦截器 ">
 <link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=stylesheet href=/sass/main.min.7b25771a8bcfa24cb7a1ec76e7fd39639716ef2838952f6a201ec01b8ffcfa3b.css>
+<link rel=stylesheet href=/sass/main.min.599771ab141071c5d41a40a82845c564f0f87d8544c845fd2039ee06bcbcd078.css>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/css/swiper.min.css>
 <script src=https://cdn.jsdelivr.net/npm/swiper@3.4.2/dist/js/swiper.min.js></script>
 </head>
@@ -27,7 +27,10 @@
 <div class=flex>
 <div>
 <a class=brand href=/>
-元培的部落格
+<span class=emoji>
+🪶
+</span>
+素履独行
 </a>
 </div>
 <div class=flex>

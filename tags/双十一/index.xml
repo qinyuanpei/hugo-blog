@@ -3,4 +3,6 @@
 如果有朋友做过化学或者生物实验，对接下来的事情应该不会感到陌生，通常我们会在这类图表中添加趋势线，由此得到一个公式，实际上这就是一个回归或者说拟合的过程，因为 Excel 内置了线性、指数型、对数型等多种曲线模型，所以，我们可以非常容易地切换到不同的曲线，而评估一个方程好坏与否的指标为 $R^2$，该值越接近 1 表示拟合效果越好，如图是博主在 Excel 中得到的一条拟合方程：
 那么，在 Python 中我们如何实现类似的效果呢？答案是 scikit-learn，这是 Python 中一个常用的机器学习算法库，主要覆盖了以下功能：分类、回归、聚类、数据降维、模型选择 和 数据预处理，我们这里主要利用了回归这部分的 LinearRegression 类，顾名思义，它就是我们通常说的线性回归。事实上，这个线性并不是单指一元一次方程，因为我们还可以使用二次或者三次多项式，因为上面的 Excel 图表早已告诉我们，一元一次方程误差太大。
 实现过程 OK，具体是如何实现的呢？首先，我们从 CSV 文件中加载数据，这个非常简单，利用 Pandas 库中的 read_csv() 方法即可：
-1 df = pd.read_csv(&amp;#39;./历年双十一交易额.csv&amp;#39;, index_col = 0) 接下来，我们使用下面的方法来获取 年份 和 交易额 这两列数据：</description></item></channel></rss>
+1df = pd.read_csv(&amp;#39;./历年双十一交易额.csv&amp;#39;, index_col = 0) 接下来，我们使用下面的方法来获取 年份 和 交易额 这两列数据：
+1year = np.array(df.index.tolist()) 2sales = np.array(df.Sales.tolist()) 此时，我们可以非常容易地用 matplotlib 库绘制出对应的图表：
+1plt.scatter(year, sales, marker=&amp;#39;o&amp;#39;) 2plt.</description></item></channel></rss>

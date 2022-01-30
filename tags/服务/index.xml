@@ -2,4 +2,4 @@
 扩展实体 首先，我们要说的是扩展实体，什么是实体呢？这其实是领域驱动设计(DDD)中的概念，相信对于实体、聚合根和值对象，大家早就耳熟能详了。在 ABP vNext 中，实体对应的类型为Entity，聚合根对应的类型为AggregateRoot。所以，你可以片面地认为，只要继承自Entity基类的类都是实体。通常，实体都会有一个唯一的标识(Id)，所以，订单、商品或者是用户，都属于实体的范畴。不过，按照业务边界上的不同，它们会在核心域、支撑域和通用域三者间频繁切换。而对于大多数系统而言，用户都将是一个通用的域。在 ABP vNext 中，其用户信息由AbpUsers表承载，它在架构上定义了IUser接口，借助于EF Core的表映射支持，我们所使用的AppUser本质上是映射到了AbpUsers表中。针对实体的扩展，在面向数据库编程的业务系统中，一个最典型的问题就是，我怎么样可以给AppUser添加字段。所以，下面我们以AppUser为例，来展示如何对实体进行扩展。
 实际上，ABP vNext 中提供了2种方式，来解决实体扩展的问题，它们分别是：Extra Properties 和 基于 EF Core 的表映射。在 官方文档 中，我们会得到更加详细的信息，这里简单介绍一下就好：
 Extra Properties 对于第1种方式，它要求我们必须实现IHasExtraProperties接口，这样我们就可以使用GetProperty()和SetProperty()两个方法，其原理是，将这些扩展字段以JSON格式存储在ExtraProperties这个字段上。如果使用MongoDB这样的非关系型数据库，则这些扩展字段可以单独存储。参考示例如下：
-1 2 3 4 5 6 7 8 // 设置扩展字段 var user = await _identityUserRepository.</description></item></channel></rss>
+1// 设置扩展字段 2var user = await _identityUserRepository.GetAsync(userId); 3user.SetProperty(&amp;#34;Title&amp;#34;, &amp;#34;起风了，唯有努力生存&amp;#34;); 4await _identityUserRepository.UpdateAsync(user); 5 6// 读取扩展字段 7var user = await _identityUserRepository.</description></item></channel></rss>

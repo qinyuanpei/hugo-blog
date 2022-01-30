@@ -139,9 +139,11 @@ params:
 
         archives:
             limit: 5
+            showIcon: false
 
         tagCloud:
             limit: 25
+            showIcon: false
 
     opengraph:
         twitter:
@@ -196,10 +198,24 @@ menu:
           params:
               newTab: false
               icon: search
+        - identifier: links
+          name: 友链
+          url: /links
+          weight: -70
+          params:
+              newTab: false
+              icon: link
+        - identifier: about
+          name: 关于
+          url: /about
+          weight: -60
+          params:
+              newTab: false
+              icon: user
         - identifier: rss
           name: RSS
           url: /index.xml
-          weight: -70
+          weight: -50
           params:
               newTab: false
               icon: rss

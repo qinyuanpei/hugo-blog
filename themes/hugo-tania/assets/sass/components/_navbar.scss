@@ -176,3 +176,18 @@ main {
         font-size: 1.2rem;
     }
 }
+
+@media screen and (max-width: 480px) {
+    .flex {
+        flex-direction: column;
+        align-content: center;
+    }
+
+    .navbar a:first-of-type {
+        margin-left: 0rem;
+    }
+
+    .navbar button {
+        margin-right: 0rem;
+    }
+}

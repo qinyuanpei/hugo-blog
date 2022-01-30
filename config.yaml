@@ -1,117 +1,262 @@
-baseurl: "https://example.com"
-languageCode: "en-us"
-title: "素履独行"
-theme: "hugo-tania"
+baseurl: https://example.com
+languageCode: en-us
+theme: hugo-theme-stack
 paginate: 10
+title: 素履独行
 
-disqusShortname: https-hugo-tania-netlify-app
+# Change it to your Disqus shortname before using
+disqusShortname: hugo-theme-stack
+
+# GA Tracking ID
+googleAnalytics:
+
+# Theme i18n support
+# Available values: en, fr, id, ja, ko, pt-br, zh-cn, zh-tw, es, de, nl, it, th, el, uk
+DefaultContentLanguage: zh-cn
+
+# Set hasCJKLanguage to true if DefaultContentLanguage is in [zh-cn ja ko]
+# This will make .Summary and .WordCount behave correctly for CJK languages.
+hasCJKLanguage: false
+
+permalinks:
+    post: /posts/:slug/
+    page: /:slug/
 
 params:
-  # Emoji will show before the blog title on site navbar.
-  titleEmoji: 🪶
+    mainSections:
+        - post
+    featuredImageField: image
+    rssFullContent: true
+    favicon:
 
-  # Logo will show before the blog title on site navbar.
-  titleLogo: 
-  
-  # Enable float footnotes.
-  # Default to true
-  enableFootnotes: true
-  
-  siteName: "Hugo Tania is Amazing"
-  siteDesc: "纵有疾风起，人生不言弃"
-  author: "飞鸿踏雪"
-  avatar: "/imgs/avatar.jpg"
+    footer:
+        since: 2014
+        customText:
 
-  dateFormat: "2006-01-02"
+    dateFormat:
+        published: Jan 02, 2006
+        lastUpdated: Jan 02, 2006 15:04 MST
 
+    sidebar:
+        emoji: 🍥
+        subtitle: 起风了，唯有努力生存
+        avatar:
+            enabled: true
+            local: true
+            src: img/avatar.png
 
-  footer:
-    sinceYear: 2014
+    article:
+        math: false
+        toc: true
+        readingTime: true
+        license:
+            enabled: true
+            default: Licensed under CC BY-NC-SA 4.0
 
+    comments:
+        enabled: true
+        provider: disqus
 
-  # Limit how many categories filter show above search input.
-  # Default to 5
-  maxCategoryToShow: 10
+        disqusjs:
+            shortname:
+            apiUrl:
+            apiKey:
+            admin:
+            adminLabel:
 
-  # Show your socail information with icon on index bio with `_index.md` content.
-  socialOptions:
-    dev-to:
-    email: qinyuanpei@163.com
-    facebook:
-    github: https://github.com/qinyuanpei
-    douban: https://www.douban.com/people/60029335/
-    weibo: https://weibo.com/1278609231/profile
-    zhihu: https://www.zhihu.com/people/qinyuanpei
-    instagram:
-    linkedin:
-    medium:
-    stack-overflow:
-    steam:
-    telegram:
-    twitter:
-    twitch:
-    whatsapp:
-  
-  # Comments settings
-  comments:
-    enabled: true
-    provider: valine
+        utterances:
+            repo:
+            issueTerm: pathname
+            label:
 
-    giscus:
-      repo: WingLim/hugo-tania
-      id: MDEwOlJlcG9zaXRvcnkzMTYyNjQzMDc=
-      category:
-        name: Comments
-        id: DIC_kwDOEtnPc84B_WKP
+        remark42:
+            host:
+            site:
+            locale:
 
-    valine:
-      enable: true # 如果你想使用valine，请将值设置为 true
-      appId:  JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz
-      appKey: VsiKvLuiBGvJL1XrAfv7siY2
-      notify: true # Mail notify
-      verify: true # Verify code
-      avatar: mm # Gravatar style : mm/identicon/monsterid/wavatar/retro/hide
-      placeholder: 欢迎在这里留下你的评论... # Comment Box placeholder
-      guest_info: nick,mail,link # Comment header info
-      pageSize: 10 # comment list page size
-      requiredFields: ['nick','mail']
+        vssue:
+            platform:
+            owner:
+            repo:
+            clientId:
+            clientSecret:
+            autoCreateIssue: false
 
+        # Waline client configuration see: https://waline.js.org/en/reference/client.html
+        waline:
+            serverURL:
+            lang:
+            visitor:
+            avatar:
+            emoji:
+                - https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo
+            requiredMeta:
+                - name
+                - email
+                - url
+            placeholder:
+            locale:
+                admin: Admin
+
+        twikoo:
+            envId:
+            region:
+            path:
+            lang:
+
+        # See https://cactus.chat/docs/reference/web-client/#configuration for description of the various options
+        cactus:
+            defaultHomeserverUrl: "https://matrix.cactus.chat:8448"
+            serverName: "cactus.chat"
+            siteName: "" # You must insert a unique identifier here matching the one you registered (See https://cactus.chat/docs/getting-started/quick-start/#register-your-site)
+            
+        giscus:
+            repo:
+            repoID:
+            category:
+            categoryID:
+            mapping:
+            lightTheme:
+            darkTheme:
+            reactionsEnabled: 1
+            emitMetadata: 0
+
+        gitalk:
+            owner: 
+            admin:  
+            repo: 
+            clientID: 
+            clientSecret: 
+        
+        cusdis:
+            host: 
+            id: 
+    widgets:
+        enabled:
+            - search
+            - archives
+            - tag-cloud
+
+        archives:
+            limit: 5
+
+        tagCloud:
+            limit: 25
+
+    opengraph:
+        twitter:
+            # Your Twitter username
+            site:
+
+            # Available values: summary, summary_large_image
+            card: summary_large_image
+
+    defaultImage:
+        opengraph:
+            enabled: false
+            local: false
+            src:
+
+    colorScheme:
+        # Display toggle
+        toggle: true
+
+        # Available values: auto, light, dark
+        default: auto
+
+    imageProcessing:
+        cover:
+            enabled: true
+        content:
+            enabled: true
+
+### Custom menu
+### See https://docs.stack.jimmycai.com/configuration/custom-menu.html
+### To remove about, archive and search page menu item, remove `menu` field from their FrontMatter
 menu:
-  header:
-    - name: 归档
-      url: "/archives"
-      sort: 0
-    - name: 分类
-      url: "/categories"
-      sort: 1
-    - name: 标签
-      url: "/tags"
-      sort: 2
-    - name: 实验室
-      url: "/works"
-      sort: 3
-    - name: 友链
-      url: "/friends"
-      sort: 4
-    - name: 读书
-      url: "/books"
-      sort: 5
-    - name: 观影
-      url: "/movies"
-      sort: 6
-  footer:
-    - name: RSS
-      url: "/index.xml"
-    - name: 站点地图
-      url: "/sitemap.xml"
+    main:
+        - identifier: home
+          name: 首页
+          url: /
+          weight: -100
+          params:
+              newTab: false
+              icon: home
+        - identifier: archives
+          name: 归档
+          url: /archives
+          weight: -90
+          params:
+              newTab: false
+              icon: archives
+        - identifier: search
+          name: 搜索
+          url: /search
+          weight: -80
+          params:
+              newTab: false
+              icon: search
+        - identifier: rss
+          name: RSS
+          url: /index.xml
+          weight: -70
+          params:
+              newTab: false
+              icon: rss
+    social:
+        - identifier: github
+          name: GitHub
+          url: https://github.com/qinyuanpei
+          weight: 10
+          params:
+            icon: brand-github
+        - identifier: zhihu
+          name: Zhihu
+          url: https://www.zhihu.com/people/qinyuanpei
+          weight: 20
+          params:
+            icon: brand-zhihu
+        - identifier: douban
+          name: Douban
+          url: https://www.zhihu.com/people/qinyuanpei
+          weight: 30
+          params:
+            icon: brand-douban
+        - identifier: weibo
+          name: Weibo
+          url: https://www.zhihu.com/people/qinyuanpei
+          weight: 40
+          params:
+            icon: brand-weibo
+        - identifier: csdn
+          name: CSDN
+          url: https://blog.csdn.me/qinyuanpei
+          weight: 50
+          params:
+            icon: link
+
+related:
+    includeNewer: true
+    threshold: 60
+    toLower: false
+    indices:
+        - name: tags
+          weight: 100
+
+        - name: categories
+          weight: 200
 
 markup:
-  highlight:
-    noClasses: false
-    lineNos: true
-  goldmark:
-    renderer:
-      unsafe: true
-
-outputs:
-  home: ["HTML", "RSS", "JSON"]
+    goldmark:
+        renderer:
+            ## Set to true if you have HTML content inside Markdown
+            unsafe: false
+    tableOfContents:
+        endLevel: 4
+        ordered: true
+        startLevel: 2
+    highlight:
+        noClasses: false
+        lineNos: true
+        lineNumbersInTable: false
+        tabWidth: 4

@@ -6,7 +6,7 @@
 <meta property="og:description" content="我们使用扩展方法无非是因为它在逻辑层需要这样的功能，所以我们没有必要去改变抽象层的逻辑，因为这样会“污染”整个代码;/// 4、第一个参数必须使用 this 关键字指定要使用扩展方法的类型;为了解决这个问题，我们可以扩展出三个方法 SetPositionX、SetPositionY、SetPositionZ 来分别为 x、y、z 三个坐标分量进行赋值，我们继续在 SomeClass 这个类中添加方法：">
 <meta property="og:url" content="/posts/c#%E4%B8%AD%E7%9A%84%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">
 <meta property="og:site_name" content="素履独行">
-<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="CSharp"><meta property="article:tag" content="扩展方法"><meta property="article:tag" content="Unity3D"><meta property="article:tag" content="技巧"><meta property="article:published_time" content="2015-12-05T12:01:02+00:00"><meta property="article:modified_time" content="2015-12-05T12:01:02+00:00">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="CSharp"><meta property="article:tag" content="扩展方法"><meta property="article:tag" content="Unity3D"><meta property="article:tag" content="技巧"><meta property="article:published_time" content="2015-12-05T12:01:02+00:00"><meta property="article:modified_time" content="2015-12-05T12:01:02+00:00">
 <meta name=twitter:title content="C#中的扩展方法学习总结">
 <meta name=twitter:description content="我们使用扩展方法无非是因为它在逻辑层需要这样的功能，所以我们没有必要去改变抽象层的逻辑，因为这样会“污染”整个代码;/// 4、第一个参数必须使用 this 关键字指定要使用扩展方法的类型;为了解决这个问题，我们可以扩展出三个方法 SetPositionX、SetPositionY、SetPositionZ 来分别为 x、y、z 三个坐标分量进行赋值，我们继续在 SomeClass 这个类中添加方法：">
 </head>
@@ -143,28 +143,28 @@ extended">
 </a>
 </article>
 <article>
-<a href=/posts/%E6%B8%A9%E6%95%85%E8%80%8C%E7%9F%A5%E6%96%B0%E7%94%B1-ado.net-%E4%B8%8E-dapper-%E6%89%80%E8%81%94%E6%83%B3%E5%88%B0%E7%9A%84/>
+<a href=/posts/%E6%B8%A9%E6%95%85%E8%80%8C%E7%9F%A5%E6%96%B0%E7%94%B1ado.net%E4%B8%8Edapper%E6%89%80%E8%81%94%E6%83%B3%E5%88%B0%E7%9A%84/>
 <div class=article-details>
 <h2 class=article-title>温故而知新，由 ADO.NET 与 Dapper 所联想到的</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/.net-core-%E4%B8%AD%E5%AF%B9%E8%B1%A1%E6%B1%A0object-pool%E7%9A%84%E4%BD%BF%E7%94%A8/>
+<a href=/posts/net-core%E4%B8%AD%E5%AF%B9%E8%B1%A1%E6%B1%A0-object-pool-%E7%9A%84%E4%BD%BF%E7%94%A8/>
 <div class=article-details>
 <h2 class=article-title>.NET Core 中对象池(Object Pool)的使用</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/.net-core-%E5%8E%9F%E7%94%9F-di-%E6%89%A9%E5%B1%95%E4%B9%8B%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A5%E5%AE%9E%E7%8E%B0/>
+<a href=/posts/net-core%E5%8E%9F%E7%94%9Fdi%E6%89%A9%E5%B1%95%E4%B9%8B%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A5%E5%AE%9E%E7%8E%B0/>
 <div class=article-details>
 <h2 class=article-title>.NET Core 原生 DI 扩展之属性注入实现</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/.net-core-%E5%8E%9F%E7%94%9F-di-%E6%89%A9%E5%B1%95%E4%B9%8B%E5%9F%BA%E4%BA%8E%E5%90%8D%E7%A7%B0%E7%9A%84%E6%B3%A8%E5%85%A5%E5%AE%9E%E7%8E%B0/>
+<a href=/posts/net-core%E5%8E%9F%E7%94%9Fdi%E6%89%A9%E5%B1%95%E4%B9%8B%E5%9F%BA%E4%BA%8E%E5%90%8D%E7%A7%B0%E7%9A%84%E6%B3%A8%E5%85%A5%E5%AE%9E%E7%8E%B0/>
 <div class=article-details>
 <h2 class=article-title>.NET Core 原生 DI 扩展之基于名称的注入实现</h2>
 </div>
@@ -173,14 +173,11 @@ extended">
 </div>
 </div>
 </aside>
-<div class=disqus-container>
-<div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</div>
-<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
-<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/c#%E4%B8%AD%E7%9A%84%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
 <footer class=site-footer>
 <section class=copyright>
 &copy;

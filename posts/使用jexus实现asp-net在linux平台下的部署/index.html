@@ -1,0 +1,269 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="所以，在这今天这篇文章里，你将看到：**如何使用 Jexus 实现 ASP.NET 在 Linux 平台下的部署**;综合考虑这些因素，我们决定采用[Jexus](https://www.jexus.org/)来将 ASP.NET 项目部署到 Linux 平台;Jexus 是由[宇内流云](http://www.cnblogs.com/yunei)开发的一款 Linux 平台上的高性能 Web 服务器，它是一个可以免费使用、不开源的项目，最大的特色是可以支持 ASP.NET、ASP.NET Core、PHP"><title>使用 Jexus 实现 ASP.NET 在 Linux 平台下的部署</title>
+<link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8jexus%E5%AE%9E%E7%8E%B0asp-net%E5%9C%A8linux%E5%B9%B3%E5%8F%B0%E4%B8%8B%E7%9A%84%E9%83%A8%E7%BD%B2/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="使用 Jexus 实现 ASP.NET 在 Linux 平台下的部署">
+<meta property="og:description" content="所以，在这今天这篇文章里，你将看到：**如何使用 Jexus 实现 ASP.NET 在 Linux 平台下的部署**;综合考虑这些因素，我们决定采用[Jexus](https://www.jexus.org/)来将 ASP.NET 项目部署到 Linux 平台;Jexus 是由[宇内流云](http://www.cnblogs.com/yunei)开发的一款 Linux 平台上的高性能 Web 服务器，它是一个可以免费使用、不开源的项目，最大的特色是可以支持 ASP.NET、ASP.NET Core、PHP">
+<meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8jexus%E5%AE%9E%E7%8E%B0asp-net%E5%9C%A8linux%E5%B9%B3%E5%8F%B0%E4%B8%8B%E7%9A%84%E9%83%A8%E7%BD%B2/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="Jexus"><meta property="article:tag" content="Docker"><meta property="article:tag" content="Linux"><meta property="article:published_time" content="2018-05-20T14:00:03+00:00"><meta property="article:modified_time" content="2018-05-20T14:00:03+00:00">
+<meta name=twitter:title content="使用 Jexus 实现 ASP.NET 在 Linux 平台下的部署">
+<meta name=twitter:description content="所以，在这今天这篇文章里，你将看到：**如何使用 Jexus 实现 ASP.NET 在 Linux 平台下的部署**;综合考虑这些因素，我们决定采用[Jexus](https://www.jexus.org/)来将 ASP.NET 项目部署到 Linux 平台;Jexus 是由[宇内流云](http://www.cnblogs.com/yunei)开发的一款 Linux 平台上的高性能 Web 服务器，它是一个可以免费使用、不开源的项目，最大的特色是可以支持 ASP.NET、ASP.NET Core、PHP">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/>
+开发工具
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E4%BD%BF%E7%94%A8jexus%E5%AE%9E%E7%8E%B0asp-net%E5%9C%A8linux%E5%B9%B3%E5%8F%B0%E4%B8%8B%E7%9A%84%E9%83%A8%E7%BD%B2/>使用 Jexus 实现 ASP.NET 在 Linux 平台下的部署</a>
+</h2>
+<h3 class=article-subtitle>
+所以，在这今天这篇文章里，你将看到：**如何使用 Jexus 实现 ASP.NET 在 Linux 平台下的部署**;综合考虑这些因素，我们决定采用[Jexus](https://www.jexus.org/)来将 ASP.NET 项目部署到 Linux 平台;Jexus 是由[宇内流云](http://www.cnblogs.com/yunei)开发的一款 Linux 平台上的高性能 Web 服务器，它是一个可以免费使用、不开源的项目，最大的特色是可以支持 ASP.NET、ASP.NET Core、PHP
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2018-05-20</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 10 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>Hello，大家好，我是 Payne，欢迎大家关注我的博客，我的博客地址是：<a class=link href=https://qinyuanpei.github.io target=_blank rel=noopener>https://qinyuanpei.github.io</a>。今天想写一点关于 Linux 部署 ASP.NET 相关的话题，为什么突然想写这个话题呢？因为就在几天前，我被我所认识的一位前辈深深地鄙视了一番，原因是我依然在使用一个落后的 IoC 框架——Unity，在如今已然是公元 2018 年的今天。我突然想到，距离.NET Core 2.0 发布已经有一段时间，而.NET Core 3.0 的 roadmap 已经开始提上日程，可我好像还没来得及认真地去对待这个现状。我一直在关注跨平台和跨语言的技术，就像我在大学里的时候就开始接触 Linux 一样，未来我们要面对的是种类繁多的终端平台，从 PC 时代到移动互联网，再到 VR、AR、IoT 和 AI，有太多太多的事情在悄然发生着变化。偶尔我的内心会泛起焦虑和迷茫，可在时光蹉跎直至褪色以前，我或许只是变回了曾经的自己。既然要如同涅槃一般重新开始，为什么不首先重新拾起曾经关注的领域呢？所以，在这今天这篇文章里，你将看到：<strong>如何使用 Jexus 实现 ASP.NET 在 Linux 平台下的部署</strong>。</p>
+<h1 id=故事背景>故事背景</h1>
+<p>我们项目组在开发这样一种服务，它可以通过收集招聘网站的简历来提取相关信息，而这些信息将作为训练集供 AI 算法使用。考虑到 Python 在 AI 领域的优势，我们决定采用 Python 来开发自然语言处理相关的业务，而简历的收集则是通过.NET 中的 Web Service 暴露给前端。整个开发相对顺利，可是在部署环节出现了问题。因为项目组以往的的项目都是部署在 Linux Server 上，所以在部署 Web Service 的问题上产生了分歧，负责运维的同事不愿意为这一个项目而单独配置一台 Windows Server。这里需要说明的是，采用.NET 来开发 Web Service 的一个重要原因是，这些简历中存在大量 Word 文档(.doc/.docx)，因此不得不采用 Office 提供的 COM 组件来支持文档的解析，虽然后来证明的确是这些 COM 组件拖了跨平台的后腿。所以，在这个时候，我们面临着两种选择，第一种方案是采用 Windows Server 来部署，我们的运维同事表示不开心；第二种方案是采用 Linux Server 来部署。我们知道.NET 跨平台的一个关键技术是 Mono，可 Mono 的问题是它的基础类库不大健全，相信微软收购 Mono 以后这个问题能够得到解决。目前官方主推的跨平台技术是.NET Core，考虑到迁移到.NET Core 版本的成本，我们最终没有选择这个方案。事实上，即使采用.NET Core 进行开发，最终我们的部署依然需要依赖<a class=link href=https://www.jexus.org/ target=_blank rel=noopener>Jexus</a>。综合考虑这些因素，我们决定采用<a class=link href=https://www.jexus.org/ target=_blank rel=noopener>Jexus</a>来将 ASP.NET 项目部署到 Linux 平台。</p>
+<h1 id=关于-jexus>关于 Jexus</h1>
+<p>Jexus 是由<a class=link href=http://www.cnblogs.com/yunei target=_blank rel=noopener>宇内流云</a>开发的一款 Linux 平台上的高性能 Web 服务器，它是一个可以免费使用、不开源的项目，最大的特色是可以支持 ASP.NET、ASP.NET Core、PHP。通俗地来讲，我们可以认为它是 Linux 平台上的 IIS，这并不为过，因为你可以注意到<a class=link href=https://www.jexusmanager.com/en/latest/ target=_blank rel=noopener>Jexus Manager</a>这个项目，它可以同时支持 Jexus，IIS 和 IIS Express 三种服务器的管理，并提供了各个平台下一致的使用体验，而 Linux 平台则主要是针对 Jexus。Jexus 提供了不亚于商用服务器的众多特性，比如多站点支持、使用应用程序池来调度管理工作进程、具有良好的稳定性和容错能力、支持 HTTPS 和 WebSockets、支持 FastCGI 协议和 OWIN 标准。除此以外，它同时支持 URL 重写、反向代理、压缩传输、入侵检测等重要功能。Jexus 底层采用 Linux 中的 epoll 机制来处理网站请求，所以会比通常使用 libuv 实现的技术拥有更高的性能。作为一款跨平台软件，Jexus 支持主流的 Linux 发行版本。目前，国内外已经有大量的网站采用 Jexus 作为它的服务器，我们可以在 Jexus 的官网上找到这些<a class=link href=https://www.jexus.org/Examples.htm target=_blank rel=noopener>案例</a>。虽然微软官方正在全力推广.NET Core，但对于那些需要维护的旧项目而言，迁移到全新的.NET Core 平台着实是个不小的挑战，而且目前支持.NET Core 版本的类库并不丰富，虽然最终的趋势一定是.NET Core 替代 Mono，但对于 Mono 而言，在.NET 宣布开源以后，从.NET Framework 中吸收的基础类库，极大的改善了 Mono 基础类库不完善的状况，而 Mono 针对 CLR 的实现、C#编译器的实现、AOT 环境等等特性，或许可以为.NET 跨平台提供借鉴，这是一个相互促进的过程。在新时代到来以前，我们暂时需要使用 Jexus 来过渡。</p>
+<h1 id=hello-linux>Hello Linux</h1>
+<p>OK，下面我们来体验一下 Jexus 在 Linux 平台上的效果，这里我们以 ASP.NET MVC4 为例，我们直接通过 Visual Studio 创建一个项目即可，这里我们需要的是这个项目发布以后的所有文件。总之，这些文件需要通过某种方式放到 Linux 平台上，大家自己去想办法就好啦，这个不再说多余的话。</p>
+<h2 id=安装-jexus>安装 Jexus</h2>
+<p>Jexus 安装起来是非常简单的，这里博主使用的是 Elementary OS，基于 Ubuntu14.0 的衍生版本。在终端下执行如下命令：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>curl https://jexus.org/release/x64/install.sh<span class=p>|</span>sudo sh
+</code></pre></div><p>你没有看错，真的只需要一行命令。事实上，Jexus 分为两个版本，即通用版和独立版。其差别是通用版不含 Mono 运行时，独立版含有 Mono 运行时。官方建议使用独立版，如果有朋友想尝试安装通用版，请在终端下执行如下命令：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>curl https://jexus.org/release/install<span class=p>|</span>sudo sh
+</code></pre></div><p>无论采用哪一种方式安装，当你看到终端中显示：Jexus 已经被成功安装到系统，就表示 Jexus 安装成功了。</p>
+<h2 id=配置-jexus>配置 Jexus</h2>
+<p>Jexus 部署到网站，需要两个东西，一个是网站内容(废话)，一个是网站配置。假定我们这里将这两个东西打包在一起，压缩包的名字为 app.tar。为什么这里选择了.tar 格式的压缩文件呢？因为在 Linux 平台下这个格式更好用些，我们熟悉的.zip 格式，可能会需要我们安装相应的扩展。此时，我们可以使用如下脚本来部署网站：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>tar -xf app.tar
+<span class=ln>2</span>sudo mv  -f .aspnetconf usr/jexus/siteconf/aspnetconf
+<span class=ln>3</span>sudo mv ./aspnet /var/www
+</code></pre></div><p>OK，现在来解释下这个脚本，这里我们需要部署一个名为“aspnet”的网站，所以，网站的内容被放置在“aspnet”这个目录里。该网站对应一个作用于 Jexus 的配置文件，配置文件的名字为 aspnetconf。首先，我们将“aspnetconf”这个配置文件移动到了“usr/jexus/siteconf/”目录下，这是 Jexus 指定的配置路径，即<strong>每一个站点都有一个配置文件，且该配置文件被放置在“usr/jexus/siteconf/”目录下</strong>。然后，我们将“aspnet”这个文件夹移动到了“/var/www”目录下，这是 Jexus 指定的网站目录，即<strong>每一个站点都有一个文件夹，文件夹的名字可以理解为网站的名字</strong>。默认情况下，Jexus 会在 www 目录里创建一个名为 default 的文件夹，即默认有一个名为 default 的站点，不过经过博主核实，最新版(v5.8.3)中是没有 default 站点。同理，Jexus 会 siteconf 目录里创建一个名为 default 的配置文件。我们通常以这个配置文件为参照来编写我们自己的配置文件，例如下面是 aspnetconf 中的内容：</p>
+<pre tabindex=0><code class=language-conf data-lang=conf>port=4000                  
+root=/ /var/www/aspnet          
+hosts=  
+indexs= 
+aspnet_exts=
+</code></pre><p>其中，</p>
+<ul>
+<li>port 表示 Jexus Web 服务器监听的端口(必填）</li>
+<li>root 表示网站虚拟目录与其对应的物理目录，中间使用空格分开(必填）</li>
+<li>hosts 表示网站域名(建议填写)，可以使用泛域名如*.yourdomain.com 或者填写*表示默认网站，一个端口有且只有一个默认网站，选填</li>
+<li>indexs 表示网站首页文件名，如 index.html、index.aspx 等，多个文件名使用英文逗号分开，选填</li>
+<li>aspnet_exts 表示 ASP.NET 扩展名，不建议填写。如要填写，多个扩展名(不含.)使用英文逗号分开。</li>
+</ul>
+<p>最简单的配置只需要 port 和 root 即可，更多的配置项可以参考官方文档。</p>
+<h2 id=基本使用>基本使用</h2>
+<p>Jexus 的常用命令简单到只有 3 个，start、restart、stop。命令的基本格式为：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>sudo /usr/jexus/jws start <span class=o>[</span>站点名<span class=o>(</span>可选，不指定时表示所有<span class=o>)]</span>
+<span class=ln>2</span>sudo /usr/jexus/jws restart <span class=o>[</span>站点名<span class=o>(</span>可选，不指定时表示所有<span class=o>)]</span>
+<span class=ln>3</span>sudo /usr/jexus/jws stop <span class=o>[</span>站点名<span class=o>(</span>可选，不指定时表示所有<span class=o>)]</span>
+</code></pre></div><p>在这个例子里，我们执行如下命令来启动 aspnet 这个站点：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>sudo /usr/jexus/jws start aspnet
+</code></pre></div><p>当终端中返回 OK 时，就表示启动成功啦，此时，我们打开浏览器，输入<code>http://localhost:4000</code> 就可以看到如下画面(这里的端口号为 4000)：
+<figure>
+<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05dq1tcmj20m80aqjsf.jpg>
+<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05dq1tcmj20m80aqjsf.jpg loading=lazy alt=运行在Linux上的ASP.NET>
+</a>
+<figcaption>运行在Linux上的ASP.NET</figcaption>
+</figure>
+你就说，这算不算惊喜。我们还可以输入<code>http://localhost:4000/info</code>来验证 Jexus 是否配置正确，当 Jexus 被正确配置以后，你就会看到一个显示着“Welcome to Jexus”的页面。嗯嗯，好像是和 Nginx 挺像的哈！</p>
+<h1 id=docker>Docker+</h1>
+<p>接下来，让我们考虑将这些 Linux 上的工作转移到 Docker 中来做，因为借助 Docker 的容器技术，它可以为我们提供一个足以自给自足的环境。通过这个环境编译测试通过的镜像可以批量地部署到生产环境中。如果你不想在每一台 Linux Server 上都覆盖本文的流程，那么 Docker 将是提高你部署效率的不二选择，而且从认知完整性的角度来看待 Docker，你就会发现它和 Jekins、TravisCI、VSTS 工具一样，都可以非常完美地被接入到持续集成(CI)的流程里去，譬如我们项目组采用的是 Jekins + Gitlib + Docker 的方案，所以，如果你想要选择一个最适合你的持续集成(CI)方案，无论如何，Docker 都是需要去了解的一个知识。关于 Docker 的背景知识大家可以自己去了解，这里我们通过编写 Dockerfile 来完成网站镜像的构建：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-dockerfile data-lang=dockerfile><span class=ln> 1</span><span class=k>FROM</span><span class=s> ubuntu:14.04</span><span class=err>
+</span><span class=ln> 2</span><span class=err></span><span class=k>LABEL</span> <span class=nv>vendor</span><span class=o>=</span><span class=s2>&#34;qinyuanpei@163.com&#34;</span><span class=err>
+</span><span class=ln> 3</span><span class=err>
+</span><span class=ln> 4</span><span class=err></span><span class=c># Prepare Environment</span><span class=err>
+</span><span class=ln> 5</span><span class=err></span><span class=k>RUN</span> sudo apt-get update <span class=err>
+</span><span class=ln> 6</span><span class=err></span><span class=k>RUN</span> sudo apt-get install -y<span class=err>
+</span><span class=ln> 7</span><span class=err></span><span class=k>RUN</span> sudo apt-get install -y curl<span class=err>
+</span><span class=ln> 8</span><span class=err></span><span class=k>RUN</span> sudo apt-get install -y wget<span class=err>
+</span><span class=ln> 9</span><span class=err></span><span class=k>RUN</span> sudo curl -sSL https://jexus.org/release/x64/install.sh<span class=p>|</span>sudo sh<span class=err>
+</span><span class=ln>10</span><span class=err>
+</span><span class=ln>11</span><span class=err></span><span class=c># Deploy Website</span><span class=err>
+</span><span class=ln>12</span><span class=err></span><span class=k>ADD</span> dest/ /<span class=err>
+</span><span class=ln>13</span><span class=err></span><span class=k>RUN</span> sudo mv -f aspnetconf /usr/jexus/siteconf/aspnetconf<span class=err>
+</span><span class=ln>14</span><span class=err></span><span class=k>RUN</span> sudo mkdir -p /var/www<span class=err>
+</span><span class=ln>15</span><span class=err></span><span class=k>RUN</span> sudo mv ./aspnet /var/www<span class=err>
+</span><span class=ln>16</span><span class=err>
+</span><span class=ln>17</span><span class=err></span><span class=c># Start Jexus</span><span class=err>
+</span><span class=ln>18</span><span class=err></span><span class=k>EXPOSE</span><span class=s> 4000</span><span class=err>
+</span><span class=ln>19</span><span class=err></span><span class=k>WORKDIR</span><span class=s> /usr/jexus</span><span class=err>
+</span><span class=ln>20</span><span class=err></span><span class=k>CMD</span> sudo ./jws start aspnet<span class=err>
+</span></code></pre></div><p>如果你熟悉 Linux 下的命令的话，你就会知道 apt-get、curl、wget 这些命令的含义，真正需要的解释的是 ADD，它表示的是，将 Dockerfile 同级目录下的 dest 目录添加到 Docker 环境中，接下来的命令我们同样非常熟悉，因为这和 Linux 下操作是完全一样的。不过，这里的确有些坑需要踩，在博主构建镜像的过程中，发现容器环境和虚拟机环境还是有本质不同的，这里的 mv 命令在 Docker 下有时候会引发“hard link”的问题，从 Stackoverflow 上好像并没有找到太有价值的答案，总之，这个问题非常的玄学。接下来，我们会将 Docker 容器的 4000 端口暴露出来，为什么是 4000 端口呢？因为这个网站的配置中指向了 4000 端口，这一点在上文中我们已经提及。而入口处的命令，显然是启动 Jexus 服务，这个不再解释。</p>
+<p>这里，我们通过如下命令来构建一个镜像版本：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>docker build -t jexus-aspnet:v1.0 .
+</code></pre></div><p>假如这个镜像被成功构建出来，我们就可以使用这个镜像来启动网站啦。如下图所示：
+<figure>
+<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz01zbucjvj20m80d5jsm.jpg>
+<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz01zbucjvj20m80d5jsm.jpg loading=lazy alt=使用Docker创建网站镜像>
+</a>
+<figcaption>使用Docker创建网站镜像</figcaption>
+</figure>
+具体地，我们可以使用 docke image 命令来管理所有的 docker 镜像。这里我们启动网站：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>docker run -p 4050:4000 -t jexus-aspnet:v1.0
+</code></pre></div><p>这里，我们将 Docker 容器的 4000 端口映射到主机的 4050 端口，当我们在浏览器中输入：<code>http://localhost:4050</code>，就可以得到和 Linux 下一样的结果。不过，在写作这篇博客时，博主使用的是 Windows 下的 Docker，如果大家遇到相关问题，欢迎在博客评论区留言。</p>
+<h1 id=本文小结>本文小结</h1>
+<p>本文从一个实际工作的场景切入，分析和阐述了如何使用 Jexus 实现 ASP.NET 项目在 Linux 下的部署。为了简化这篇文章的写作，我们使用了一个 ASP.NET MVC4 的示例项目，真实的项目通常会有数据库，所以情况会比本文所介绍的流程更为复杂，可这让我们看到了一种可能性不是吗？通过查阅相关资料，博主发现 ASP.NET Core 的部署不需要 Jexus，它只需要一个 dotnet run 命令即可。然后，作为一次体验 Docker 的过程，我们通过编写 Dockerfile 的方式让 Jexus 和 Docker 发生了某种奇妙的关联。作为本文的一个延伸，我们需要考虑网站服务停止后可以自动重启，这就是所谓的守护进程机制啦，感兴趣的朋友可以继续深入研究，Jexus 提供了大量的优秀特性，这篇文章中所看到的不过是冰山一角。最终，我们的项目还是没有使用 Jexus，这其中有对 Jexus 性能的不信任，有因为 COM 组件而做出的妥协，有对 Mono 非官方方案的鄙夷……可以说，技术选型是一个受到多种因素制约的问题，谁拥有了话语权，就可以左右技术选型的走向，这是否又印证了，人类并非如自己所标榜的那般理性和正义？好了，以上就是这篇文章的全部内容啦，今天是 5 月 20 日，如果没有人对你说“我爱你”，请记得对自己说“我爱你”，谢谢大家！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/jexus/>Jexus</a>
+<a href=/tags/docker/>Docker</a>
+<a href=/tags/linux/>Linux</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E5%9C%A8wsl%E4%B8%AD%E4%BD%BF%E7%94%A8linux%E6%A1%8C%E9%9D%A2%E7%8E%AF%E5%A2%83%E7%9A%84%E5%B0%9D%E8%AF%95%E4%B8%8E%E6%80%BB%E7%BB%93/>
+<div class=article-details>
+<h2 class=article-title>在 WSL 中使用 Linux 桌面环境的尝试与总结</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8Edocker%E6%9E%84%E5%BB%BA-net%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%E7%8E%AF%E5%A2%83/>
+<div class=article-details>
+<h2 class=article-title>基于 Docker 构建 .NET 持续集成环境</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E8%AE%B0%E4%B8%80%E6%AC%A1%E4%BB%8E%E5%B7%B2%E6%8D%9F%E5%9D%8F%E7%9A%84git%E4%BB%93%E5%BA%93%E4%B8%AD%E6%89%BE%E5%9B%9E%E4%BB%A3%E7%A0%81%E7%9A%84%E7%BB%8F%E5%8E%86/>
+<div class=article-details>
+<h2 class=article-title>记一次从已损坏的 Git 仓库中找回代码的经历</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/wsl%E4%B8%8Bdocker%E4%BD%BF%E7%94%A8%E8%B8%A9%E5%9D%91%E5%B0%8F%E8%AE%B0/>
+<div class=article-details>
+<h2 class=article-title>WSL 下 Docker 使用踩坑小记</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8vscode%E4%BD%9C%E4%B8%BAsourcetree%E7%9A%84diff%E5%92%8Cmerge%E5%B7%A5%E5%85%B7/>
+<div class=article-details>
+<h2 class=article-title>使用 VSCode 作为 SourceTree 的 Diff 和 Merge 工具</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E4%BD%BF%E7%94%A8jexus%E5%AE%9E%E7%8E%B0asp-net%E5%9C%A8linux%E5%B9%B3%E5%8F%B0%E4%B8%8B%E7%9A%84%E9%83%A8%E7%BD%B2/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#故事背景>故事背景</a></li>
+<li><a href=#关于-jexus>关于 Jexus</a></li>
+<li><a href=#hello-linux>Hello Linux</a>
+<ol>
+<li><a href=#安装-jexus>安装 Jexus</a></li>
+<li><a href=#配置-jexus>配置 Jexus</a></li>
+<li><a href=#基本使用>基本使用</a></li>
+</ol>
+</li>
+<li><a href=#docker>Docker+</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

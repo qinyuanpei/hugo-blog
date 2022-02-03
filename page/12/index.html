@@ -61,6 +61,11 @@
 </a>
 </li>
 <li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
 <a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
 <span>搜索</span>
 </a>
@@ -96,7 +101,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BD%BF%E7%94%A8-sonarcloud-%E4%B8%BA.net/.net-core-%E9%A1%B9%E7%9B%AE%E9%9B%86%E6%88%90%E9%9D%99%E6%80%81%E6%A3%80%E6%9F%A5/>使用 SonarCloud 为.NET/.NET Core 项目集成静态检查</a>
+<a href=/posts/%E4%BD%BF%E7%94%A8sonarcloud%E4%B8%BA-net-net-core%E9%A1%B9%E7%9B%AE%E9%9B%86%E6%88%90%E9%9D%99%E6%80%81%E6%A3%80%E6%9F%A5/>使用 SonarCloud 为.NET/.NET Core 项目集成静态检查</a>
 </h2>
 <h3 class=article-subtitle>
 经过反复尝试，最终我们实现了：**在 TravisCI 下使用 MSBuild 构建项目**、**使用 Nuget 在线安装 NUnit 并运行单元测试**、**使用 SonarCloud 对代码进行静态检查**;通常使用 Sonar 来构建静态检查工具时，需要我们在本地搭建一套运行环境，而 SonarCloud 是针对 Sonar 推出的一个“云”版本;在编写 TravisCI 脚本的过程中，我们一同验证了 MSBuild、Nuget、NUnit 等.NET 常规工具或者类库在 Linux 平台下使用的可能性，最终在 TravisCI 的帮助下完成了从项目构建、单元测试再到代码的分析的整个流程
@@ -150,7 +155,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E9%82%82%E9%80%85-aop%E8%AF%B4%E8%AF%B4-javascript-%E4%B8%AD%E7%9A%84%E4%BF%AE%E9%A5%B0%E5%99%A8/>邂逅 AOP：说说 JavaScript 中的修饰器</a>
+<a href=/posts/%E9%82%82%E9%80%85aop%E8%AF%B4%E8%AF%B4javascript%E4%B8%AD%E7%9A%84%E4%BF%AE%E9%A5%B0%E5%99%A8/>邂逅 AOP：说说 JavaScript 中的修饰器</a>
 </h2>
 <h3 class=article-subtitle>
 再比如，我们的业务中要求：用户在访问相关资源或者是执行相关操作时，需要确保用户的状态是登录着的，因此，我们不可避免地在代码中，使用 if 语句去判断用户是否登录，试想如果所有的业务代码都这样写，两个模块间就存在了直接耦合，当然我们可以说这是最简单的做法，因为它照顾了大部分人的思维和情绪，可你看 Angular/Redux/TypeScript 等项目中无一不遍布着修饰器的身影，当一种框架逐渐流行并成为一种趋势的时候，好像大家立刻就忘记了一件事情：原本我们都是非常排斥这些奇技淫巧的，可因为框架的流行你就默认接受了这种设定;在这个例子中，我们通过修饰器函数 readonly()对 getName()方法进行修饰，使其变成一个 readonly 的方法;此种差别，大家可以非常明显地看出来，我们在使用修饰器函数 setProp()的时候，现在允许传入一个参数 20，此时的结果是非常地显而易见的，这段代码将如你所愿地输出 20
@@ -231,7 +236,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BD%BF%E7%94%A8-unity-%E6%A1%86%E6%9E%B6%E7%AE%80%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%8F%8A%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%E6%B5%81%E7%A8%8B/>使用 Unity 框架简化应用程序异常处理及日志记录流程</a>
+<a href=/posts/%E4%BD%BF%E7%94%A8unity%E6%A1%86%E6%9E%B6%E7%AE%80%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%8F%8A%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%E6%B5%81%E7%A8%8B/>使用 Unity 框架简化应用程序异常处理及日志记录流程</a>
 </h2>
 <h3 class=article-subtitle>
 今天这篇文章，我们从一个实际项目的背景出发，引出使用 Unity 框架来简化异常处理和日志记录流程这一想法，在正式实践这一想法前，我们首先了解了 Unity 框架中提供的三种拦截器及其各自优劣，在此基础上我们实现了 LogHandler 和 ExceptionHandler 两个组件，并展示了如何使用这两个组件，探讨使用整个 AOP 机制对现有项目的影响有多大，以及为什么我们需要 Unity 框架等问题，框架固然重要，了解为什么使用框架则更重要;那么在今天的故事中，我们遇到了的一个场景是在指定方法执行前、后插入代码片段，这是面向切面编程(AOP)的基本思想，为此，我们考虑使用 Unity 框架来简化应用程序中异常处理及日志记录流程;这是一个具备完整前端和后端流程的项目，在学习这个项目的过程中，我逐渐发现某些非常有趣的东西，比如在 Web API 的设计中采用严谨而完善的错误码、使用 OAuth 和 JWT 对 API 资源进行访问控制，在 JavaScript 中使用修饰器特性来实现日志记录等等，这些东西我会在后续的博客逐步去整理，今天想说的是如何通过 Unity 框架来简化应用程序异常处理和日志记录流程，而之所以关注这个问题，是因为我发现项目中接近滥用的异常处理，以及我不能忍受的大量重复代码
@@ -258,7 +263,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9F%BA%E4%BA%8E%E6%96%B0%E6%B5%AA%E5%BE%AE%E5%8D%9A%E7%9A%84%E7%94%B7%E5%A5%B3%E6%80%A7%E6%8B%A9%E5%81%B6%E8%A7%82%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E4%B8%8B/>基于新浪微博的男女性择偶观数据分析(下)</a>
+<a href=/posts/%E5%9F%BA%E4%BA%8E%E6%96%B0%E6%B5%AA%E5%BE%AE%E5%8D%9A%E7%9A%84%E7%94%B7%E5%A5%B3%E6%80%A7%E6%8B%A9%E5%81%B6%E8%A7%82%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E4%B8%8B/>基于新浪微博的男女性择偶观数据分析(下)</a>
 </h2>
 <h3 class=article-subtitle>
 在数据分析这部分，我们对特征、年龄、性别、身高、地区和星座等进行了分析，并借助 Python 中的图表模块完成了数据的可视化工作;我们通过词云对微博进行可视化分析，更多是针对词频的一种分析方法，这种方法虽然可以帮助我们找出关键字，可是因为最初写作这篇文章时，对数据分析领域相关知识知之甚少，而且在分析的过程中没有考虑停用词，所以我认为在文本分类或者是主题提取层面上，我们都需要一种更好的方法;按照传统主题提取模型，文本分类问题被拆分为**特征工程**和**分类器**两个部分，其中，**特征工程的作用是将文本转化为计算机可以理解的格式，并提供强特征表达能力，即特征信息可以用以分类，而分类器基本上是统计学相关的内容，其作用是根据特征对数据进行分类**
@@ -339,7 +344,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9F%BA%E4%BA%8E-travis-ci-%E5%AE%9E%E7%8E%B0-hexo-%E5%9C%A8-github-%E5%92%8C-coding-%E7%9A%84%E5%90%8C%E6%AD%A5%E9%83%A8%E7%BD%B2/>基于 Travis CI 实现 Hexo 在 Github 和 Coding 的同步部署</a>
+<a href=/posts/%E5%9F%BA%E4%BA%8Etravisci%E5%AE%9E%E7%8E%B0hexo%E5%9C%A8github-pages%E5%92%8Ccoding-pages%E5%90%8C%E6%AD%A5%E9%83%A8%E7%BD%B2/>基于 Travis CI 实现 Hexo 在 Github 和 Coding 的同步部署</a>
 </h2>
 <h3 class=article-subtitle>
 我的想法是以 [Github](https://github.com/qinyuanpei/qinyuanpei.github.io) 作为代码的主仓库，其上面的 **blog** 分支存放博客的源代码， **master** 分支存放博客的静态页面，在此基础上，我们同时推送静态页面到 Github 和 Coding 的代码仓库，这样就可以实现两个平台的同步部署，这里的部署自然是指由 Travis 完成的自动化部署;其原理是 Github 为 [Travis CI](https://www.travis-ci.org/) 分配一个 token，当我们向 Github 推送新的代码以后，Travis 就会从代码仓库中拉取代码，并通过 [npm](https://www.npmjs.com/) 安装依赖生成静态页面，我们将这些静态页面推送到 master 分支，即可完成对 Hexo 的部署操作;各位朋友，大家好，我是 Payne，欢迎大家关注我的博客，我的博客地址是 [https://qinyuanpei.github.io](https://qinyuanpei.github.io) .在曾经的一篇博客：[《持续集成在 Hexo 自动化部署上的实践》](https://qinyuanpei.github.io/posts/3521618732/)中，我为大家分享了在线持续集成服务 [Travis CI](https://www.travis-ci.org/) 的相关内容，在这篇文章中我们通过 [Travis CI](https://www.travis-ci.org/) 为 Hexo 提供了自动部署的支持
@@ -383,7 +388,7 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <form action=/search/ class="search-form widget">
 <p>
 <label>搜索</label>
-<input name=keyword required placeholder=输入关键词...>
+<input name=keyword required placeholder=请输入关键词>
 <button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
 </button>
 </p>
@@ -473,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/dapper/ class=font_size_3>
-Dapper
+<a href=/tags/wechat/ class=font_size_1>
+Wechat
 </a>
-<a href=/tags/%E7%89%88%E6%9D%83/ class=font_size_1>
-版权
+<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
+加密
 </a>
-<a href=/tags/server-%E9%85%B1/ class=font_size_1>
-Server 酱
+<a href=/tags/hashset/ class=font_size_1>
+HashSet
 </a>
-<a href=/tags/%E9%98%B2%E7%96%AB/ class=font_size_1>
-防疫
+<a href=/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/ class=font_size_8>
+微服务
 </a>
-<a href=/tags/%E7%9B%91%E6%8E%A7/ class=font_size_2>
-监控
+<a href=/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/ class=font_size_3>
+多线程
 </a>
-<a href=/tags/script/ class=font_size_1>
-Script
+<a href=/tags/%E5%B9%B4%E5%8D%8E/ class=font_size_1>
+年华
 </a>
-<a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
-长安十二时辰
+<a href=/tags/%E9%85%8D%E7%BD%AE/ class=font_size_1>
+配置
 </a>
-<a href=/tags/%E7%BD%91%E5%85%B3/ class=font_size_1>
-网关
+<a href=/tags/%E6%A0%87%E6%B3%A8/ class=font_size_1>
+标注
 </a>
-<a href=/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/ class=font_size_1>
-图像处理
+<a href=/tags/%E5%85%AC%E4%BC%97%E5%8F%B7/ class=font_size_1>
+公众号
 </a>
-<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
-调优
+<a href=/tags/%E6%8F%92%E4%BB%B6/ class=font_size_3>
+插件
 </a>
-<a href=/tags/%E8%A1%8C%E4%B8%9A/ class=font_size_1>
-行业
+<a href=/tags/vue/ class=font_size_3>
+Vue
 </a>
-<a href=/tags/wsl/ class=font_size_2>
-WSL
+<a href=/tags/%E8%A5%BF%E5%AE%89/ class=font_size_3>
+西安
 </a>
-<a href=/tags/rabbitmq/ class=font_size_2>
-RabbitMQ
+<a href=/tags/%E5%AE%9E%E4%BD%93/ class=font_size_2>
+实体
 </a>
-<a href=/tags/opencv/ class=font_size_3>
-OpenCV
+<a href=/tags/%E9%9C%8D%E9%87%91/ class=font_size_1>
+霍金
 </a>
-<a href=/tags/%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/ class=font_size_1>
-夏目漱石
+<a href=/tags/polly/ class=font_size_1>
+Polly
 </a>
-<a href=/tags/git/ class=font_size_2>
-Git
+<a href=/tags/%E5%8D%B0%E5%BA%A6/ class=font_size_1>
+印度
 </a>
-<a href=/tags/travis/ class=font_size_3>
-Travis
+<a href=/tags/jsonp/ class=font_size_1>
+JSONP
 </a>
-<a href=/tags/%E8%AE%BF%E9%97%AE%E9%87%8F/ class=font_size_1>
-访问量
+<a href=/tags/%E5%91%BD%E4%BB%A4/ class=font_size_1>
+命令
 </a>
-<a href=/tags/.net-core/ class=font_size_14>
-.NET Core
+<a href=/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/ class=font_size_3>
+跨平台
 </a>
-<a href=/tags/%E5%8E%86%E5%8F%B2/ class=font_size_2>
-历史
+<a href=/tags/%E6%84%9F%E6%82%9F/ class=font_size_14>
+感悟
 </a>
-<a href=/tags/%E6%95%B0%E5%AD%A6/ class=font_size_4>
-数学
+<a href=/tags/lambda/ class=font_size_2>
+Lambda
 </a>
-<a href=/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/ class=font_size_1>
-模板引擎
+<a href=/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/ class=font_size_1>
+插件化
 </a>
-<a href=/tags/%E4%BD%90%E8%97%A4%E5%81%A5/ class=font_size_1>
-佐藤健
+<a href=/tags/ztree/ class=font_size_1>
+zTree
 </a>
-<a href=/tags/excel/ class=font_size_1>
-Excel
+<a href=/tags/rpg/ class=font_size_1>
+RPG
 </a>
-<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/ class=font_size_1>
-游戏引擎
+<a href=/tags/%E9%BB%91%E5%AE%A2/ class=font_size_2>
+黑客
 </a>
 <a href=/tags class=font_size_9999>
 更多

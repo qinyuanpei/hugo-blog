@@ -1,0 +1,294 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="现在解决了创建资源的问题，我们接下来只要调用 ProjectWindowUtil 的 StartNameEditingIfProjectWindowExists 方法即可，该方法需要传入一个继承自 EndNameEditAction 的类的实例、目标文件路径和模板文件的路径;好了，第二个参数作为一个验证的标志，如果该标志为 true，意味着我们定义的静态方法是一个验证方法在执行静态方法前会首先对方法进行验证，这个我们暂且不管，因为今天我们这个来自星星的黑科技主要和第三个参数有关，第三个参数表示一个优先级，它表示菜单项在菜单栏中的展示顺序，优先级大的菜单项会展示在优先级小的菜单项下面，由此我们就明白了了模板文件名中的类似 81、83 这样的数字的真实含义，注意到模板文件的排列顺序和编辑器中的菜单项顺序是一样的，我们做一个尝试，编写下面的代码：;Unity3D 默认的脚本模版位于/Editor/Data/Resources/ScriptTemplates/目录下，注意该目录相对 Unity3D 的安装目录而言，在这个目录中我们可以找到 Unity3D 中脚本模板的某些蛛丝马迹，首先，脚本模板是一个简单的文本文件，这个文本文件中预先填充了内容，我们在编辑器中创建模脚本或者 Shader 的时候实际上是读取这些文件然后在写入项目中的指定路径的"><title>扩展 Unity3D 编辑器的脚本模板</title>
+<link rel=canonical href=/posts/%E6%89%A9%E5%B1%95unity3d%E7%BC%96%E8%BE%91%E5%99%A8%E7%9A%84%E8%84%9A%E6%9C%AC%E6%A8%A1%E6%9D%BF/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="扩展 Unity3D 编辑器的脚本模板">
+<meta property="og:description" content="现在解决了创建资源的问题，我们接下来只要调用 ProjectWindowUtil 的 StartNameEditingIfProjectWindowExists 方法即可，该方法需要传入一个继承自 EndNameEditAction 的类的实例、目标文件路径和模板文件的路径;好了，第二个参数作为一个验证的标志，如果该标志为 true，意味着我们定义的静态方法是一个验证方法在执行静态方法前会首先对方法进行验证，这个我们暂且不管，因为今天我们这个来自星星的黑科技主要和第三个参数有关，第三个参数表示一个优先级，它表示菜单项在菜单栏中的展示顺序，优先级大的菜单项会展示在优先级小的菜单项下面，由此我们就明白了了模板文件名中的类似 81、83 这样的数字的真实含义，注意到模板文件的排列顺序和编辑器中的菜单项顺序是一样的，我们做一个尝试，编写下面的代码：;Unity3D 默认的脚本模版位于/Editor/Data/Resources/ScriptTemplates/目录下，注意该目录相对 Unity3D 的安装目录而言，在这个目录中我们可以找到 Unity3D 中脚本模板的某些蛛丝马迹，首先，脚本模板是一个简单的文本文件，这个文本文件中预先填充了内容，我们在编辑器中创建模脚本或者 Shader 的时候实际上是读取这些文件然后在写入项目中的指定路径的">
+<meta property="og:url" content="/posts/%E6%89%A9%E5%B1%95unity3d%E7%BC%96%E8%BE%91%E5%99%A8%E7%9A%84%E8%84%9A%E6%9C%AC%E6%A8%A1%E6%9D%BF/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="Unity3D"><meta property="article:tag" content="编辑器"><meta property="article:tag" content="模板"><meta property="article:published_time" content="2016-01-08T13:58:44+00:00"><meta property="article:modified_time" content="2016-01-08T13:58:44+00:00">
+<meta name=twitter:title content="扩展 Unity3D 编辑器的脚本模板">
+<meta name=twitter:description content="现在解决了创建资源的问题，我们接下来只要调用 ProjectWindowUtil 的 StartNameEditingIfProjectWindowExists 方法即可，该方法需要传入一个继承自 EndNameEditAction 的类的实例、目标文件路径和模板文件的路径;好了，第二个参数作为一个验证的标志，如果该标志为 true，意味着我们定义的静态方法是一个验证方法在执行静态方法前会首先对方法进行验证，这个我们暂且不管，因为今天我们这个来自星星的黑科技主要和第三个参数有关，第三个参数表示一个优先级，它表示菜单项在菜单栏中的展示顺序，优先级大的菜单项会展示在优先级小的菜单项下面，由此我们就明白了了模板文件名中的类似 81、83 这样的数字的真实含义，注意到模板文件的排列顺序和编辑器中的菜单项顺序是一样的，我们做一个尝试，编写下面的代码：;Unity3D 默认的脚本模版位于/Editor/Data/Resources/ScriptTemplates/目录下，注意该目录相对 Unity3D 的安装目录而言，在这个目录中我们可以找到 Unity3D 中脚本模板的某些蛛丝马迹，首先，脚本模板是一个简单的文本文件，这个文本文件中预先填充了内容，我们在编辑器中创建模脚本或者 Shader 的时候实际上是读取这些文件然后在写入项目中的指定路径的">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/unity3d/>
+Unity3D
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E6%89%A9%E5%B1%95unity3d%E7%BC%96%E8%BE%91%E5%99%A8%E7%9A%84%E8%84%9A%E6%9C%AC%E6%A8%A1%E6%9D%BF/>扩展 Unity3D 编辑器的脚本模板</a>
+</h2>
+<h3 class=article-subtitle>
+现在解决了创建资源的问题，我们接下来只要调用 ProjectWindowUtil 的 StartNameEditingIfProjectWindowExists 方法即可，该方法需要传入一个继承自 EndNameEditAction 的类的实例、目标文件路径和模板文件的路径;好了，第二个参数作为一个验证的标志，如果该标志为 true，意味着我们定义的静态方法是一个验证方法在执行静态方法前会首先对方法进行验证，这个我们暂且不管，因为今天我们这个来自星星的黑科技主要和第三个参数有关，第三个参数表示一个优先级，它表示菜单项在菜单栏中的展示顺序，优先级大的菜单项会展示在优先级小的菜单项下面，由此我们就明白了了模板文件名中的类似 81、83 这样的数字的真实含义，注意到模板文件的排列顺序和编辑器中的菜单项顺序是一样的，我们做一个尝试，编写下面的代码：;Unity3D 默认的脚本模版位于/Editor/Data/Resources/ScriptTemplates/目录下，注意该目录相对 Unity3D 的安装目录而言，在这个目录中我们可以找到 Unity3D 中脚本模板的某些蛛丝马迹，首先，脚本模板是一个简单的文本文件，这个文本文件中预先填充了内容，我们在编辑器中创建模脚本或者 Shader 的时候实际上是读取这些文件然后在写入项目中的指定路径的
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2016-01-08</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 5 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>最近在学习 Shader 时感觉 Shader 语言参数众多、语法诡异，如果每次都从头开始写 Shader 一定是一件痛苦的事情。如果可以在本地定义好一组标准的 Shader 模板，这样当我们需要实现某些效果类似的 Shader 时，就可以在这个 Shader 模板的基础上进行修改。因为 Shader 文件是一个文本文件，所以我们可以非常容易地创建这样一个模板，在这个模板中我们可以进一步完善相关的参数注释，这样就不用每次写 Shader 的时候都需要查文档了，从这个角度出发，就进入了这篇文章的正题：扩展 Unity3D 编辑器的脚本模板。</p>
+<h1 id=按图索骥模板在哪里>按图索骥，模板在哪里</h1>
+<p>Unity3D 默认的脚本模版位于/Editor/Data/Resources/ScriptTemplates/目录下，注意该目录相对 Unity3D 的安装目录而言，在这个目录中我们可以找到 Unity3D 中脚本模板的某些蛛丝马迹，首先，脚本模板是一个简单的文本文件，这个文本文件中预先填充了内容，我们在编辑器中创建模脚本或者 Shader 的时候实际上是读取这些文件然后在写入项目中的指定路径的。其次，这些模板文件中#SCRIPTNAME#或者#NAME#这样的标记，当我们在编辑器中创建文件的时候，这个标记会被替换成指定的文件名。比如 Unity3D 中继承自 MonoBehaviour 的脚本，有一个非常重要的特性是文件名必须和类名保持一致，这固然是 Unity3D 引擎的一个设定，可是在这里亦可以找到一个可以称得上理由的理由。我们注意到这些模板的文件名中都有一个独一无二的数字，比如 C#脚本的模板中的数字是 81、Shader 模板中的数字是 83，这些数字是什么呢，博主这里将其称为来自星星的黑科技。</p>
+<h1 id=来自星星的黑科技>来自星星的黑科技</h1>
+<p>作为一个经常捣鼓 Unity3D 编辑器的人，如果说你不知道 MenuItem、EditorWindow、ScriptableWizard 这些黑科技，那么说明你不是一个喜欢折腾和探索的人。从 Unity3D 的 API 文档中，我们知道 MenuItem 的原型为：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=n>MenuItem</span><span class=p>(</span><span class=kt>string</span> <span class=n>itemName</span><span class=p>,</span><span class=kt>bool</span> <span class=n>isValidateFunction</span><span class=p>,</span><span class=kt>int</span> <span class=n>priority</span><span class=p>)</span> 
+</code></pre></div><p>我知道我们通常使用 MenuItem 常常使用的是它的第一个参数，即定义一个菜单项的名称，我们可以使用"/&ldquo;这样的分隔符来表示菜单的层级，MenuItem 需要配合一个静态方法来使用，可以理解为当我们点击当前定义的菜单后就会去执行静态方法中的代码，因此 MenuItem 常常可以帮助我们做些编辑器扩展开发的工作。好了，第二个参数作为一个验证的标志，如果该标志为 true，意味着我们定义的静态方法是一个验证方法在执行静态方法前会首先对方法进行验证，这个我们暂且不管，因为今天我们这个来自星星的黑科技主要和第三个参数有关，第三个参数表示一个优先级，它表示菜单项在菜单栏中的展示顺序，优先级大的菜单项会展示在优先级小的菜单项下面，由此我们就明白了了模板文件名中的类似 81、83 这样的数字的真实含义，注意到模板文件的排列顺序和编辑器中的菜单项顺序是一样的，我们做一个尝试，编写下面的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=na>[MenuItem(&#34;Assets/Create/Lua Scripts&#34;, false, 85)]</span>
+<span class=ln> 2</span><span class=k>static</span> <span class=k>void</span> <span class=n>CreateLuaScripts</span><span class=p>()</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>        
+<span class=ln> 5</span><span class=p>}</span>
+<span class=ln> 6</span><span class=na>
+</span><span class=ln> 7</span><span class=na>[MenuItem(&#34;Assets/Create/固定功能着色器&#34;, false, 86)]</span>
+<span class=ln> 8</span><span class=k>static</span> <span class=k>void</span> <span class=n>CreateFixedFunctionShader</span><span class=p>()</span>
+<span class=ln> 9</span><span class=p>{</span>
+<span class=ln>10</span>        
+<span class=ln>11</span><span class=p>}</span>
+<span class=ln>12</span><span class=na>
+</span><span class=ln>13</span><span class=na>[MenuItem(&#34;Assets/Create/表面着色器&#34;, false, 87)]</span>
+<span class=ln>14</span><span class=k>static</span> <span class=k>void</span> <span class=n>CreateSurfaceShader</span><span class=p>()</span>
+<span class=ln>15</span><span class=p>{</span>
+<span class=ln>16</span>       
+<span class=ln>17</span><span class=p>}</span>
+<span class=ln>18</span><span class=na>
+</span><span class=ln>19</span><span class=na>[MenuItem(&#34;Assets/Create/可编程着色器&#34;, false, 88)]</span>
+<span class=ln>20</span><span class=k>static</span> <span class=k>void</span> <span class=n>CreateVertexAndFragmentShader</span><span class=p>()</span>
+<span class=ln>21</span><span class=p>{</span>
+<span class=ln>22</span>        
+<span class=ln>23</span><span class=p>}</span>
+</code></pre></div><p>注意到我们按照已知的优先级继续写了四个方法，现在我们在编辑器中可以发现默认的菜单栏发生了变化：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/10/18/ZeBFMRDiGk24fSz.png>
+<img src=/https:/i.loli.net/2021/10/18/ZeBFMRDiGk24fSz.png loading=lazy alt=黑科技让菜单栏发生了变化>
+</a>
+<figcaption>黑科技让菜单栏发生了变化</figcaption>
+</figure></p>
+<p>我们可以看到我们编写的这四个菜单都生效了，虽然它们暂时什么都做不了，但顺着这个方向去探索，我们是可以实现最初的梦想的。现在我们来思考如何根据模板来创建文件，这个对我们来说简直太简单了，通过 StreamReader 来读取模板，然后再用 StreamWriter 来生成文件就可以了。可是这样创建的文件的文件名是固定的，在创建文件的时候我们没法修改，而且即使修改了文件内定义的名字并不会改变啊。所以我们需要一个更好的解决方案。Unity3D 提供了一个 UnityEditor.ProjectWindowCallback 的命名空间，在这个空间中提供了一个称为 EndNameEditAction 的类，我们只需要继承这个类就可以完成这个任务。这个类需要重写 Action 的方法，我们知道创建一个文件的完整步骤是创建文件然后使其高亮显示，因此这部分代码实现如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=c1>/// &lt;summary&gt;
+</span><span class=ln> 2</span><span class=c1>/// 定义一个创建资源的Action类并实现其Action方法
+</span><span class=ln> 3</span><span class=c1>/// &lt;/summary&gt;
+</span><span class=ln> 4</span><span class=c1></span><span class=k>class</span> <span class=nc>CreateAssetAction</span> <span class=p>:</span> <span class=n>EndNameEditAction</span>
+<span class=ln> 5</span><span class=p>{</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span>    <span class=k>public</span> <span class=k>override</span> <span class=k>void</span> <span class=n>Action</span><span class=p>(</span><span class=kt>int</span> <span class=n>instanceId</span><span class=p>,</span> <span class=kt>string</span> <span class=n>pathName</span><span class=p>,</span> <span class=kt>string</span> <span class=n>resourceFile</span><span class=p>)</span>
+<span class=ln> 8</span>    <span class=p>{</span>
+<span class=ln> 9</span>        <span class=c1>//创建资源
+</span><span class=ln>10</span><span class=c1></span>        <span class=n>Object</span> <span class=n>obj</span> <span class=p>=</span> <span class=n>CreateAssetFormTemplate</span><span class=p>(</span><span class=n>pathName</span><span class=p>,</span> <span class=n>resourceFile</span><span class=p>);</span>
+<span class=ln>11</span>        <span class=c1>//高亮显示该资源
+</span><span class=ln>12</span><span class=c1></span>        <span class=n>ProjectWindowUtil</span><span class=p>.</span><span class=n>ShowCreatedAsset</span><span class=p>(</span><span class=n>obj</span><span class=p>);</span>
+<span class=ln>13</span>    <span class=p>}</span>
+<span class=ln>14</span>
+<span class=ln>15</span>    <span class=k>internal</span> <span class=k>static</span> <span class=n>Object</span> <span class=n>CreateAssetFormTemplate</span><span class=p>(</span><span class=kt>string</span> <span class=n>pathName</span><span class=p>,</span> <span class=kt>string</span> <span class=n>resourceFile</span><span class=p>)</span>
+<span class=ln>16</span>    <span class=p>{</span>
+<span class=ln>17</span>
+<span class=ln>18</span>        <span class=c1>//获取要创建资源的绝对路径
+</span><span class=ln>19</span><span class=c1></span>        <span class=kt>string</span> <span class=n>fullName</span> <span class=p>=</span> <span class=n>Path</span><span class=p>.</span><span class=n>GetFullPath</span><span class=p>(</span><span class=n>pathName</span><span class=p>);</span>
+<span class=ln>20</span>        <span class=c1>//读取本地模版文件
+</span><span class=ln>21</span><span class=c1></span>        <span class=n>StreamReader</span> <span class=n>reader</span> <span class=p>=</span> <span class=k>new</span> <span class=n>StreamReader</span><span class=p>(</span><span class=n>resourceFile</span><span class=p>);</span>
+<span class=ln>22</span>        <span class=kt>string</span> <span class=n>content</span> <span class=p>=</span> <span class=n>reader</span><span class=p>.</span><span class=n>ReadToEnd</span><span class=p>();</span>
+<span class=ln>23</span>        <span class=n>reader</span><span class=p>.</span><span class=n>Close</span><span class=p>();</span>
+<span class=ln>24</span>
+<span class=ln>25</span>        <span class=c1>//获取资源的文件名
+</span><span class=ln>26</span><span class=c1></span>        <span class=kt>string</span> <span class=n>fileName</span> <span class=p>=</span> <span class=n>Path</span><span class=p>.</span><span class=n>GetFileNameWithoutExtension</span><span class=p>(</span><span class=n>pathName</span><span class=p>);</span>
+<span class=ln>27</span>        <span class=c1>//替换默认的文件名
+</span><span class=ln>28</span><span class=c1></span>        <span class=n>content</span> <span class=p>=</span> <span class=n>content</span><span class=p>.</span><span class=n>Replace</span><span class=p>(</span><span class=s>&#34;#NAME&#34;</span><span class=p>,</span> <span class=n>fileName</span><span class=p>);</span>
+<span class=ln>29</span>
+<span class=ln>30</span>        <span class=c1>//写入新文件
+</span><span class=ln>31</span><span class=c1></span>        <span class=n>StreamWriter</span> <span class=n>writer</span> <span class=p>=</span> <span class=k>new</span> <span class=n>StreamWriter</span><span class=p>(</span><span class=n>fullName</span><span class=p>,</span> <span class=k>false</span><span class=p>,</span> <span class=n>System</span><span class=p>.</span><span class=n>Text</span><span class=p>.</span><span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>);</span>
+<span class=ln>32</span>        <span class=n>writer</span><span class=p>.</span><span class=n>Write</span><span class=p>(</span><span class=n>content</span><span class=p>);</span>
+<span class=ln>33</span>        <span class=n>writer</span><span class=p>.</span><span class=n>Close</span><span class=p>();</span>
+<span class=ln>34</span>
+<span class=ln>35</span>        <span class=c1>//刷新本地资源
+</span><span class=ln>36</span><span class=c1></span>        <span class=n>AssetDatabase</span><span class=p>.</span><span class=n>ImportAsset</span><span class=p>(</span><span class=n>pathName</span><span class=p>);</span>
+<span class=ln>37</span>        <span class=n>AssetDatabase</span><span class=p>.</span><span class=n>Refresh</span><span class=p>();</span>
+<span class=ln>38</span>
+<span class=ln>39</span>        <span class=k>return</span> <span class=n>AssetDatabase</span><span class=p>.</span><span class=n>LoadAssetAtPath</span><span class=p>(</span><span class=n>pathName</span><span class=p>,</span> <span class=k>typeof</span><span class=p>(</span><span class=n>Object</span><span class=p>));</span>
+<span class=ln>40</span>    <span class=p>}</span>
+<span class=ln>41</span><span class=p>}</span>
+</code></pre></div><p>这部分代码相对来说比较简单，就是读取本地模板文件然后生成新文件，在生成新文件的时候会将#NAME 替换成实际的文件名，这样我们就完成了文件资源的创建。现在的问题是如何在创建文件的时候获取实际的路径，这部分代码实现如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>private</span> <span class=k>static</span> <span class=kt>string</span> <span class=n>GetSelectedPath</span><span class=p>()</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=c1>//默认路径为Assets
+</span><span class=ln> 4</span><span class=c1></span>    <span class=kt>string</span> <span class=n>selectedPath</span> <span class=p>=</span> <span class=s>&#34;Assets&#34;</span><span class=p>;</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span>    <span class=c1>//获取选中的资源
+</span><span class=ln> 7</span><span class=c1></span>    <span class=n>Object</span><span class=p>[]</span> <span class=n>selection</span> <span class=p>=</span> <span class=n>Selection</span><span class=p>.</span><span class=n>GetFiltered</span><span class=p>(</span><span class=k>typeof</span><span class=p>(</span><span class=n>Object</span><span class=p>),</span> <span class=n>SelectionMode</span><span class=p>.</span><span class=n>Assets</span><span class=p>);</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span>    <span class=c1>//遍历选中的资源以返回路径
+</span><span class=ln>10</span><span class=c1></span>    <span class=k>foreach</span> <span class=p>(</span><span class=n>Object</span> <span class=n>obj</span> <span class=k>in</span> <span class=n>selection</span><span class=p>)</span>
+<span class=ln>11</span>    <span class=p>{</span>
+<span class=ln>12</span>        <span class=n>selectedPath</span> <span class=p>=</span> <span class=n>AssetDatabase</span><span class=p>.</span><span class=n>GetAssetPath</span><span class=p>(</span><span class=n>obj</span><span class=p>);</span>
+<span class=ln>13</span>        <span class=k>if</span> <span class=p>(!</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span><span class=p>(</span><span class=n>selectedPath</span><span class=p>)</span> <span class=p>&amp;&amp;</span> <span class=n>File</span><span class=p>.</span><span class=n>Exists</span><span class=p>(</span><span class=n>selectedPath</span><span class=p>))</span>
+<span class=ln>14</span>        <span class=p>{</span>
+<span class=ln>15</span>            <span class=n>selectedPath</span> <span class=p>=</span> <span class=n>Path</span><span class=p>.</span><span class=n>GetDirectoryName</span><span class=p>(</span><span class=n>selectedPath</span><span class=p>);</span>
+<span class=ln>16</span>            <span class=k>break</span><span class=p>;</span>
+<span class=ln>17</span>        <span class=p>}</span>
+<span class=ln>18</span>    <span class=p>}</span>
+<span class=ln>19</span>
+<span class=ln>20</span>    <span class=k>return</span> <span class=n>selectedPath</span><span class=p>;</span>
+<span class=ln>21</span><span class=p>}</span>
+</code></pre></div><p>现在解决了创建资源的问题，我们接下来只要调用 ProjectWindowUtil 的 StartNameEditingIfProjectWindowExists 方法即可，该方法需要传入一个继承自 EndNameEditAction 的类的实例、目标文件路径和模板文件的路径。例如要创建一个 Lua 脚本可以这样实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=na>[MenuItem(&#34;Assets/Create/Lua Scripts&#34;, false, 85)]</span>
+<span class=ln>2</span><span class=k>static</span> <span class=k>void</span> <span class=n>CreateLuaScripts</span><span class=p>()</span>
+<span class=ln>3</span><span class=p>{</span>
+<span class=ln>4</span>    <span class=n>ProjectWindowUtil</span><span class=p>.</span><span class=n>StartNameEditingIfProjectWindowExists</span><span class=p>(</span><span class=m>0</span><span class=p>,</span>
+<span class=ln>5</span>        <span class=n>ScriptableObject</span><span class=p>.</span><span class=n>CreateInstance</span><span class=p>&lt;</span><span class=n>CreateAssetAction</span><span class=p>&gt;(),</span>
+<span class=ln>6</span>        <span class=n>GetSelectedPath</span><span class=p>()</span> <span class=p>+</span> <span class=s>&#34;/NewLuaScript.lua&#34;</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span>
+<span class=ln>7</span>        <span class=s>&#34;Assets/Editor/Template/85-Lua-NewLuaScript.lua.txt&#34;</span><span class=p>);</span>
+<span class=ln>8</span><span class=p>}</span>
+</code></pre></div><p><figure>
+<a href=/https:/i.loli.net/2021/10/18/y3p5Gf81XLaKkle.gif>
+<img src=/https:/i.loli.net/2021/10/18/y3p5Gf81XLaKkle.gif loading=lazy alt="通过编辑器扩展实现 Shader 文件的创建">
+</a>
+<figcaption>通过编辑器扩展实现 Shader 文件的创建</figcaption>
+</figure></p>
+<h1 id=小结>小结</h1>
+<p>现在有了这个黑科技以后，我们可以创建更多的模板来扩展编辑器的功能，比如对 Shader 而言，我们可以创建些基础性的 Shader 模板，然后每次需要写 Shader 的时候直接从模板库中选择一个功能类似的 Shader 然后在此基础上进行修改，这样比从头开始写一个新的 Shader 应该会轻松不少，这段时间学习 Shader，感觉进程缓慢离图形学高手遥遥无期，行了，这篇博客就是这样了。</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/unity3d/>Unity3D</a>
+<a href=/tags/%E7%BC%96%E8%BE%91%E5%99%A8/>编辑器</a>
+<a href=/tags/%E6%A8%A1%E6%9D%BF/>模板</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E5%9C%A8unity3d%E4%B8%AD%E4%BD%BF%E7%94%A8ugui%E5%AE%9E%E7%8E%B03d%E6%97%8B%E8%BD%AC%E7%89%B9%E6%95%88/>
+<div class=article-details>
+<h2 class=article-title>在 Unity3D 中使用 uGUI 实现 3D 旋转特效</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%9C%A8ugui%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%B8%8D%E8%A7%84%E5%88%99%E7%B2%BE%E7%81%B5%E5%88%B6%E4%BD%9C%E6%8C%89%E9%92%AE/>
+<div class=article-details>
+<h2 class=article-title>Unity3D 游戏开发之在 uGUI 中使用不规则精灵制作按钮</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8B%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>EasyAR 尝鲜系列教程之视频播放功能的实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8Bc++%E6%8F%92%E4%BB%B6%E6%8E%A5%E5%85%A5/>
+<div class=article-details>
+<h2 class=article-title>Unity3D 游戏开发之 C++ 插件接入</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%88%86%E9%A1%B5%E6%95%88%E6%9E%9C%E5%9C%A8ugui%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>Unity3D 游戏开发之分页效果在 uGUI 中的实现</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E6%89%A9%E5%B1%95unity3d%E7%BC%96%E8%BE%91%E5%99%A8%E7%9A%84%E8%84%9A%E6%9C%AC%E6%A8%A1%E6%9D%BF/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#按图索骥模板在哪里>按图索骥，模板在哪里</a></li>
+<li><a href=#来自星星的黑科技>来自星星的黑科技</a></li>
+<li><a href=#小结>小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

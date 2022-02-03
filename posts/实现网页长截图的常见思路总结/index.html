@@ -6,7 +6,7 @@
 <meta property="og:description" content="作为一个经常写博客的人，我有时会在微博上分享博客内容，可不知道从什么时候开始，国内互联网越来越丧失信仰，所有的厂商都在试图打造一个**“只进">
 <meta property="og:url" content="/posts/%E5%AE%9E%E7%8E%B0%E7%BD%91%E9%A1%B5%E9%95%BF%E6%88%AA%E5%9B%BE%E7%9A%84%E5%B8%B8%E8%A7%81%E6%80%9D%E8%B7%AF%E6%80%BB%E7%BB%93/">
 <meta property="og:site_name" content="素履独行">
-<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Python"><meta property="article:tag" content="Selenium"><meta property="article:tag" content="长截图"><meta property="article:tag" content="工具"><meta property="article:published_time" content="2021-01-09T20:37:47+00:00"><meta property="article:modified_time" content="2021-01-09T20:37:47+00:00">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="Python"><meta property="article:tag" content="Selenium"><meta property="article:tag" content="长截图"><meta property="article:tag" content="工具"><meta property="article:published_time" content="2021-01-09T20:37:47+00:00"><meta property="article:modified_time" content="2021-01-09T20:37:47+00:00">
 <meta name=twitter:title content="实现网页长截图的常见思路总结">
 <meta name=twitter:description content="作为一个经常写博客的人，我有时会在微博上分享博客内容，可不知道从什么时候开始，国内互联网越来越丧失信仰，所有的厂商都在试图打造一个**“只进">
 </head>
@@ -227,21 +227,21 @@ extended">
 </a>
 </article>
 <article>
-<a href=/posts/%E4%BD%BF%E7%94%A8-python-%E7%94%9F%E6%88%90%E5%8D%9A%E5%AE%A2%E7%9B%AE%E5%BD%95%E5%B9%B6%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%96%B0-readme/>
+<a href=/posts/%E4%BD%BF%E7%94%A8python%E7%94%9F%E6%88%90%E5%8D%9A%E5%AE%A2%E7%9B%AE%E5%BD%95%E5%B9%B6%E6%9B%B4%E6%96%B0readme/>
 <div class=article-details>
 <h2 class=article-title>使用 Python 生成博客目录并自动更新 README</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/%E5%9F%BA%E4%BA%8E-python-%E5%92%8C-selenium-%E5%AE%9E%E7%8E%B0-csdn-%E4%B8%80%E9%94%AE%E4%B8%89%E8%BF%9E%E8%87%AA%E5%8A%A8%E5%8C%96/>
+<a href=/posts/%E5%9F%BA%E4%BA%8Epython%E5%92%8Cselenium%E5%AE%9E%E7%8E%B0csdn%E4%B8%80%E9%94%AE%E4%B8%89%E8%BF%9E%E8%87%AA%E5%8A%A8%E5%8C%96/>
 <div class=article-details>
 <h2 class=article-title>基于 Python 和 Selenium 实现 CSDN 一键三连自动化</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/%E5%8E%9F%E7%94%9F-javascript-%E5%AE%9E%E7%8E%B0-hexo-%E5%8D%9A%E5%AE%A2%E6%8E%A8%E8%8D%90%E5%8A%9F%E8%83%BD/>
+<a href=/posts/%E5%8E%9F%E7%94%9Fjavascript%E5%AE%9E%E7%8E%B0hexo%E5%8D%9A%E5%AE%A2%E6%8E%A8%E8%8D%90%E5%8A%9F%E8%83%BD/>
 <div class=article-details>
 <h2 class=article-title>原生 JavaScript 实现 Hexo 博客推荐功能</h2>
 </div>
@@ -257,14 +257,11 @@ extended">
 </div>
 </div>
 </aside>
-<div class=disqus-container>
-<div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</div>
-<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
-<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E5%AE%9E%E7%8E%B0%E7%BD%91%E9%A1%B5%E9%95%BF%E6%88%AA%E5%9B%BE%E7%9A%84%E5%B8%B8%E8%A7%81%E6%80%9D%E8%B7%AF%E6%80%BB%E7%BB%93/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
 <footer class=site-footer>
 <section class=copyright>
 &copy;

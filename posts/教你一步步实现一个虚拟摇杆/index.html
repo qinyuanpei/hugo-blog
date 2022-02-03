@@ -6,7 +6,7 @@
 <meta property="og:description" content="接下来，我们在场景中添加一个角色模型来测试我们编写的虚拟摇杆，因为在 JoyStick 中我们已经定义了事件委托，所以在这里就是简单的调用啦;关于使用第三方插件来实现虚拟摇杆，请大家参照我以前写的文章[Unity3D 游戏开发之使用 EasyTouch 虚拟摇杆控制人物移动](http://blog.csdn.net/qinyuanpei/article/details/26204177)，在这里就不再赘述了;在这段脚本中，我们实现了 OnPointerDown、OnPointerUp 和 OnDrag 三个 uGUI 事件接口，然后注册了相关的事件委托，这里借鉴了 EasyTouch 的设计，可以使得虚拟摇杆的逻辑和角色控制逻辑相互分离">
 <meta property="og:url" content="/posts/%E6%95%99%E4%BD%A0%E4%B8%80%E6%AD%A5%E6%AD%A5%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/">
 <meta property="og:site_name" content="素履独行">
-<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="游戏开发"><meta property="article:tag" content="虚拟摇杆"><meta property="article:tag" content="uGUI"><meta property="article:published_time" content="2015-10-30T09:44:18+00:00"><meta property="article:modified_time" content="2015-10-30T09:44:18+00:00">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="游戏开发"><meta property="article:tag" content="虚拟摇杆"><meta property="article:tag" content="uGUI"><meta property="article:published_time" content="2015-10-30T09:44:18+00:00"><meta property="article:modified_time" content="2015-10-30T09:44:18+00:00">
 <meta name=twitter:title content="教你一步步实现一个虚拟摇杆">
 <meta name=twitter:description content="接下来，我们在场景中添加一个角色模型来测试我们编写的虚拟摇杆，因为在 JoyStick 中我们已经定义了事件委托，所以在这里就是简单的调用啦;关于使用第三方插件来实现虚拟摇杆，请大家参照我以前写的文章[Unity3D 游戏开发之使用 EasyTouch 虚拟摇杆控制人物移动](http://blog.csdn.net/qinyuanpei/article/details/26204177)，在这里就不再赘述了;在这段脚本中，我们实现了 OnPointerDown、OnPointerUp 和 OnDrag 三个 uGUI 事件接口，然后注册了相关的事件委托，这里借鉴了 EasyTouch 的设计，可以使得虚拟摇杆的逻辑和角色控制逻辑相互分离">
 </head>
@@ -59,6 +59,11 @@ on-phone--column extended">
 <li>
 <a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
 <span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
 </a>
 </li>
 <li>
@@ -372,35 +377,35 @@ Unity3D
 <div class=related-contents>
 <div class="flex article-list--tile">
 <article>
-<a href=/posts/%E5%9C%A8-unity3d-%E4%B8%AD%E4%BD%BF%E7%94%A8-ugui-%E5%AE%9E%E7%8E%B0-3d-%E6%97%8B%E8%BD%AC%E7%89%B9%E6%95%88/>
+<a href=/posts/%E5%9C%A8unity3d%E4%B8%AD%E4%BD%BF%E7%94%A8ugui%E5%AE%9E%E7%8E%B03d%E6%97%8B%E8%BD%AC%E7%89%B9%E6%95%88/>
 <div class=article-details>
 <h2 class=article-title>在 Unity3D 中使用 uGUI 实现 3D 旋转特效</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/unity3d-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%9C%A8-ugui-%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%B8%8D%E8%A7%84%E5%88%99%E7%B2%BE%E7%81%B5%E5%88%B6%E4%BD%9C%E6%8C%89%E9%92%AE/>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%9C%A8ugui%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%B8%8D%E8%A7%84%E5%88%99%E7%B2%BE%E7%81%B5%E5%88%B6%E4%BD%9C%E6%8C%89%E9%92%AE/>
 <div class=article-details>
 <h2 class=article-title>Unity3D 游戏开发之在 uGUI 中使用不规则精灵制作按钮</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/unity3d-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%88%86%E9%A1%B5%E6%95%88%E6%9E%9C%E5%9C%A8-ugui-%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%88%86%E9%A1%B5%E6%95%88%E6%9E%9C%E5%9C%A8ugui%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/>
 <div class=article-details>
 <h2 class=article-title>Unity3D 游戏开发之分页效果在 uGUI 中的实现</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/%E5%9C%A8-unity3d-%E4%B8%AD%E5%8A%A0%E8%BD%BD%E5%A4%96%E9%83%A8%E5%9B%BE%E7%89%87%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%B3%95/>
+<a href=/posts/%E5%9C%A8unity3d%E4%B8%AD%E5%8A%A0%E8%BD%BD%E5%A4%96%E9%83%A8%E5%9B%BE%E7%89%87%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%B3%95/>
 <div class=article-details>
 <h2 class=article-title>在 Unity3D 中加载外部图片的两种方法</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/%E5%9C%A8-unity3d-%E4%B8%AD%E5%9F%BA%E4%BA%8E%E8%AE%A2%E9%98%85%E8%80%85%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6/>
+<a href=/posts/%E5%9C%A8unity3d%E4%B8%AD%E5%9F%BA%E4%BA%8E%E8%AE%A2%E9%98%85%E8%80%85%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6/>
 <div class=article-details>
 <h2 class=article-title>在 Unity3D 中基于订阅者模式实现事件机制</h2>
 </div>
@@ -409,14 +414,11 @@ Unity3D
 </div>
 </div>
 </aside>
-<div class=disqus-container>
-<div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</div>
-<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
-<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E6%95%99%E4%BD%A0%E4%B8%80%E6%AD%A5%E6%AD%A5%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
 <footer class=site-footer>
 <section class=copyright>
 &copy;

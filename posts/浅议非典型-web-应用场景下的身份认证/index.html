@@ -6,7 +6,7 @@
 <meta property="og:description" content="据我所知，软件行业，向来是充满着鄙视链的，人们时常会因为语言、框架、范式、架构等等问题而争执不休。不必说 PHP 到底是不是世界上最好的语言，不必说">
 <meta property="og:url" content="/posts/%E6%B5%85%E8%AE%AE%E9%9D%9E%E5%85%B8%E5%9E%8B-web-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/">
 <meta property="og:site_name" content="素履独行">
-<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="gRPC"><meta property="article:tag" content="SignalR"><meta property="article:tag" content="Kafka"><meta property="article:published_time" content="2021-12-28T11:53:29+00:00"><meta property="article:modified_time" content="2021-12-28T11:53:29+00:00">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="gRPC"><meta property="article:tag" content="SignalR"><meta property="article:tag" content="Kafka"><meta property="article:published_time" content="2021-12-28T11:53:29+00:00"><meta property="article:modified_time" content="2021-12-28T11:53:29+00:00">
 <meta name=twitter:title content="浅议非典型 Web 应用场景下的身份认证">
 <meta name=twitter:description content="据我所知，软件行业，向来是充满着鄙视链的，人们时常会因为语言、框架、范式、架构等等问题而争执不休。不必说 PHP 到底是不是世界上最好的语言，不必说">
 </head>
@@ -50,8 +50,8 @@ extended">
 <h1 id=grpc>gRPC</h1>
 <p>相信经常阅读我博客的朋友，都知道这样一件事情，那就是，过去这半年多的时间，我一直在探索，如何去构建一个以 gRPC 为核心的微服务架构。想了解这方面内容的朋友，不妨抽空看看我前面写过的博客。从整体上来说，我们对于 gRPC 的使用上，基本可以分为对内和对外两个方面。对内，不同的服务间通过 gRPC 客户端互相通信，我们称之为：直连；对外，不同的服务通过 Envoy 代理为 JSON API 供前端/客户端消费，我们称之为：代理。一个简单的微服务示意图，如下图所示：</p>
 <p><figure>
-<a href=/gRPC-MicroService.drawio.png>
-<img src=/gRPC-MicroService.drawio.png loading=lazy alt="gRPC 微服务中的内与外">
+<a href=/posts/%e6%b5%85%e8%ae%ae%e9%9d%9e%e5%85%b8%e5%9e%8b-Web-%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af%e4%b8%8b%e7%9a%84%e8%ba%ab%e4%bb%bd%e8%ae%a4%e8%af%81/gRPC-MicroService.drawio.png>
+<img src=/posts/%e6%b5%85%e8%ae%ae%e9%9d%9e%e5%85%b8%e5%9e%8b-Web-%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af%e4%b8%8b%e7%9a%84%e8%ba%ab%e4%bb%bd%e8%ae%a4%e8%af%81/gRPC-MicroService.drawio.png loading=lazy alt="gRPC 微服务中的内与外">
 </a>
 <figcaption>gRPC 微服务中的内与外</figcaption>
 </figure></p>
@@ -232,8 +232,8 @@ extended">
 </code></pre></div><h1 id=kafka>Kafka</h1>
 <p>无独有偶，除了 SignalR ，我们还用到了消息中间件 Kafka，事实上，SignalR 会从 Kafka 拉取消息，并将其发布到订阅了该 Topic 的客户端上，所以，Kafka 在整个系统中，其实扮演着非常重要的角色。如果你只是需要让 Kafka 充当一个消息中介者，那么，你完全不需要考虑 Kafka 的身份认证问题。可一旦你考虑用 Kafka 来做具体的业务，这个问题就会立刻凸显出来。譬如，当我们用 Kafka 来实现一个分布式事务的时候，我们采用了 SAGA 模式，即让主事务负责事务的协调，每个子事务在收到主事务的消息后，执行相应的操作并回复主事务一条消息，再由主事务来决定整个事务应该提交还是回滚。如图所示，下面是一个针对 SAGA 模式的简单示意图：</p>
 <p><figure>
-<a href=/Kafka-Distributed-Transaction.drawio.png>
-<img src=/Kafka-Distributed-Transaction.drawio.png loading=lazy alt="分布式事务 SAGA 模式示意图">
+<a href=/posts/%e6%b5%85%e8%ae%ae%e9%9d%9e%e5%85%b8%e5%9e%8b-Web-%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af%e4%b8%8b%e7%9a%84%e8%ba%ab%e4%bb%bd%e8%ae%a4%e8%af%81/Kafka-Distributed-Transaction.drawio.png>
+<img src=/posts/%e6%b5%85%e8%ae%ae%e9%9d%9e%e5%85%b8%e5%9e%8b-Web-%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af%e4%b8%8b%e7%9a%84%e8%ba%ab%e4%bb%bd%e8%ae%a4%e8%af%81/Kafka-Distributed-Transaction.drawio.png loading=lazy alt="分布式事务 SAGA 模式示意图">
 </a>
 <figcaption>分布式事务 SAGA 模式示意图</figcaption>
 </figure></p>
@@ -373,7 +373,7 @@ extended">
 </a>
 </article>
 <article>
-<a href=/posts/grpc-%E6%90%AD%E9%85%8D-swagger-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%96%87%E6%A1%A3%E5%8C%96/>
+<a href=/posts/grpc-%E6%90%AD%E9%85%8D-swagger-%E5%AE%9E%E7%8E%B0%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%96%87%E6%A1%A3%E5%8C%96/>
 <div class=article-details>
 <h2 class=article-title>gRPC 搭配 Swagger 实现微服务文档化</h2>
 </div>
@@ -387,14 +387,14 @@ extended">
 </a>
 </article>
 <article>
-<a href=/posts/asp.net-core-grpc-%E6%89%93%E9%80%9A%E5%89%8D%E7%AB%AF%E4%B8%96%E7%95%8C%E7%9A%84%E5%B0%9D%E8%AF%95/>
+<a href=/posts/asp-net-core-grpc-%E6%89%93%E9%80%9A%E5%89%8D%E7%AB%AF%E4%B8%96%E7%95%8C%E7%9A%84%E5%B0%9D%E8%AF%95/>
 <div class=article-details>
 <h2 class=article-title>ASP.NET Core gRPC 打通前端世界的尝试</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/asp.net-core-grpc-%E9%9B%86%E6%88%90-polly-%E5%AE%9E%E7%8E%B0%E4%BC%98%E9%9B%85%E9%87%8D%E8%AF%95/>
+<a href=/posts/asp-net-core-grpc-%E9%9B%86%E6%88%90-polly-%E5%AE%9E%E7%8E%B0%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BC%98%E9%9B%85%E9%87%8D%E8%AF%95/>
 <div class=article-details>
 <h2 class=article-title>ASP.NET Core gRPC 集成 Polly 实现优雅重试</h2>
 </div>
@@ -403,14 +403,11 @@ extended">
 </div>
 </div>
 </aside>
-<div class=disqus-container>
-<div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</div>
-<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
-<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E6%B5%85%E8%AE%AE%E9%9D%9E%E5%85%B8%E5%9E%8B-web-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
 <footer class=site-footer>
 <section class=copyright>
 &copy;

@@ -1,0 +1,325 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="好了，在了解了 EasyAR 中常用的标准接口以后，我们下面来着手构建第一个 ImageTarget 项目，和我们第一次接触 EasyAR 不同，这次我们会编写些简单地代码，打开场景填入应用程序密钥(Key)然后运行它，这种方式在这里会显得略 LOW;EasyAR 中的识别图相对来说比较简单，因为我们只需要选择一张图片然后为其创建一个材质，再将这个材质附加到 ImageTarget 物体上就可以了;我确信这个类简单到彻底，它需要开发者在编辑器中填入 KEY 然后再 Awake 方法中完成对 EasyAR 的初始化，就是这样简单，我们这里将这个脚本附加到 EasyAR 这个物体上去，这样我们就完成了引擎的初始化工作，下面我们就可以专注于 AR 内容的产生了"><title>EasyAR 尝鲜系列教程之 ImageTarget 千呼万唤始出来</title>
+<link rel=canonical href=/posts/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8Bimagetarget%E5%8D%83%E5%91%BC%E4%B8%87%E5%94%A4%E5%A7%8B%E5%87%BA%E6%9D%A5/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="EasyAR 尝鲜系列教程之 ImageTarget 千呼万唤始出来">
+<meta property="og:description" content="好了，在了解了 EasyAR 中常用的标准接口以后，我们下面来着手构建第一个 ImageTarget 项目，和我们第一次接触 EasyAR 不同，这次我们会编写些简单地代码，打开场景填入应用程序密钥(Key)然后运行它，这种方式在这里会显得略 LOW;EasyAR 中的识别图相对来说比较简单，因为我们只需要选择一张图片然后为其创建一个材质，再将这个材质附加到 ImageTarget 物体上就可以了;我确信这个类简单到彻底，它需要开发者在编辑器中填入 KEY 然后再 Awake 方法中完成对 EasyAR 的初始化，就是这样简单，我们这里将这个脚本附加到 EasyAR 这个物体上去，这样我们就完成了引擎的初始化工作，下面我们就可以专注于 AR 内容的产生了">
+<meta property="og:url" content="/posts/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8Bimagetarget%E5%8D%83%E5%91%BC%E4%B8%87%E5%94%A4%E5%A7%8B%E5%87%BA%E6%9D%A5/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="增强现实"><meta property="article:tag" content="EasyAR"><meta property="article:tag" content="AR"><meta property="article:tag" content="教程"><meta property="article:published_time" content="2015-12-09T08:39:54+00:00"><meta property="article:modified_time" content="2015-12-09T08:39:54+00:00">
+<meta name=twitter:title content="EasyAR 尝鲜系列教程之 ImageTarget 千呼万唤始出来">
+<meta name=twitter:description content="好了，在了解了 EasyAR 中常用的标准接口以后，我们下面来着手构建第一个 ImageTarget 项目，和我们第一次接触 EasyAR 不同，这次我们会编写些简单地代码，打开场景填入应用程序密钥(Key)然后运行它，这种方式在这里会显得略 LOW;EasyAR 中的识别图相对来说比较简单，因为我们只需要选择一张图片然后为其创建一个材质，再将这个材质附加到 ImageTarget 物体上就可以了;我确信这个类简单到彻底，它需要开发者在编辑器中填入 KEY 然后再 Awake 方法中完成对 EasyAR 的初始化，就是这样简单，我们这里将这个脚本附加到 EasyAR 这个物体上去，这样我们就完成了引擎的初始化工作，下面我们就可以专注于 AR 内容的产生了">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/unity3d/>
+Unity3D
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8Bimagetarget%E5%8D%83%E5%91%BC%E4%B8%87%E5%94%A4%E5%A7%8B%E5%87%BA%E6%9D%A5/>EasyAR 尝鲜系列教程之 ImageTarget 千呼万唤始出来</a>
+</h2>
+<h3 class=article-subtitle>
+好了，在了解了 EasyAR 中常用的标准接口以后，我们下面来着手构建第一个 ImageTarget 项目，和我们第一次接触 EasyAR 不同，这次我们会编写些简单地代码，打开场景填入应用程序密钥(Key)然后运行它，这种方式在这里会显得略 LOW;EasyAR 中的识别图相对来说比较简单，因为我们只需要选择一张图片然后为其创建一个材质，再将这个材质附加到 ImageTarget 物体上就可以了;我确信这个类简单到彻底，它需要开发者在编辑器中填入 KEY 然后再 Awake 方法中完成对 EasyAR 的初始化，就是这样简单，我们这里将这个脚本附加到 EasyAR 这个物体上去，这样我们就完成了引擎的初始化工作，下面我们就可以专注于 AR 内容的产生了
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2015-12-09</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 6 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>各位朋友大家好，欢迎大家关注我的博客，我是秦元培，我的博客地址是<a class=link href=http://qinyuanpei.com target=_blank rel=noopener>http://qinyuanpei.com</a>。最近 EasyAR 终于迎来了一次重大的版本更新：v1.10，真可谓是“千呼万唤始出来”啊，所以在官方文档和示例项目基本完善的情况下，博主决定将 EasyAR 尝鲜系列教程继续下去。本次教程主要以官方新发布的 Unity 示例项目为基础来进行讲解，关注 Androis/iOS 原生应用开发的朋友请自行针对官方示例项目进行研究。好了，今天主要的内容是通过 EasyAR SDK 来自行构建一个 ImageTarget 的实例，采用 Unity3D 4.6.4 版本进行开发。</p>
+<h1 id=easyar-sdk-的结构>EasyAR SDK 的结构</h1>
+<p>将 EasyAR SDK 导入 Unity3D 后会在项目的 Assets 根目录下生成 EasyAR 和 Plugins 两个文件夹。其中 EasyAR 文件夹中提供了开发 AR 应用相关的标准接口、材质、Shader 和 Prefab，Plugins 文件夹中提供了针对各个平台的插件。好了，下面我们来介绍 EasyAR SDK 中提供的标准接口：</p>
+<ul>
+<li>ARBuilder: 该类提供了 EasyAR 初始化的相关方法，我们在编写 EasyAR 配置类的时候会用到这个类，这是一个可以直接使用的类。</li>
+<li>ImageTargetBehaviour: 该类是一个抽象类，我们需要对其进行 override，可以将这个类理解为 ImageTarget 生命周期相关的一个类，在实际使用中需要配合 ITargetEventHandle 这个接口来使用。</li>
+<li>VideoPlayerBaseBehaviour: 该类是一个组件，我们可以使用这个组件来播放视频。其原理和 ImageTarget 类似，所不同的地方是 ImageTarget 在识别成功后会显示一个模型，而这里则是使用一个隐藏的物体来播放视频，VideoPlayerBaseBehaviour 负责控制视频的播放、暂停等工作。</li>
+<li>ITargetEventHandle: 这是一个接口，通过该接口可以捕捉到识别过程中的 OnTargetFound、OnTargetLost、OnTargetLoad 和 OnTargetUnload 四个事件，对于一个基本的 AR 应用来说，我们通常需要关注的是 OnTargetFound、OnTargetLost 这两个方法。</li>
+</ul>
+<h1 id=构建第一个-imagetarget-项目>构建第一个 ImageTarget 项目</h1>
+<p>好了，在了解了 EasyAR 中常用的标准接口以后，我们下面来着手构建第一个 ImageTarget 项目，和我们第一次接触 EasyAR 不同，这次我们会编写些简单地代码，打开场景填入应用程序密钥(Key)然后运行它，这种方式在这里会显得略 LOW。</p>
+<h2 id=easyar-的初始化>EasyAR 的初始化</h2>
+<p>首先我们在 Assets/EasyAR/Prefabs 目录下找到 EasyAR 这个预制体，然后将其拖放到场景中，这样我们就创建了基本的 EasyAR 应用场景，接下来我们要做的事情就是在这个场景中填入各种各样的识别物。为了让 EasyAR 正常工作，我们首先要编写一个初始化 EasyAR 的脚本：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>using</span> <span class=nn>UnityEngine</span><span class=p>;</span>
+<span class=ln> 2</span><span class=k>using</span> <span class=nn>System.Collections</span><span class=p>;</span>
+<span class=ln> 3</span><span class=k>using</span> <span class=nn>EasyAR</span><span class=p>;</span>
+<span class=ln> 4</span>
+<span class=ln> 5</span><span class=k>public</span> <span class=k>class</span> <span class=nc>EasyARConfig</span> <span class=p>:</span> <span class=n>MonoBehaviour</span> 
+<span class=ln> 6</span><span class=p>{</span>
+<span class=ln> 7</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln> 8</span><span class=c1></span>    <span class=c1>/// 应用程序密钥
+</span><span class=ln> 9</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>10</span><span class=c1></span><span class=na>    [TextArea(1,10)]</span>
+<span class=ln>11</span>    <span class=k>public</span> <span class=kt>string</span> <span class=n>Key</span><span class=p>;</span>
+<span class=ln>12</span>
+<span class=ln>13</span>    <span class=k>public</span> <span class=k>void</span> <span class=n>Awake</span><span class=p>()</span>
+<span class=ln>14</span>    <span class=p>{</span>
+<span class=ln>15</span>        <span class=c1>//检查KEY是否存在
+</span><span class=ln>16</span><span class=c1></span>        <span class=k>if</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span><span class=p>(</span><span class=n>Key</span><span class=p>))</span>
+<span class=ln>17</span>            <span class=n>Debug</span><span class=p>.</span><span class=n>Log</span><span class=p>(</span><span class=s>&#34;请先输入应用程序密钥&#34;</span><span class=p>);</span>
+<span class=ln>18</span>
+<span class=ln>19</span>        <span class=c1>//初始化EasyAR
+</span><span class=ln>20</span><span class=c1></span>        <span class=n>ARBuilder</span><span class=p>.</span><span class=n>Instance</span><span class=p>.</span><span class=n>InitializeEasyAR</span><span class=p>(</span><span class=n>Key</span><span class=p>);</span>
+<span class=ln>21</span>        <span class=n>ARBuilder</span><span class=p>.</span><span class=n>Instance</span><span class=p>.</span><span class=n>EasyBuild</span><span class=p>();</span>
+<span class=ln>22</span>    <span class=p>}</span>
+<span class=ln>23</span>    
+<span class=ln>24</span><span class=p>}</span>
+</code></pre></div><p>我确信这个类简单到彻底，它需要开发者在编辑器中填入 KEY 然后再 Awake 方法中完成对 EasyAR 的初始化，就是这样简单，我们这里将这个脚本附加到 EasyAR 这个物体上去，这样我们就完成了引擎的初始化工作，下面我们就可以专注于 AR 内容的产生了。</p>
+<h2 id=制作一个-imagetarget>制作一个 ImageTarget</h2>
+<p>接下来我们在 Assets/EasyAR/Prefabs 目录中找到 ImageTarget 这个预制体，将其拖放到场景中，确保它在摄像机的视野范围内。我们注意到默认情况下它附加了一个 ImageTargetBehaviour 脚本，我们在前面已经说过，这个类是一个抽象类，抽象类通常是不做任何事情的，因此我们需要继承这个类来编写一个具体类，我们将这个具体类命名为 CustomImageTargetBehaviour。下面给出它的代码实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>using</span> <span class=nn>UnityEngine</span><span class=p>;</span>
+<span class=ln> 2</span><span class=k>using</span> <span class=nn>System.Collections</span><span class=p>;</span>
+<span class=ln> 3</span><span class=k>using</span> <span class=nn>EasyAR</span><span class=p>;</span>
+<span class=ln> 4</span>
+<span class=ln> 5</span><span class=k>public</span> <span class=k>class</span> <span class=nc>CustomImageTargetBehaviour</span> <span class=p>:</span><span class=n>ImageTargetBehaviour</span><span class=p>,</span><span class=n>ITargetEventHandler</span>
+<span class=ln> 6</span><span class=p>{</span>
+<span class=ln> 7</span>
+<span class=ln> 8</span>    <span class=k>protected</span> <span class=k>override</span> <span class=k>void</span> <span class=n>Start</span><span class=p>()</span>
+<span class=ln> 9</span>    <span class=p>{</span>
+<span class=ln>10</span>        <span class=c1>//在Start方法中隐藏模型
+</span><span class=ln>11</span><span class=c1></span>        <span class=k>base</span><span class=p>.</span><span class=n>Start</span><span class=p>();</span>
+<span class=ln>12</span>        <span class=n>HideObjects</span><span class=p>(</span><span class=n>transform</span><span class=p>);</span>
+<span class=ln>13</span>    <span class=p>}</span>
+<span class=ln>14</span>
+<span class=ln>15</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>16</span><span class=c1></span>    <span class=c1>/// 隐藏模型的方法
+</span><span class=ln>17</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>18</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;trans&#34;&gt;要隐藏的Transform&lt;/param&gt;
+</span><span class=ln>19</span><span class=c1></span>    <span class=k>void</span> <span class=n>HideObjects</span><span class=p>(</span><span class=n>Transform</span> <span class=n>trans</span><span class=p>)</span>
+<span class=ln>20</span>    <span class=p>{</span>
+<span class=ln>21</span>        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>trans</span><span class=p>.</span><span class=n>childCount</span><span class=p>;</span> <span class=p>++</span><span class=n>i</span><span class=p>)</span>
+<span class=ln>22</span>            <span class=n>HideObjects</span><span class=p>(</span><span class=n>trans</span><span class=p>.</span><span class=n>GetChild</span><span class=p>(</span><span class=n>i</span><span class=p>));</span>
+<span class=ln>23</span>        <span class=k>if</span> <span class=p>(</span><span class=n>transform</span> <span class=p>!=</span> <span class=n>trans</span><span class=p>)</span>
+<span class=ln>24</span>            <span class=n>gameObject</span><span class=p>.</span><span class=n>SetActive</span><span class=p>(</span><span class=k>false</span><span class=p>);</span>
+<span class=ln>25</span>    <span class=p>}</span>
+<span class=ln>26</span>
+<span class=ln>27</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>28</span><span class=c1></span>    <span class=c1>/// 显示模型的方法
+</span><span class=ln>29</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>30</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;trans&#34;&gt;要显示的Transform&lt;/param&gt;
+</span><span class=ln>31</span><span class=c1></span>    <span class=k>void</span> <span class=n>ShowObjects</span><span class=p>(</span><span class=n>Transform</span> <span class=n>trans</span><span class=p>)</span>
+<span class=ln>32</span>    <span class=p>{</span>
+<span class=ln>33</span>        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>trans</span><span class=p>.</span><span class=n>childCount</span><span class=p>;</span> <span class=p>++</span><span class=n>i</span><span class=p>)</span>
+<span class=ln>34</span>            <span class=n>ShowObjects</span><span class=p>(</span><span class=n>trans</span><span class=p>.</span><span class=n>GetChild</span><span class=p>(</span><span class=n>i</span><span class=p>));</span>
+<span class=ln>35</span>        <span class=k>if</span> <span class=p>(</span><span class=n>transform</span> <span class=p>!=</span> <span class=n>trans</span><span class=p>)</span>
+<span class=ln>36</span>            <span class=n>gameObject</span><span class=p>.</span><span class=n>SetActive</span><span class=p>(</span><span class=k>true</span><span class=p>);</span>
+<span class=ln>37</span>    <span class=p>}</span>
+<span class=ln>38</span>
+<span class=ln>39</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>40</span><span class=c1></span>    <span class=c1>/// 实现ITargetEventHandler接口中的OnTargetFound方法
+</span><span class=ln>41</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>42</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;target&#34;&gt;识别目标&lt;/param&gt;
+</span><span class=ln>43</span><span class=c1></span>    <span class=k>void</span> <span class=n>ITargetEventHandler</span><span class=p>.</span><span class=n>OnTargetFound</span><span class=p>(</span><span class=n>Target</span> <span class=n>target</span><span class=p>)</span>
+<span class=ln>44</span>    <span class=p>{</span>
+<span class=ln>45</span>        <span class=n>ShowObjects</span><span class=p>(</span><span class=n>transform</span><span class=p>);</span>
+<span class=ln>46</span>    <span class=p>}</span>
+<span class=ln>47</span>
+<span class=ln>48</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>49</span><span class=c1></span>    <span class=c1>/// 实现ITargetEventHandler接口中的OnTargetLost方法
+</span><span class=ln>50</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>51</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;target&#34;&gt;识别目标&lt;/param&gt;
+</span><span class=ln>52</span><span class=c1></span>    <span class=k>void</span> <span class=n>ITargetEventHandler</span><span class=p>.</span><span class=n>OnTargetLost</span><span class=p>(</span><span class=n>Target</span> <span class=n>target</span><span class=p>)</span>
+<span class=ln>53</span>    <span class=p>{</span>
+<span class=ln>54</span>        <span class=n>HideObjects</span><span class=p>(</span><span class=n>transform</span><span class=p>);</span>
+<span class=ln>55</span>    <span class=p>}</span>
+<span class=ln>56</span>
+<span class=ln>57</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>58</span><span class=c1></span>    <span class=c1>/// 实现ITargetEventHandler接口中的OnTargetLoad方法
+</span><span class=ln>59</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>60</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;target&#34;&gt;识别目标&lt;/param&gt;
+</span><span class=ln>61</span><span class=c1></span>    <span class=k>void</span> <span class=n>ITargetEventHandler</span><span class=p>.</span><span class=n>OnTargetLoad</span><span class=p>(</span><span class=n>Target</span> <span class=n>target</span><span class=p>,</span> <span class=kt>bool</span> <span class=n>status</span><span class=p>)</span>
+<span class=ln>62</span>    <span class=p>{</span>
+<span class=ln>63</span>        
+<span class=ln>64</span>    <span class=p>}</span>
+<span class=ln>65</span>
+<span class=ln>66</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>67</span><span class=c1></span>    <span class=c1>/// 实现ITargetEventHandler接口中的OnTargetUnload方法
+</span><span class=ln>68</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>69</span><span class=c1></span>    <span class=c1>/// &lt;param name=&#34;target&#34;&gt;识别目标&lt;/param&gt;
+</span><span class=ln>70</span><span class=c1></span>    <span class=k>void</span> <span class=n>ITargetEventHandler</span><span class=p>.</span><span class=n>OnTargetUnload</span><span class=p>(</span><span class=n>Target</span> <span class=n>target</span><span class=p>,</span> <span class=kt>bool</span> <span class=n>status</span><span class=p>)</span>
+<span class=ln>71</span>    <span class=p>{</span>
+<span class=ln>72</span>       
+<span class=ln>73</span>    <span class=p>}</span>
+<span class=ln>74</span><span class=p>}</span>
+</code></pre></div><p>可以注意到在这个类中我们主要做了两件事情：第一，定义了隐藏和显示识别模型的方法 HideObjects 和 ShowObjects，其作用是在没有识别到 Target 的时候隐藏物体，在识别到 Target 的时候显示物体；第二，实现了 ITargetEventHandler 接口并在 OnTargetFound 和 OnTargetLost 两个方法中实现我们第一步希望达到的目的。至此，我们完成了一个基本的 AR 识别组件，我们下面所有的 AR 识别物体都是通过这个组件来工作的，所以我们从场景中的 ImageTarget 物体上移除默认的 ImageTargetBehaviour 脚本然后为其添加我们定义的 CustomImageTargetBehaviour 脚本。</p>
+<p>编写完脚本以后我们就可以着手制作识别图和 Marker 了，EasyAR 最让人喜欢的一点就是你可以按照自己的意愿来制作识别图和 Marker。虽然 Vuforia 在识别效果上比 EasyAR 更好点，可是对程序员来说选择一个透明的产品方案比面对着黑箱子进行调试要明智得多。EasyAR 中的识别图相对来说比较简单，因为我们只需要选择一张图片然后为其创建一个材质，再将这个材质附加到 ImageTarget 物体上就可以了。此外还会涉及到某些参数的设置，我们下面会提到。好了，我们继续选择官方示例中的 idback 这张图片来作为我们的识别图，因为身份证每个人都有可以随时用来进行测试，而一般的图片则需要打印出来制成硬质卡片来使用。我们在 Assets 目录中创建一个 StreamingAssets 目录，将官方示例中 targets.json 和 idbcak.jpg 两个文件拷贝过来。创建材质就不再说了，这是 Unity3D 中非常非常基础的内容。我们将创建好的材质附加到 ImageTarget 物体上以后，可能在场景中并不会看到对应的识别图，这是因为我们没有为其配置参数。具体的参数配置如下图：</p>
+<p><figure>
+<a href=/https:/ww1.sinaimg.cn/large/None.jpg>
+<img src=/https:/ww1.sinaimg.cn/large/None.jpg loading=lazy alt=ImageTarget参数配置>
+</a>
+<figcaption>ImageTarget参数配置</figcaption>
+</figure></p>
+<p>具体这些参数的定义请大家自己去看文档，因为我这里说得再明白如果大家不看等于我没有说。好了，下面我们来创建 Marker，这个就比较简单了，我们直接找一个模型缩放到合适的大小然后拖拽到 ImageTarget 这个物体下面就可以了。如图是博主参照官方示例制作的两个识别图及其 Marker：</p>
+<p><figure>
+<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz68j2ap8rj20fa09wacy.jpg>
+<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz68j2ap8rj20fa09wacy.jpg loading=lazy alt=两个ImageTarget及其对应Maker>
+</a>
+<figcaption>两个ImageTarget及其对应Maker</figcaption>
+</figure></p>
+<h2 id=走向成功的关键步骤>走向成功的关键步骤</h2>
+<p>1、在 EasyAR 物体的 EasyARConfig 组件中填入从官网申请的 KEY。
+2、在 BuildSetting 中填写 KEY 对应的 AppID。
+3、安装 SDK 中附带的 VC++2015 运行库。
+4、如要编译 Android 版本，请确保安装 Java 环境和 Android SDK
+更多的问题请自行到官方文档中对照寻找解决办法。</p>
+<h1 id=截图展示>截图展示</h1>
+<p><figure>
+<a href=/.>
+<img src=/. loading=lazy alt=截图展示>
+</a>
+<figcaption>截图展示</figcaption>
+</figure></p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E5%A2%9E%E5%BC%BA%E7%8E%B0%E5%AE%9E/>增强现实</a>
+<a href=/tags/easyar/>EasyAR</a>
+<a href=/tags/ar/>AR</a>
+<a href=/tags/%E6%95%99%E7%A8%8B/>教程</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8B%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>EasyAR 尝鲜系列教程之视频播放功能的实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8B%E8%87%AA%E5%AE%9A%E4%B9%89marker%E7%9A%84%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>EasyAR 尝鲜系列教程之自定义 Marker 的实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8Bhello-easyar/>
+<div class=article-details>
+<h2 class=article-title>EasyAR尝鲜系列教程之Hello EasyAR</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9C%A8unity3d%E4%B8%AD%E4%BD%BF%E7%94%A8ugui%E5%AE%9E%E7%8E%B03d%E6%97%8B%E8%BD%AC%E7%89%B9%E6%95%88/>
+<div class=article-details>
+<h2 class=article-title>在 Unity3D 中使用 uGUI 实现 3D 旋转特效</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%9C%A8ugui%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%B8%8D%E8%A7%84%E5%88%99%E7%B2%BE%E7%81%B5%E5%88%B6%E4%BD%9C%E6%8C%89%E9%92%AE/>
+<div class=article-details>
+<h2 class=article-title>Unity3D 游戏开发之在 uGUI 中使用不规则精灵制作按钮</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8Bimagetarget%E5%8D%83%E5%91%BC%E4%B8%87%E5%94%A4%E5%A7%8B%E5%87%BA%E6%9D%A5/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#easyar-sdk-的结构>EasyAR SDK 的结构</a></li>
+<li><a href=#构建第一个-imagetarget-项目>构建第一个 ImageTarget 项目</a>
+<ol>
+<li><a href=#easyar-的初始化>EasyAR 的初始化</a></li>
+<li><a href=#制作一个-imagetarget>制作一个 ImageTarget</a></li>
+<li><a href=#走向成功的关键步骤>走向成功的关键步骤</a></li>
+</ol>
+</li>
+<li><a href=#截图展示>截图展示</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

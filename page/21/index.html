@@ -61,6 +61,11 @@
 </a>
 </li>
 <li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
 <a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
 <span>搜索</span>
 </a>
@@ -150,7 +155,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/unity3d-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E4%BD%BF%E7%94%A8-disunity-%E6%8F%90%E5%8F%96-unity3d-%E6%B8%B8%E6%88%8F%E8%B5%84%E6%BA%90/>Unity3D 游戏开发之使用 disunity 提取 Unity3D 游戏资源</a>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E4%BD%BF%E7%94%A8disunity%E6%8F%90%E5%8F%96unity3d%E6%B8%B8%E6%88%8F%E8%B5%84%E6%BA%90/>Unity3D 游戏开发之使用 disunity 提取 Unity3D 游戏资源</a>
 </h2>
 <h3 class=article-subtitle>
 好了，下面我们再来看看怎么提取这个模型文件对应的贴图，在游戏目录/assetbundles/NPC/Texture/下有一个名为 s049_1.unity3d_1D2446B9 的文件，这就是 s049 这个模型对应的贴图了;下面我们就来尝试解析这个文件，不过游戏制作方对 config 文件夹下的内容进行了加密，因为在这个文件夹下面是两个 AssetBundle 文件，博主尝试用 extract 和 bundle-extract 两个命令进行解析，可是得到的只是些文本文件，对我们继续研究没有什么帮助;这个工具呢，博主在[Unity3D 游戏开发之反编译 AssetBundle 提取游戏资源](http://www.qinyuanpei.com/2015/04/02/unity3d-development-with-assetbundle/)这篇文章中其实已经提到过了，不过因为有些朋友对如何使用这个工具依然存在问题，所以博主决定特地写一篇文章来讲解如何使用 disunity 来提取 Unity3D 游戏中的素材
@@ -177,7 +182,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/unity3d-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%8F%8D%E7%BC%96%E8%AF%91-assetbundle-%E6%8F%90%E5%8F%96%E6%B8%B8%E6%88%8F%E8%B5%84%E6%BA%90/>Unity3D 游戏开发之反编译 AssetBundle 提取游戏资源</a>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%8F%8D%E7%BC%96%E8%AF%91assetbundle%E6%8F%90%E5%8F%96%E6%B8%B8%E6%88%8F%E8%B5%84%E6%BA%90/>Unity3D 游戏开发之反编译 AssetBundle 提取游戏资源</a>
 </h2>
 <h3 class=article-subtitle>
 具体来说呢，AssetBundle 在 Unity3D 中是一种用于资源打包盒资源动态加载的解决方法，比如我们平时玩的单机游戏容量一般都比较大，这是因为制作人员在制作游戏的时候将所有的项目资源都整合到了一起;第五个参数是平台的选择，因为 Unity3D 是一个跨平台的游戏引擎，而各个平台现在的情况又不尽相同，因此现在 Unity3D 采取的方案是各个平台只能使用自己平台对应的 AssetBundle，这一点希望大家在使用的时候注意啊;这是一个简单的导出 AssetBundle 资源包的方法，它有两个参数，第一个参数表示是一个枚举类型，定义为 ExportType，取 Single 时表示打包一个特定的激活物体，比如说一个模型、一个场景等等
@@ -204,7 +209,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/unity3d-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/>Unity3D 游戏开发之编辑器扩展程序开发实例</a>
+<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/>Unity3D 游戏开发之编辑器扩展程序开发实例</a>
 </h2>
 <h3 class=article-subtitle>
 开发 Unity3D 编辑器扩展程序的命名空间主要是 UnityEditor，在该命名空间下常用的类有 EditorGUI、EditorGUILayout、EditorWindow(可能还有其它的类，不过到目前为止博主就用过这些，如果有其它的类，欢迎大家来补充啊);当我们在场景中选择好物体后，只要填好预设物体的名称、tag、Layer 就可以直接生成 Prefab 了，不过这里有个问题，因为生成 Prefab 必须要传入一个 GameObject，因此如果直接选择项目资源文件夹里的内容可能会报错，因为你选择的不是一个 GameObject;* 在 Unity3D 中我们可以通过 TextureImporter、ModelImporter、AudioImporter、MovieImporter 等来分别向 Unity3D 中导入贴图、模型、音频、视频等等，经过设置后最终通过 AssetDatabase.ImportAsset()来将其添加到项目中热完全，最后需要使用 AssetDatabase.Refresh()方法来刷新本地资源，使导入的资源生效
@@ -231,7 +236,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BB%8E%E5%A4%8D%E6%B4%BB%E5%92%8C%E6%9A%82%E5%81%9C/%E6%81%A2%E5%A4%8D%E8%B0%88%E6%B8%B8%E6%88%8F%E6%95%B0%E6%8D%AE%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86/>从「复活」和「暂停/恢复」谈游戏数据配置管理</a>
+<a href=/posts/%E4%BB%8E%E5%A4%8D%E6%B4%BB%E5%92%8C%E6%9A%82%E5%81%9C%E6%81%A2%E5%A4%8D%E8%B0%88%E6%B8%B8%E6%88%8F%E6%95%B0%E6%8D%AE%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86/>从「复活」和「暂停/恢复」谈游戏数据配置管理</a>
 </h2>
 <h3 class=article-subtitle>
 本文将从游戏中的"复活"和"暂停/恢复"这两个应用场景的角度来谈谈在游戏开发中如何对游戏中的数据进行管理和配置;首先我们来从游戏当中的两个常见的应用场景:"复活"和"暂停/恢复"来看看游戏数据配置和管理的重要性;动态数据是指在游戏中会不断变化的数据，比如玩家的得分、玩家的生命值、玩家的经验值等等
@@ -258,7 +263,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%B8%BA-hexo-%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%E7%9A%84%E6%96%87%E7%AB%A0%E6%8F%92%E4%BB%B6/>为 Hexo 开发一个网易云音乐的文章插件</a>
+<a href=/posts/%E4%B8%BAhexo%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%E7%9A%84%E6%96%87%E7%AB%A0%E6%8F%92%E4%BB%B6/>为 Hexo 开发一个网易云音乐的文章插件</a>
 </h2>
 <h3 class=article-subtitle>
 这段代码博主在本地使用 NodeJS 测试了没有不过什么问题，大家可以在截图中清楚地看到[music:29713754]已经被替换称了网易云音乐的 Flash 组件，这样在网页中就会显示出网易云音乐的播放器，我们就能听到这熟悉而温暖的旋律了;那么，现在我们其实就是在做这样一件事情，我们在文章中插入这样一个[key:value]的结构，然后通过程序将它替换成相应的 HTML 结构，这样就实现了在 Hexo 的文章中使用[key:value]结构来编写简单插件的功能，如果经历过使用 wordpress 建站的朋友一定知道，在 wordpress 中存在许多这样的类似插件，可以帮助写作者简化某些输入内容;相信经过博主的一番介绍，大家已经对这段代码相当熟悉了吧，这里就是先做判断，判断文章内容中是否有[key:vaule]这样的结构，如果没有就直接输出item.content
@@ -285,7 +290,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BD%BF%E7%94%A8-coding.net-%E5%92%8C-hexo-%E5%AE%9E%E7%8E%B0%E7%BD%91%E9%A1%B5%E6%B8%B8%E6%88%8F%E7%9A%84%E5%8F%91%E5%B8%83/>使用 Coding.NET 和 Hexo 实现网页游戏的发布</a>
+<a href=/posts/%E4%BD%BF%E7%94%A8coding.net%E5%92%8Chexo%E5%AE%9E%E7%8E%B0%E7%BD%91%E9%A1%B5%E6%B8%B8%E6%88%8F%E7%9A%84%E5%8F%91%E5%B8%83/>使用 Coding.NET 和 Hexo 实现网页游戏的发布</a>
 </h2>
 <h3 class=article-subtitle>
 博主是最近了解到，Github 除了可以用 xxx.github.io 这种方式搭建博客外，还可以通过 gh-pages 分支来实现，换句话说只要我们把静态的网页放到项目的 gh-pages 下，Github 就能帮你把页面显示出来，因此我们就可以将 Unity3D 导出的网页版本游戏放到 Github 上，从而实现游戏的在线演示;本文将尝试借助 Coding.NET 的项目演示功能，通过对 Hexo 中支持的发布类型进行扩充，实现可以在 Hexo 中发布网页游戏，从而方便博主展示游戏作品和帮助读者了解游戏效果;博主是一名至今为止都还没有做出一款完整游戏(指已上线)的游戏开发者,可是即使这样，博主依然愿意将自己在游戏开发过程中的感悟和体会分享给大家，因为博主在学习编程的路上摸索了这么久，首先要感谢的就是那些愿意在互联网上分享技术的人们，不管是 Github 上愿意将项目开源的那些技术大牛，还是在博客圈子里不断探索追逐梦想的人们，如果没有他们不求回报的辛勤付出，我是绝对不可能在环境科学这样一个专业中学好编程技术的
@@ -312,7 +317,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/c#%E4%B8%AD-socket-%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%BC%82%E6%AD%A5%E5%AE%9E%E7%8E%B0/>C#中 Socket 通信编程的异步实现</a>
+<a href=/posts/c#%E4%B8%ADsocket%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%BC%82%E6%AD%A5%E5%AE%9E%E7%8E%B0/>C#中 Socket 通信编程的异步实现</a>
 </h2>
 <h3 class=article-subtitle>
 相信大家还记得我们在《C#中 Socket 通信编程的同步实现》这篇文章中使用多线程来实现简单聊天的案例吧，在这个案例中我们需要开启两个线程来不断监听客户端的连接和客户端的消息，这样的效率肯定是很低的;if (socket == null || message == string.Empty) return;在 Socket 的异步编程中，服务端不需要为一个客户端单独创建一个线程来维护其连接，可是这样带来的一个问题就是博主不知道该如何实现一个多客户端的异步编程的实例
@@ -339,7 +344,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/c#%E4%B8%AD-socket-%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%90%8C%E6%AD%A5%E5%AE%9E%E7%8E%B0/>C#中 Socket 通信编程的同步实现</a>
+<a href=/posts/c#%E4%B8%ADsocket%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%90%8C%E6%AD%A5%E5%AE%9E%E7%8E%B0/>C#中 Socket 通信编程的同步实现</a>
 </h2>
 <h3 class=article-subtitle>
 服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听
@@ -382,7 +387,7 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <form action=/search/ class="search-form widget">
 <p>
 <label>搜索</label>
-<input name=keyword required placeholder=输入关键词...>
+<input name=keyword required placeholder=请输入关键词>
 <button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
 </button>
 </p>
@@ -472,80 +477,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E5%88%86%E9%A1%B5/ class=font_size_1>
-分页
+<a href=/tags/%E6%8F%92%E4%BB%B6/ class=font_size_3>
+插件
 </a>
-<a href=/tags/love2d/ class=font_size_1>
-Love2D
+<a href=/tags/opencv/ class=font_size_3>
+OpenCV
 </a>
-<a href=/tags/%E6%B6%88%E6%81%AF/ class=font_size_1>
-消息
+<a href=/tags/grpc/ class=font_size_8>
+gRPC
 </a>
-<a href=/tags/%E9%87%8D%E8%AF%95/ class=font_size_2>
-重试
+<a href=/tags/%E5%AE%A1%E8%AE%A1/ class=font_size_1>
+审计
 </a>
-<a href=/tags/%E6%A0%BC%E5%BC%8F/ class=font_size_1>
-格式
+<a href=/tags/%E9%95%BF%E5%AE%89/ class=font_size_1>
+长安
 </a>
-<a href=/tags/signalr/ class=font_size_2>
-SignalR
+<a href=/tags/%E6%A2%A6%E6%83%B3/ class=font_size_3>
+梦想
 </a>
-<a href=/tags/svn/ class=font_size_1>
-SVN
+<a href=/tags/%E5%90%8E%E7%AB%AF/ class=font_size_1>
+后端
 </a>
-<a href=/tags/%E8%AF%97%E4%BA%BA/ class=font_size_1>
-诗人
+<a href=/tags/matplotlib/ class=font_size_1>
+matplotlib
 </a>
-<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
-调优
+<a href=/tags/%E8%AE%AD%E7%BB%83/ class=font_size_1>
+训练
 </a>
-<a href=/tags/socket/ class=font_size_2>
-Socket
+<a href=/tags/%E7%94%9F%E6%AD%BB/ class=font_size_1>
+生死
+</a>
+<a href=/tags/%E7%94%BB%E5%AE%B6/ class=font_size_1>
+画家
+</a>
+<a href=/tags/%E7%AB%A5%E8%AF%9D/ class=font_size_1>
+童话
+</a>
+<a href=/tags/%E9%9A%8F%E7%AC%94/ class=font_size_8>
+随笔
+</a>
+<a href=/tags/jsdelivr/ class=font_size_1>
+jsDelivr
+</a>
+<a href=/tags/%E8%9B%8B%E7%82%92%E9%A5%AD/ class=font_size_1>
+蛋炒饭
+</a>
+<a href=/tags/%E5%BD%B1%E8%AF%84/ class=font_size_10>
+影评
+</a>
+<a href=/tags/httpclient/ class=font_size_2>
+HttpClient
+</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1/ class=font_size_1>
+服务
+</a>
+<a href=/tags/pl/sql/ class=font_size_1>
+PL/SQL
+</a>
+<a href=/tags/castle/ class=font_size_1>
+Castle
 </a>
 <a href=/tags/%E6%97%B6%E5%8C%BA/ class=font_size_1>
 时区
 </a>
-<a href=/tags/assetbundle/ class=font_size_2>
-AssetBundle
+<a href=/tags/%E6%97%A0%E9%97%AE%E8%A5%BF%E4%B8%9C/ class=font_size_1>
+无问西东
 </a>
-<a href=/tags/%E9%80%9A%E4%BF%A1/ class=font_size_2>
-通信
+<a href=/tags/%E9%95%BF%E6%88%AA%E5%9B%BE/ class=font_size_1>
+长截图
 </a>
-<a href=/tags/tracing/ class=font_size_1>
-Tracing
+<a href=/tags/%E9%98%BF%E9%87%8C/ class=font_size_1>
+阿里
 </a>
-<a href=/tags/grafana/ class=font_size_1>
-Grafana
-</a>
-<a href=/tags/%E5%A2%9E%E5%BC%BA%E7%8E%B0%E5%AE%9E/ class=font_size_4>
-增强现实
-</a>
-<a href=/tags/swagger/ class=font_size_2>
-Swagger
-</a>
-<a href=/tags/%E5%A4%95%E9%9B%BE%E8%8A%B1%E5%9B%AD/ class=font_size_1>
-夕雾花园
-</a>
-<a href=/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class=font_size_3>
-中间件
-</a>
-<a href=/tags/sourcetree/ class=font_size_1>
-SourceTree
-</a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5/ class=font_size_1>
-健康检查
-</a>
-<a href=/tags/sklearn/ class=font_size_1>
-Sklearn
-</a>
-<a href=/tags/%E7%89%B9%E6%80%A7/ class=font_size_1>
-特性
-</a>
-<a href=/tags/%E8%A5%BF%E5%AE%89/ class=font_size_3>
-西安
-</a>
-<a href=/tags/%E4%BD%90%E8%97%A4%E5%81%A5/ class=font_size_1>
-佐藤健
+<a href=/tags/kafka/ class=font_size_1>
+Kafka
 </a>
 <a href=/tags class=font_size_9999>
 更多

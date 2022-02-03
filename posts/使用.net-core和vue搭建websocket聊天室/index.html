@@ -6,7 +6,7 @@
 <meta property="og:description" content="这里，我们给出的是WebSocketChat中间件中最为关键的部分，详细的代码我已经放在[Github](https://github.com/qinyuanpei/dotnetcore-pritices)上啦，大家可以参考[WebSocketChat](https://github.com/qinyuanpei/dotnetcore-pritices/blob/master/hello-webapi-1/Middlewares/WebSocketChat.cs)类，其基本原理是：使用一个字典来存储每一个聊天室中的会话(Socket)，当用户打开或者关闭一个WebSocket连接时，会向服务器端发送一个事件(Event)，这样客户端中持有的用户列表将被更新，而根据发送的消息，可以决定这条消息是被发给指定联系人还是群发：; 发送给：;var webSocket = await context.WebSockets.AcceptWebSocketAsync()">
 <meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8.net-core%E5%92%8Cvue%E6%90%AD%E5%BB%BAwebsocket%E8%81%8A%E5%A4%A9%E5%AE%A4/">
 <meta property="og:site_name" content="素履独行">
-<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="WebSocket"><meta property="article:tag" content=".NET Core"><meta property="article:tag" content="Vue"><meta property="article:published_time" content="2018-08-01T15:42:23+00:00"><meta property="article:modified_time" content="2018-08-01T15:42:23+00:00">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="WebSocket"><meta property="article:tag" content=".NET Core"><meta property="article:tag" content="Vue"><meta property="article:published_time" content="2018-08-01T15:42:23+00:00"><meta property="article:modified_time" content="2018-08-01T15:42:23+00:00">
 <meta name=twitter:title content="使用.NET Core和Vue搭建WebSocket聊天室">
 <meta name=twitter:description content="这里，我们给出的是WebSocketChat中间件中最为关键的部分，详细的代码我已经放在[Github](https://github.com/qinyuanpei/dotnetcore-pritices)上啦，大家可以参考[WebSocketChat](https://github.com/qinyuanpei/dotnetcore-pritices/blob/master/hello-webapi-1/Middlewares/WebSocketChat.cs)类，其基本原理是：使用一个字典来存储每一个聊天室中的会话(Socket)，当用户打开或者关闭一个WebSocket连接时，会向服务器端发送一个事件(Event)，这样客户端中持有的用户列表将被更新，而根据发送的消息，可以决定这条消息是被发给指定联系人还是群发：; 发送给：;var webSocket = await context.WebSockets.AcceptWebSocketAsync()">
 </head>
@@ -250,7 +250,7 @@ extended">
 <div class=related-contents>
 <div class="flex article-list--tile">
 <article>
-<a href=/posts/%E5%9F%BA%E4%BA%8E-websocket-%E5%92%8C-redis-%E5%AE%9E%E7%8E%B0-bilibili-%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/>
+<a href=/posts/%E5%9F%BA%E4%BA%8Ewebsocket%E5%92%8Credis%E5%AE%9E%E7%8E%B0bilibili%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/>
 <div class=article-details>
 <h2 class=article-title>基于 WebSocket 和 Redis 实现 Bilibili 弹幕效果</h2>
 </div>
@@ -287,14 +287,11 @@ extended">
 </div>
 </div>
 </aside>
-<div class=disqus-container>
-<div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</div>
-<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
-<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E4%BD%BF%E7%94%A8.net-core%E5%92%8Cvue%E6%90%AD%E5%BB%BAwebsocket%E8%81%8A%E5%A4%A9%E5%AE%A4/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
 <footer class=site-footer>
 <section class=copyright>
 &copy;

@@ -6,7 +6,7 @@
 <meta property="og:description" content="打算开一个新的专栏——源代码探案系列，目的是通过源代码来探索更广阔的技术世界。因为我越来越意识到，我可能缺乏一个结构化的知识体系，虽然处在一">
 <meta property="og:url" content="/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E5%B9%B6%E5%8F%91%E9%99%90%E5%88%B6%E4%B8%AD%E9%97%B4%E4%BB%B6-concurrencylimiter/">
 <meta property="og:site_name" content="素履独行">
-<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="并发"><meta property="article:tag" content=".NET Core"><meta property="article:tag" content="中间件"><meta property="article:tag" content="源码"><meta property="article:published_time" content="2021-03-04T20:13:47+00:00"><meta property="article:modified_time" content="2021-03-04T20:13:47+00:00">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="并发"><meta property="article:tag" content=".NET Core"><meta property="article:tag" content="中间件"><meta property="article:tag" content="源码"><meta property="article:published_time" content="2021-03-04T20:13:47+00:00"><meta property="article:modified_time" content="2021-03-04T20:13:47+00:00">
 <meta name=twitter:title content="源代码探案系列之 .NET Core 并发限制中间件 ConcurrencyLimiter">
 <meta name=twitter:description content="打算开一个新的专栏——源代码探案系列，目的是通过源代码来探索更广阔的技术世界。因为我越来越意识到，我可能缺乏一个结构化的知识体系，虽然处在一">
 </head>
@@ -241,14 +241,14 @@ extended">
 </a>
 </article>
 <article>
-<a href=/posts/%E4%B8%80%E9%81%93-hashset-%E9%9D%A2%E8%AF%95%E9%A2%98%E5%BC%95%E5%8F%91%E7%9A%84%E8%9D%B4%E8%9D%B6%E6%95%88%E5%BA%94/>
+<a href=/posts/%E4%B8%80%E9%81%93hashset%E9%9D%A2%E8%AF%95%E9%A2%98%E5%BC%95%E5%8F%91%E7%9A%84%E8%9D%B4%E8%9D%B6%E6%95%88%E5%BA%94/>
 <div class=article-details>
 <h2 class=article-title>一道 HashSet 面试题引发的蝴蝶效应</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/.net-core-%E4%B8%AD%E5%AF%B9%E8%B1%A1%E6%B1%A0object-pool%E7%9A%84%E4%BD%BF%E7%94%A8/>
+<a href=/posts/net-core%E4%B8%AD%E5%AF%B9%E8%B1%A1%E6%B1%A0-object-pool-%E7%9A%84%E4%BD%BF%E7%94%A8/>
 <div class=article-details>
 <h2 class=article-title>.NET Core 中对象池(Object Pool)的使用</h2>
 </div>
@@ -257,14 +257,11 @@ extended">
 </div>
 </div>
 </aside>
-<div class=disqus-container>
-<div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</div>
-<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
-<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E5%B9%B6%E5%8F%91%E9%99%90%E5%88%B6%E4%B8%AD%E9%97%B4%E4%BB%B6-concurrencylimiter/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
 <footer class=site-footer>
 <section class=copyright>
 &copy;

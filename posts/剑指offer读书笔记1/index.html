@@ -1,0 +1,342 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="如果是同一个，则不进行赋值运算，直接返回，如果事先不判断就进行赋值，那么在释放实例自身内存的时候就会导致严重的问题，当*this和传入的参数是同一个实例时，一旦释放了自身的内存，传入的参数的内存将同时被释放，因此将再也找不到需要赋值的内容了;*  因为链表中的内存不是一次性分配的，所以我们不能确定链表的内存和数组一样是连续的，因此如果想在链表中找到第i个结点，我们只能从头结点开始，沿着指向下一个结点的指针遍历链表，其效率是O(n);get{ return instance"><title>剑指 Offer 读书笔记(1)</title>
+<link rel=canonical href=/posts/%E5%89%91%E6%8C%87offer%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="剑指 Offer 读书笔记(1)">
+<meta property="og:description" content="如果是同一个，则不进行赋值运算，直接返回，如果事先不判断就进行赋值，那么在释放实例自身内存的时候就会导致严重的问题，当*this和传入的参数是同一个实例时，一旦释放了自身的内存，传入的参数的内存将同时被释放，因此将再也找不到需要赋值的内容了;*  因为链表中的内存不是一次性分配的，所以我们不能确定链表的内存和数组一样是连续的，因此如果想在链表中找到第i个结点，我们只能从头结点开始，沿着指向下一个结点的指针遍历链表，其效率是O(n);get{ return instance">
+<meta property="og:url" content="/posts/%E5%89%91%E6%8C%87offer%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="读书"><meta property="article:tag" content="面试"><meta property="article:tag" content="剑指Offer"><meta property="article:tag" content="技术"><meta property="article:published_time" content="2015-01-20T10:04:41+00:00"><meta property="article:modified_time" content="2015-01-20T10:04:41+00:00">
+<meta name=twitter:title content="剑指 Offer 读书笔记(1)">
+<meta name=twitter:description content="如果是同一个，则不进行赋值运算，直接返回，如果事先不判断就进行赋值，那么在释放实例自身内存的时候就会导致严重的问题，当*this和传入的参数是同一个实例时，一旦释放了自身的内存，传入的参数的内存将同时被释放，因此将再也找不到需要赋值的内容了;*  因为链表中的内存不是一次性分配的，所以我们不能确定链表的内存和数组一样是连续的，因此如果想在链表中找到第i个结点，我们只能从头结点开始，沿着指向下一个结点的指针遍历链表，其效率是O(n);get{ return instance">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+读书笔记
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E5%89%91%E6%8C%87offer%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/>剑指 Offer 读书笔记(1)</a>
+</h2>
+<h3 class=article-subtitle>
+如果是同一个，则不进行赋值运算，直接返回，如果事先不判断就进行赋值，那么在释放实例自身内存的时候就会导致严重的问题，当*this和传入的参数是同一个实例时，一旦释放了自身的内存，传入的参数的内存将同时被释放，因此将再也找不到需要赋值的内容了;* 因为链表中的内存不是一次性分配的，所以我们不能确定链表的内存和数组一样是连续的，因此如果想在链表中找到第i个结点，我们只能从头结点开始，沿着指向下一个结点的指针遍历链表，其效率是O(n);get{ return instance
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2015-01-20</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 6 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>在此将【剑指 Offer】中的经典问题和重要内容整理出来，便于以后遇到类似的问题再次查阅。博主强烈为大家推荐这本书，因为这本书中的题目都来自真实的公司笔试，对于大家求职、找工作会有很大的帮助。</p>
+<h3 id=1在定义一个赋值运算符时通常需要考虑以下四点>1、在定义一个赋值运算符时，通常需要考虑以下四点：</h3>
+<ul>
+<li>是否将返回值的类型声明为该类型的引用，并在函数结束前返回实例自身的引用(即*this)。只有一个返回引用，才可以允许连续赋值，否则如果函数的返回值是void，应用该赋值运算符将不能做连续赋值。</li>
+<li>是否将传入的参数类型声明为常量引用。如果传入的参数不是引用而是实例，那么从形参到实参会调用一次复制构造函数，把参数声明为引用可以避免这样的无谓消耗，能提高代码的效率。同时，我们在赋值运算函数内部不会改变传入的实例状态，因此应该在传入的引用参数前加上const关键字。</li>
+<li>是否释放实例已有的内存，如果我们忘记在分配新内存之前释放自身已有的空间，恒旭将出现内存泄漏。</li>
+<li>是否判断传入的参数和当前的实例是否是同一个实例。如果是同一个，则不进行赋值运算，直接返回，如果事先不判断就进行赋值，那么在释放实例自身内存的时候就会导致严重的问题，当*this和传入的参数是同一个实例时，一旦释放了自身的内存，传入的参数的内存将同时被释放，因此将再也找不到需要赋值的内容了。</li>
+</ul>
+<p>当我们完整的考虑了上述四个方面以后，我们可以写出如下的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=ln> 1</span><span class=n>CMyString</span><span class=o>&amp;</span> <span class=n>CMyString</span><span class=o>::</span><span class=k>operator</span> <span class=o>=</span> <span class=p>(</span><span class=k>const</span> <span class=n>CMyString</span> <span class=o>&amp;</span><span class=n>str</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>	<span class=k>if</span><span class=p>(</span><span class=k>this</span> <span class=o>==</span> <span class=o>&amp;</span><span class=n>str</span><span class=p>)</span>
+<span class=ln> 4</span>	  <span class=k>return</span><span class=p>;</span>
+<span class=ln> 5</span>	<span class=k>delete</span> <span class=p>[]</span><span class=n>m_pData</span><span class=p>;</span>
+<span class=ln> 6</span>	<span class=n>m_pData</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>
+<span class=ln> 7</span>	<span class=n>m_pData</span> <span class=o>=</span> <span class=k>new</span> <span class=kt>char</span><span class=p>[</span><span class=n>strlen</span><span class=p>(</span><span class=n>str</span><span class=p>.</span><span class=n>m_pData</span><span class=p>)</span> <span class=o>+</span> <span class=mi>1</span><span class=p>];</span>
+<span class=ln> 8</span>	<span class=n>strcpy</span><span class=p>(</span><span class=n>m_pData</span><span class=p>,</span><span class=n>str</span><span class=p>.</span><span class=n>m_pData</span><span class=p>);</span>
+<span class=ln> 9</span>
+<span class=ln>10</span>	<span class=k>return</span> <span class=o>*</span><span class=k>this</span><span class=p>;</span>
+<span class=ln>11</span><span class=p>}</span>
+</code></pre></div><h3 id=2要想在赋值运算符函数中实现异常安全性我们有两种方法>2、要想在赋值运算符函数中实现异常安全性，我们有两种方法</h3>
+<ul>
+<li>方法一：先用new分配新内容再用delete释放已有内容。这样只有当分配内容成功后再释放原来的内容，换句话说当分配内存失败时我们可以确定CMyString的实例不会被修改。</li>
+<li>方法二：先创建一个临时实例，再交换临时实例和原来的实例</li>
+</ul>
+<p>下面给出第二种方法的实现代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=ln> 1</span><span class=n>CMyString</span><span class=o>&amp;</span> <span class=n>CMyString</span><span class=o>::</span><span class=k>operator</span> <span class=o>=</span> <span class=p>(</span><span class=k>const</span> <span class=n>CMyString</span> <span class=o>&amp;</span><span class=n>str</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>	<span class=k>if</span><span class=p>(</span><span class=k>this</span> <span class=o>!=</span> <span class=o>&amp;</span><span class=n>str</span><span class=p>){</span>
+<span class=ln> 4</span>
+<span class=ln> 5</span>	  <span class=n>CMyString</span> <span class=nf>strTemp</span><span class=p>(</span><span class=n>str</span><span class=p>);</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span>	  <span class=kt>char</span><span class=o>*</span> <span class=n>pTemp</span> <span class=o>=</span> <span class=n>strTemp</span><span class=p>.</span><span class=n>m_pData</span><span class=p>;</span>
+<span class=ln> 8</span>	  <span class=n>strTemp</span><span class=p>.</span><span class=n>m_pData</span> <span class=o>=</span> <span class=n>m_pData</span><span class=p>;</span>
+<span class=ln> 9</span>	  <span class=n>m_pData</span> <span class=o>=</span> <span class=n>pTemp</span><span class=p>;</span>
+<span class=ln>10</span>  <span class=p>}</span>
+<span class=ln>11</span>
+<span class=ln>12</span>  <span class=k>return</span> <span class=o>*</span><span class=k>this</span>
+<span class=ln>13</span><span class=p>}</span>
+</code></pre></div><h3 id=3对于c和c中的struct和class的认识>3、对于C++和C#中的struct和class的认识</h3>
+<ul>
+<li>C++:在C++中如果没有标明成员函数或者成员变量的访问权限级别，则在struct中默认的是public，在class中的默认的private。</li>
+<li>C#:在C#中如果没有标明成员函数或者成员变量的访问级别，则struct和class默认都是private，不同的是struct定义的是值类型，其实例在栈上分配内存；class定义的是引用类型，其实例在堆上分配内存。</li>
+</ul>
+<h3 id=4在c中实现单例模式>4、在C#中实现单例模式</h3>
+<ul>
+<li>原理：在C#语法中C#是在调用静态函数时初始化静态变量，.NET运行时可以保证只调用一次静态构造函数，这样我们就可以保证仅初始化一次Instance;
+下面给出代码示例：</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>sealed</span> <span class=k>class</span> <span class=nc>Singleton</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>	<span class=k>private</span> <span class=n>Singleton</span><span class=p>()</span>
+<span class=ln> 4</span>  <span class=p>{</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span>  <span class=p>}</span>
+<span class=ln> 7</span>
+<span class=ln> 8</span>  <span class=k>private</span> <span class=k>static</span> <span class=n>Singleton</span> <span class=n>instance</span><span class=p>=</span><span class=k>new</span> <span class=n>Singleton</span><span class=p>();</span>
+<span class=ln> 9</span>  <span class=k>public</span> <span class=k>static</span> <span class=n>Singleton</span> <span class=n>Instance</span>
+<span class=ln>10</span>  <span class=p>{</span>
+<span class=ln>11</span>    <span class=k>get</span><span class=p>{</span> <span class=k>return</span> <span class=n>instance</span><span class=p>;}</span>
+<span class=ln>12</span>  <span class=p>}</span>
+<span class=ln>13</span><span class=p>}</span>
+</code></pre></div><h3 id=5c数组重要概念>5、C++数组重要概念</h3>
+<ul>
+<li>数组是最简单的一种数据结构，它占据一块连续的内存并按照顺序存储数据。</li>
+<li>在C/C++中，数组和指针是相互关联又有区别的两个概念。当我们声明一个数组时，其数组的名字同时是一个指针，该指针指向数组的第一个元素，因此我们可以使用一个指针来访问数组。可是值得注意的是，C/C++并没有记录数组的大小，因此使用指针访问数组中的元素时要注意不能超出数组的边界。</li>
+<li>使用sizeof计算指针的大小时，在32位操作系统中，对于任意指针结果都是4。</li>
+<li>二维数组在内存中占据连续的空间。在内存中从上到下存储各行元素，在同一行中按照从左到右的顺序存储。因此我们可以根据行号和列号计算出相对于数组首地址的偏移量，从而找到对应的元素。</li>
+</ul>
+<h3 id=6c中的string类型>6、C#中的String类型</h3>
+<ul>
+<li>在C#中封装字符串的类型Sysytem.String有一个非常特殊的性质，即String中的内容是不能改变的。当尝试改变String中的内容，就会产生一个新的实例。</li>
+<li>如果要连续多次修改字符串内容，可以考虑使用StringBuilder。</li>
+<li>当我们需要在函数或者方法中返回一个String实例时，我们需要在传入的参数前加上ref或者out标记</li>
+</ul>
+<h3 id=7链表>7、链表</h3>
+<ul>
+<li>链表是一种动态数据结构，因为在创建链表的时候，不需要知道链表的长度。当插入一个结点时，我们只需要为新结点分配内存，然后调整指针的指向来确保新结点被链接到链表当中。内存分配不是在创建链表时一次性完成，而是每添加一个结点分配一次内存。由于没有闲置的内存，因此链表的空间效率比数组要高。</li>
+<li>因为链表中的内存不是一次性分配的，所以我们不能确定链表的内存和数组一样是连续的，因此如果想在链表中找到第i个结点，我们只能从头结点开始，沿着指向下一个结点的指针遍历链表，其效率是O(n)。而在数组中，我们可以根据下标i直接找到第i个元素，其效率是O(1)。</li>
+<li>当我们需要从尾到头输出链表时，第一个遍历到的结点最后一个输出，而最后一个遍历到的结点第一个输出，这是典型的后进先出，因此我们可以考虑使用栈来实现这种顺序。下面是具体的代码实现：</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=ln> 1</span><span class=kt>void</span> <span class=nf>PrintListReversingly_Iteratively</span><span class=p>(</span><span class=n>ListNode</span><span class=o>*</span> <span class=n>pHead</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>	<span class=n>std</span><span class=o>::</span><span class=n>stack</span><span class=o>&lt;</span><span class=n>ListNode</span><span class=o>*&gt;</span> <span class=n>nodes</span><span class=p>;</span>
+<span class=ln> 4</span>
+<span class=ln> 5</span>	<span class=n>ListNode</span><span class=o>*</span> <span class=n>pNode</span> <span class=o>=</span> <span class=n>pHead</span><span class=p>;</span>
+<span class=ln> 6</span>	<span class=k>while</span> <span class=p>(</span><span class=n>pNode</span> <span class=o>!=</span> <span class=nb>NULL</span><span class=p>)</span>
+<span class=ln> 7</span>	<span class=p>{</span>
+<span class=ln> 8</span>      <span class=n>nodes</span><span class=p>.</span><span class=n>push</span><span class=p>(</span><span class=n>pNode</span><span class=p>);</span>
+<span class=ln> 9</span>      <span class=n>pNode</span> <span class=o>=</span> <span class=n>pNode</span><span class=o>-&gt;</span><span class=n>m_pNext</span><span class=p>;</span>
+<span class=ln>10</span>    <span class=p>}</span>
+<span class=ln>11</span>
+<span class=ln>12</span>    <span class=k>while</span> <span class=p>(</span><span class=o>!</span><span class=n>nodes</span><span class=p>.</span><span class=n>empty</span><span class=p>())</span>
+<span class=ln>13</span>    <span class=p>{</span>
+<span class=ln>14</span>      <span class=n>pNode</span> <span class=o>=</span> <span class=n>nodes</span><span class=p>.</span><span class=n>top</span><span class=p>();</span>
+<span class=ln>15</span>      <span class=n>printf</span><span class=p>(</span><span class=s>&#34;%d</span><span class=se>\t</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>pNode</span><span class=o>-&gt;</span><span class=n>m_nValue</span><span class=p>);</span>
+<span class=ln>16</span>      <span class=n>nodes</span><span class=p>.</span><span class=n>pop</span><span class=p>();</span>
+<span class=ln>17</span>    <span class=p>}</span>
+<span class=ln>18</span><span class=p>}</span>
+</code></pre></div><h3 id=8树>8、树</h3>
+<ul>
+<li>除了根节点之外每个结点只有一个父结点，根节点没有父结点。</li>
+<li>除了叶节点以外所有结点都有一个或者多个子结点，叶结点没有子结点。父结点和子结点间用指针链接。</li>
+<li>二叉树是树的一类特殊结构，在二叉树的每个结点最多只能有两个子结点。二叉树有三种主要的遍历方式，即前序遍历(根、左、右)、中序遍历(左、根、右)、后序遍历(左、右、根)。</li>
+<li>二叉搜索树是二叉树的一个特例，其特点是左子节点总是小于或等于根节点，右子结点总是大于或等于根节点。</li>
+</ul>
+<h3 id=9栈和队列>9、栈和队列</h3>
+<ul>
+<li>栈的特点是后进先出，即最后一个被压入(Push)栈的元素会第一个被弹出(Pop)。</li>
+<li>队列的特点是先进先出，即第一个进入队列(入队)的元素将会第一个出来(出队)。</li>
+</ul>
+<h3 id=10递归与循环>10、递归与循环</h3>
+<ul>
+<li>递归实现的效率无法和循环相比，因此函数调用会造成时间和空间的损失、会造成重复计算、可能会造成栈溢出。
+在经典的斐波那契数列问题中，我们可以采用下面的方法来代替传统的递归方法：</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=kt>int</span> <span class=n>Fiboncci</span><span class=p>(</span><span class=kt>int</span> <span class=n>n</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>  <span class=kt>int</span><span class=p>[]</span> <span class=n>result</span><span class=p>=</span><span class=k>new</span> <span class=kt>int</span><span class=p>[]</span> <span class=p>{</span> <span class=m>0</span><span class=p>,</span> <span class=m>1</span> <span class=p>};</span>
+<span class=ln> 4</span>  <span class=k>if</span> <span class=p>(</span><span class=n>n</span> <span class=p>&lt;</span> <span class=m>2</span><span class=p>)</span>
+<span class=ln> 5</span>     <span class=k>return</span> <span class=n>result</span><span class=p>[</span><span class=n>n</span><span class=p>];</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span>  <span class=kt>int</span> <span class=n>m</span> <span class=p>=</span> <span class=m>1</span><span class=p>;</span>
+<span class=ln> 8</span>  <span class=kt>int</span> <span class=n>n</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span>
+<span class=ln> 9</span>  <span class=kt>int</span> <span class=n>k</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span>
+<span class=ln>10</span>  <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=p>=</span> <span class=m>2</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;=</span> <span class=n>n</span><span class=p>;</span> <span class=n>i</span><span class=p>++)</span>
+<span class=ln>11</span>  <span class=p>{</span>
+<span class=ln>12</span>     <span class=n>k</span> <span class=p>=</span> <span class=n>m</span> <span class=p>+</span> <span class=n>n</span><span class=p>;</span>
+<span class=ln>13</span>     <span class=n>n</span> <span class=p>=</span> <span class=n>m</span><span class=p>;</span>
+<span class=ln>14</span>     <span class=n>m</span> <span class=p>=</span> <span class=n>k</span><span class=p>;</span>
+<span class=ln>15</span>  <span class=p>}</span>
+<span class=ln>16</span>
+<span class=ln>17</span>  <span class=k>return</span> <span class=n>k</span><span class=p>;</span>
+<span class=ln>18</span><span class=p>}</span>
+</code></pre></div><h3 id=11位运算>11、位运算</h3>
+<ul>
+<li>左移<code>m &lt;&lt; n</code>表示把 m 左移 n 位。左移 n 位的时候，最左边的 n 位将被丢弃，同时在最右边补上 n 个0。如：</li>
+</ul>
+<blockquote>
+<p>00001010 &#171; 2 = 00101000
+10001010 &#171; 3 = 01010000</p>
+</blockquote>
+<ul>
+<li>右移<code>m >> n</code>表示把 m 右移 n 位。右移 n 位的时候，最右边的 n 位将被丢弃。此时如果数字是一个无符号数值，则用0填补最左边的 n 位;如果数字是一个正数，则在右移之后在左边补 n 个0;如果数字是一个负数，则右移之后在左边补 n 个1。如：</li>
+</ul>
+<blockquote>
+<p>00001010 &#187; 2 = 00000010
+10001010 &#187; 3 = 11110001</p>
+</blockquote>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E8%AF%BB%E4%B9%A6/>读书</a>
+<a href=/tags/%E9%9D%A2%E8%AF%95/>面试</a>
+<a href=/tags/%E5%89%91%E6%8C%87offer/>剑指Offer</a>
+<a href=/tags/%E6%8A%80%E6%9C%AF/>技术</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/c#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<div class=article-details>
+<h2 class=article-title>《C#多线程编程实战》读书笔记</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E5%B8%B8%E7%94%A8%E6%9C%AF%E8%AF%AD/>
+<div class=article-details>
+<h2 class=article-title>函数式编程常用术语</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E7%94%9F%E5%91%BD%E7%9A%84%E6%9C%9D%E5%9C%A3%E8%80%85/>
+<div class=article-details>
+<h2 class=article-title>生命的朝圣者</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%A0%E4%BA%86%E8%A7%A3%E7%88%B1%E7%9A%84%E8%89%BA%E6%9C%AF%E5%90%97/>
+<div class=article-details>
+<h2 class=article-title>你了解爱的艺术吗？</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/html5%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E6%95%B4%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>HTML5 游戏开发技术基础整理</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E5%89%91%E6%8C%87offer%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li>
+<ol>
+<li>
+<ol>
+<li><a href=#1在定义一个赋值运算符时通常需要考虑以下四点>1、在定义一个赋值运算符时，通常需要考虑以下四点：</a></li>
+<li><a href=#2要想在赋值运算符函数中实现异常安全性我们有两种方法>2、要想在赋值运算符函数中实现异常安全性，我们有两种方法</a></li>
+<li><a href=#3对于c和c中的struct和class的认识>3、对于C++和C#中的struct和class的认识</a></li>
+<li><a href=#4在c中实现单例模式>4、在C#中实现单例模式</a></li>
+<li><a href=#5c数组重要概念>5、C++数组重要概念</a></li>
+<li><a href=#6c中的string类型>6、C#中的String类型</a></li>
+<li><a href=#7链表>7、链表</a></li>
+<li><a href=#8树>8、树</a></li>
+<li><a href=#9栈和队列>9、栈和队列</a></li>
+<li><a href=#10递归与循环>10、递归与循环</a></li>
+<li><a href=#11位运算>11、位运算</a></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

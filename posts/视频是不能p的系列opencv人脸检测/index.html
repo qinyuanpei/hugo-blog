@@ -1,0 +1,324 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="恍惚间，2020 年已接近尾声，回首过去这一年，无论是疫情、失业还是“996”，均以某种特殊的方式铭刻着这一年的记忆。也许，是这个冬天的西安雾"><title>视频是不能 P 的系列：OpenCV 人脸检测</title>
+<link rel=canonical href=/posts/%E8%A7%86%E9%A2%91%E6%98%AF%E4%B8%8D%E8%83%BDp%E7%9A%84%E7%B3%BB%E5%88%97opencv%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="视频是不能 P 的系列：OpenCV 人脸检测">
+<meta property="og:description" content="恍惚间，2020 年已接近尾声，回首过去这一年，无论是疫情、失业还是“996”，均以某种特殊的方式铭刻着这一年的记忆。也许，是这个冬天的西安雾">
+<meta property="og:url" content="/posts/%E8%A7%86%E9%A2%91%E6%98%AF%E4%B8%8D%E8%83%BDp%E7%9A%84%E7%B3%BB%E5%88%97opencv%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="OpenCV"><meta property="article:tag" content="Python"><meta property="article:tag" content="图像处理"><meta property="article:tag" content="人脸检测"><meta property="article:published_time" content="2020-12-25T22:49:47+00:00"><meta property="article:modified_time" content="2020-12-25T22:49:47+00:00">
+<meta name=twitter:title content="视频是不能 P 的系列：OpenCV 人脸检测">
+<meta name=twitter:description content="恍惚间，2020 年已接近尾声，回首过去这一年，无论是疫情、失业还是“996”，均以某种特殊的方式铭刻着这一年的记忆。也许，是这个冬天的西安雾">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E8%A7%86%E9%A2%91%E6%98%AF%E4%B8%8D%E8%83%BDp%E7%9A%84%E7%B3%BB%E5%88%97opencv%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/>视频是不能 P 的系列：OpenCV 人脸检测</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2020-12-25</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 9 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>恍惚间，2020 年已接近尾声，回首过去这一年，无论是疫情、失业还是“996”，均以某种特殊的方式铭刻着这一年的记忆。也许，是这个冬天的西安雾霾更少一点。所以，有时透过中午的一抹冬阳，居然意外地觉得春天的脚步渐渐近了，甚至连圣诞节这种“洋节日”都感到亲切而且期待，我想，这大概是我丧了一段时间的缘故吧！可不管怎样，人们对未来的生活时常有一种“迷之自信”，果然生还还是要继续下去的呀！趁着最近的时间比较充裕，我决定开启一个信息的系列：视频是不能 P 的。这是互联网上流传的一个老梗了，正所谓“视频是不能 P 的，所以是真的”。其实，在如今这个亦真亦假的世界里，哪里还有什么东西是不能 PS 的呢？借助人工智能“改头换面”越来越轻而易举，而这背后关于隐私和伦理的一连串问题随之而来，你越来越难以确认屏幕对面的那个是不是真实的人类。所以，这个系列会以 OpenCV 作为起点，去探索那些好玩、有趣的视频/图像处理思路，通过技术来证明视频是可以被 PS 的。而作为这个系列的第一篇，我们将从一个最简单的地方开始，它就是人脸检测。</p>
+<h1 id=第一个入门示例>第一个入门示例</h1>
+<p>学习 OpenCV 最好的方式，就是从官方的示例开始，我个人非常推荐的两个教程是 <a class=link href=https://docs.opencv.org/3.4/db/d28/tutorial_cascade_classifier.html target=_blank rel=noopener>OpenCV: Cascade Classifier</a> 和 <a class=link href=https://pythonexamples.org/python-opencv/ target=_blank rel=noopener>Python OpenCV Tutorial</a>，其次是 <a class=link href=https://blog.csdn.net/poem_qianmo target=_blank rel=noopener>浅墨大神</a> 的<a class=link href=https://blog.csdn.net/poem_qianmo/category_9262318.html target=_blank rel=noopener>【OpenCV】入门教程</a>，不同的是， <a class=link href=https://blog.csdn.net/poem_qianmo target=_blank rel=noopener>浅墨大神</a> 的教程主要是使用 C++，对于像博主这样的“不学无术”的人，这简直无异于从入门到放弃，所以，建议大家结合自己的实际情况，选择适合自己的“难度”。好了，思绪拉回我们这里，在 OpenCV 中实现人脸检测，主要分为以下三个步骤，即，首先，定义联级分类器<strong>CascadeClassifier</strong>并载入指定的模型文件；其次，对待检测目标进行灰度化和直方图均衡化处理；最后，对灰度图调用<code>detectMultiScale()</code>方法进行检测。下面是一个简化过的入门示例，使用世界上最省心的 Python 语言进行编写：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=kn>import</span> <span class=nn>cv2</span>
+<span class=ln> 2</span>
+<span class=ln> 3</span><span class=c1># 步骤1: 定义联级分类器CascadeClassifier并载入指定的模型文件</span>
+<span class=ln> 4</span><span class=n>faceCascade</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>CascadeClassifier</span><span class=p>(</span><span class=s1>&#39;./haarcascades/haarcascade_frontalface_alt2.xml&#39;</span><span class=p>)</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span><span class=c1># 步骤2: 对待检测目标进行灰度化和直方图均衡化处理</span>
+<span class=ln> 7</span><span class=n>target</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>imread</span><span class=p>(</span><span class=s1>&#39;target.jpg&#39;</span><span class=p>)</span>
+<span class=ln> 8</span><span class=n>target_gray</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>cvtColor</span><span class=p>(</span><span class=n>target</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>COLOR_BGR2GRAY</span><span class=p>)</span>
+<span class=ln> 9</span><span class=n>target_gray</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>equalizeHist</span><span class=p>(</span><span class=n>target_gray</span><span class=p>)</span>
+<span class=ln>10</span>
+<span class=ln>11</span><span class=c1># 步骤3: 人脸检测</span>
+<span class=ln>12</span><span class=n>faces</span> <span class=o>=</span> <span class=n>faceCascade</span><span class=o>.</span><span class=n>detectMultiScale</span><span class=p>(</span><span class=n>target_gray</span><span class=p>)</span>
+<span class=ln>13</span><span class=k>for</span> <span class=p>(</span><span class=n>x</span><span class=p>,</span><span class=n>y</span><span class=p>,</span><span class=n>w</span><span class=p>,</span><span class=n>h</span><span class=p>)</span> <span class=ow>in</span> <span class=n>faces</span><span class=p>:</span>
+<span class=ln>14</span>    <span class=n>cv2</span><span class=o>.</span><span class=n>rectangle</span><span class=p>(</span><span class=n>target</span><span class=p>,</span> <span class=p>(</span><span class=n>x</span><span class=p>,</span> <span class=n>y</span><span class=p>),</span> <span class=p>(</span><span class=n>x</span> <span class=o>+</span> <span class=n>w</span><span class=p>,</span> <span class=n>y</span> <span class=o>+</span> <span class=n>h</span><span class=p>),</span> <span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=mi>255</span><span class=p>,</span> <span class=mi>0</span><span class=p>),</span> <span class=mi>2</span><span class=p>)</span>
+<span class=ln>15</span>
+<span class=ln>16</span><span class=c1># 步骤4: 展示结果</span>
+<span class=ln>17</span><span class=n>cv2</span><span class=o>.</span><span class=n>imshow</span><span class=p>(</span><span class=s1>&#39;Face Detection&#39;</span><span class=p>,</span> <span class=n>target</span><span class=p>)</span>
+<span class=ln>18</span><span class=n>cv2</span><span class=o>.</span><span class=n>waitKey</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span>
+<span class=ln>19</span><span class=n>cv2</span><span class=o>.</span><span class=n>destroyAllWindows</span><span class=p>()</span> 
+</code></pre></div><p>正常情况下，你会得到下面的结果，这里选取的素材是经典日剧《半泽直树》：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/25/DcQRW32aUTBx5lY.png>
+<img src=/https:/i.loli.net/2020/12/25/DcQRW32aUTBx5lY.png loading=lazy alt=OpenCV人脸检测效果展示>
+</a>
+<figcaption>OpenCV人脸检测效果展示</figcaption>
+</figure></p>
+<p>怎么样？是不是被 OpenCV 的强大给震惊到了？下面我们针对每个步骤做更详细的说明：</p>
+<ul>
+<li>第 1 行引入 OpenCV，需要我们安装 OpenCV 的<a class=link href=https://pypi.org/project/opencv-python/ target=_blank rel=noopener>Python 版本</a>。</li>
+<li>第 4 行实例化级联分类器 CascadeClassifier，关于这个级联分类器，它是 OpenCV 下做目标检测的模块，内置<strong>Haar</strong>、<strong>HOG</strong>和<strong>LBP</strong>三类特性算法，而所谓“级联”，则是指它通过多个强分类器串联实现最终分类的思路。在初始化级联分类器的时候，需要载入指定的模型文件，这些模型文件是官方提前训练好的，可以从<a class=link href=https://github.com/opencv/opencv/tree/master/data/haarcascades target=_blank rel=noopener>Github</a>上进行下载，不同的模型文件对应不同的功能，这里使用的<code>haarcascade_frontalface_alt2.xml</code>主要针对面部检测，而像<code>haarcascade_eye_tree_eyeglasses.xml</code>则可以对眼睛进行检测。除此之外，我们还通过训练获得自己的模型文件，当然，这一切都是后话啦！</li>
+<li>第 7~9 行，我们载入了一张图片素材，并对其进行了灰度化和直方图均衡化处理。这里需要关注的三个函数是：<a class=link href=.>imread</a>、<a class=link href=https://docs.opencv.org/3.4/d8/d01/group__imgproc__color__conversions.html#ga397ae87e1288a81d2363b61574eb8cab target=_blank rel=noopener>cvtColor</a> 和 <a class=link href=https://docs.opencv.org/3.4/d6/dc7/group__imgproc__hist.html#ga7e54091f0c937d49bf84152a16f76d6e target=_blank rel=noopener>equalizeHist</a>，它们的作用分别是读取图片、转换颜色和直方图均衡化处理。其中，对人脸检测而言，灰度图是必要的条件，而直方图均衡化则是可选的一个过程。</li>
+<li>第 12~14 行，通过 <a class=link href=https://docs.opencv.org/3.4/d1/de5/classcv_1_1CascadeClassifier.html#aaf8181cb63968136476ec4204ffca498 target=_blank rel=noopener>detectMultiScale</a> 方法我们就可以对待检测目标进行检测，关于它的参数，常用的有 scaleFactor、minNeighbors、minSize、maxSize，它可以对人脸检测做进一步的细节上控制，对于我们而言，我们更关心检测的结果，这里我们将检测到的人脸区域以矩形的方式绘制出来。</li>
+<li>第 17~19 行，主要是为了方面大家观察结果，实际使用中可能会输出为文件或者实时渲染，这里需要关注的重点函数是：<a class=link href=https://docs.opencv.org/3.4/df/d24/group__highgui__opengl.html#gaae7e90aa3415c68dba22a5ff2cefc25d target=_blank rel=noopener>imshow</a>，顾名思义，它可以让图片展示在窗口中，类似我们这个示例中的效果。</li>
+</ul>
+<h1 id=柴犬界的网红>柴犬界的“网红”</h1>
+<p>曾经，有“好事者”分析过微信和 QQ 的年度表情，表情包文化流行的背后，实际上表达方式多样化的一种体现，例如：“笑哭”这一符号，固然有哭笑不得的含义在里面，可又何尝不是<strong>二十多岁人生总是边哭边笑的真实写照</strong>呢？而“捂脸”这一符号在我看来更多的是一种无可奈何，甚至有一种自我嘲讽的意味在里面。至于“呲牙”，<strong>朴实无华的微笑背后，大抵是看惯了庭前花开花落，可以“不以物喜，不以己悲”地笑对人生吧</strong>！其实，在这许许多多地表情里，我最喜欢的是微博里的“Doge”，这个眉清目秀的“狗头”能表达出各种丰富的含义，相比之下，微信里的“Doge”就有一点拙劣的模仿的意味了，俗话说**“狗头保命”**，在一个互联网信仰缺失的时代，用这样一种表情作为人类的保护色，又是不是一种反讽呢？而大家都知道，这个“Doge”表情，实际上是源于一个叫做<a class=link href=https://baike.baidu.com/item/Homestar%20Runner target=_blank rel=noopener>Homestar Runner</a>的网上动画系列，其原型则来源于一只名为<a class=link href="https://baijiahao.baidu.com/s?id=1567521374438179&wfr=spider&for=pc" target=_blank rel=noopener>Kabosu</a>的柴犬，由于它融合了萌宠和故意搞笑两大特点，因此在网络上迅速走红，并由此衍生出一系列二次创作。</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/26/i3OZfYwHvugT6JU.png>
+<img src=/https:/i.loli.net/2020/12/26/i3OZfYwHvugT6JU.png loading=lazy alt=微信年度表情>
+</a>
+<figcaption>微信年度表情</figcaption>
+</figure></p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/26/lN9ZgjuXxfs54cF.jpg>
+<img src=/https:/i.loli.net/2020/12/26/lN9ZgjuXxfs54cF.jpg loading=lazy alt=QQ年度表情>
+</a>
+<figcaption>QQ年度表情</figcaption>
+</figure></p>
+<p>现在，让我们唤醒身体里的中二灵魂，通过 OpenCV 让这个柴犬界的网红出现在我们面前。这里的思路是，在检测到人脸后，在人脸区域绘制一个“狗头”表情，为此，我们需要定义一个<code>copyTo()</code>函数，它可以将一张小图(MaskImage)绘制到大图(SrcImage)的指定位置，我们一起来看它的具体实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>def</span> <span class=nf>copyTo</span><span class=p>(</span><span class=n>srcImage</span><span class=p>,</span> <span class=n>maskImage</span><span class=p>,</span> <span class=n>x</span><span class=p>,</span> <span class=n>y</span><span class=p>,</span> <span class=n>w</span><span class=p>,</span> <span class=n>h</span><span class=p>):</span>
+<span class=ln> 2</span>    <span class=c1># 按照区域大小对maskImage进行缩放</span>
+<span class=ln> 3</span>    <span class=n>img_h</span><span class=p>,</span> <span class=n>img_w</span><span class=p>,</span> <span class=n>_</span> <span class=o>=</span> <span class=n>maskImage</span><span class=o>.</span><span class=n>shape</span>
+<span class=ln> 4</span>    <span class=n>img_scale</span> <span class=o>=</span> <span class=n>h</span> <span class=o>/</span> <span class=n>img_h</span>
+<span class=ln> 5</span>    <span class=n>new_w</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>img_w</span> <span class=o>*</span> <span class=n>img_scale</span><span class=p>)</span>
+<span class=ln> 6</span>    <span class=n>new_h</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>img_h</span> <span class=o>*</span> <span class=n>img_scale</span><span class=p>)</span>
+<span class=ln> 7</span>    <span class=n>img_resize</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>resize</span><span class=p>(</span><span class=n>maskImage</span> <span class=p>,(</span><span class=n>new_w</span> <span class=p>,</span><span class=n>new_h</span><span class=p>))</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span>    <span class=c1># “粘贴”小图到大图的指定位置</span>
+<span class=ln>10</span>    <span class=k>if</span> <span class=p>(</span><span class=n>srcImage</span><span class=o>.</span><span class=n>shape</span><span class=p>[</span><span class=mi>2</span><span class=p>]</span> <span class=o>!=</span> <span class=n>maskImage</span><span class=o>.</span><span class=n>shape</span><span class=p>[</span><span class=mi>2</span><span class=p>]):</span>
+<span class=ln>11</span>        <span class=n>y1</span><span class=p>,</span> <span class=n>y2</span> <span class=o>=</span> <span class=n>y</span><span class=p>,</span> <span class=n>y</span> <span class=o>+</span> <span class=n>img_resize</span><span class=o>.</span><span class=n>shape</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span>
+<span class=ln>12</span>        <span class=n>x1</span><span class=p>,</span> <span class=n>x2</span> <span class=o>=</span> <span class=n>x</span><span class=p>,</span> <span class=n>x</span> <span class=o>+</span> <span class=n>img_resize</span><span class=o>.</span><span class=n>shape</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span>
+<span class=ln>13</span>        <span class=n>alpha_s</span> <span class=o>=</span> <span class=n>img_resize</span><span class=p>[:,</span> <span class=p>:,</span> <span class=mi>3</span><span class=p>]</span> <span class=o>/</span> <span class=mf>255.0</span>
+<span class=ln>14</span>        <span class=n>alpha_l</span> <span class=o>=</span> <span class=mf>1.0</span> <span class=o>-</span> <span class=n>alpha_s</span>
+<span class=ln>15</span>        <span class=k>for</span> <span class=n>c</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=mi>3</span><span class=p>):</span>
+<span class=ln>16</span>            <span class=n>srcImage</span><span class=p>[</span><span class=n>y1</span><span class=p>:</span><span class=n>y2</span><span class=p>,</span> <span class=n>x1</span><span class=p>:</span><span class=n>x2</span><span class=p>,</span> <span class=n>c</span><span class=p>]</span> <span class=o>=</span> <span class=p>(</span>
+<span class=ln>17</span>                <span class=n>alpha_s</span> <span class=o>*</span> <span class=n>img_resize</span><span class=p>[:,</span> <span class=p>:,</span> <span class=n>c</span><span class=p>]</span> <span class=o>+</span> <span class=n>alpha_l</span> <span class=o>*</span> <span class=n>srcImage</span><span class=p>[</span><span class=n>y1</span><span class=p>:</span><span class=n>y2</span><span class=p>,</span> <span class=n>x1</span><span class=p>:</span><span class=n>x2</span><span class=p>,</span> <span class=n>c</span><span class=p>]</span>
+<span class=ln>18</span>            <span class=p>)</span>
+<span class=ln>19</span>    <span class=k>else</span><span class=p>:</span>
+<span class=ln>20</span>        <span class=n>srcImage</span><span class=p>[</span><span class=n>y</span><span class=p>:</span><span class=n>y</span> <span class=o>+</span> <span class=n>img_resize</span><span class=o>.</span><span class=n>shape</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span> <span class=n>x</span><span class=p>:</span><span class=n>x</span> <span class=o>+</span> <span class=n>img_resize</span><span class=o>.</span><span class=n>shape</span><span class=p>[</span><span class=mi>1</span><span class=p>]]</span> <span class=o>=</span> <span class=n>img_resize</span>
+<span class=ln>21</span>
+<span class=ln>22</span>    <span class=k>return</span> <span class=n>srcImage</span>
+</code></pre></div><p>在这里，我们首先要关注这样一件事情，即 OpenCV 默认使用的是由 R、G、B 组成的三通道，可对于像 PNG 这种格式的图片，它会含有一个 Alpha 通道。这样，当我们尝试把一张含 Alpha 通道的小图，“粘贴”到只有 R、G、B 三个通道的大图上时，就会出现通道数对不上的问题，所以，这个函数实际上对这种情况做了特殊处理。其次，每一个 OpenCV 中的图片，即 Mat，其 shape 属性是一个由三个元素组成的元组，依次为图片高度、图片宽度和图片通道数。“黏贴”的过程实际上是修改对应位置处的像素信息。好了，现在，我们来修改一下第一版的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=c1># 步骤1: 定义联级分类器CascadeClassifier并载入指定的模型文件</span>
+<span class=ln> 2</span><span class=n>faceCascade</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>CascadeClassifier</span><span class=p>(</span><span class=s1>&#39;./haarcascades/haarcascade_frontalface_alt2.xml&#39;</span><span class=p>)</span>
+<span class=ln> 3</span><span class=c1># cv2.IMREAD_UNCHANGED表示保留Alpha通道信息</span>
+<span class=ln> 4</span><span class=n>doge</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>imread</span><span class=p>(</span><span class=s1>&#39;doge-4.png&#39;</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>IMREAD_UNCHANGED</span><span class=p>)</span> 
+<span class=ln> 5</span>
+<span class=ln> 6</span><span class=c1># 步骤2: 对待检测目标进行灰度化和直方图均衡化处理</span>
+<span class=ln> 7</span><span class=n>target</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>imread</span><span class=p>(</span><span class=s1>&#39;target.jpg&#39;</span><span class=p>)</span>
+<span class=ln> 8</span><span class=n>target_gray</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>cvtColor</span><span class=p>(</span><span class=n>target</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>COLOR_BGR2GRAY</span><span class=p>)</span>
+<span class=ln> 9</span><span class=n>target_gray</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>equalizeHist</span><span class=p>(</span><span class=n>target_gray</span><span class=p>)</span>
+<span class=ln>10</span>
+<span class=ln>11</span><span class=c1># 步骤3: 人脸检测</span>
+<span class=ln>12</span><span class=n>faces</span> <span class=o>=</span> <span class=n>faceCascade</span><span class=o>.</span><span class=n>detectMultiScale</span><span class=p>(</span><span class=n>target_gray</span><span class=p>)</span>
+<span class=ln>13</span><span class=k>for</span> <span class=p>(</span><span class=n>x</span><span class=p>,</span><span class=n>y</span><span class=p>,</span><span class=n>w</span><span class=p>,</span><span class=n>h</span><span class=p>)</span> <span class=ow>in</span> <span class=n>faces</span><span class=p>:</span>
+<span class=ln>14</span>    <span class=n>target</span> <span class=o>=</span> <span class=n>copyTo</span><span class=p>(</span><span class=n>target</span><span class=p>,</span> <span class=n>doge</span><span class=p>,</span> <span class=n>x</span><span class=p>,</span> <span class=n>y</span><span class=p>,</span> <span class=n>w</span><span class=p>,</span> <span class=n>h</span><span class=p>)</span> <span class=c1># 粘贴“狗头”表情至每一个面部区域</span>
+<span class=ln>15</span>
+<span class=ln>16</span><span class=c1># 步骤4: 展示结果</span>
+<span class=ln>17</span><span class=n>cv2</span><span class=o>.</span><span class=n>imshow</span><span class=p>(</span><span class=s1>&#39;Face Detection&#39;</span><span class=p>,</span> <span class=n>target</span><span class=p>)</span>
+<span class=ln>18</span><span class=n>cv2</span><span class=o>.</span><span class=n>waitKey</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span>
+<span class=ln>19</span><span class=n>cv2</span><span class=o>.</span><span class=n>destroyAllWindows</span><span class=p>()</span> 
+</code></pre></div><p>此时，我们就可以得到下面的结果：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/26/Y9Al67cnvtgWmBz.png>
+<img src=/https:/i.loli.net/2020/12/26/Y9Al67cnvtgWmBz.png loading=lazy alt=全员Doge!>
+</a>
+<figcaption>全员Doge!</figcaption>
+</figure></p>
+<p>其实，我本人更喜欢这张，一张充满精神污染意味的图片：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/26/8QaJlR5XIxLftCo.png>
+<img src=/https:/i.loli.net/2020/12/26/8QaJlR5XIxLftCo.png loading=lazy alt=来自神烦狗的精神污染>
+</a>
+<figcaption>来自神烦狗的精神污染</figcaption>
+</figure></p>
+<h1 id=视频级-ps-入门>视频级 PS 入门</h1>
+<p>OK，相信到这里为止，各位读者朋友，都已经顺着博主的思路实现了图片级别的“PS”，既然我们这个系列叫<strong>做视频是不能 P 的</strong>，那么大家要问了，视频到底能不能 P 呢？答案显然是可以，不然博主写这个系列就不是“人脸检测”而是“人肉打脸”啦！下面，我们来继续对今天的这个例子做一点升级。考虑在 OpenCV 中，<strong>VideoCapture</strong>可以通过摄像头捕捉视频画面，所以，我们只需要把这个“狗头”绘制到每一帧画面上，就可以实现视频级别的 PS 啦！</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=c1># 步骤1: 定义联级分类器CascadeClassifier并载入指定的模型文件</span>
+<span class=ln> 2</span><span class=n>faceCascade</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>CascadeClassifier</span><span class=p>(</span><span class=s1>&#39;./haarcascades/haarcascade_frontalface_alt2.xml&#39;</span><span class=p>)</span>
+<span class=ln> 3</span><span class=n>doge</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>imread</span><span class=p>(</span><span class=s1>&#39;doge-4.png&#39;</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>IMREAD_UNCHANGED</span><span class=p>)</span>
+<span class=ln> 4</span><span class=n>cap</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>VideoCapture</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span> <span class=c1>#笔记本自带摄像头</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span><span class=k>while</span> <span class=p>(</span><span class=kc>True</span><span class=p>):</span>
+<span class=ln> 7</span>    <span class=n>ret</span><span class=p>,</span> <span class=n>frame</span> <span class=o>=</span> <span class=n>cap</span><span class=o>.</span><span class=n>read</span><span class=p>()</span> 
+<span class=ln> 8</span>    <span class=k>if</span> <span class=p>(</span><span class=n>ret</span> <span class=o>==</span> <span class=kc>False</span><span class=p>):</span>
+<span class=ln> 9</span>        <span class=k>break</span>
+<span class=ln>10</span>
+<span class=ln>11</span>    <span class=c1># 步骤2: 对待检测目标进行灰度化和直方图均衡化处理</span>
+<span class=ln>12</span>    <span class=c1># 读取视频中每一帧</span>
+<span class=ln>13</span>    <span class=n>target</span> <span class=o>=</span> <span class=n>frame</span>
+<span class=ln>14</span>    <span class=n>target_gray</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>cvtColor</span><span class=p>(</span><span class=n>target</span><span class=p>,</span> <span class=n>cv2</span><span class=o>.</span><span class=n>COLOR_BGR2GRAY</span><span class=p>)</span>
+<span class=ln>15</span>    <span class=n>target_gray</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>equalizeHist</span><span class=p>(</span><span class=n>target_gray</span><span class=p>)</span>
+<span class=ln>16</span>
+<span class=ln>17</span>    <span class=c1># 步骤3: 人脸检测</span>
+<span class=ln>18</span>    <span class=n>faces</span> <span class=o>=</span> <span class=n>faceCascade</span><span class=o>.</span><span class=n>detectMultiScale</span><span class=p>(</span><span class=n>target_gray</span><span class=p>)</span>
+<span class=ln>19</span>    <span class=k>for</span> <span class=p>(</span><span class=n>x</span><span class=p>,</span><span class=n>y</span><span class=p>,</span><span class=n>w</span><span class=p>,</span><span class=n>h</span><span class=p>)</span> <span class=ow>in</span> <span class=n>faces</span><span class=p>:</span>
+<span class=ln>20</span>        <span class=n>target</span> <span class=o>=</span> <span class=n>copyTo</span><span class=p>(</span><span class=n>target</span><span class=p>,</span> <span class=n>doge</span><span class=p>,</span> <span class=n>x</span><span class=p>,</span> <span class=n>y</span><span class=p>,</span> <span class=n>w</span><span class=p>,</span> <span class=n>h</span><span class=p>)</span>
+<span class=ln>21</span>
+<span class=ln>22</span>    <span class=c1># 步骤4: 展示结果</span>
+<span class=ln>23</span>    <span class=n>cv2</span><span class=o>.</span><span class=n>imshow</span><span class=p>(</span><span class=s1>&#39;Face Detection&#39;</span><span class=p>,</span> <span class=n>target</span><span class=p>)</span>
+<span class=ln>24</span>    <span class=c1># 按Q退出</span>
+<span class=ln>25</span>    <span class=k>if</span> <span class=n>cv2</span><span class=o>.</span><span class=n>waitKey</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span> <span class=o>&amp;</span> <span class=mh>0xFF</span> <span class=o>==</span> <span class=nb>ord</span><span class=p>(</span><span class=s1>&#39;q&#39;</span><span class=p>):</span>
+<span class=ln>26</span>        <span class=k>break</span>
+<span class=ln>27</span>
+<span class=ln>28</span><span class=n>cap</span><span class=o>.</span><span class=n>release</span><span class=p>()</span> 
+<span class=ln>29</span><span class=n>cv2</span><span class=o>.</span><span class=n>destroyAllWindows</span><span class=p>()</span> 
+</code></pre></div><p>一起来看看实现的效果吧！可能当你看完这篇博客的时候，你会觉得我写这玩意儿到底有什么用？不好意思，这玩意儿还真有用！它解决了像博主这样腼腆、不敢在公开场合抛头露面的人的困惑。暴走大事件里“王尼玛”一直戴着头罩，所以，很多人都好奇他本人到底长什么样子，如果当时能考虑这个思路的话，是不是可以不用一直戴着头罩。同样地，还有在浪客剑心真人版里饰演志志雄真实的藤原龙也，全身上下缠满绷带的造型其实对演员来说是非常不友好的，如果当时能考虑这个思路的话，是不是演员可以不用受那么大的罪。如果说这些都有些遥远的话，那么，至少在采访后期希望保护受访者隐私的场景下，这个思路是完全可行的，就像大家看到的它可以完全的遮挡住我的脸，而类似的打马赛克等等技术，本质上还是对图像进行处理，甚至美颜相机里的各种特效，底层都离不开 OpenCV 里的这些算法。怎么样？现在有没有觉得博主其实是一个非常有趣的人，哈哈!</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/26/CZi4SYOgzsoy8Qk.gif>
+<img src=/https:/i.loli.net/2020/12/26/CZi4SYOgzsoy8Qk.gif loading=lazy alt=视频级别的“PS”>
+</a>
+<figcaption>视频级别的“PS”</figcaption>
+</figure></p>
+<h1 id=本文小结>本文小结</h1>
+<p>这篇博客主要分享了 OpenCV 在人脸检测方面的简单应用，OpenCV 中的 CascadeClassifier 整合<strong>Haar</strong>、<strong>HOG</strong>和<strong>LBP</strong>三类特性算法，通过预置的模型文件可以实现不同程度的目标检测功能，而在人脸检测的基础上，我们可以通过训练来实现简单的人脸识别，正如今年爆发的新冠疫情让人脸识别出现新的挑战一样，虽然人脸识别的场景正在变得越来越复杂，可作为一个世界上最流行的计算机视觉库，OpenCV 中的各种模块、算法还是一如既往的经典。结合 imread()、resize()、cvtColor()等等的方法，我们可以将“狗头”表情贴到图片或者视频中的人脸区域，而这个思路可以为人脸遮挡相关的场景做一点探索。</p>
+<p>在一个流行美颜的时代，人们对于别人甚至自己的期望在无限拔高，像博主本人一直不怎么喜欢拍照，有时候我们埋怨别人没有把我们拍得好看一点，可那究竟是你眼中的自己还是别人眼中的自己呢？正如相亲的时候，人们总喜欢把最好的、美化过的一面展示给别人，因为只有这样才能让别人对你产生兴趣，可往往现实的落差会让这种来得快的兴趣消失得更快。所以，我想说，虽然在技术面前万物似乎皆可“PS”，可对于我们自己而言，你是否了解真正的自己呢？关于我博客的写作风格，我一直不确定是要用偏严谨还是偏活泼的方式来表达，因为眼看着被后浪们一点点超越，这实在是种难以言说的感觉，欢迎大家在评论区留下你对博客内容或者观点的想法，祝大家周末愉快，一个人一样要活得浪漫！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/opencv/>OpenCV</a>
+<a href=/tags/python/>Python</a>
+<a href=/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/>图像处理</a>
+<a href=/tags/%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/>人脸检测</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-python-%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB%E9%98%B2%E7%96%AB%E5%81%A5%E5%BA%B7%E7%A0%81/>
+<div class=article-details>
+<h2 class=article-title>使用 Python 自动识别防疫健康码</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%9C%E4%B8%BA%E6%8A%80%E6%9C%AF%E5%AE%85%E7%9A%84%E6%88%91%E6%98%AF%E8%BF%99%E6%A0%B7%E8%BF%BD%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83%E7%9A%84/>
+<div class=article-details>
+<h2 class=article-title>作为技术宅的我，是这样追鬼滅の刃的</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8python%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/>
+<div class=article-details>
+<h2 class=article-title>使用 Python 开发插件化应用程序</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8Epython%E5%AE%9E%E7%8E%B0windows%E4%B8%8B%E5%A3%81%E7%BA%B8%E5%88%87%E6%8D%A2%E5%8A%9F%E8%83%BD/>
+<div class=article-details>
+<h2 class=article-title>基于 Python 实现 Windows 下壁纸切换功能</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%90%86%E8%A7%A3python%E8%A3%85%E9%A5%B0%E5%99%A8/>
+<div class=article-details>
+<h2 class=article-title>深入浅出理解 Python 装饰器</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E8%A7%86%E9%A2%91%E6%98%AF%E4%B8%8D%E8%83%BDp%E7%9A%84%E7%B3%BB%E5%88%97opencv%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#第一个入门示例>第一个入门示例</a></li>
+<li><a href=#柴犬界的网红>柴犬界的“网红”</a></li>
+<li><a href=#视频级-ps-入门>视频级 PS 入门</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

@@ -61,6 +61,11 @@
 </a>
 </li>
 <li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
 <a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
 <span>搜索</span>
 </a>
@@ -123,7 +128,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%BC%82%E6%AD%A5-lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F%E9%97%AE%E9%A2%98%E7%9A%84%E6%8E%A2%E7%B4%A2/>异步 Lambda 表达式问题的探索</a>
+<a href=/posts/%E5%BC%82%E6%AD%A5lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E9%97%AE%E9%A2%98%E7%9A%84%E6%8E%A2%E7%B4%A2/>异步 Lambda 表达式问题的探索</a>
 </h2>
 <h3 class=article-subtitle>
 async void 方法引发异常时，因为它没有 Task 对象来放置异常，因此它的异常 SynchronizationContext 上引发，而且因为[AsyncVoidMethodBuilder](http://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.asyncvoidmethodbuilder.aspx)内部并没有使用 TaskScheduler，因此对于 async void 方法来说，线程池中未捕获的异常将会一直向上抛并最终导致程序异常终止，虽然我们可以在 AppDomain.UnhandledException 这个事件中捕捉到这些"未处理的异常"，但这并不能阻止程序异常终止，通过我们可以通过注册这个事件来记录异常日志，以帮助我们快速定位问题;好了，现在我们回到这篇文章开始的问题，我们现在知道 async Task 和 async Task&lt;T>引发的异常，都不会是程序立即终止，除非我们显式地去 await 一个 Task 对象会引发异常，可是对 async void 来讲，一旦它引发异常，常规的 try-catch 时无法捕捉到异常的，这种"未处理的异常"会一直向上抛并最终导致程序异常终止;我们注意到这里声明了两个 Action，即两个没有返回值的委托类型，它们的不同点在于前者使用了 async/await 这两个关键字，而后者则是一个普通的同步方法，那么这两者生成的 IL 代码是否有区别呢
@@ -150,7 +155,7 @@ async void 方法引发异常时，因为它没有 Task 对象来放置异常，
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/redis-%E7%BC%93%E5%AD%98%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E7%B3%BB%E5%88%97%E4%B9%8B%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85/>Redis 缓存技术学习系列之发布订阅</a>
+<a href=/posts/redis%E7%BC%93%E5%AD%98%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E7%B3%BB%E5%88%97%E4%B9%8B%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85/>Redis 缓存技术学习系列之发布订阅</a>
 </h2>
 <h3 class=article-subtitle>
 对具体观察者而言，我们需要做的就是继承 Observer 类然后重写 Update 方法，在这里我们需要实现两个不同的类 EmailObserver 和 WechatObserver，它们分别来实现邮件和公众号接收到主题推送消息以后的逻辑，这里以 EmailObserver 为例，代码实现如下：;在这里，我们订阅的公众号称为"主题"，而我们则称为"观察者"或者"订阅者"，而这正是观察者模式又被称为"发布-订阅模式"的原因所在，这种定义了一种一对多的依赖关系，让多个观察者同时监听同一个主题对象，当该主题对象在状态发生变化时，会通知所有观察者对象并使其自动更新自己的设计模式就被称为"观察者模式";这个场景可以看出"推送模式"让订阅者饱受消息骚扰，而为了解决这个问题，我们就有了"拉取模式"，此时主题仅仅是告诉观察者博客内容有更新，而更新的内容需要观察者自己去处理，这种模式大同小异，大家可以参照"推送模式"来自己实现
@@ -177,7 +182,7 @@ async void 方法引发异常时，因为它没有 Task 对象来放置异常，
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/redis-%E7%BC%93%E5%AD%98%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86/>Redis 缓存技术学习系列之事务处理</a>
+<a href=/posts/redis%E7%BC%93%E5%AD%98%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86/>Redis 缓存技术学习系列之事务处理</a>
 </h2>
 <h3 class=article-subtitle>
 在这个例子中，我们尝试在事务中对 Record_Count 做一个自增操作，这段代码在非并发的情况下是没有问题的，可是在并发的情况下，如果在执行 EXEC 命令前有一个用户修改了 Record_Count 的值，那么我们此时的结果就会比期望的结果小 1，现在我们有了 WATCH，Redis 就会对 Record_Count 进行监听，当 Redis 监听到该值发生变化的时候，这个事务就会被自动取消，进而避免造成冲突;Redis 中提供了一种称为 check-and-set 的机制，该机制主要通过 WATCH 命令来实现，其原理正是基于乐观锁的策略，Redis 会在执行 EXEC 命令前检查被监视的键对应的值是否发生变化，如果该值发生变化表明有人修改过这个键中存储的值，此时 Redis 将会自动取消当前事务;特别地，因为在 Redis 中命令是存储在一个队列中，所以，事务中的所有命令都会按顺序执行，并且在执行事务的过程中不会被客户端发送的其它命令中断
@@ -231,7 +236,7 @@ async void 方法引发异常时，因为它没有 Task 对象来放置异常，
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/redis-%E7%BC%93%E5%AD%98%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E7%B3%BB%E5%88%97%E4%B9%8B%E9%82%82%E9%80%85-redis/>Redis 缓存技术学习系列之邂逅 Redis</a>
+<a href=/posts/redis%E7%BC%93%E5%AD%98%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E7%B3%BB%E5%88%97%E4%B9%8B%E9%82%82%E9%80%85redis/>Redis 缓存技术学习系列之邂逅 Redis</a>
 </h2>
 <h3 class=article-subtitle>
 ​ 好了，这就是这篇博客的内容了，自我感觉 Redis 中的内容相对分散，这种细小的知识点都隐藏在命令中，最初在介绍不同的数据类型的时候，在文章中均做了详细的介绍并辅以终端脚本，可是最后发现这样写下去还不如去看官方文档，像 Redis 这种即使学习了都不见得有机会使用的技术，当然我并不是说 Redis 不好啊，关系型数据库目前依然是主流的技术驱动力量，所以我觉得我们学习的时候最好是“观其大略”、“不求甚解”，首先注重整体知识体系上的理解，微枝末叶上的细节问题可以在使用的时候去查阅文档;我们知道 Redis 是一个键-值数据库，所以在了解了 Redis 中支持的数据类型，即“值”以后，现在让我们将关注点回归到“键”上面来，这是因为作为一个键-值数据库，键是我们从数据库中获取值的唯一方式，因此在这里说说 Redis 中那些和键有关的命令，这些命令基本都遵循下面的命名格式，常见的命令有：;Redis 是一个采用键-值存储方案的数据库，因而传统关系型数据库里的 SQL 在这里将不再适用
@@ -258,7 +263,7 @@ async void 方法引发异常时，因为它没有 Task 对象来放置异常，
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BD%BF%E7%94%A8-c#%E5%BC%80%E5%8F%91-http-%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E6%94%AF%E6%8C%81-https/>使用 C#开发 HTTP 服务器之支持 HTTPS</a>
+<a href=/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E6%94%AF%E6%8C%81https/>使用 C#开发 HTTP 服务器之支持 HTTPS</a>
 </h2>
 <h3 class=article-subtitle>
 这恰恰印证了我们最初的观点，即 HTTPS 协议依然采用 HTTP 协议(三次握手)进行通讯，不同的地方在于中间环节增加了加密处理，例如在客户端和服务器端相互验证的环节采用的是非对称加密，在客户端验证通过以后双方采用随机数作为密钥是对称加密，而三次握手以后验证消息是否被篡改则是采用 HASH 算法;我们可以将其理解为在 HTTP 协议的基础上增加了安全机制，这里的安全机制是指 SSL,简单来讲 HTTPS 协议依然采用 HTTP 协议，不过它在 HTTP 和 TCP 间增加了加密/身份验证层，因此在保证数据传输安全的同时，为服务器提供了身份校验机制;好了，现在我们对 HTTPS 协议有了一个基本的认识：HTTPS 协议相比 HTTP 协议增加了身份验证和消息加密的机制，因此 HTTPS 协议能够保证通讯过程中的数据传输安全
@@ -339,7 +344,7 @@ async void 方法引发异常时，因为它没有 Task 对象来放置异常，
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9F%BA%E4%BA%8E-mono-%E5%92%8C-vscode-%E6%89%93%E9%80%A0%E8%BD%BB%E9%87%8F%E7%BA%A7%E8%B7%A8%E5%B9%B3%E5%8F%B0-ide/>基于 Mono 和 VSCode 打造轻量级跨平台 IDE</a>
+<a href=/posts/%E5%9F%BA%E4%BA%8Emono%E5%92%8Cvscode%E6%89%93%E9%80%A0%E8%BD%BB%E9%87%8F%E7%BA%A7%E8%B7%A8%E5%B9%B3%E5%8F%B0ide/>基于 Mono 和 VSCode 打造轻量级跨平台 IDE</a>
 </h2>
 <h3 class=article-subtitle>
 我们现在按 F5 进行调试，和编译时一样，如果用户没有为当前项目配置“任务调试程序”，VSCode 会提示我们去创建一个配置文件 launch.json，我们这里选择 mono，该选项在安装 Mono-Debug 插件以前是没有的，该配置文件如下，我们注意到这里需要修改 program 属性为 MainClass.exe:;现在，我们应该会得到一个 MainClass.exe 的文件，最初博主尝试直接去配置 launch.json，发现直接填写 type 为 mono 在 VSCode 中是无法识别的，最后决定去安装 mono-debug 的插件，安装插件在 VSCode 中是非常简单的，按下 Ctrl+Shift+X 打开插件界面，可以在这里查看最流行的插件列表、官方推荐的插件列表等等，我们直接搜索 mono-debug 然后安装插件即可;因为博主的计算机上安装了 Mono，所以在一开始使用 VSCode 的时候，就先入为主地认为在不安装插件的情况下，应该就可以直接在 VSCode 中编译和调试代码了
@@ -383,7 +388,7 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <form action=/search/ class="search-form widget">
 <p>
 <label>搜索</label>
-<input name=keyword required placeholder=输入关键词...>
+<input name=keyword required placeholder=请输入关键词>
 <button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
 </button>
 </p>
@@ -473,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E6%A8%A1%E6%9D%BF/ class=font_size_1>
-模板
+<a href=/tags/%E8%BF%81%E7%A7%BB/ class=font_size_1>
+迁移
 </a>
-<a href=/tags/kafka/ class=font_size_1>
-Kafka
+<a href=/tags/%E9%82%AA%E4%B8%8D%E5%8E%8B%E6%AD%A3/ class=font_size_1>
+邪不压正
 </a>
-<a href=/tags/%E8%AE%A4%E8%AF%81/ class=font_size_1>
-认证
-</a>
-<a href=/tags/%E5%BC%82%E5%B8%B8/ class=font_size_3>
-异常
-</a>
-<a href=/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/ class=font_size_8>
-数据库
-</a>
-<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
-加密
-</a>
-<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
-塔防
-</a>
-<a href=/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/ class=font_size_1>
-反向代理
-</a>
-<a href=/tags/hangfire/ class=font_size_1>
-Hangfire
-</a>
-<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
-装饰器
-</a>
-<a href=/tags/%E4%BD%8E%E4%BB%A3%E7%A0%81/ class=font_size_1>
-低代码
-</a>
-<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
-网易
-</a>
-<a href=/tags/2019/ class=font_size_1>
-2019
-</a>
-<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
-面试
-</a>
-<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
-对象池
-</a>
-<a href=/tags/%E4%BA%B2%E6%83%85/ class=font_size_1>
-亲情
-</a>
-<a href=/tags/%E5%BC%95%E6%93%8E/ class=font_size_1>
-引擎
-</a>
-<a href=/tags/%E5%92%8C%E5%B9%B3/ class=font_size_1>
-和平
-</a>
-<a href=/tags/%E7%AE%97%E6%B3%95/ class=font_size_2>
-算法
-</a>
-<a href=/tags/%E6%95%B0%E6%8D%AE/ class=font_size_1>
-数据
-</a>
-<a href=/tags/%E4%BB%B7%E5%80%BC/ class=font_size_1>
-价值
+<a href=/tags/%E6%80%9D%E8%80%83/ class=font_size_1>
+思考
 </a>
 <a href=/tags/%E6%8F%90%E7%BA%B2/ class=font_size_1>
 提纲
 </a>
-<a href=/tags/lua/ class=font_size_2>
-Lua
+<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
+同步
 </a>
-<a href=/tags/dynamic-proxy/ class=font_size_1>
-Dynamic Proxy
+<a href=/tags/%E8%AF%AD%E6%B3%95/ class=font_size_1>
+语法
 </a>
-<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
-脚本
+<a href=/tags/pwa/ class=font_size_1>
+PWA
+</a>
+<a href=/tags/referrer/ class=font_size_1>
+Referrer
+</a>
+<a href=/tags/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/ class=font_size_2>
+动态代理
+</a>
+<a href=/tags/keycloak/ class=font_size_1>
+Keycloak
+</a>
+<a href=/tags/%E6%95%B0%E5%AD%A6/ class=font_size_4>
+数学
+</a>
+<a href=/tags/%E5%BC%95%E6%93%8E/ class=font_size_1>
+引擎
+</a>
+<a href=/tags/mono/ class=font_size_4>
+Mono
+</a>
+<a href=/tags/%E8%AF%BB%E4%B9%A6/ class=font_size_5>
+读书
+</a>
+<a href=/tags/gephi/ class=font_size_1>
+Gephi
+</a>
+<a href=/tags/hangfire/ class=font_size_1>
+Hangfire
+</a>
+<a href=/tags/dapper/ class=font_size_3>
+Dapper
+</a>
+<a href=/tags/%E8%AE%AD%E7%BB%83/ class=font_size_1>
+训练
+</a>
+<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
+展望
+</a>
+<a href=/tags/%E9%98%85%E8%AF%BB/ class=font_size_2>
+阅读
+</a>
+<a href=/tags/websocket/ class=font_size_3>
+WebSocket
+</a>
+<a href=/tags/%E7%B1%B3%E8%8A%B1%E4%B9%8B%E5%91%B3/ class=font_size_1>
+米花之味
+</a>
+<a href=/tags/%E5%AE%9E%E4%BD%93/ class=font_size_2>
+实体
+</a>
+<a href=/tags/%E7%9F%AB%E6%83%85/ class=font_size_1>
+矫情
+</a>
+<a href=/tags/sklearn/ class=font_size_1>
+Sklearn
 </a>
 <a href=/tags class=font_size_9999>
 更多

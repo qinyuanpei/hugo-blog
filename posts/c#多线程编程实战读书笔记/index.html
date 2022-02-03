@@ -6,7 +6,7 @@
 <meta property="og:description" content="* Tips38：通过 Task 实例的 ConfigureAwait()方法，可以设置使用 await 时同步上下文的行为，默认情况下，await 操作符会尝试捕捉同步上下文，并在其中执行代码，即调度器会向 UI 线程投入成千上百个后续操作任务，这会使用它的消息循环来异步地执行这些任务，当我们不需要在 UI 线程中运行这些代码时，向 ConfigureAwait 方法传入 false 将会是一个更高效的方案;* Tips51：ParallelEnumerable 类含有 PLINQ 的全部逻辑，并且作为 IEnumerable 集合功能的一组扩展方法，默认情况下结果会被合并单个线程中，我们可以通过 ForAll 方法来指定处理逻辑，此时它们使用的是同一个线程，将跳过合并结果的过程，除了 AsParallel()方法，我们同样可以使用 AsSequential()方法，来使得 PLINQ 查询以顺序方式执行(相对于并行);* Tips13：SemaphoreSlim 是 Semaphore 的轻量级版本，用以限制同时访问同一个资源的线程数量，超过该数量的线程需要等待，直到之前的线程中某一个完成工作，并调用 Release()方法发出信号，其使用了混合模式，而 Semaphore 则使用内核模式，可以在跨程序同步的场景下使用">
 <meta property="og:url" content="/posts/c#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
 <meta property="og:site_name" content="素履独行">
-<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="读书"><meta property="article:tag" content="多线程"><meta property="article:tag" content="笔记"><meta property="article:tag" content="编程"><meta property="article:published_time" content="2018-01-07T21:34:36+00:00"><meta property="article:modified_time" content="2018-01-07T21:34:36+00:00">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="读书"><meta property="article:tag" content="多线程"><meta property="article:tag" content="笔记"><meta property="article:tag" content="编程"><meta property="article:published_time" content="2018-01-07T21:34:36+00:00"><meta property="article:modified_time" content="2018-01-07T21:34:36+00:00">
 <meta name=twitter:title content="《C#多线程编程实战》读书笔记">
 <meta name=twitter:description content="* Tips38：通过 Task 实例的 ConfigureAwait()方法，可以设置使用 await 时同步上下文的行为，默认情况下，await 操作符会尝试捕捉同步上下文，并在其中执行代码，即调度器会向 UI 线程投入成千上百个后续操作任务，这会使用它的消息循环来异步地执行这些任务，当我们不需要在 UI 线程中运行这些代码时，向 ConfigureAwait 方法传入 false 将会是一个更高效的方案;* Tips51：ParallelEnumerable 类含有 PLINQ 的全部逻辑，并且作为 IEnumerable 集合功能的一组扩展方法，默认情况下结果会被合并单个线程中，我们可以通过 ForAll 方法来指定处理逻辑，此时它们使用的是同一个线程，将跳过合并结果的过程，除了 AsParallel()方法，我们同样可以使用 AsSequential()方法，来使得 PLINQ 查询以顺序方式执行(相对于并行);* Tips13：SemaphoreSlim 是 Semaphore 的轻量级版本，用以限制同时访问同一个资源的线程数量，超过该数量的线程需要等待，直到之前的线程中某一个完成工作，并调用 Release()方法发出信号，其使用了混合模式，而 Semaphore 则使用内核模式，可以在跨程序同步的场景下使用">
 </head>
@@ -178,7 +178,7 @@ Parallel 类中的 Invoke 方法是最简单的实现多任务并行的方法，
 </a>
 </article>
 <article>
-<a href=/posts/web-api-%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<a href=/posts/web-api-%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-md/>
 <div class=article-details>
 <h2 class=article-title>《Web API 的设计与开发》读书笔记</h2>
 </div>
@@ -199,7 +199,7 @@ Parallel 类中的 Invoke 方法是最简单的实现多任务并行的方法，
 </a>
 </article>
 <article>
-<a href=/posts/html5-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E6%95%B4%E7%90%86/>
+<a href=/posts/html5%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E6%95%B4%E7%90%86/>
 <div class=article-details>
 <h2 class=article-title>HTML5 游戏开发技术基础整理</h2>
 </div>
@@ -208,14 +208,11 @@ Parallel 类中的 Invoke 方法是最简单的实现多任务并行的方法，
 </div>
 </div>
 </aside>
-<div class=disqus-container>
-<div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</div>
-<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
-<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/c#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
 <footer class=site-footer>
 <section class=copyright>
 &copy;

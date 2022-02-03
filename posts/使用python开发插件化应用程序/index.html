@@ -1,0 +1,355 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="考虑到 Python 是一门解释型的语言，我们在编写插件的时候，更希望做到“热插拔”，比如修改了某个插件后，希望它可以立刻生效，这个时候我们就需要重新加载模块，此时 importlib 的 reload 就能满足我们的要求，这正是博主一开始就要使用 importlib，而不是 import 语法对应内建方法__import__()的原因;好了，现在我们就完成了这次“插件化”的迭代，截止到目前为止，博主共完成了 [Unsplash](.) 、 [Bing 壁纸](.) 、 [WallHaven](.) 和 [国家地理](.) 四个“源”的接入，这些插件在实现上基本大同小异，本质上来讲它们是一个又一个的爬虫，只要实现了 getImage()这个方法都可以接入进来，这就是我们通常说的“约定大于配置”，关于更多的代码细节，大家可以通过[Github]((https://github.com/qinyuanpei/WallPaper))来了解;mkt=zh-CN) 和 [WallHaven](https://wallhaven.cc) 两个壁纸来源，考虑到大多数的壁纸抓取流程是一样的，博主决定以“插件”的方式完成这次迭代，换句话说，主程序不需要再做任何调整，当我们希望增加新的数据源的时候，只需要写一个.py 脚本即可，这就是今天这篇文章的写作缘由"><title>使用 Python 开发插件化应用程序</title>
+<link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8python%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="使用 Python 开发插件化应用程序">
+<meta property="og:description" content="考虑到 Python 是一门解释型的语言，我们在编写插件的时候，更希望做到“热插拔”，比如修改了某个插件后，希望它可以立刻生效，这个时候我们就需要重新加载模块，此时 importlib 的 reload 就能满足我们的要求，这正是博主一开始就要使用 importlib，而不是 import 语法对应内建方法__import__()的原因;好了，现在我们就完成了这次“插件化”的迭代，截止到目前为止，博主共完成了 [Unsplash](.) 、 [Bing 壁纸](.) 、 [WallHaven](.) 和 [国家地理](.) 四个“源”的接入，这些插件在实现上基本大同小异，本质上来讲它们是一个又一个的爬虫，只要实现了 getImage()这个方法都可以接入进来，这就是我们通常说的“约定大于配置”，关于更多的代码细节，大家可以通过[Github]((https://github.com/qinyuanpei/WallPaper))来了解;mkt=zh-CN) 和 [WallHaven](https://wallhaven.cc) 两个壁纸来源，考虑到大多数的壁纸抓取流程是一样的，博主决定以“插件”的方式完成这次迭代，换句话说，主程序不需要再做任何调整，当我们希望增加新的数据源的时候，只需要写一个.py 脚本即可，这就是今天这篇文章的写作缘由">
+<meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8python%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="Python"><meta property="article:tag" content="插件化"><meta property="article:tag" content="壁纸"><meta property="article:published_time" content="2019-10-11T08:56:27+00:00"><meta property="article:modified_time" content="2019-10-11T08:56:27+00:00">
+<meta name=twitter:title content="使用 Python 开发插件化应用程序">
+<meta name=twitter:description content="考虑到 Python 是一门解释型的语言，我们在编写插件的时候，更希望做到“热插拔”，比如修改了某个插件后，希望它可以立刻生效，这个时候我们就需要重新加载模块，此时 importlib 的 reload 就能满足我们的要求，这正是博主一开始就要使用 importlib，而不是 import 语法对应内建方法__import__()的原因;好了，现在我们就完成了这次“插件化”的迭代，截止到目前为止，博主共完成了 [Unsplash](.) 、 [Bing 壁纸](.) 、 [WallHaven](.) 和 [国家地理](.) 四个“源”的接入，这些插件在实现上基本大同小异，本质上来讲它们是一个又一个的爬虫，只要实现了 getImage()这个方法都可以接入进来，这就是我们通常说的“约定大于配置”，关于更多的代码细节，大家可以通过[Github]((https://github.com/qinyuanpei/WallPaper))来了解;mkt=zh-CN) 和 [WallHaven](https://wallhaven.cc) 两个壁纸来源，考虑到大多数的壁纸抓取流程是一样的，博主决定以“插件”的方式完成这次迭代，换句话说，主程序不需要再做任何调整，当我们希望增加新的数据源的时候，只需要写一个.py 脚本即可，这就是今天这篇文章的写作缘由">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=/https:/github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/blog.csdn.me/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E4%BD%BF%E7%94%A8python%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/>使用 Python 开发插件化应用程序</a>
+</h2>
+<h3 class=article-subtitle>
+考虑到 Python 是一门解释型的语言，我们在编写插件的时候，更希望做到“热插拔”，比如修改了某个插件后，希望它可以立刻生效，这个时候我们就需要重新加载模块，此时 importlib 的 reload 就能满足我们的要求，这正是博主一开始就要使用 importlib，而不是 import 语法对应内建方法__import__()的原因;好了，现在我们就完成了这次“插件化”的迭代，截止到目前为止，博主共完成了 [Unsplash](.) 、 [Bing 壁纸](.) 、 [WallHaven](.) 和 [国家地理](.) 四个“源”的接入，这些插件在实现上基本大同小异，本质上来讲它们是一个又一个的爬虫，只要实现了 getImage()这个方法都可以接入进来，这就是我们通常说的“约定大于配置”，关于更多的代码细节，大家可以通过[Github]((https://github.com/qinyuanpei/WallPaper))来了解;mkt=zh-CN) 和 [WallHaven](https://wallhaven.cc) 两个壁纸来源，考虑到大多数的壁纸抓取流程是一样的，博主决定以“插件”的方式完成这次迭代，换句话说，主程序不需要再做任何调整，当我们希望增加新的数据源的时候，只需要写一个.py 脚本即可，这就是今天这篇文章的写作缘由
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2019-10-11</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 6 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>插件化应用是个老话题啦，在我们的日常生活中更是屡见不鲜。无论是多年来臃肿不堪的 Eclipse，亦或者是扩展丰富著称的 Chrome，乃至近年来最优秀的编辑器 VSCode，插件都是这其中重要的组成部分。插件的意义在于扩展应用程序的功能，这其实有点像 iPhone 手机和 AppStore 的关系，没有应用程序的手机无非就是一部手机，而拥有了应用程序的手机则可以是 Everything。显然，安装或卸载应用程序并不会影响手机的基本功能，而应用程序离开了手机同样无法单独运行。所以，所谓“插件”，实际上是<strong>一种按照一定规范开发的应用程序，它只能运行在特定的软件平台/应用程序且无法运行</strong>。这里，最重要的一点是应用程序可以不依赖插件单独运行，这是这类“插件式”应用的基本要求。</p>
+<p>好了，在了解了插件的概念以后，我们来切入今天的正文。博主曾经在<a class=link href=https://blog.yuanpei.me/posts/2822230423/ target=_blank rel=noopener>《基于 Python 实现 Windows 下壁纸切换功能》</a>这篇文章中编写了一个小程序，它可以配合 Windows 注册表实现从 <a class=link href=https://unsplash.com/ target=_blank rel=noopener>Unsplash</a> 上抓取壁纸的功能。最近，博主想为这个小程序增加 <a class=link href="https://cn.bing.com/?mkt=zh-CN" target=_blank rel=noopener>必应壁纸</a> 和 <a class=link href=https://wallhaven.cc target=_blank rel=noopener>WallHaven</a> 两个壁纸来源，考虑到大多数的壁纸抓取流程是一样的，博主决定以“插件”的方式完成这次迭代，换句话说，主程序不需要再做任何调整，当我们希望增加新的数据源的时候，只需要写一个.py 脚本即可，这就是今天这篇文章的写作缘由。同样的功能，如果使用 Java 或者 C#这类编译型语言来做，我们可能会想到为插件定义一个 IPlugin 接口，这样每一个插件实际上都是 IPlugin 接口的实现类，自然而然地，我们会想到通过反射来调用接口里的方法，这是编译型语言的做法。而面对 Python 这样的解释型语言，我们同样有解释型语言的做法。</p>
+<p>首先，我们从一个最简单的例子入手。我们知道，Python 中的 import 语法可以用来引入一个模块，这个模块可以是 Python 标准库、第三方库和自定义模块。现在，假设我们有两个模块：<code>foo.py</code> 和 <code>bar.py</code>。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=c1>#foo.py</span>
+<span class=ln> 2</span><span class=kn>import</span> <span class=nn>sys</span>
+<span class=ln> 3</span>
+<span class=ln> 4</span><span class=k>class</span> <span class=nc>Chat</span><span class=p>:</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span>    <span class=k>def</span> <span class=nf>send</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span><span class=n>uid</span><span class=p>,</span><span class=n>msg</span><span class=p>):</span>
+<span class=ln> 7</span>        <span class=nb>print</span><span class=p>(</span><span class=s1>&#39;给</span><span class=si>{uid}</span><span class=s1>发送消息：</span><span class=si>{msg}</span><span class=s1>&#39;</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=n>uid</span><span class=o>=</span><span class=n>uid</span><span class=p>,</span><span class=n>msg</span><span class=o>=</span><span class=n>msg</span><span class=p>))</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span>    <span class=k>def</span> <span class=nf>sendAll</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span><span class=n>msg</span><span class=p>):</span>
+<span class=ln>10</span>        <span class=nb>print</span><span class=p>(</span><span class=s1>&#39;群发消息：</span><span class=si>{msg}</span><span class=s1>&#39;</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=n>msg</span><span class=o>=</span><span class=n>msg</span><span class=p>))</span>
+</code></pre></div><hr>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=c1>#bar.py</span>
+<span class=ln> 2</span><span class=kn>import</span> <span class=nn>sys</span>
+<span class=ln> 3</span>
+<span class=ln> 4</span><span class=k>class</span> <span class=nc>Echo</span><span class=p>:</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span>    <span class=k>def</span> <span class=nf>say</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+<span class=ln> 7</span>        <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;人生苦短，我用Python&#34;</span><span class=p>)</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span><span class=k>def</span> <span class=nf>cry</span><span class=p>():</span>
+<span class=ln>10</span>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;男人哭吧哭吧不是罪&#34;</span><span class=p>)</span>
+</code></pre></div><p>通常, 为了在当前模块(main.py)中使用这两个模块，我们可以使用以下语句：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln>1</span><span class=kn>import</span> <span class=nn>foo</span>
+<span class=ln>2</span><span class=kn>from</span> <span class=nn>bar</span> <span class=kn>import</span> <span class=o>*</span>
+</code></pre></div><p>这是一种简单粗暴的做法，因为它会导入模块中的全部内容。一种更好的做法是按需加载，例如下面的语句：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln>1</span><span class=kn>from</span> <span class=nn>foo</span> <span class=kn>import</span> <span class=n>Chat</span>
+</code></pre></div><p>到这里，我们先来思考第一个问题，Python 是怎么样去查找一个模块的呢？这和 Python 中的导入路径有关，通过<code>sys.path</code>我们可以非常容易地找到这些路径，常见的导入路径有<code>当前目录</code>、<code>site-package目录</code>和<code>PYTHONPATH</code>。熟悉 Python 的朋友应该都知道，<code>site-package</code>和<code>PYTHONPATH</code>各自的含义，前者是通过 pip 安装的模块的导入目录，后者是 Python 标准库的导入目录。当前目录这个从何说起呢？事实上，从我们写下<code>from…import…</code>语句的时候，这个机制就已经在工作了，否则 Python 应该是找不到 foo 和 bar 这两个模块的了。这里还有相对导入和绝对导入的问题，一个点(<code>.</code>)和两个点(<code>..</code>)的问题，这些我们在这里暂且按下不表，因为我们会直接修改<code>sys.path</code>(逃</p>
+<p>在 Python 中有一种动态导入模块的方式，我们只需要告诉它模块名称、导入路径就可以了，这就是下面要说的<code>importlib</code>标准库。继续用 foo 和 bar 这两个神奇的单词来举例，假设我们现在不想通过 import 这种偏“静态”的方式导入一个模块，我们应该怎么做呢？一起来看下面代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=kn>import</span> <span class=nn>foo</span>
+<span class=ln> 2</span><span class=kn>from</span> <span class=nn>foo</span> <span class=kn>import</span> <span class=n>Chat</span>
+<span class=ln> 3</span><span class=kn>from</span> <span class=nn>bar</span> <span class=kn>import</span> <span class=o>*</span>
+<span class=ln> 4</span><span class=kn>import</span> <span class=nn>importlib</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span><span class=c1>#调用foo模块Chat类方法</span>
+<span class=ln> 7</span><span class=n>foo</span><span class=o>.</span><span class=n>Chat</span><span class=p>()</span><span class=o>.</span><span class=n>send</span><span class=p>(</span><span class=s1>&#39;Dear&#39;</span><span class=p>,</span><span class=s1>&#39;I Miss You&#39;</span><span class=p>)</span>
+<span class=ln> 8</span><span class=n>moduleFoo</span> <span class=o>=</span> <span class=n>importlib</span><span class=o>.</span><span class=n>import_module</span><span class=p>(</span><span class=s1>&#39;.&#39;</span><span class=p>,</span><span class=s1>&#39;foo&#39;</span><span class=p>)</span>
+<span class=ln> 9</span><span class=n>classChat</span> <span class=o>=</span> <span class=nb>getattr</span><span class=p>(</span><span class=n>moduleFoo</span><span class=p>,</span><span class=s1>&#39;Chat&#39;</span><span class=p>)</span>
+<span class=ln>10</span><span class=n>classChat</span><span class=p>()</span><span class=o>.</span><span class=n>send</span><span class=p>(</span><span class=s1>&#39;Dear&#39;</span><span class=p>,</span><span class=s1>&#39;I Miss You&#39;</span><span class=p>)</span>
+<span class=ln>11</span>
+<span class=ln>12</span><span class=c1>#调用bar模块Echo类方法</span>
+<span class=ln>13</span><span class=n>Echo</span><span class=p>()</span><span class=o>.</span><span class=n>say</span><span class=p>()</span>
+<span class=ln>14</span><span class=n>moduleBar</span> <span class=o>=</span> <span class=n>importlib</span><span class=o>.</span><span class=n>import_module</span><span class=p>(</span><span class=s1>&#39;.&#39;</span><span class=p>,</span><span class=s1>&#39;bar&#39;</span><span class=p>)</span>
+<span class=ln>15</span><span class=n>classEcho</span> <span class=o>=</span> <span class=nb>getattr</span><span class=p>(</span><span class=n>moduleBar</span><span class=p>,</span><span class=s1>&#39;Echo&#39;</span><span class=p>)</span>
+<span class=ln>16</span><span class=n>classEcho</span><span class=p>()</span><span class=o>.</span><span class=n>say</span><span class=p>()</span>
+<span class=ln>17</span>
+<span class=ln>18</span><span class=c1>#调用bar模块中的cry()方法</span>
+<span class=ln>19</span><span class=n>cry</span><span class=p>()</span>
+<span class=ln>20</span><span class=n>methodCry</span> <span class=o>=</span> <span class=nb>getattr</span><span class=p>(</span><span class=n>moduleBar</span><span class=p>,</span><span class=s1>&#39;cry&#39;</span><span class=p>)</span>
+<span class=ln>21</span><span class=n>methodCry</span><span class=p>()</span>
+</code></pre></div><p>可以注意到，动态导入可以让我们在运行时期间引入一个模块(.py)，这恰恰是我们需要的功能。为了让大家对比这两种方式上的差异，我给出了静态引入和动态引入的等价代码。其中，<code>getattr()</code>其实可以理解为 Python 中的反射，我们总是可以按照<code>模块</code>-><code>类</code>-><code>方法</code>的顺序来逐层查找,即：通过 dir()方法，然后该怎么调用就怎么调用。所以，到这里整个“插件化”的思路就非常清晰了，即：首先，通过配置来为 Python 增加一个导入路径，这个导入路径本质上就是插件目录。其次，插件目录内的每一个脚本文件(.py)就是一个模块，每个模块都有一个相同的方法签名。最终，通过配置来决定要导入哪一个模块，然后调用模块中类的实例方法即可。顺着这个思路，博主为 <a class=link href=https://github.com/qinyuanpei/WallPaper target=_blank rel=noopener>WallPaper</a> 项目引入了插件机制，核心代码如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>if</span><span class=p>(</span><span class=n>pluginFile</span> <span class=o>==</span> <span class=s1>&#39;&#39;</span> <span class=ow>or</span> <span class=n>pluginName</span> <span class=o>==</span> <span class=s1>&#39;&#39;</span><span class=p>):</span>
+<span class=ln> 2</span>        <span class=n>spider</span> <span class=o>=</span> <span class=n>UnsplashSpider</span><span class=p>()</span>
+<span class=ln> 3</span>        <span class=n>imageFile</span> <span class=o>=</span> <span class=n>spider</span><span class=o>.</span><span class=n>getImage</span><span class=p>(</span><span class=n>downloadFolder</span><span class=p>)</span>
+<span class=ln> 4</span>        <span class=n>setWallPaper</span><span class=p>(</span><span class=n>imageFile</span><span class=p>)</span>
+<span class=ln> 5</span>    <span class=k>else</span><span class=p>:</span>
+<span class=ln> 6</span>        <span class=k>if</span><span class=p>(</span><span class=ow>not</span> <span class=n>check</span><span class=p>(</span><span class=n>pluginFile</span><span class=p>,</span><span class=n>addonPath</span><span class=p>)):</span>
+<span class=ln> 7</span>            <span class=nb>print</span><span class=p>(</span><span class=s1>&#39;插件</span><span class=si>%s</span><span class=s1>不存在或配置不正确&#39;</span> <span class=o>%</span> <span class=n>pluginName</span><span class=p>)</span>
+<span class=ln> 8</span>            <span class=k>return</span>
+<span class=ln> 9</span>        <span class=n>module</span> <span class=o>=</span> <span class=n>importlib</span><span class=o>.</span><span class=n>import_module</span><span class=p>(</span><span class=s1>&#39;.&#39;</span><span class=p>,</span><span class=n>pluginFile</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;.py&#39;</span><span class=p>,</span><span class=s1>&#39;&#39;</span><span class=p>))</span>
+<span class=ln>10</span>        <span class=n>instance</span> <span class=o>=</span> <span class=nb>getattr</span><span class=p>(</span><span class=n>module</span><span class=p>,</span><span class=n>pluginName</span><span class=p>)</span>
+<span class=ln>11</span>        <span class=n>imageFile</span> <span class=o>=</span> <span class=n>instance</span><span class=p>()</span><span class=o>.</span><span class=n>getImage</span><span class=p>(</span><span class=n>downloadFolder</span><span class=p>)</span>
+<span class=ln>12</span>        <span class=n>setWallPaper</span><span class=p>(</span><span class=n>imageFile</span><span class=p>)</span>
+</code></pre></div><p>接下来，我们可以很容易地扩展出 <a class=link href="https://cn.bing.com/?mkt=zh-CN" target=_blank rel=noopener>必应壁纸</a> 和 <a class=link href=https://wallhaven.cc target=_blank rel=noopener>WallHaven</a> 两个“插件”。按照约定，这两个插件都必须实现 getImage()方法，它接受一个下载目录作为参数，所以，显而易见，我们在这个插件里实现壁纸的下载，然后返回壁纸的路径即可，因为主程序会完成剩余设置壁纸的功能。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=c1># 必应每日壁纸插件</span>
+<span class=ln> 2</span><span class=k>class</span> <span class=nc>BingSpider</span><span class=p>:</span>
+<span class=ln> 3</span>
+<span class=ln> 4</span>    <span class=k>def</span> <span class=nf>getImage</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>downloadFolder</span><span class=p>):</span>
+<span class=ln> 5</span>        <span class=n>searchURL</span> <span class=o>=</span> <span class=s1>&#39;https://cn.bing.com/HPImageArchive.aspx?format=js&amp;idx=0&amp;n=1&amp;mkt=zh-CN&#39;</span>
+<span class=ln> 6</span>        <span class=n>response</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>searchURL</span><span class=p>)</span>
+<span class=ln> 7</span>        <span class=n>data</span> <span class=o>=</span> <span class=n>json</span><span class=o>.</span><span class=n>loads</span><span class=p>(</span><span class=n>response</span><span class=o>.</span><span class=n>text</span><span class=p>)</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span>        <span class=n>resultId</span> <span class=o>=</span> <span class=n>data</span><span class=p>[</span><span class=s1>&#39;images&#39;</span><span class=p>][</span><span class=mi>0</span><span class=p>][</span><span class=s1>&#39;hsh&#39;</span><span class=p>]</span>
+<span class=ln>10</span>        <span class=n>resultURL</span> <span class=o>=</span> <span class=s1>&#39;https://cn.bing.com&#39;</span> <span class=o>+</span> <span class=n>data</span><span class=p>[</span><span class=s1>&#39;images&#39;</span><span class=p>][</span><span class=mi>0</span><span class=p>][</span><span class=s1>&#39;url&#39;</span><span class=p>]</span>
+<span class=ln>11</span>        <span class=nb>print</span><span class=p>(</span><span class=sa>u</span><span class=s1>&#39;正在为您下载图片:</span><span class=si>%s</span><span class=s1>...&#39;</span> <span class=o>%</span> <span class=n>resultId</span><span class=p>)</span>
+<span class=ln>12</span>        <span class=k>if</span><span class=p>(</span><span class=ow>not</span> <span class=n>path</span><span class=o>.</span><span class=n>exists</span><span class=p>(</span><span class=n>downloadFolder</span><span class=p>)):</span>
+<span class=ln>13</span>            <span class=n>os</span><span class=o>.</span><span class=n>makedirs</span><span class=p>(</span><span class=n>downloadFolder</span><span class=p>)</span>
+<span class=ln>14</span>        
+<span class=ln>15</span>        <span class=n>jpgFile</span> <span class=o>=</span> <span class=n>resultId</span> <span class=o>+</span> <span class=s1>&#39;.jpg&#39;</span>
+<span class=ln>16</span>        <span class=n>jpgFile</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>downloadFolder</span><span class=p>,</span> <span class=n>jpgFile</span><span class=p>)</span>
+<span class=ln>17</span>        <span class=n>response</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>resultURL</span><span class=p>)</span>
+<span class=ln>18</span>        <span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=n>jpgFile</span><span class=p>,</span><span class=s1>&#39;wb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>file</span><span class=p>:</span>
+<span class=ln>19</span>            <span class=n>file</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>response</span><span class=o>.</span><span class=n>content</span><span class=p>)</span>
+<span class=ln>20</span>        <span class=k>return</span> <span class=n>jpgFile</span>      
+</code></pre></div><hr>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=c1># WallHaven壁纸插件</span>
+<span class=ln> 2</span><span class=k>class</span> <span class=nc>WallHavenSpider</span><span class=p>:</span>
+<span class=ln> 3</span>
+<span class=ln> 4</span>    <span class=k>def</span> <span class=nf>getImage</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span><span class=n>downloadFolder</span><span class=p>):</span> 
+<span class=ln> 5</span>        <span class=n>url</span> <span class=o>=</span> <span class=s1>&#39;https://alpha.wallhaven.cc/wallpaper/&#39;</span> 
+<span class=ln> 6</span>        <span class=n>response</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=p>)</span> 
+<span class=ln> 7</span>        <span class=nb>print</span><span class=p>(</span><span class=n>response</span><span class=o>.</span><span class=n>text</span><span class=p>)</span>
+<span class=ln> 8</span>        <span class=n>soup</span> <span class=o>=</span> <span class=n>BeautifulSoup</span><span class=p>(</span><span class=n>response</span><span class=o>.</span><span class=n>text</span><span class=p>,</span><span class=s1>&#39;html.parser&#39;</span><span class=p>)</span>
+<span class=ln> 9</span>        <span class=n>imgs</span> <span class=o>=</span> <span class=n>soup</span><span class=o>.</span><span class=n>find_all</span><span class=p>(</span><span class=s1>&#39;img&#39;</span><span class=p>)</span>
+<span class=ln>10</span>        <span class=n>length</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>imgs</span><span class=p>)</span>
+<span class=ln>11</span>        <span class=k>if</span> <span class=n>length</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>:</span>
+<span class=ln>12</span>            <span class=n>match</span> <span class=o>=</span> <span class=n>random</span><span class=o>.</span><span class=n>choice</span><span class=p>(</span><span class=n>imgs</span><span class=p>)</span>
+<span class=ln>13</span>            <span class=n>rawUrl</span> <span class=o>=</span> <span class=n>match</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;src&#39;</span><span class=p>)</span>
+<span class=ln>14</span>            <span class=n>rawId</span> <span class=o>=</span> <span class=n>rawUrl</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s1>&#39;/&#39;</span><span class=p>)[</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span>
+<span class=ln>15</span>            <span class=n>rawUrl</span> <span class=o>=</span> <span class=s1>&#39;https://w.wallhaven.cc/full/&#39;</span> <span class=o>+</span> <span class=n>rawId</span><span class=p>[</span><span class=mi>0</span><span class=p>:</span><span class=mi>2</span><span class=p>]</span> <span class=o>+</span> <span class=s1>&#39;/wallhaven-&#39;</span> <span class=o>+</span> <span class=n>rawId</span>
+<span class=ln>16</span>            <span class=n>raw</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>rawUrl</span><span class=p>)</span> 
+<span class=ln>17</span>            <span class=n>imgFile</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>downloadFolder</span><span class=p>,</span> <span class=n>rawId</span><span class=p>)</span>
+<span class=ln>18</span>            <span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=n>imgFile</span><span class=p>,</span><span class=s1>&#39;wb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>f</span><span class=p>:</span>
+<span class=ln>19</span>                <span class=n>f</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>raw</span><span class=o>.</span><span class=n>content</span><span class=p>)</span>
+<span class=ln>20</span>        <span class=k>return</span> <span class=n>imgFile</span>  
+</code></pre></div><p>好了，现在功能是实现了，我们来继续深入“插件化”这个话题。考虑到 Python 是一门解释型的语言，我们在编写插件的时候，更希望做到“热插拔”，比如修改了某个插件后，希望它可以立刻生效，这个时候我们就需要重新加载模块，此时 importlib 的 reload 就能满足我们的要求，这正是博主一开始就要使用 importlib，而不是 import 语法对应内建方法__import__()的原因。以 C#的开发经历而言，虽然可以直接更换 DLL 实现更新，可更新的过程中 IIS 会被停掉，所以，这种并不能被称之为“热更新”。基于以上两点考虑，博主最终决定使用 watchdog 配合 importlib 来实现“热插拔”，下面是关键代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>class</span> <span class=nc>LoggingEventHandler</span><span class=p>(</span><span class=n>FileSystemEventHandler</span><span class=p>):</span>
+<span class=ln> 2</span>
+<span class=ln> 3</span>    <span class=c1># 当配置文件修改时重新加载模块</span>
+<span class=ln> 4</span>    <span class=c1># 为节省篇幅已对代码进行精简</span>
+<span class=ln> 5</span>    <span class=k>def</span> <span class=nf>on_modified</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>event</span><span class=p>):</span>
+<span class=ln> 6</span>        <span class=nb>super</span><span class=p>(</span><span class=n>LoggingEventHandler</span><span class=p>,</span> <span class=bp>self</span><span class=p>)</span><span class=o>.</span><span class=n>on_modified</span><span class=p>(</span><span class=n>event</span><span class=p>)</span>
+<span class=ln> 7</span>        <span class=n>what</span> <span class=o>=</span> <span class=s1>&#39;directory&#39;</span> <span class=k>if</span> <span class=n>event</span><span class=o>.</span><span class=n>is_directory</span> <span class=k>else</span> <span class=s1>&#39;file&#39;</span>
+<span class=ln> 8</span>        <span class=n>confPath</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>sys</span><span class=o>.</span><span class=n>path</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span><span class=s1>&#39;config.ini&#39;</span><span class=p>)</span>
+<span class=ln> 9</span>        <span class=k>if</span><span class=p>(</span><span class=n>what</span> <span class=o>==</span><span class=s1>&#39;file&#39;</span> <span class=ow>and</span> <span class=n>event</span><span class=o>.</span><span class=n>src_path</span> <span class=o>==</span> <span class=n>confPath</span><span class=p>):</span>
+<span class=ln>10</span>            <span class=n>importlib</span><span class=o>.</span><span class=n>reload</span><span class=p>(</span><span class=n>module</span><span class=p>)</span>
+<span class=ln>11</span>        <span class=n>logging</span><span class=o>.</span><span class=n>info</span><span class=p>(</span><span class=s2>&#34;Modified </span><span class=si>%s</span><span class=s2>: </span><span class=si>%s</span><span class=s2>&#34;</span><span class=p>,</span> <span class=n>what</span><span class=p>,</span> <span class=n>event</span><span class=o>.</span><span class=n>src_path</span><span class=p>)</span>
+</code></pre></div><p>好了，现在我们就完成了这次“插件化”的迭代，截止到目前为止，博主共完成了 <a class=link href=.>Unsplash</a> 、 <a class=link href=.>Bing 壁纸</a> 、 <a class=link href=.>WallHaven</a> 和 <a class=link href=.>国家地理</a> 四个“源”的接入，这些插件在实现上基本大同小异，本质上来讲它们是一个又一个的爬虫，只要实现了 getImage()这个方法都可以接入进来，这就是我们通常说的“约定大于配置”，关于更多的代码细节，大家可以通过<a class=link href=%28https://github.com/qinyuanpei/WallPaper%29>Github</a>来了解。</p>
+<p>简单回顾下这篇博客，核心其实是 importlib 模块的使用，它可以让我们在运行时期间动态导入一个模块，这是实现插件化的重要前提。以此为基础，我们设计了基于 Python 脚本的单文件插件，即从指定的目录加载脚本文件，每个脚本就是一个插件。而作为插件化的一个延伸，我们介绍了 watchdog 模块的简单应用，配合 importlib 模块的 reload()方法，就可以实现所谓的“热更新”。好了，以上就是这篇博客的所有内容了，我们下一篇见！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/python/>Python</a>
+<a href=/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/>插件化</a>
+<a href=/tags/%E5%A3%81%E7%BA%B8/>壁纸</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-python-%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB%E9%98%B2%E7%96%AB%E5%81%A5%E5%BA%B7%E7%A0%81/>
+<div class=article-details>
+<h2 class=article-title>使用 Python 自动识别防疫健康码</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E8%A7%86%E9%A2%91%E6%98%AF%E4%B8%8D%E8%83%BDp%E7%9A%84%E7%B3%BB%E5%88%97opencv%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/>
+<div class=article-details>
+<h2 class=article-title>视频是不能 P 的系列：OpenCV 人脸检测</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%9C%E4%B8%BA%E6%8A%80%E6%9C%AF%E5%AE%85%E7%9A%84%E6%88%91%E6%98%AF%E8%BF%99%E6%A0%B7%E8%BF%BD%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83%E7%9A%84/>
+<div class=article-details>
+<h2 class=article-title>作为技术宅的我，是这样追鬼滅の刃的</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8Epython%E5%AE%9E%E7%8E%B0windows%E4%B8%8B%E5%A3%81%E7%BA%B8%E5%88%87%E6%8D%A2%E5%8A%9F%E8%83%BD/>
+<div class=article-details>
+<h2 class=article-title>基于 Python 实现 Windows 下壁纸切换功能</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%90%86%E8%A7%A3python%E8%A3%85%E9%A5%B0%E5%99%A8/>
+<div class=article-details>
+<h2 class=article-title>深入浅出理解 Python 装饰器</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E4%BD%BF%E7%94%A8python%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

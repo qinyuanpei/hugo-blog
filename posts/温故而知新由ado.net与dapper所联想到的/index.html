@@ -1,0 +1,357 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="这段时间在维护一个“遗产项目”，体验可以说是相当地难受，因为它的数据持久化层完全由 ADO.NET 纯手工打造，所以，你可以在项目中看到无所不在的 DataT"><title>温故而知新，由 ADO.NET 与 Dapper 所联想到的</title>
+<link rel=canonical href=/posts/%E6%B8%A9%E6%95%85%E8%80%8C%E7%9F%A5%E6%96%B0%E7%94%B1ado.net%E4%B8%8Edapper%E6%89%80%E8%81%94%E6%83%B3%E5%88%B0%E7%9A%84/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="温故而知新，由 ADO.NET 与 Dapper 所联想到的">
+<meta property="og:description" content="这段时间在维护一个“遗产项目”，体验可以说是相当地难受，因为它的数据持久化层完全由 ADO.NET 纯手工打造，所以，你可以在项目中看到无所不在的 DataT">
+<meta property="og:url" content="/posts/%E6%B8%A9%E6%95%85%E8%80%8C%E7%9F%A5%E6%96%B0%E7%94%B1ado.net%E4%B8%8Edapper%E6%89%80%E8%81%94%E6%83%B3%E5%88%B0%E7%9A%84/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="ADO.NET"><meta property="article:tag" content="Dapper"><meta property="article:tag" content="Dynamic"><meta property="article:tag" content="技巧"><meta property="article:published_time" content="2020-12-30T12:49:47+00:00"><meta property="article:modified_time" content="2020-12-30T12:49:47+00:00">
+<meta name=twitter:title content="温故而知新，由 ADO.NET 与 Dapper 所联想到的">
+<meta name=twitter:description content="这段时间在维护一个“遗产项目”，体验可以说是相当地难受，因为它的数据持久化层完全由 ADO.NET 纯手工打造，所以，你可以在项目中看到无所不在的 DataT">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E6%B8%A9%E6%95%85%E8%80%8C%E7%9F%A5%E6%96%B0%E7%94%B1ado.net%E4%B8%8Edapper%E6%89%80%E8%81%94%E6%83%B3%E5%88%B0%E7%9A%84/>温故而知新，由 ADO.NET 与 Dapper 所联想到的</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2020-12-30</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 9 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>这段时间在维护一个“遗产项目”，体验可以说是相当地难受，因为它的数据持久化层完全由 ADO.NET 纯手工打造，所以，你可以在项目中看到无所不在的 DataTable，不论是读操作还是写操作。这个 DataTable 让我这个习惯了 Entity Framework 的人感到非常别扭，我并不排斥写手写 SQL 语句，我只是拥有某种自觉并且清醒地知道，自己写的 SQL 语句未必就比 ORM 生成的 SQL 语句要好。可至少应该是像 Dapper 这种程度的封装啊，因为关系型数据库天生就和面向对象编程存在隔离，所以，频繁地使用 DataTable 无疑意味着你要写很多的转换的代码，当我看到<code>DbConnection</code>、<code>DbCommand</code>、<code>DbDataReader</code>、<code>DbDataAdapter</code>这些熟悉的“底层”的时候，我意识到我可以结合着 Dapper 的实现，从中梳理出一点改善的思路，所以，这篇博客想聊一聊<strong>ADO.NET</strong>、<strong>Dapper</strong>和<strong>Dynamic</strong>这三者间交叉的部分，希望能给大家带来新的启发。</p>
+<h1 id=重温-adonet>重温 ADO.NET</h1>
+<p>相信大家都知道，我这里提到的<code>DbConnection</code>、<code>DbCommand</code>、<code>DbDataReader</code>、<code>DbDataAdapte</code>以及<code>DataTable</code>、<code>DataSet</code>，实际上就是 ADO.NET 中核心的组成部分，譬如<code>DbConnection</code>负责管理数据库连接，<code>DbCommand</code>负责 SQL 语句的执行，<code>DbDataReader</code>和<code>DbDataAdapter</code>负责数据库结果集的读取。需要注意的是，这些类型都是抽象类，而各个数据库的具体实现，则是由对应的厂商来完成，即我们称之为“驱动”的部分，它们都遵循同一套接口规范，而<code>DataTable</code>和<code>DataSet</code>则是“装”数据库结果集的容器。关于 ADO.NET 的设计理念，可以从下图中得到更清晰的答案：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/31/dEN2tajehboDiTl.png>
+<img src=/https:/i.loli.net/2020/12/31/dEN2tajehboDiTl.png loading=lazy alt=ADO.NET架构>
+</a>
+<figcaption>ADO.NET架构</figcaption>
+</figure></p>
+<p>在这种理念的指引，使用 ADO.NET 访问数据库通常会是下面的画风。博主相信，大家在各种各样的<code>DbHelper</code>或者<code>DbUtils</code>中都见过类似的代码片段，在更复杂的场景中，我们会使用<code>DbParameter</code>来辅助<code>DbCommand</code>，而这就是所谓的<strong>SQL 参数化查询</strong>。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=kt>var</span> <span class=n>fileName</span> <span class=p>=</span> <span class=n>Path</span><span class=p>.</span><span class=n>Combine</span><span class=p>(</span><span class=n>Directory</span><span class=p>.</span><span class=n>GetCurrentDirectory</span><span class=p>(),</span> <span class=s>&#34;Chinook.db&#34;</span><span class=p>);</span>
+<span class=ln> 2</span><span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>connection</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SQLiteConnection</span><span class=p>(</span><span class=s>$&#34;Data Source={fileName}&#34;</span><span class=p>))</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=k>if</span> <span class=p>(</span><span class=n>connection</span><span class=p>.</span><span class=n>State</span> <span class=p>!=</span> <span class=n>ConnectionState</span><span class=p>.</span><span class=n>Open</span><span class=p>)</span> <span class=n>connection</span><span class=p>.</span><span class=n>Open</span><span class=p>();</span>
+<span class=ln> 5</span>    <span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>command</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateCommand</span><span class=p>())</span>
+<span class=ln> 6</span>    <span class=p>{</span>
+<span class=ln> 7</span>        <span class=n>command</span><span class=p>.</span><span class=n>CommandText</span> <span class=p>=</span> <span class=s>&#34;SELECT AlbumId, Title, ArtistId FROM [Album]&#34;</span><span class=p>;</span>
+<span class=ln> 8</span>        <span class=n>command</span><span class=p>.</span><span class=n>CommandType</span> <span class=p>=</span> <span class=n>CommandType</span><span class=p>.</span><span class=n>Text</span><span class=p>;</span>
+<span class=ln> 9</span>
+<span class=ln>10</span>        <span class=c1>//套路1：使用DbDataReader读取数据
+</span><span class=ln>11</span><span class=c1></span>        <span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>reader</span> <span class=p>=</span> <span class=n>command</span><span class=p>.</span><span class=n>ExecuteReader</span><span class=p>())</span>
+<span class=ln>12</span>        <span class=p>{</span>
+<span class=ln>13</span>            <span class=k>while</span> <span class=p>(</span><span class=n>reader</span><span class=p>.</span><span class=n>Read</span><span class=p>())</span>
+<span class=ln>14</span>            <span class=p>{</span>
+<span class=ln>15</span>                <span class=c1>//各种眼花缭乱的写法:)
+</span><span class=ln>16</span><span class=c1></span>                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;AlbumId={reader.GetValue(0)}&#34;</span><span class=p>);</span>
+<span class=ln>17</span>                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;Title={reader.GetFieldValue&lt;string&gt;(&#34;</span><span class=n>Title</span><span class=s>&#34;)}&#34;</span><span class=p>);</span>
+<span class=ln>18</span>                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;ArtistId={reader.GetInt32(&#34;</span><span class=n>ArtistId</span><span class=s>&#34;)}&#34;</span><span class=p>);</span>
+<span class=ln>19</span>            <span class=p>}</span>
+<span class=ln>20</span>        <span class=p>}</span>
+<span class=ln>21</span>
+<span class=ln>22</span>        <span class=c1>//套路2：使用DbDataAdapter读取数据
+</span><span class=ln>23</span><span class=c1></span>        <span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>adapter</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SQLiteDataAdapter</span><span class=p>(</span><span class=n>command</span><span class=p>))</span>
+<span class=ln>24</span>        <span class=p>{</span>
+<span class=ln>25</span>            <span class=kt>var</span> <span class=n>dataTable</span> <span class=p>=</span> <span class=k>new</span> <span class=n>DataTable</span><span class=p>();</span>
+<span class=ln>26</span>            <span class=n>adapter</span><span class=p>.</span><span class=n>Fill</span><span class=p>(</span><span class=n>dataTable</span><span class=p>);</span>
+<span class=ln>27</span>        <span class=p>}</span>
+<span class=ln>28</span>    <span class=p>}</span>
+<span class=ln>29</span><span class=p>}</span>
+</code></pre></div><p>这里经常会引发的讨论是，<code>DbDataReader</code>和<code>DbDataAdapter</code>的区别以及各自的使用场景是什么？简单来说，前者是按需读取/只读，数据库连接会一直保持；而后者是一次读取，数据全部加载到内存，数据库连接用完就会关掉。从资源释放的角度，听起来后者更友好一点，可显然结果集越大占用的内存就会越多。而如果从易用性上来考虑，后者可以直接填充数据到<code>DataSet</code>或者<code>DataTable</code>，前者则需要费一点周折，你看这段代码是不是有点秀操作的意思：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln>1</span><span class=c1>//各种眼花缭乱的写法:)
+</span><span class=ln>2</span><span class=c1></span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;AlbumId={reader.GetValue(0)}&#34;</span><span class=p>);</span>
+<span class=ln>3</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;Title={reader.GetFieldValue&lt;string&gt;(&#34;</span><span class=n>Title</span><span class=s>&#34;)}&#34;</span><span class=p>);</span>
+<span class=ln>4</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;ArtistId={reader.GetInt32(&#34;</span><span class=n>ArtistId</span><span class=s>&#34;)}&#34;</span><span class=p>);</span>
+</code></pre></div><p>在这个“遗产项目”中，<code>DbDataReader</code>和<code>DbDataAdapter</code>都有所涉猎，后者在结果集不大的情况下还是可以的，唯一的遗憾就是<code>DataTable</code>和<code>LINQ</code>的违和感实在太强烈了，虽然可以勉强使用<code>AsEnumerable()</code>拯救一下，而前者就有一点魔幻了，你能看到各种<code>GetValue(1)</code>、<code>GetValue(2)</code>这样的写法，这简直就是成心不想让后面维护的人好过，因为加字段的时候要小心翼翼地，确保字段顺序不会被修改。明明这个世界上有<a class=link href=https://github.com/StackExchange/Dapper target=_blank rel=noopener>Dapper</a>、<a class=link href=https://github.com/donet5/SqlSugar target=_blank rel=noopener>SqlSugar</a>、<a class=link href=https://smartsql.net/ target=_blank rel=noopener>SmartSql</a>这样优秀的 ORM 存在，为什么就要如此执著地写这种代码呢？是觉得 MyBatis 在 XML 里写 SQL 语句很时尚吗？</p>
+<p>所以，我开始尝试改进这些代码，我希望它可以像 Dapper 一样，提供<code>Query&lt;T>()</code>和<code>Execute()</code>两个方法足矣！如果要把结果集映射到一个具体的类型上，大家都能想到使用反射，我更想实现的是 Dapper 里的<code>DapperRow</code>，它可以通过“·”或者字典的形式来访问字段，现在的问题来了，你能实现类似 Dapper 里 DapperRow 的效果吗？因为想偷懒的时候，dynamic 不比 DataRow 更省事儿吗？那玩意儿光转换类型就要烦死人了，更不用说要映射到某个 DTO 啦！</p>
+<h1 id=实现-dynamicrow>实现 DynamicRow</h1>
+<p>通过阅读 Dapper 的源代码，我们知道，Dapper 中用<a class=link href=https://github.com/StackExchange/Dapper/blob/main/Dapper/SqlMapper.DapperTable.cs target=_blank rel=noopener>DapperTable</a>和<a class=link href=https://github.com/StackExchange/Dapper/blob/main/Dapper/SqlMapper.DapperRowMetaObject.cs target=_blank rel=noopener>DapperRow</a>替换掉了 DataTable 和 DataRow，可见这两个玩意儿有多不好用，果然，英雄所见略同啊，哈哈哈！其实，这背后的一切的功臣是<a class=link href="https://docs.microsoft.com/zh-cn/dotnet/api/system.dynamic.idynamicmetaobjectprovider?view=net-5.0" target=_blank rel=noopener>IDynamicMetaObjectProvider</a>，通过这个接口我们就能实现类似的功能，我们熟悉的<code>ExpendoObject</code>就是最好的例子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln>1</span><span class=kt>dynamic</span> <span class=n>person</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ExpandoObject</span><span class=p>();</span> 
+<span class=ln>2</span><span class=n>person</span><span class=p>.</span><span class=n>FirstName</span> <span class=p>=</span> <span class=s>&#34;Sherlock&#34;</span><span class=p>;</span> 
+<span class=ln>3</span><span class=n>person</span><span class=p>.</span><span class=n>LastName</span> <span class=p>=</span> <span class=s>&#34;Holmes&#34;</span><span class=p>;</span>
+<span class=ln>4</span>
+<span class=ln>5</span><span class=c1>//等价形式
+</span><span class=ln>6</span><span class=c1></span><span class=p>(</span><span class=n>person</span> <span class=k>as</span> <span class=n>IDctionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;)[</span><span class=s>&#34;FirstName&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>&#34;Sherlock&#34;</span><span class=p>;</span>
+<span class=ln>7</span><span class=p>(</span><span class=n>person</span> <span class=k>as</span> <span class=n>IDctionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;)[</span><span class=s>&#34;LastName&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>&#34;Holmes&#34;</span><span class=p>;</span>
+</code></pre></div><p>这里，我们用一种简单的方式，让 DynamicRow 继承者 DynamicObject，下面一起来看具体的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>class</span> <span class=nc>DynamicRow</span> <span class=p>:</span> <span class=n>DynamicObject</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>private</span> <span class=k>readonly</span> <span class=n>IDataRecord</span> <span class=m>_</span><span class=n>record</span><span class=p>;</span>
+<span class=ln> 4</span>    <span class=k>public</span> <span class=n>DynamicRow</span><span class=p>(</span><span class=n>IDataRecord</span> <span class=n>record</span><span class=p>)</span>
+<span class=ln> 5</span>    <span class=p>{</span>
+<span class=ln> 6</span>        <span class=m>_</span><span class=n>record</span> <span class=p>=</span> <span class=n>record</span><span class=p>;</span>
+<span class=ln> 7</span>    <span class=p>}</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span>    <span class=k>public</span> <span class=k>override</span> <span class=kt>bool</span> <span class=n>TryGetMember</span><span class=p>(</span><span class=n>GetMemberBinder</span> <span class=n>binder</span><span class=p>,</span> <span class=k>out</span> <span class=kt>object</span> <span class=n>result</span><span class=p>)</span>
+<span class=ln>10</span>    <span class=p>{</span>
+<span class=ln>11</span>        <span class=kt>var</span> <span class=n>index</span> <span class=p>=</span> <span class=m>_</span><span class=n>record</span><span class=p>.</span><span class=n>GetOrdinal</span><span class=p>(</span><span class=n>binder</span><span class=p>.</span><span class=n>Name</span><span class=p>);</span>
+<span class=ln>12</span>        <span class=n>result</span> <span class=p>=</span> <span class=n>index</span> <span class=p>&gt;</span> <span class=m>0</span> <span class=p>?</span> <span class=m>_</span><span class=n>record</span><span class=p>[</span><span class=n>binder</span><span class=p>.</span><span class=n>Name</span><span class=p>]</span> <span class=p>:</span> <span class=k>null</span><span class=p>;</span>
+<span class=ln>13</span>        <span class=k>return</span> <span class=n>index</span> <span class=p>&gt;</span> <span class=m>0</span><span class=p>;</span>
+<span class=ln>14</span>    <span class=p>}</span>
+<span class=ln>15</span>        
+<span class=ln>16</span>    <span class=c1>//支持像字典一样使用
+</span><span class=ln>17</span><span class=c1></span>    <span class=k>public</span> <span class=kt>object</span> <span class=k>this</span><span class=p>[</span><span class=kt>string</span> <span class=n>field</span><span class=p>]</span> <span class=p>=&gt;</span>
+<span class=ln>18</span>       <span class=m>_</span><span class=n>record</span><span class=p>.</span><span class=n>GetOrdinal</span><span class=p>(</span><span class=n>field</span><span class=p>)</span> <span class=p>&gt;</span> <span class=m>0</span> <span class=p>?</span> <span class=m>_</span><span class=n>record</span><span class=p>[</span><span class=n>field</span><span class=p>]</span> <span class=p>:</span> <span class=k>null</span><span class=p>;</span>
+<span class=ln>19</span><span class=p>}</span>
+</code></pre></div><p>对于<code>DynamicObject</code>这个类型而言，里面最重要的两个方法其实是<code>TryGetMember()</code>和<code>TrySetMember()</code>，因为这决定了这个动态对象的读和写两个操作。因为我们这里不需要反向地去操作数据库，所以，我们只需要关注<code>TryGetMember()</code>即可，一旦实现这个方法，我们就可以使用类似<code>foo.bar</code>这种形式访问字段，而提供一个索引器，则是为了提供类似<code>foo["bar"]</code>的访问方式，这一点同样是为了像 Dapper 看齐，无非是 Dapper 的 DynamicRow 本来就是一个字典！</p>
+<p>现在，我们来着手实现一个简化版的 Dapper，给<code>IDbConnection</code>这个接口扩展出<code>Query&lt;T>()</code>和<code>Execute()</code>两个方法，我们注意到<code>Query&lt;T>()</code>需要用到<code>DbDataReader</code>或者<code>DbDataAdapter</code>其一，对于<code>DbDataAdapter</code>而言，它的实现完全由具体的子类决定，所以，对于<code>IDbConnection</code>接口而言，它完全不知道对应的子类是什么，此时，我们只能通过判断<code>IDbConnection</code>的类型来返回对应的 DbDataAdapter。读过我之前<a class=link href=https://blog.yuanpei.me/posts/3086300103/ target=_blank rel=noopener>博客</a>的朋友，应该对 Dapper 里的数据库类型的字典有印象，不好意思，这里历史要再次上演啦！</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>static</span> <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=kt>dynamic</span><span class=p>&gt;</span> <span class=n>Query</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>,</span> 
+<span class=ln> 2</span>  <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>trans</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=kt>var</span> <span class=n>reader</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateDataReader</span><span class=p>(</span><span class=n>sql</span><span class=p>);</span>
+<span class=ln> 5</span>    <span class=k>while</span> <span class=p>(</span><span class=n>reader</span><span class=p>.</span><span class=n>Read</span><span class=p>())</span>
+<span class=ln> 6</span>        <span class=k>yield</span> <span class=k>return</span> <span class=k>new</span> <span class=n>DynamicRow</span><span class=p>(</span><span class=n>reader</span> <span class=k>as</span> <span class=n>IDataRecord</span><span class=p>);</span>
+<span class=ln> 7</span><span class=p>}</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span><span class=k>public</span> <span class=k>static</span> <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=n>Query</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>,</span>
+<span class=ln>10</span>  <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>trans</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span> 
+<span class=ln>11</span>  <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=n>class</span><span class=p>,</span> <span class=k>new</span><span class=p>()</span>
+<span class=ln>12</span><span class=p>{</span>
+<span class=ln>13</span>    <span class=kt>var</span> <span class=n>reader</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateDataReader</span><span class=p>(</span><span class=n>sql</span><span class=p>);</span>
+<span class=ln>14</span>    <span class=k>while</span> <span class=p>(</span><span class=n>reader</span><span class=p>.</span><span class=n>Read</span><span class=p>())</span>
+<span class=ln>15</span>        <span class=k>yield</span> <span class=k>return</span> <span class=p>(</span><span class=n>reader</span> <span class=k>as</span> <span class=n>IDataRecord</span><span class=p>).</span><span class=n>Cast</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;();</span>
+<span class=ln>16</span><span class=p>}</span>
+</code></pre></div><p>这里的<code>CreateDataReader()</code>和<code>Cast()</code>都是博主自定义的扩展方法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>private</span> <span class=k>static</span> <span class=n>IDataReader</span> <span class=n>CreateDataReader</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=kt>var</span> <span class=n>command</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateCommand</span><span class=p>();</span>
+<span class=ln> 4</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandText</span> <span class=p>=</span> <span class=n>sql</span><span class=p>;</span>
+<span class=ln> 5</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandType</span> <span class=p>=</span> <span class=n>CommandType</span><span class=p>.</span><span class=n>Text</span><span class=p>;</span>
+<span class=ln> 6</span>    <span class=k>return</span> <span class=n>command</span><span class=p>.</span><span class=n>ExecuteReader</span><span class=p>();</span>
+<span class=ln> 7</span><span class=p>}</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span><span class=k>private</span> <span class=k>static</span> <span class=n>T</span> <span class=n>Cast</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>IDataRecord</span> <span class=n>record</span><span class=p>)</span> <span class=k>where</span> <span class=n>T</span><span class=p>:</span><span class=n>class</span><span class=p>,</span> <span class=k>new</span><span class=p>()</span>
+<span class=ln>10</span><span class=p>{</span>
+<span class=ln>11</span>    <span class=kt>var</span> <span class=n>instance</span> <span class=p>=</span> <span class=k>new</span> <span class=n>T</span><span class=p>();</span>
+<span class=ln>12</span>    <span class=k>foreach</span><span class=p>(</span><span class=kt>var</span> <span class=n>property</span> <span class=k>in</span> <span class=k>typeof</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>GetProperties</span><span class=p>())</span>
+<span class=ln>13</span>    <span class=p>{</span>
+<span class=ln>14</span>        <span class=kt>var</span> <span class=n>index</span> <span class=p>=</span> <span class=n>record</span><span class=p>.</span><span class=n>GetOrdinal</span><span class=p>(</span><span class=n>property</span><span class=p>.</span><span class=n>Name</span><span class=p>);</span>
+<span class=ln>15</span>        <span class=k>if</span> <span class=p>(</span><span class=n>index</span> <span class=p>&lt;</span> <span class=m>0</span><span class=p>)</span> <span class=k>continue</span><span class=p>;</span>
+<span class=ln>16</span>        <span class=kt>var</span> <span class=n>propertyType</span> <span class=p>=</span> <span class=n>property</span><span class=p>.</span><span class=n>PropertyType</span><span class=p>;</span>
+<span class=ln>17</span>        <span class=k>if</span> <span class=p>(</span><span class=n>propertyType</span><span class=p>.</span><span class=n>IsGenericType</span> <span class=p>&amp;&amp;</span> 
+<span class=ln>18</span>          <span class=n>propertyType</span><span class=p>.</span><span class=n>GetGenericTypeDefinition</span><span class=p>()</span> <span class=p>==</span> <span class=k>typeof</span><span class=p>(</span><span class=n>Nullable</span><span class=p>&lt;&gt;))</span>
+<span class=ln>19</span>            <span class=n>propertyType</span> <span class=p>=</span> <span class=n>Nullable</span><span class=p>.</span><span class=n>GetUnderlyingType</span><span class=p>(</span><span class=n>propertyType</span><span class=p>);</span>
+<span class=ln>20</span>        <span class=n>property</span><span class=p>.</span><span class=n>SetValue</span><span class=p>(</span><span class=n>instance</span><span class=p>,</span> 
+<span class=ln>21</span>          <span class=n>Convert</span><span class=p>.</span><span class=n>ChangeType</span><span class=p>(</span><span class=n>record</span><span class=p>[</span><span class=n>property</span><span class=p>.</span><span class=n>Name</span><span class=p>],</span> <span class=n>propertyType</span><span class=p>));</span>
+<span class=ln>22</span>    <span class=p>}</span> 
+<span class=ln>23</span>
+<span class=ln>24</span>    <span class=k>return</span> <span class=n>instance</span><span class=p>;</span>  
+<span class=ln>25</span><span class=p>}</span>
+</code></pre></div><p>而<code>Execute()</code>方法则要简单的多，因为从<code>IDbConnection</code>到<code>IDbCommand</code>的这条线，可以直接通过<code>CreateCommand()</code>来实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln>1</span><span class=k>public</span> <span class=k>static</span> <span class=kt>int</span> <span class=n>Execute</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>,</span> 
+<span class=ln>2</span>  <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>trans</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln>3</span><span class=p>{</span>
+<span class=ln>4</span>    <span class=kt>var</span> <span class=n>command</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateCommand</span><span class=p>();</span>
+<span class=ln>5</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandText</span> <span class=p>=</span> <span class=n>sql</span><span class=p>;</span>
+<span class=ln>6</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandType</span> <span class=p>=</span> <span class=n>CommandType</span><span class=p>.</span><span class=n>Text</span><span class=p>;</span>
+<span class=ln>7</span>    <span class=k>return</span> <span class=n>command</span><span class=p>.</span><span class=n>ExecuteNonQuery</span><span class=p>();</span>
+<span class=ln>8</span><span class=p>}</span>
+</code></pre></div><h1 id=实现参数化查询>实现参数化查询</h1>
+<p>大家可以注意到，我这里的参数 param 完全没有用上，这是因为<code>IDbCommand</code>的<code>Paraneters</code>属性显然是一个抽象类的集合。所以，从<code>IDbConnection</code>的角度来看这个问题的时候，它又不知道这个参数要如何来给了，而且像 Dapper 里的参数，涉及到集合类型会存在<code>IN</code>和<code>NOT IN</code>以及批量操作的问题，比普通的字符串替换还要稍微复杂一点。如果我们只考虑最简单的情况，它还是可以尝试一番的：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>private</span> <span class=k>static</span> <span class=k>void</span> <span class=n>SetDbParameter</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbCommand</span> <span class=n>command</span><span class=p>,</span> <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>if</span> <span class=p>(</span><span class=n>param</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span> <span class=k>return</span><span class=p>;</span>
+<span class=ln> 4</span>    <span class=k>if</span> <span class=p>(</span><span class=n>param</span> <span class=k>is</span> <span class=n>IDictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;)</span>
+<span class=ln> 5</span>    <span class=p>{</span>
+<span class=ln> 6</span>        <span class=c1>//使用字典作为参数
+</span><span class=ln> 7</span><span class=c1></span>        <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>arg</span> <span class=k>in</span> <span class=n>param</span> <span class=k>as</span> <span class=n>IDictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;)</span>
+<span class=ln> 8</span>        <span class=p>{</span>
+<span class=ln> 9</span>              <span class=kt>var</span> <span class=n>newParam</span> <span class=p>=</span> <span class=n>command</span><span class=p>.</span><span class=n>CreateParameter</span><span class=p>();</span>
+<span class=ln>10</span>              <span class=n>newParam</span><span class=p>.</span><span class=n>ParameterName</span> <span class=p>=</span> <span class=s>$&#34;@{arg.Key}&#34;</span><span class=p>;</span>
+<span class=ln>11</span>              <span class=n>newParam</span><span class=p>.</span><span class=n>Value</span> <span class=p>=</span> <span class=n>arg</span><span class=p>.</span><span class=n>Value</span><span class=p>;</span>
+<span class=ln>12</span>              <span class=n>command</span><span class=p>.</span><span class=n>Parameters</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>newParam</span><span class=p>);</span>
+<span class=ln>13</span>        <span class=p>}</span>
+<span class=ln>14</span>    <span class=p>}</span>
+<span class=ln>15</span>    <span class=k>else</span> 
+<span class=ln>16</span>    <span class=p>{</span>
+<span class=ln>17</span>        <span class=c1>//使用匿名对象作为参数
+</span><span class=ln>18</span><span class=c1></span>        <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>property</span> <span class=k>in</span> <span class=n>param</span><span class=p>.</span><span class=n>GetType</span><span class=p>().</span><span class=n>GetProperties</span><span class=p>())</span>
+<span class=ln>19</span>        <span class=p>{</span>
+<span class=ln>20</span>              <span class=kt>var</span> <span class=n>propVal</span> <span class=p>=</span> <span class=n>property</span><span class=p>.</span><span class=n>GetValue</span><span class=p>(</span><span class=n>param</span><span class=p>);</span>
+<span class=ln>21</span>              <span class=k>if</span> <span class=p>(</span><span class=n>propVal</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span> <span class=k>continue</span><span class=p>;</span>
+<span class=ln>22</span>              <span class=kt>var</span> <span class=n>newParam</span> <span class=p>=</span> <span class=n>command</span><span class=p>.</span><span class=n>CreateParameter</span><span class=p>();</span>
+<span class=ln>23</span>              <span class=n>newParam</span><span class=p>.</span><span class=n>ParameterName</span> <span class=p>=</span> <span class=s>$&#34;@{property.Name}&#34;</span><span class=p>;</span>
+<span class=ln>24</span>              <span class=n>newParam</span><span class=p>.</span><span class=n>Value</span> <span class=p>=</span> <span class=n>propVal</span><span class=p>;</span>
+<span class=ln>25</span>              <span class=n>command</span><span class=p>.</span><span class=n>Parameters</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>newParam</span><span class=p>);</span>
+<span class=ln>26</span>        <span class=p>}</span>
+<span class=ln>27</span>    <span class=p>}</span>
+<span class=ln>28</span><span class=p>}</span>
+</code></pre></div><p>相应地，为了能在<code>Query&lt;T>()</code>和<code>Execute()</code>两个方法中使用参数，我们需要修改相关的方法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>static</span> <span class=kt>int</span> <span class=n>Execute</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>,</span> 
+<span class=ln> 2</span>  <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>trans</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=kt>var</span> <span class=n>command</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateCommand</span><span class=p>();</span>
+<span class=ln> 5</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandText</span> <span class=p>=</span> <span class=n>sql</span><span class=p>;</span>
+<span class=ln> 6</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandType</span> <span class=p>=</span> <span class=n>CommandType</span><span class=p>.</span><span class=n>Text</span><span class=p>;</span>
+<span class=ln> 7</span>    <span class=n>command</span><span class=p>.</span><span class=n>SetDbParameter</span><span class=p>(</span><span class=n>param</span><span class=p>);</span>
+<span class=ln> 8</span>    <span class=k>return</span> <span class=n>command</span><span class=p>.</span><span class=n>ExecuteNonQuery</span><span class=p>();</span>
+<span class=ln> 9</span><span class=p>}</span>
+<span class=ln>10</span>
+<span class=ln>11</span><span class=k>private</span> <span class=k>static</span> <span class=n>IDataReader</span> <span class=n>CreateDataReader</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>,</span> 
+<span class=ln>12</span>  <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln>13</span><span class=p>{</span>
+<span class=ln>14</span>    <span class=kt>var</span> <span class=n>command</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateCommand</span><span class=p>();</span>
+<span class=ln>15</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandText</span> <span class=p>=</span> <span class=n>sql</span><span class=p>;</span>
+<span class=ln>16</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandType</span> <span class=p>=</span> <span class=n>CommandType</span><span class=p>.</span><span class=n>Text</span><span class=p>;</span>
+<span class=ln>17</span>    <span class=n>command</span><span class=p>.</span><span class=n>SetDbParameter</span><span class=p>(</span><span class=n>param</span><span class=p>);</span>
+<span class=ln>18</span>    <span class=k>return</span> <span class=n>command</span><span class=p>.</span><span class=n>ExecuteReader</span><span class=p>();</span>
+<span class=ln>19</span><span class=p>}</span>
+</code></pre></div><p>现在，唯一的问题就剩下<code>DbType</code>和<code>@</code>啦，前者在不同的数据库中可能对应不同的类型，后者则要面临 Oracle 这朵奇葩的兼容性问题，相关内容可以参考在这篇博客：<a class=link href=https://blog.yuanpei.me/posts/3086300103/ target=_blank rel=noopener>Dapper.Contrib 在 Oracle 环境下引发 ORA-00928 异常问题的解决</a>。到这一步，我们基本上可以实现类似 Dapper 的效果。当然，我并不是为了重复制造轮子，只是像从 Dapper 这样一个结果反推出相关的技术细节，从而可以串联起整个 ASO.NET 甚至是 Entity Framework 的知识体系，工作中解决类似的问题非常简单，直接通过 NuGet 安装 Dapper 即可，可如果你想深入了解某一个事物，最好的方法就是亲自去探寻其中的原理。现在基础设施越来越完善了，可有时候我们再找不回编程的那种快乐，大概是我们内心深处放弃了什么……</p>
+<p>考虑到，从微软的角度，它鼓励我们为每一家数据库去实现数据库驱动，所以，它定义了很多的抽象类。而从 ORM 的角度来考虑，它要抹平不同数据库的差异，Dapper 的做法是给<code>IDbConnection</code>写扩展方法，而针对每个数据库的“方言”，实际上不管什么 ORM 都要去做这部分“脏活儿”，以前是分给数据库厂商去做，现在是交给 ORM 设计者去做，我觉得 ADO.NET 里似乎缺少了一部分东西，它需要提供一个 IDbAdapterProvider 的接口，返回 IDbAdapter 接口，这样就可以不用关心它是被如何创建出来的。你看，同样是设计接口，可微软和 ServiceStack 俨然是两种不同的思路，这其中的差异，足可窥见一斑矣！实际上，Entity Framework 就是在以 ADO.NET 为基础发展而来的，在这个过程中，还是由厂商来实现对应的 Provider。此时此刻，你悟到了我所说的“温故而知新”了嘛？</p>
+<h1 id=本文小结>本文小结</h1>
+<p>本文实则由针对 DataSet/DataTable 的吐槽而引出，在这个过程中，我们重新温习了 ADO.NET 中<code>DbConnection</code>、<code>DbCommand</code>、<code>DbDataReader</code>、<code>DbDataAdapter</code>这些关键的组成部分，而为了解决 DataTable 在使用上的种种不变，我们想到了借鉴 Dapper 中的 DapperRow 来实现“动态查询”，由此引出了.NET 中实现 dynamic 最重要的一个接口：<code>IDynamicMetaObjectProvide</code>，这使得我们可以在查询数据库的时候返回一个 dynamic 的集合。而为了更接近 Dapper 一点，我们基于扩展方法的形式为<code>IDbConnection</code>编写了<code>Query&lt;T>()</code>和<code>Execute()</code>方法，在数据库读写层面上彻底终结了 DataSet/DataTable 的生命。最后，我们实现了一个简化版本的参数化查询，同样是借鉴 Dapper 的思路。这说明一件什么事情呢？<strong>当你在一个看似合理、结局固定的现状中无法摆脱的时候，“平躺”虽然能让你获得一丝喘息的机会，但与此同时，你永远失去了跳出这个层级去看待事物的机会</strong>，就像我以前吐槽同事天天用<code>StringBuider</code>拼接字符串一样，一味地吐槽是没有什么用的，重要的是你会选择怎么做，所以，后来我向大家推荐了<a class=link href=https://github.com/dotliquid/dotliquid target=_blank rel=noopener>Linquid</a>，<strong>2021 年已经来了，希望你不只是增长了年龄和皱纹</strong>，晚安！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/ado.net/>ADO.NET</a>
+<a href=/tags/dapper/>Dapper</a>
+<a href=/tags/dynamic/>Dynamic</a>
+<a href=/tags/%E6%8A%80%E5%B7%A7/>技巧</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/net-core%E4%B8%AD%E5%AF%B9%E8%B1%A1%E6%B1%A0-object-pool-%E7%9A%84%E4%BD%BF%E7%94%A8/>
+<div class=article-details>
+<h2 class=article-title>.NET Core 中对象池(Object Pool)的使用</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/net-core%E5%8E%9F%E7%94%9Fdi%E6%89%A9%E5%B1%95%E4%B9%8B%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A5%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>.NET Core 原生 DI 扩展之属性注入实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/net-core%E5%8E%9F%E7%94%9Fdi%E6%89%A9%E5%B1%95%E4%B9%8B%E5%9F%BA%E4%BA%8E%E5%90%8D%E7%A7%B0%E7%9A%84%E6%B3%A8%E5%85%A5%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>.NET Core 原生 DI 扩展之基于名称的注入实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/net-core-pococontroller%E5%9C%A8%E5%8A%A8%E6%80%81web-api%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/>
+<div class=article-details>
+<h2 class=article-title>.NET Core POCOController 在动态 Web API 中的应用</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/c#%E4%B8%AD%E7%9A%84%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/>
+<div class=article-details>
+<h2 class=article-title>C#中的扩展方法学习总结</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E6%B8%A9%E6%95%85%E8%80%8C%E7%9F%A5%E6%96%B0%E7%94%B1ado.net%E4%B8%8Edapper%E6%89%80%E8%81%94%E6%83%B3%E5%88%B0%E7%9A%84/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#重温-adonet>重温 ADO.NET</a></li>
+<li><a href=#实现-dynamicrow>实现 DynamicRow</a></li>
+<li><a href=#实现参数化查询>实现参数化查询</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

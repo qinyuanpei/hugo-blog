@@ -61,6 +61,11 @@
 </a>
 </li>
 <li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
 <a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
 <span>搜索</span>
 </a>
@@ -96,7 +101,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9F%BA%E4%BA%8E%E6%96%B0%E6%B5%AA%E5%BE%AE%E5%8D%9A%E7%9A%84%E7%94%B7%E5%A5%B3%E6%80%A7%E6%8B%A9%E5%81%B6%E8%A7%82%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E4%B8%8A/>基于新浪微博的男女性择偶观数据分析(上)</a>
+<a href=/posts/%E5%9F%BA%E4%BA%8E%E6%96%B0%E6%B5%AA%E5%BE%AE%E5%8D%9A%E7%9A%84%E7%94%B7%E5%A5%B3%E6%80%A7%E6%8B%A9%E5%81%B6%E8%A7%82%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E4%B8%8A/>基于新浪微博的男女性择偶观数据分析(上)</a>
 </h2>
 <h3 class=article-subtitle>
 在这里我们主要将男嘉宾/女嘉宾分别筛选出来，然后将分词结果用逗号串联起来，这样即可得到 male_tags 和 female_tags，我们会将其传递给 WordCloud 模块，可以注意到我们为男性/女性词云分别设置了不同的背景图片，最终会生成两张不同的图片，这里主要参考了[Image-colored](https://amueller.github.io/word_cloud/auto_examples/colored.html)这个示例，代码片段展示如下：;接下来，我们有了针对男、女择偶要求期望的 Wish 字段，可这些信息对我们而言，依然显得繁重而冗余，所以接下来我们考虑对 Wish 字段进行分词，最初的设想是通过词性和语法来分析，可当我分完词以后我就不得不佩服中文的博大精深，这里我选择了两个中文处理相关的库，即[结巴分词](https://github.com/fxsjy/jieba)和[SnowNLP](https://github.com/fxsjy/jieba)，它们都是开源项目并且有大量的文档作为参考，这里想说的是，SnowNLP 中支持中文文本的情感分析，这是我最初想要使用这个库的一个重要原因，因为我想从这些微博中找出评价一个人的形容词或者名词，而这些词的情感分析，可以作为我们是否将其作为一个评价指标的重要依据;解决登录的问题以后，回到这个问题本身，我们需要抓取[@西安月老牵线](https://weibo.com/u/5566882921)发布的所有微博，移动版对微博做了分页处理，所以我们只需要知道总共有多少页，然后循环去提取每一页里的信息即可，因为我们注意到每一页的地址都符合[https://weibo.cn/u/3232168977
@@ -177,7 +182,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%E5%9C%A8-hexo-%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E4%B8%8A%E7%9A%84%E5%AE%9E%E8%B7%B5/>持续集成在 Hexo 自动化部署上的实践</a>
+<a href=/posts/%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%E5%9C%A8hexo%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E4%B8%8A%E7%9A%84%E5%AE%9E%E8%B7%B5/>持续集成在 Hexo 自动化部署上的实践</a>
 </h2>
 <h3 class=article-subtitle>
 TravisCI 提供了主流编程语言如 C#、Java、JavaScript、Ruby、PHP、Node.js 等的支持，相比 Jenkins 而言，它是一个轻量级的持续集成平台，它会在每次提交代码后，根据配置文件来创建一个虚拟机，并执行用户定义的 Build 任务，这个虚拟机提供版本控制(**Git**)、项目构建(**Node.js**)等，在此前提下，我们下面着手 Hexo 的自动化部署;现在我们在本地提交代码到 blog 分支，就会触发 TravisCI 执行 Build 任务，在这里 Build 任务是从 blog 分支拉取博客内容及主题，通过 npm 安装依赖的 nodejs 模块，最终 Hexo 生成的静态页面会被推送到 master 分支，这样就完成了整个自动化构建的流程;其次，持续集成可以将开发和部署分离，所以我在任何一台计算机上撰写博客，都可以通过 TravisCI 实现编译和部署，对 Hexo 这种静态博客而言，部署其实就是推送页面到 Github 而已，整体难度并没有太高
@@ -258,7 +263,7 @@ TravisCI 提供了主流编程语言如 C#、Java、JavaScript、Ruby、PHP、No
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BB%8E-react-%E4%B8%93%E5%88%A9%E4%BA%8B%E4%BB%B6%E7%9C%8B%E5%BC%80%E6%BA%90%E8%BD%AF%E4%BB%B6%E8%AE%B8%E5%8F%AF/>从 React 专利事件看开源软件许可</a>
+<a href=/posts/%E4%BB%8Ereact%E4%B8%93%E5%88%A9%E4%BA%8B%E4%BB%B6%E7%9C%8B%E5%BC%80%E6%BA%90%E8%BD%AF%E4%BB%B6%E8%AE%B8%E5%8F%AF/>从 React 专利事件看开源软件许可</a>
 </h2>
 <h3 class=article-subtitle>
 实际上在 React 为前端带来虚拟 DOM、单向数据流和不可变对象等一系列函数式编程的概念的同时，Facebook 在开源社区中的话语权同样越来越大，Facebook 在开源协议中夹藏私货的确让人有种"挟天子以令诸侯"的感觉，曾几何时，社区指责微软没有开放全部的 OpenXML 标准，因为大家都觉得按照这个标准实现的 Office 文档和微软家的存在差异，可是面对这种和自家产品紧密联系的项目要开源，我觉得这不单是 Facebook 会有所提防，恐怕所有的商业公司都会有类似的想法吧，所以在这个事件中，隐含的一个点就是，一旦当使用 React 的公司和 Facebook 发生业务上的竞争，React 将成为 Facebook 获得诉讼胜利的一个重要筹码，因为根据 React 的专利协议，Facebook 有权在开展诉讼时从被授权方手中收回 React 的使用权，所以我们不难理解为什么百度和 Wordpress 都宣称要停止使用 React，除了不想受制于人以外，像百度这种未来可能会和 Facebook 在 AI 等领域发生竞争的公司，宁可自己造一套轮子而不愿让自家专利被对方使用的做法，我觉得是可以理解的;或许在数日前，你还在为 React 专利事件而苦恼，或者考虑在 Preact 的基础上实现一个新的 React，或者考虑转向 Angular 和 Vue 这两个框架，此时此刻 Facebook 宣布将 React 的开源协议修改为 MIT，或许这算是开源社区的一次胜利，或许这算是整个专利事件的尘埃落定，或许有人继续担心 Facebook 搞其他事情，可是这个世界原本就是在每天都发生变化着的，对于未来我们常常是无从得知它的足迹会在哪里;所以这篇文章我想和大家通过 React 专利事件来聊聊开源软件许可，以及我们如何在商业化和开源社区间找到一个平衡点
@@ -285,7 +290,7 @@ TravisCI 提供了主流编程语言如 C#、Java、JavaScript、Ruby、PHP、No
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/redis-%E7%BC%93%E5%AD%98%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E7%B3%BB%E5%88%97%E4%B9%8B-lua-%E8%84%9A%E6%9C%AC/>Redis 缓存技术学习系列之 Lua 脚本</a>
+<a href=/posts/redis%E7%BC%93%E5%AD%98%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E7%B3%BB%E5%88%97%E4%B9%8Blua%E8%84%9A%E6%9C%AC/>Redis 缓存技术学习系列之 Lua 脚本</a>
 </h2>
 <h3 class=article-subtitle>
 好了，现在大家应该理解 EVAL 这个命令的使用方法啦，那么对 EVALSHA 命令来说，顾名思义，它就是使用了 SHA1 验证的 EVAL 方法，我们注意到现在脚本都是定义在 EVAL 命令的第一个参数上，假如我们需要复用一个脚本，而该脚本可以为我们提供 Sum 这样的功能，即它可以返回一组参数的和给我们，显然参数的个数是不同的，那么这个时候我们总不能每次都重复写这个脚本吧，所以 Redis 会为脚本创建一个指纹，我们使用 EVALSHA 命令来传入一个指纹，Redis 将从缓存的脚本中找到这个脚本，并结合我们的参数来调用它，这样我们就可以获得脚本执行以后的结果，关于指纹的这种说法，大家可以结合 Git 提交代码时的感受进行理解，除此以外，它和 EVAL 在使用方法上是完全一致的，所以不再举例子说明啦;尤其当我面试的时候，我发现好多我写在简历上的内容，都会成为某种意义上的呈堂证供，这让我更加确信好多东西需要不断地去巩固，所以尝试在实际项目上使用 Moq、考虑怎么写出更好的测试方法以及时刻保持自我的不可替代性，这些都是我最近在考虑的事情，有时候发脾气是因为觉得自己在浪费生命，可越是被这种无力感笼罩的时候，就越是要对自己狠一点儿，所以在这篇博客中，让我们重新拾起对 Redis 的学习兴趣，今天我们来说说 Redis 中的 Lua 脚本;好了，我们下面来解释下这段脚本，我们向 Redis 中键名为**data**的集合中添加了 5 个元素，注意这句脚本是在执行**src/redis-cli**后执行的，这部分内容我们在前面讲解 Redis 中的数据结构的时候提到过，博主表示在写这篇文章的时候依然要去看文档，总之现在我们有一个集合，并且这个集合中有 5 个元素，与此同时呢，我们编写了一个 Lua 脚本文件**script01.lua**，这个脚本的作用是对集合中的元素进行求和
@@ -383,7 +388,7 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <form action=/search/ class="search-form widget">
 <p>
 <label>搜索</label>
-<input name=keyword required placeholder=输入关键词...>
+<input name=keyword required placeholder=请输入关键词>
 <button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
 </button>
 </p>
@@ -473,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/jetbrain/ class=font_size_1>
-JetBrain
+<a href=/tags/%E6%8B%96%E6%8B%BD/ class=font_size_1>
+拖拽
 </a>
-<a href=/tags/jsdelivr/ class=font_size_1>
-jsDelivr
-</a>
-<a href=/tags/%E6%A6%82%E7%8E%87/ class=font_size_2>
-概率
-</a>
-<a href=/tags/%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/ class=font_size_1>
-配置中心
-</a>
-<a href=/tags/%E6%80%A7%E8%83%BD/ class=font_size_1>
-性能
-</a>
-<a href=/tags/%E9%BB%91%E5%AE%A2/ class=font_size_2>
-黑客
-</a>
-<a href=/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/ class=font_size_1>
-函数式编程
-</a>
-<a href=/tags/ide/ class=font_size_1>
-IDE
-</a>
-<a href=/tags/%E9%98%BF%E9%87%8C/ class=font_size_1>
-阿里
-</a>
-<a href=/tags/%E5%AE%B9%E5%99%A8/ class=font_size_1>
-容器
-</a>
-<a href=/tags/%E6%96%87%E6%A1%A3/ class=font_size_1>
-文档
-</a>
-<a href=/tags/%E5%9B%9E%E9%A1%BE/ class=font_size_1>
-回顾
-</a>
-<a href=/tags/gephi/ class=font_size_1>
-Gephi
-</a>
-<a href=/tags/retrofit/ class=font_size_1>
-Retrofit
-</a>
-<a href=/tags/%E5%BE%AE%E5%8D%9A/ class=font_size_3>
-微博
-</a>
-<a href=/tags/%E8%BF%81%E7%A7%BB/ class=font_size_1>
-迁移
-</a>
-<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/ class=font_size_1>
-游戏引擎
-</a>
-<a href=/tags/%E5%85%A8%E6%99%BA%E8%B4%A4/ class=font_size_1>
-全智贤
-</a>
-<a href=/tags/%E6%A0%A1%E9%AA%8C/ class=font_size_1>
-校验
+<a href=/tags/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/ class=font_size_2>
+主从复制
 </a>
 <a href=/tags/restful/ class=font_size_4>
 RESTful
 </a>
-<a href=/tags/%E9%98%85%E8%AF%BB/ class=font_size_2>
-阅读
+<a href=/tags/%E8%AF%BB%E4%B9%A6/ class=font_size_5>
+读书
 </a>
-<a href=/tags/%E4%BA%91%E9%9F%B3%E4%B9%90/ class=font_size_1>
-云音乐
+<a href=/tags/%E4%BA%B2%E6%83%85/ class=font_size_1>
+亲情
 </a>
-<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
-调优
+<a href=/tags/%E6%83%85%E6%84%9F/ class=font_size_1>
+情感
+</a>
+<a href=/tags/di/ class=font_size_2>
+DI
+</a>
+<a href=/tags/sublime/ class=font_size_1>
+Sublime
+</a>
+<a href=/tags/c#/ class=font_size_7>
+C#
+</a>
+<a href=/tags/%E6%9C%9D%E5%9C%A3/ class=font_size_1>
+朝圣
+</a>
+<a href=/tags/hangfire/ class=font_size_1>
+Hangfire
+</a>
+<a href=/tags/csharp/ class=font_size_2>
+CSharp
+</a>
+<a href=/tags/wechat/ class=font_size_1>
+Wechat
+</a>
+<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
+网易
+</a>
+<a href=/tags/%E7%AE%97%E6%B3%95/ class=font_size_2>
+算法
+</a>
+<a href=/tags/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A0%91/ class=font_size_1>
+表达式树
+</a>
+<a href=/tags/lua/ class=font_size_2>
+Lua
+</a>
+<a href=/tags/%E5%BD%B1%E8%AF%84/ class=font_size_10>
+影评
+</a>
+<a href=/tags/pwa/ class=font_size_1>
+PWA
+</a>
+<a href=/tags/aop/ class=font_size_6>
+AOP
+</a>
+<a href=/tags/es6/ class=font_size_1>
+ES6
+</a>
+<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
+面试
+</a>
+<a href=/tags/envoy/ class=font_size_6>
+Envoy
 </a>
 <a href=/tags/pl/sql/ class=font_size_1>
 PL/SQL
 </a>
-<a href=/tags/ado.net/ class=font_size_1>
-ADO.NET
+<a href=/tags/excel/ class=font_size_1>
+Excel
 </a>
 <a href=/tags class=font_size_9999>
 更多

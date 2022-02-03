@@ -6,7 +6,7 @@
 <meta property="og:description" content="在这里 Contract 实现了 IRankable 接口，每个 Contract 的权重由 Level 和 Priority 两个属性来计算，示例中我们一次从集合中随机抽取了 10 个 Contract，而我们的算法能够保证它们都是不重复的，这个程序可以满足各种各样的抽取规则，比如按照 Contract 的口语、职位等不同的维度进行概率模型的建立即可，只要它实现了 IRankable 接口就可以使用这篇文章中的方法来随机抽取，这其实是一个业余时间的小项目啦，可我还是想让自己认真地考虑下这个问题，所以我花时间写了这篇文章，我对它的期望并没有太高，我喜欢将这些想法写下来而已;后者在每次抽取完以后需要将抽中的奖品从奖品池中取出，重新计算概率后方能进行下一轮抽取，所以这里我们直接给出这两两种抽取方法的代码实现，这里需要考虑的一个问题是，在抽取指定数目个“奖品”的时候我们通常不希望出现重复的元素，前者需要我们判断已抽取的奖品列表中是否存在指定元素，而后者因为抽取的奖品会被取出，所以不需要考虑这种情况的处理;好了，现在我们就获得了不同权重物品所对应的累积概率，即其概率范围，因此我们可以利用随机生成[0,1)范围内的随机数，然后判断随机数所在哪个概率范围内，我们就可以知道要对哪个权重分组中的奖品进行抽取，而对每个权重分组来说，因为其权重都是一样的，所以这里抽取试验可以认为是符合随机概率的，我们只需要从该分组中随机选取一个奖品返回就可以啦">
 <meta property="og:url" content="/posts/%E4%B8%80%E4%B8%AA%E5%85%B3%E4%BA%8E%E6%A6%82%E7%8E%87%E7%9A%84%E9%97%AE%E9%A2%98%E7%9A%84%E6%80%9D%E8%80%83/">
 <meta property="og:site_name" content="素履独行">
-<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="概率"><meta property="article:tag" content="数学"><meta property="article:tag" content="算法"><meta property="article:published_time" content="2016-09-24T20:06:45+00:00"><meta property="article:modified_time" content="2016-09-24T20:06:45+00:00">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="概率"><meta property="article:tag" content="数学"><meta property="article:tag" content="算法"><meta property="article:published_time" content="2016-09-24T20:06:45+00:00"><meta property="article:modified_time" content="2016-09-24T20:06:45+00:00">
 <meta name=twitter:title content="一个关于概率的问题的思考">
 <meta name=twitter:description content="在这里 Contract 实现了 IRankable 接口，每个 Contract 的权重由 Level 和 Priority 两个属性来计算，示例中我们一次从集合中随机抽取了 10 个 Contract，而我们的算法能够保证它们都是不重复的，这个程序可以满足各种各样的抽取规则，比如按照 Contract 的口语、职位等不同的维度进行概率模型的建立即可，只要它实现了 IRankable 接口就可以使用这篇文章中的方法来随机抽取，这其实是一个业余时间的小项目啦，可我还是想让自己认真地考虑下这个问题，所以我花时间写了这篇文章，我对它的期望并没有太高，我喜欢将这些想法写下来而已;后者在每次抽取完以后需要将抽中的奖品从奖品池中取出，重新计算概率后方能进行下一轮抽取，所以这里我们直接给出这两两种抽取方法的代码实现，这里需要考虑的一个问题是，在抽取指定数目个“奖品”的时候我们通常不希望出现重复的元素，前者需要我们判断已抽取的奖品列表中是否存在指定元素，而后者因为抽取的奖品会被取出，所以不需要考虑这种情况的处理;好了，现在我们就获得了不同权重物品所对应的累积概率，即其概率范围，因此我们可以利用随机生成[0,1)范围内的随机数，然后判断随机数所在哪个概率范围内，我们就可以知道要对哪个权重分组中的奖品进行抽取，而对每个权重分组来说，因为其权重都是一样的，所以这里抽取试验可以认为是符合随机概率的，我们只需要从该分组中随机选取一个奖品返回就可以啦">
 </head>
@@ -301,7 +301,7 @@ extended">
 </a>
 </article>
 <article>
-<a href=/posts/envoy-%E9%9B%86%E6%88%90-jaeger-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%B7%9F%E8%B8%AA/>
+<a href=/posts/envoy-%E9%9B%86%E6%88%90-jaeger-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/>
 <div class=article-details>
 <h2 class=article-title>Envoy 集成 Jaeger 实现分布式链路跟踪</h2>
 </div>
@@ -331,14 +331,11 @@ extended">
 </div>
 </div>
 </aside>
-<div class=disqus-container>
-<div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</div>
-<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
-<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E4%B8%80%E4%B8%AA%E5%85%B3%E4%BA%8E%E6%A6%82%E7%8E%87%E7%9A%84%E9%97%AE%E9%A2%98%E7%9A%84%E6%80%9D%E8%80%83/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
 <footer class=site-footer>
 <section class=copyright>
 &copy;

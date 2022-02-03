@@ -6,7 +6,7 @@
 <meta property="og:description" content="时间终于来到了十二月，据说，《黑客帝国 4：矩阵重生》 将于本月在北美上映，正如同它的片名一样，黑客帝国系列在沉寂了十八年后，终于等来了一次矩阵">
 <meta property="og:url" content="/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%9B%E6%9E%97%E6%8E%A2%E9%99%A9%E7%B3%BB%E5%88%97%E4%B9%8B-redis-%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/">
 <meta property="og:site_name" content="素履独行">
-<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="分布式"><meta property="article:tag" content="集群"><meta property="article:tag" content="Redis"><meta property="article:published_time" content="2021-12-01T09:58:59+00:00"><meta property="article:modified_time" content="2021-12-01T09:58:59+00:00">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="分布式"><meta property="article:tag" content="集群"><meta property="article:tag" content="Redis"><meta property="article:published_time" content="2021-12-01T09:58:59+00:00"><meta property="article:modified_time" content="2021-12-01T09:58:59+00:00">
 <meta name=twitter:title content="分布式丛林探险系列之 Redis 集群模式">
 <meta name=twitter:description content="时间终于来到了十二月，据说，《黑客帝国 4：矩阵重生》 将于本月在北美上映，正如同它的片名一样，黑客帝国系列在沉寂了十八年后，终于等来了一次矩阵">
 </head>
@@ -48,15 +48,15 @@ extended">
 <h1 id=redis-集群概述>Redis 集群概述</h1>
 <p>通过上一篇<a class=link href=/posts/1748863652/>文章</a>，我们了解到，主从复制的作用主要体现在数据冗余、故障恢复、负载均衡等方面。可很多时候，我们讲分布式，并不是说简单的复制就好啦！相信大家都听说过，水平扩展和垂直扩展这两个概念，特别是数据库的水平扩展，它天然地和分片(Sharding)联系在一起，这意味是我们希望在不同地数据库/表里存储不同地数据。此前，博主曾在 <a class=link href=https://blog.yuanpei.me/posts/2151871792/ target=_blank rel=noopener>《浅议 EF Core 分库分表及多租户架构的实现》</a> 一文里介绍过数据库的分库/表，作为类比，我们可以归纳出 Redis 集群模式的第一个特点，即：<strong>它本质上是一种服务器 Sharding 技术</strong>。因为纯粹的主从复制意味着，每台 Redis 服务器都存储相同的数据，显然这造成了资源的浪费，而让每台 Redis 服务器存储不同的数据，这就是 Redis 的集群模式。如下图所示，Redis 集群模式呈现出的一种网状结构，完全不同于主从复制间的单向流动：</p>
 <p><figure>
-<a href=/Redis-Clusters-theory.drawio.png>
-<img src=/Redis-Clusters-theory.drawio.png loading=lazy alt="Redis 集群模式示意图">
+<a href=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-theory.drawio.png>
+<img src=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-theory.drawio.png loading=lazy alt="Redis 集群模式示意图">
 </a>
 <figcaption>Redis 集群模式示意图</figcaption>
 </figure></p>
 <p>从图中可以看出，6 台服务器组成了一个网状结构，任意两台服务器间都可以相互通信。也许，大家会好奇一个问题，为什么这里博主就画了 6 台服务器？其实，这一切都是有迹可循的，因为 Redis 官方规定：一个集群中至少需要有 3 个主服务器(Master)。所以，一个 Redis 集群至少需要 6 台服务器。如果从这个角度来审视集群的定义的话，你可以认为 Redis 集群就是由多个主从复制一起对外提供服务。此时，集群中的节点都通过 TCP 连接和一个被称为 Cluster Bus 的二进制协议来建立通信，这里的 Cluster Bus 你可以将其理解为 <a class=link href=https://kafka.apache.org/ target=_blank rel=noopener>Kafka</a> 或者 <a class=link href=https://www.rabbitmq.com/ target=_blank rel=noopener>RabbitMQ</a> 这样的支持“发布-订阅”(Pub-Sub)机制的东西，换句话说，集群中的每个节点都可以通过 Cluster Bus 与集群中的其它节点连接起来。节点们使用一种叫做 <a class=link href=https://hyperledger-fabric.readthedocs.io/zh_CN/release-2.2/gossip.html target=_blank rel=noopener>Gossip</a> 的消息协议，据说，这是一种从瘟疫和社交网站上获得灵感消息传播方式。“六度分割”理论告诉我们，<strong>最多通过 6 个人你就能认识任何一个陌生人</strong>，同样地，最多通过 6 个节点你就可以把消息传递给任何一个节点。</p>
 <p><figure>
-<a href=/Redis-Clusters-1.drawio.png>
-<img src=/Redis-Clusters-1.drawio.png loading=lazy alt="Redis 集群模式与主从模式的联系">
+<a href=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-1.drawio.png>
+<img src=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-1.drawio.png loading=lazy alt="Redis 集群模式与主从模式的联系">
 </a>
 <figcaption>Redis 集群模式与主从模式的联系</figcaption>
 </figure></p>
@@ -64,22 +64,22 @@ extended">
 <h2 id=一致性哈希算法>一致性哈希算法</h2>
 <p>OK，我们知道，在面对数据库的水平拆分问题时，一个最为关键的问题是路由，换句话说，我怎么样可以找到到对应的库或者表。常见的思路有范围、哈希和配置等等，而在 Redis 的集群模式下，我们同样会面临这个问题，更一般地，任何需要负载均衡的场景都需要考虑这个问题，譬如，我们对多台服务器的 IP 地址求余，然后按照余数来进行路由，抑或者是按照不同的权重进行随机等等，这看起来像回到了熟悉的负载均衡算法，对吗？事实上，一般的负载均衡算法都会选择哈希算法，而哈希算法本质上就是一种散列函数，它可以把任意长度的输入转化为确定的、固定长度的输出，以最常见的求余为例，它具体是怎么工作的呢？我们来一起看下面的图：</p>
 <p><figure>
-<a href=/Redis-Clusters-Hash.drawio.png>
-<img src=/Redis-Clusters-Hash.drawio.png loading=lazy alt=经典哈希算法>
+<a href=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Hash.drawio.png>
+<img src=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Hash.drawio.png loading=lazy alt=经典哈希算法>
 </a>
 <figcaption>经典哈希算法</figcaption>
 </figure></p>
 <p>可以注意到，首先，我们需要对 Key 计算出一个 hash 值，你可以理解为编程语言里的<code>GetHashCode()</code>方法，主要目的是将字符串类型的 Key 转化为整数型方便计算。接下来，按照主节点的数量来进行求余运算(统称为<strong>散列运算</strong>)，例如，这里我们有 3 台主节点服务器，故而在上面的图示中 n 应该等于 3，而这就是经典的哈希算法啦！那么，Redis 的集群有没有采用这个算法呢？答案还是否定的，因为这个方案里最大的变数就是 n。具体来讲，如果你想要扩容，那么 n 会变大，此时 Key 与服务器间的映射关系会被打破，即使不扩容，一旦某台服务器宕机，Key 与服务器间的映射关系还是会被打破，如果出现散列“碰撞”，无疑会让问题变得更复杂。</p>
 <p><figure>
-<a href=/Redis-Clusters-Hash-Conflict.drawio.png>
-<img src=/Redis-Clusters-Hash-Conflict.drawio.png loading=lazy alt=经典哈希算法“碰撞”问题>
+<a href=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Hash-Conflict.drawio.png>
+<img src=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Hash-Conflict.drawio.png loading=lazy alt=经典哈希算法“碰撞”问题>
 </a>
 <figcaption>经典哈希算法“碰撞”问题</figcaption>
 </figure></p>
 <p>可以注意到，当从对 3 取模变成对 2 取模以后，必然会出现两个 1，这就是所谓的散列“碰撞”。所以，对于经典的哈希算法而言，它无法抵消因为 n 的变化而带来的重新 hash 的问题。为了解决这个问题，业界普遍使用的是一致性哈希算法，相比经典的哈希算法，最大的变化在于它将 n 的取值固定下来，即按 <code>2^32</code> 取模，此时，结果会落在 0 到 <code>2^32 - 1</code> 这个区间内，一旦我们将这个区间抽象为一个圆环，利用 CRC16 算法计算出来的值就会落在圆环上的某个地方：</p>
 <p><figure>
-<a href=/Redis-Clusters-Hash-Advance.drawio.png>
-<img src=/Redis-Clusters-Hash-Advance.drawio.png loading=lazy alt=改良后的哈希一致性算法>
+<a href=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Hash-Advance.drawio.png>
+<img src=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Hash-Advance.drawio.png loading=lazy alt=改良后的哈希一致性算法>
 </a>
 <figcaption>改良后的哈希一致性算法</figcaption>
 </figure></p>
@@ -87,15 +87,15 @@ extended">
 <h2 id=redis-哈希槽>Redis 哈希槽</h2>
 <p>截止到现在，我们知道了，一致性哈希算法相对经典哈希算法的优势，可这个算法真的没有问题吗？我们应该会想到，节点在哈希环上的分布是不均匀的，这意味着，每个节点上对应的 Key 的数量各不相同，更进一步，我们可以说，每台 Redis 上存储的数据量不同，这样，原本期待着负载均衡的我们，此刻被光速地打脸。因此，在实际应用中，为了让哈希环分布更均匀一点，会设置所谓的“虚拟节点”。不过，就算你考虑到了这种地步，Redis 还是没有采用这种哈希一致性的方案，你说这是不是有点气人？事实上，它采用的是一种被称为哈希槽的方案：</p>
 <p><figure>
-<a href=/Redis-Clusters-Hash-Slots.drawio.png>
-<img src=/Redis-Clusters-Hash-Slots.drawio.png loading=lazy alt="Redis 哈希槽示意图">
+<a href=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Hash-Slots.drawio.png>
+<img src=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Hash-Slots.drawio.png loading=lazy alt="Redis 哈希槽示意图">
 </a>
 <figcaption>Redis 哈希槽示意图</figcaption>
 </figure></p>
 <p>如图所示，Redis 集群中总共有 16384 个槽位，它是怎么算出来的呢？因为 CRC16 算法产生的 hash 值有 16 个 bit，因此，它可以产生 <code>2^16</code> 即 65536 个值，理论上我们完全可以分配 65536 个槽位，不过考虑到网络带宽、节点数目，作者觉得 16384 个槽位完全够用了，前提是你集群内的节点不超过 1000 个！是不是听起来觉得非常离谱？可有些时候，工程上的事情，还真不能按科学一板一眼的来，不然，你又怎么会见到各种各样的“敏捷开发”、”项目管理”呢？</p>
 <p><figure>
-<a href=/Redis-Clusters-Hash-Slots-Assign.png>
-<img src=/Redis-Clusters-Hash-Slots-Assign.png loading=lazy alt="Redis 哈希槽槽位分配">
+<a href=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Hash-Slots-Assign.png>
+<img src=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Hash-Slots-Assign.png loading=lazy alt="Redis 哈希槽槽位分配">
 </a>
 <figcaption>Redis 哈希槽槽位分配</figcaption>
 </figure></p>
@@ -182,8 +182,8 @@ appendonly yes
 </span><span class=ln>4</span><span class=se></span>  --cluster-replicas <span class=m>1</span>
 </code></pre></div><p>该命令表示创建一个由 6 台服务器组成的集群，其中，<code>--cluster-replicas</code> 参数表示每个主节点分配一个从节点。此时此刻，当我们按下回车后，就可以看到下面的画面：</p>
 <p><figure>
-<a href=/Redis-Clusters-Docker-01.png>
-<img src=/Redis-Clusters-Docker-01.png loading=lazy alt="通过 redis-cli 创建 Redis 集群">
+<a href=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Docker-01.png>
+<img src=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Docker-01.png loading=lazy alt="通过 redis-cli 创建 Redis 集群">
 </a>
 <figcaption>通过 redis-cli 创建 Redis 集群</figcaption>
 </figure></p>
@@ -196,22 +196,22 @@ appendonly yes
 <span class=ln>6</span>127.0.0.1:7001&gt; <span class=nb>set</span> name yuanpei
 </code></pre></div><p>我们会发现一个现象，就是 Redis 会告诉你这里有一次重定向，如图所示，它从 <code>7001</code> 重定向到了 <code>7002</code>，这是因为按照 CRC16 算法计算出的结果，<code>name</code> 这个键应该被分配到 <code>7002</code> 上存储：</p>
 <p><figure>
-<a href=/Redis-Clusters-Docker-03.png>
-<img src=/Redis-Clusters-Docker-03.png loading=lazy alt="通过 redis-cli 向 Redis 集群写入值">
+<a href=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Docker-03.png>
+<img src=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Docker-03.png loading=lazy alt="通过 redis-cli 向 Redis 集群写入值">
 </a>
 <figcaption>通过 redis-cli 向 Redis 集群写入值</figcaption>
 </figure></p>
 <p>同理，在我们已经知道 <code>name</code> 这个键存储在 <code>7002</code>上的情况下，我们依然可以从集群中的其它节点上读取到这个值：</p>
 <p><figure>
-<a href=/Redis-Clusters-Docker-02.png>
-<img src=/Redis-Clusters-Docker-02.png loading=lazy alt="通过 redis-cli 向 Redis 集群读出值">
+<a href=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Docker-02.png>
+<img src=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Docker-02.png loading=lazy alt="通过 redis-cli 向 Redis 集群读出值">
 </a>
 <figcaption>通过 redis-cli 向 Redis 集群读出值</figcaption>
 </figure></p>
 <p>可以注意到，集群依然可以自动地从 <code>7004</code> 重定向到 <code>7002</code>，这表明，我们可以从集群中的任何一个节点上查询数据，并且每个节点上都存储着不同的数据，这可不就是数据分片吗？这恰恰印证了我一开始的观点，即：<strong>Redis 的集群模式，本质上是一种服务器 Sharding 技术</strong>。果然，博主诚不欺人也，哈哈！</p>
 <p><figure>
-<a href=/Redis-Clusters-Vote.drawio.png>
-<img src=/Redis-Clusters-Vote.drawio.png loading=lazy alt="Redis 集群投票示意图">
+<a href=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Vote.drawio.png>
+<img src=/posts/%e5%88%86%e5%b8%83%e5%bc%8f%e4%b8%9b%e6%9e%97%e6%8e%a2%e9%99%a9%e7%b3%bb%e5%88%97%e4%b9%8b-Redis-%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f/Redis-Clusters-Vote.drawio.png loading=lazy alt="Redis 集群投票示意图">
 </a>
 <figcaption>Redis 集群投票示意图</figcaption>
 </figure></p>
@@ -243,21 +243,21 @@ appendonly yes
 </a>
 </article>
 <article>
-<a href=/posts/%E5%86%8D%E8%AF%9D-aop%E4%BB%8E%E7%AE%80%E5%8C%96%E7%BC%93%E5%AD%98%E6%93%8D%E4%BD%9C%E8%AF%B4%E8%B5%B7/>
+<a href=/posts/%E5%86%8D%E8%AF%9Daop%E4%BB%8E%E7%AE%80%E5%8C%96%E7%BC%93%E5%AD%98%E6%93%8D%E4%BD%9C%E8%AF%B4%E8%B5%B7/>
 <div class=article-details>
 <h2 class=article-title>再话 AOP，从简化缓存操作说起</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/%E5%9F%BA%E4%BA%8E-websocket-%E5%92%8C-redis-%E5%AE%9E%E7%8E%B0-bilibili-%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/>
+<a href=/posts/%E5%9F%BA%E4%BA%8Ewebsocket%E5%92%8Credis%E5%AE%9E%E7%8E%B0bilibili%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/>
 <div class=article-details>
 <h2 class=article-title>基于 WebSocket 和 Redis 实现 Bilibili 弹幕效果</h2>
 </div>
 </a>
 </article>
 <article>
-<a href=/posts/envoy-%E9%9B%86%E6%88%90-jaeger-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%B7%9F%E8%B8%AA/>
+<a href=/posts/envoy-%E9%9B%86%E6%88%90-jaeger-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/>
 <div class=article-details>
 <h2 class=article-title>Envoy 集成 Jaeger 实现分布式链路跟踪</h2>
 </div>
@@ -273,14 +273,11 @@ appendonly yes
 </div>
 </div>
 </aside>
-<div class=disqus-container>
-<div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</div>
-<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
-<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%9B%E6%9E%97%E6%8E%A2%E9%99%A9%E7%B3%BB%E5%88%97%E4%B9%8B-redis-%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
 <footer class=site-footer>
 <section class=copyright>
 &copy;

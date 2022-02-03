@@ -1,0 +1,30 @@
+{{ $categories := .Site.Taxonomies.categories.ByCount }}
+{{ if $categories }}
+<section class="widget archives">
+    {{ if .Site.Params.widgets.categories.showIcon }}
+    <div class="widget-icon">
+        {{ partial "helper/icon" "infinity" }}
+    </div>
+    {{ end }}
+    <h2 class="widget-title section-title">{{ T "widget.categories.title" }}</h2>
+
+    <div class="widget-archive--list">
+        {{ range $item := first .Site.Params.widgets.categories.limit $categories }}
+        <div class="archives-year">
+            <a href="{{ $item.Page.RelPermalink }}">
+                <span class="year">{{ $item.Page.Title }}</span>
+                <span class="count">{{ $item.Count }}</span>
+            </a>
+        </div>
+        {{ end }}
+
+        <div class="archives-year">
+            <div class="archives-year">
+                <a href="/categories">
+                    <span class="year">{{ T "widget.categories.more" }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{{ end }}

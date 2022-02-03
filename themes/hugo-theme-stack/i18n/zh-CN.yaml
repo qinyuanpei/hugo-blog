@@ -50,6 +50,11 @@ widget:
             other: 标签云
         more: 
             other: 更多
+    categories:
+        title:
+            other: 分类
+        more:
+            other: 更多
 
 search:
     title:

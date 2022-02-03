@@ -1,0 +1,24 @@
+<div id="comment" class="valine-container"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+new Valine({
+    el: '#comment' ,
+    notify: false, 
+    verify: true, 
+    appId: '{{ .Site.Params.comments.valine.appId }}',
+    appKey: '{{ .Site.Params.comments.valine.appKey }}',
+    placeholder: '云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',
+    path:'{{ .Permalink }}', 
+    avatar:'identicon',
+    requiredFields: ['nick','mail']
+});
+</script>
+<style>
+    .valine-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>

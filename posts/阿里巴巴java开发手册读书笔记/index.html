@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="说明：表达是否最好用 0 和 1 来表示，我们用 Y 和 N 时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用 unsigned tinyint 类型，它本身就自带默认值 0，这样就可以避免这种问题的出现;说明：建议全部使用小写，因为主流 SQL 教程的里关键字都采用大写，但在 PLSQL/SQLyog 里编写 SQL 语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写;说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某 SAP 提供的 OA 接口，除了超级难用以外，每次都要花大量时间去对字段"><title>《阿里巴巴 Java 开发手册》读书笔记</title>
 <link rel=canonical href=/posts/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
-<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="《阿里巴巴 Java 开发手册》读书笔记">
+<link rel=stylesheet href=/scss/style.min.6687a61b1e238f92786f42470861148a3b041862018e00b73f68762d8d7985d8.css><meta property="og:title" content="《阿里巴巴 Java 开发手册》读书笔记">
 <meta property="og:description" content="说明：表达是否最好用 0 和 1 来表示，我们用 Y 和 N 时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用 unsigned tinyint 类型，它本身就自带默认值 0，这样就可以避免这种问题的出现;说明：建议全部使用小写，因为主流 SQL 教程的里关键字都采用大写，但在 PLSQL/SQLyog 里编写 SQL 语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写;说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某 SAP 提供的 OA 接口，除了超级难用以外，每次都要花大量时间去对字段">
 <meta property="og:url" content="/posts/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
 <meta property="og:site_name" content="素履独行">

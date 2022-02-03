@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型"><title>使用 C#开发 HTTP 服务器系列之更简单的实现方式</title>
 <link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E6%9B%B4%E7%AE%80%E5%8D%95%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/>
-<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="使用 C#开发 HTTP 服务器系列之更简单的实现方式">
+<link rel=stylesheet href=/scss/style.min.6687a61b1e238f92786f42470861148a3b041862018e00b73f68762d8d7985d8.css><meta property="og:title" content="使用 C#开发 HTTP 服务器系列之更简单的实现方式">
 <meta property="og:description" content="其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型">
 <meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E6%9B%B4%E7%AE%80%E5%8D%95%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">
 <meta property="og:site_name" content="素履独行">

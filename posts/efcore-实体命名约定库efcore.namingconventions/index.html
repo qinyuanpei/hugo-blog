@@ -1,50 +1,14 @@
 <!doctype html><html lang=en-us>
 <head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“CURD Boy”。虽然不过是朴实无华的“增删查改”，可隐隐然早已分出了无数的流派。在这些不同的流派中，有的人坚持“我手写我心”，认为手写SQL才是真正的王道，没有读过/写过成百上千行的存储过程，便不足以谈论程序员的人生。而有的人喜欢ORM的清晰、整洁，认为数据库和面向对象存在着天然抗阻，ORM更有利于推进DDD和微服务的落地。相信大家都听说过Java里的SSH框架，从Hibernate到Mybatis再到Spring Data JPA，可以说这种争论一直没有停止过。这里我们不打算讨论这个问题，我们平时使用EF或者EFCore的过程中，作为连接数据库和面向对象两个异世界的桥梁，ORM需要我们来告诉它，实体数据与数据库表字段的映射关系，所以，经常需要通过数据注解或者Fulent API来写各种配置。那么，有没有什么方案可以让我们偷这个懒呢？下面隆重请出本文的主角：EFCore.NamingConventions。
-使用方法 EFCore. NamingConventions，目前由一个非官方的组织进行维护，代码托管在 Github 上，100％的开源项目。
-如果你希望直接使用它的话，可以直接通过NuGet进行安装：
-1Install-Package EFCore.NamingConventions 接下来，我们只需要在DbContext的 OnConfiguring()方法中，调用它提供的扩展方法即可：
-1protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 2=&amp;gt; optionsBuilder 3.UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) 4.UseSnakeCaseNamingConvention(); 或者，你可以使用依赖注入的方式：
-1services.AddDbContext&amp;lt;ChinookContext&amp;gt;(options =&amp;gt; 2 options.UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) 3 .UseSnakeCaseNamingConvention() 4); 这里我以SQLite数据库为例，来展示它的具体使用细节。事实上，它提供了 4 种命名约定的策略：
- UseSnakeCaseNamingConvention: FullName -&amp;gt; full_name UseLowerCaseNamingConvention: FullName -&amp;gt; fullname UseCamelCaseNamingConvention: FullName -&amp;gt; fullName UseUpperCaseNamingConvention: FullName -&amp;gt; FULLNAME  简单来说，就是当我们的实体中存在一个属性FullName时，它会告诉EF或者EFCore，这个属性FullName对应的表字段是什么。
-虽然，在大多数的场景中，我们都希望属性名称和表字段一致，可你要知道，像Oracle这种对大小写敏感的数据库，特别喜欢自作聪明地帮你全部改成大写。
-所以，在上家公司工作的时候，为了兼容Oracle这病态的癖好，公司里有个不成文的规定，那就是：所有实体的属性名称最好都大写。
-本来大家用驼峰命名就是为了好认单词，好家伙！这下全部大写了，一眼望过去简直就是灾难，因为没有办法做到“望文生义”，如果那个时候知道这个库的存在，是不是就能解决这个问题了呢？
-第一个示例 下面我们以UseSnakeCaseNamingConvention为例，结合SQLite来做一个简单的例子。
-首先，我们定义必要的实体，并为DbContext配置实体命名约束规则：
-1// Album 2public class Album 3{ 4 public int AlbumId { get; set; } 5 public string Title { get; set; } 6 public int ArtistId { get; set; } 7 public string TenantId { get; set; } 8} 9 10// Artist 11public class Artist 12{ 13 public int ArtistId { get; set; } 14 public string Name { get; set; } 15 public string TenantId { get; set; } 16} 接下来，通过迁移命令来生成数据库架构："><title>EFCore 实体命名约定库：EFCore.NamingConventions</title>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“CURD Boy”。虽然不过是朴实无华的“增删查改"><title>EFCore 实体命名约定库：EFCore.NamingConventions</title>
 <link rel=canonical href=/posts/efcore-%E5%AE%9E%E4%BD%93%E5%91%BD%E5%90%8D%E7%BA%A6%E5%AE%9A%E5%BA%93efcore.namingconventions/>
 <link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="EFCore 实体命名约定库：EFCore.NamingConventions">
-<meta property="og:description" content="在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“CURD Boy”。虽然不过是朴实无华的“增删查改”，可隐隐然早已分出了无数的流派。在这些不同的流派中，有的人坚持“我手写我心”，认为手写SQL才是真正的王道，没有读过/写过成百上千行的存储过程，便不足以谈论程序员的人生。而有的人喜欢ORM的清晰、整洁，认为数据库和面向对象存在着天然抗阻，ORM更有利于推进DDD和微服务的落地。相信大家都听说过Java里的SSH框架，从Hibernate到Mybatis再到Spring Data JPA，可以说这种争论一直没有停止过。这里我们不打算讨论这个问题，我们平时使用EF或者EFCore的过程中，作为连接数据库和面向对象两个异世界的桥梁，ORM需要我们来告诉它，实体数据与数据库表字段的映射关系，所以，经常需要通过数据注解或者Fulent API来写各种配置。那么，有没有什么方案可以让我们偷这个懒呢？下面隆重请出本文的主角：EFCore.NamingConventions。
-使用方法 EFCore. NamingConventions，目前由一个非官方的组织进行维护，代码托管在 Github 上，100％的开源项目。
-如果你希望直接使用它的话，可以直接通过NuGet进行安装：
-1Install-Package EFCore.NamingConventions 接下来，我们只需要在DbContext的 OnConfiguring()方法中，调用它提供的扩展方法即可：
-1protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 2=&amp;gt; optionsBuilder 3.UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) 4.UseSnakeCaseNamingConvention(); 或者，你可以使用依赖注入的方式：
-1services.AddDbContext&amp;lt;ChinookContext&amp;gt;(options =&amp;gt; 2 options.UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) 3 .UseSnakeCaseNamingConvention() 4); 这里我以SQLite数据库为例，来展示它的具体使用细节。事实上，它提供了 4 种命名约定的策略：
- UseSnakeCaseNamingConvention: FullName -&amp;gt; full_name UseLowerCaseNamingConvention: FullName -&amp;gt; fullname UseCamelCaseNamingConvention: FullName -&amp;gt; fullName UseUpperCaseNamingConvention: FullName -&amp;gt; FULLNAME  简单来说，就是当我们的实体中存在一个属性FullName时，它会告诉EF或者EFCore，这个属性FullName对应的表字段是什么。
-虽然，在大多数的场景中，我们都希望属性名称和表字段一致，可你要知道，像Oracle这种对大小写敏感的数据库，特别喜欢自作聪明地帮你全部改成大写。
-所以，在上家公司工作的时候，为了兼容Oracle这病态的癖好，公司里有个不成文的规定，那就是：所有实体的属性名称最好都大写。
-本来大家用驼峰命名就是为了好认单词，好家伙！这下全部大写了，一眼望过去简直就是灾难，因为没有办法做到“望文生义”，如果那个时候知道这个库的存在，是不是就能解决这个问题了呢？
-第一个示例 下面我们以UseSnakeCaseNamingConvention为例，结合SQLite来做一个简单的例子。
-首先，我们定义必要的实体，并为DbContext配置实体命名约束规则：
-1// Album 2public class Album 3{ 4 public int AlbumId { get; set; } 5 public string Title { get; set; } 6 public int ArtistId { get; set; } 7 public string TenantId { get; set; } 8} 9 10// Artist 11public class Artist 12{ 13 public int ArtistId { get; set; } 14 public string Name { get; set; } 15 public string TenantId { get; set; } 16} 接下来，通过迁移命令来生成数据库架构：">
+<meta property="og:description" content="在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“CURD Boy”。虽然不过是朴实无华的“增删查改">
 <meta property="og:url" content="/posts/efcore-%E5%AE%9E%E4%BD%93%E5%91%BD%E5%90%8D%E7%BA%A6%E5%AE%9A%E5%BA%93efcore.namingconventions/">
 <meta property="og:site_name" content="素履独行">
 <meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="EF"><meta property="article:tag" content="实体"><meta property="article:tag" content=".NET"><meta property="article:tag" content="数据库"><meta property="article:published_time" content="2021-06-17T16:37:11+00:00"><meta property="article:modified_time" content="2021-06-17T16:37:11+00:00">
 <meta name=twitter:title content="EFCore 实体命名约定库：EFCore.NamingConventions">
-<meta name=twitter:description content="在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“CURD Boy”。虽然不过是朴实无华的“增删查改”，可隐隐然早已分出了无数的流派。在这些不同的流派中，有的人坚持“我手写我心”，认为手写SQL才是真正的王道，没有读过/写过成百上千行的存储过程，便不足以谈论程序员的人生。而有的人喜欢ORM的清晰、整洁，认为数据库和面向对象存在着天然抗阻，ORM更有利于推进DDD和微服务的落地。相信大家都听说过Java里的SSH框架，从Hibernate到Mybatis再到Spring Data JPA，可以说这种争论一直没有停止过。这里我们不打算讨论这个问题，我们平时使用EF或者EFCore的过程中，作为连接数据库和面向对象两个异世界的桥梁，ORM需要我们来告诉它，实体数据与数据库表字段的映射关系，所以，经常需要通过数据注解或者Fulent API来写各种配置。那么，有没有什么方案可以让我们偷这个懒呢？下面隆重请出本文的主角：EFCore.NamingConventions。
-使用方法 EFCore. NamingConventions，目前由一个非官方的组织进行维护，代码托管在 Github 上，100％的开源项目。
-如果你希望直接使用它的话，可以直接通过NuGet进行安装：
-1Install-Package EFCore.NamingConventions 接下来，我们只需要在DbContext的 OnConfiguring()方法中，调用它提供的扩展方法即可：
-1protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 2=&amp;gt; optionsBuilder 3.UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) 4.UseSnakeCaseNamingConvention(); 或者，你可以使用依赖注入的方式：
-1services.AddDbContext&amp;lt;ChinookContext&amp;gt;(options =&amp;gt; 2 options.UseSqlite(&amp;#34;Data Source=Chinook.db&amp;#34;) 3 .UseSnakeCaseNamingConvention() 4); 这里我以SQLite数据库为例，来展示它的具体使用细节。事实上，它提供了 4 种命名约定的策略：
- UseSnakeCaseNamingConvention: FullName -&amp;gt; full_name UseLowerCaseNamingConvention: FullName -&amp;gt; fullname UseCamelCaseNamingConvention: FullName -&amp;gt; fullName UseUpperCaseNamingConvention: FullName -&amp;gt; FULLNAME  简单来说，就是当我们的实体中存在一个属性FullName时，它会告诉EF或者EFCore，这个属性FullName对应的表字段是什么。
-虽然，在大多数的场景中，我们都希望属性名称和表字段一致，可你要知道，像Oracle这种对大小写敏感的数据库，特别喜欢自作聪明地帮你全部改成大写。
-所以，在上家公司工作的时候，为了兼容Oracle这病态的癖好，公司里有个不成文的规定，那就是：所有实体的属性名称最好都大写。
-本来大家用驼峰命名就是为了好认单词，好家伙！这下全部大写了，一眼望过去简直就是灾难，因为没有办法做到“望文生义”，如果那个时候知道这个库的存在，是不是就能解决这个问题了呢？
-第一个示例 下面我们以UseSnakeCaseNamingConvention为例，结合SQLite来做一个简单的例子。
-首先，我们定义必要的实体，并为DbContext配置实体命名约束规则：
-1// Album 2public class Album 3{ 4 public int AlbumId { get; set; } 5 public string Title { get; set; } 6 public int ArtistId { get; set; } 7 public string TenantId { get; set; } 8} 9 10// Artist 11public class Artist 12{ 13 public int ArtistId { get; set; } 14 public string Name { get; set; } 15 public string TenantId { get; set; } 16} 接下来，通过迁移命令来生成数据库架构：">
+<meta name=twitter:description content="在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“CURD Boy”。虽然不过是朴实无华的“增删查改">
 </head>
 <body class="article-page has-toc">
 <script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
@@ -73,7 +37,7 @@ extended">
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <time class=article-time--reading>
-阅读时长: 1 分钟
+阅读时长: 4 分钟
 </time>
 </div>
 </footer>

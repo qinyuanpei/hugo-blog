@@ -1,29 +1,14 @@
 <!doctype html><html lang=en-us>
 <head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="有人说，程序员最讨厌两件事情，一件是写文档，一件是别人不写文档，这充分展现了人类双标的本质，所谓的“严于律人”、“宽于律己”就是在说这件事情。虽然这种听来有点自私的想法，是生物自然选择的结果，可一旦人类的大脑皮层在进化过程中产生了“理性”，就会试图去纠正这种来自动物世界的阴暗面。所以，人类双标的本质，大概还是因为这个行为本身就有种超越规则、凌驾于众人之上的感觉，毕竟每个人生来就习惯这种使用特权的感觉。回到写文档这个话题，时下流行的微服务架构，最为显著的一个特点是：仓库多、服务多、接口多，此时，接口文档的重要性就凸显出来，因为接口本质上是一种契约，特别在前后端分离的场景中，只要前、后端约定好接口的参数、返回值，就可以独立进行开发，提供一份清晰的接口文档就显得很有必要。在 RESTful 风格的 API 设计中，Swagger 是最为常见的接口文档方案，那么，当我们开始构建以 gRPC 为核心的微服务的时候，我们又该如何考虑接口文档这件事情呢？今天我们就来一起探讨下这个话题。
-protoc-gen-doc 方案 当视角从 RESTful 转向 gRPC 的时候，本质上是接口的描述语言发生了变化，前者是 JSON 而后者则是 Protobuf，因此，gRPC 服务的文档化自然而然地就落在 Protobuf 上。事实上，官方提供了 protoc-gen-doc 这个方案，如果大家阅读过我以前的博客，就会意识到这是 Protobuf 编译器，即 protoc 的插件，因为我们曾经通过这个编译器来生成代码、服务描述文件等等。protoc-gen-doc 这个插件的基本用法如下：
-1protoc \ 2 --plugin=protoc-gen-doc=./protoc-gen-doc \ 3 --doc_out=./doc \ 4 --doc_opt=html,index.html \ 5 proto/*.proto 其中，官方更推荐使用 Docker 来进行部署：
-1docker run --rm \ 2 -v $(pwd)/examples/doc:/out \ 3 -v $(pwd)/examples/proto:/protos \ 4 pseudomuto/protoc-gen-doc 默认情况下，它会生成 HTML 格式的接口文档，看一眼就会发现，就是那种传统的 Word 文档的感觉：
- 通过 protoc-gen-doc 生成的接口文档 
-除此以外，这个插件还可以生成 Markdown 格式的接口文档，这个就挺符合程序员的审美，因为此时此刻，你眼前看到的这篇文章，就是通过 Markdown 写成的："><title>gRPC 搭配 Swagger 实现微服务文档化</title>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="有人说，程序员最讨厌两件事情，一件是写文档，一件是别人不写文档，这充分展现了人类双标的本质，所谓的“严于律人”、“宽于律己”就是在说这件事情"><title>gRPC 搭配 Swagger 实现微服务文档化</title>
 <link rel=canonical href=/posts/grpc-%E6%90%AD%E9%85%8D-swagger-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%96%87%E6%A1%A3%E5%8C%96/>
 <link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="gRPC 搭配 Swagger 实现微服务文档化">
-<meta property="og:description" content="有人说，程序员最讨厌两件事情，一件是写文档，一件是别人不写文档，这充分展现了人类双标的本质，所谓的“严于律人”、“宽于律己”就是在说这件事情。虽然这种听来有点自私的想法，是生物自然选择的结果，可一旦人类的大脑皮层在进化过程中产生了“理性”，就会试图去纠正这种来自动物世界的阴暗面。所以，人类双标的本质，大概还是因为这个行为本身就有种超越规则、凌驾于众人之上的感觉，毕竟每个人生来就习惯这种使用特权的感觉。回到写文档这个话题，时下流行的微服务架构，最为显著的一个特点是：仓库多、服务多、接口多，此时，接口文档的重要性就凸显出来，因为接口本质上是一种契约，特别在前后端分离的场景中，只要前、后端约定好接口的参数、返回值，就可以独立进行开发，提供一份清晰的接口文档就显得很有必要。在 RESTful 风格的 API 设计中，Swagger 是最为常见的接口文档方案，那么，当我们开始构建以 gRPC 为核心的微服务的时候，我们又该如何考虑接口文档这件事情呢？今天我们就来一起探讨下这个话题。
-protoc-gen-doc 方案 当视角从 RESTful 转向 gRPC 的时候，本质上是接口的描述语言发生了变化，前者是 JSON 而后者则是 Protobuf，因此，gRPC 服务的文档化自然而然地就落在 Protobuf 上。事实上，官方提供了 protoc-gen-doc 这个方案，如果大家阅读过我以前的博客，就会意识到这是 Protobuf 编译器，即 protoc 的插件，因为我们曾经通过这个编译器来生成代码、服务描述文件等等。protoc-gen-doc 这个插件的基本用法如下：
-1protoc \ 2 --plugin=protoc-gen-doc=./protoc-gen-doc \ 3 --doc_out=./doc \ 4 --doc_opt=html,index.html \ 5 proto/*.proto 其中，官方更推荐使用 Docker 来进行部署：
-1docker run --rm \ 2 -v $(pwd)/examples/doc:/out \ 3 -v $(pwd)/examples/proto:/protos \ 4 pseudomuto/protoc-gen-doc 默认情况下，它会生成 HTML 格式的接口文档，看一眼就会发现，就是那种传统的 Word 文档的感觉：
- 通过 protoc-gen-doc 生成的接口文档 
-除此以外，这个插件还可以生成 Markdown 格式的接口文档，这个就挺符合程序员的审美，因为此时此刻，你眼前看到的这篇文章，就是通过 Markdown 写成的：">
+<meta property="og:description" content="有人说，程序员最讨厌两件事情，一件是写文档，一件是别人不写文档，这充分展现了人类双标的本质，所谓的“严于律人”、“宽于律己”就是在说这件事情">
 <meta property="og:url" content="/posts/grpc-%E6%90%AD%E9%85%8D-swagger-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%96%87%E6%A1%A3%E5%8C%96/">
 <meta property="og:site_name" content="素履独行">
 <meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="gRPC"><meta property="article:tag" content="Swagger"><meta property="article:tag" content="微服务"><meta property="article:tag" content="文档"><meta property="article:published_time" content="2021-09-28T14:13:32+00:00"><meta property="article:modified_time" content="2021-09-28T14:13:32+00:00">
 <meta name=twitter:title content="gRPC 搭配 Swagger 实现微服务文档化">
-<meta name=twitter:description content="有人说，程序员最讨厌两件事情，一件是写文档，一件是别人不写文档，这充分展现了人类双标的本质，所谓的“严于律人”、“宽于律己”就是在说这件事情。虽然这种听来有点自私的想法，是生物自然选择的结果，可一旦人类的大脑皮层在进化过程中产生了“理性”，就会试图去纠正这种来自动物世界的阴暗面。所以，人类双标的本质，大概还是因为这个行为本身就有种超越规则、凌驾于众人之上的感觉，毕竟每个人生来就习惯这种使用特权的感觉。回到写文档这个话题，时下流行的微服务架构，最为显著的一个特点是：仓库多、服务多、接口多，此时，接口文档的重要性就凸显出来，因为接口本质上是一种契约，特别在前后端分离的场景中，只要前、后端约定好接口的参数、返回值，就可以独立进行开发，提供一份清晰的接口文档就显得很有必要。在 RESTful 风格的 API 设计中，Swagger 是最为常见的接口文档方案，那么，当我们开始构建以 gRPC 为核心的微服务的时候，我们又该如何考虑接口文档这件事情呢？今天我们就来一起探讨下这个话题。
-protoc-gen-doc 方案 当视角从 RESTful 转向 gRPC 的时候，本质上是接口的描述语言发生了变化，前者是 JSON 而后者则是 Protobuf，因此，gRPC 服务的文档化自然而然地就落在 Protobuf 上。事实上，官方提供了 protoc-gen-doc 这个方案，如果大家阅读过我以前的博客，就会意识到这是 Protobuf 编译器，即 protoc 的插件，因为我们曾经通过这个编译器来生成代码、服务描述文件等等。protoc-gen-doc 这个插件的基本用法如下：
-1protoc \ 2 --plugin=protoc-gen-doc=./protoc-gen-doc \ 3 --doc_out=./doc \ 4 --doc_opt=html,index.html \ 5 proto/*.proto 其中，官方更推荐使用 Docker 来进行部署：
-1docker run --rm \ 2 -v $(pwd)/examples/doc:/out \ 3 -v $(pwd)/examples/proto:/protos \ 4 pseudomuto/protoc-gen-doc 默认情况下，它会生成 HTML 格式的接口文档，看一眼就会发现，就是那种传统的 Word 文档的感觉：
- 通过 protoc-gen-doc 生成的接口文档 
-除此以外，这个插件还可以生成 Markdown 格式的接口文档，这个就挺符合程序员的审美，因为此时此刻，你眼前看到的这篇文章，就是通过 Markdown 写成的：">
+<meta name=twitter:description content="有人说，程序员最讨厌两件事情，一件是写文档，一件是别人不写文档，这充分展现了人类双标的本质，所谓的“严于律人”、“宽于律己”就是在说这件事情">
 </head>
 <body class="article-page has-toc">
 <script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
@@ -52,7 +37,7 @@ extended">
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <time class=article-time--reading>
-阅读时长: 3 分钟
+阅读时长: 6 分钟
 </time>
 </div>
 </footer>

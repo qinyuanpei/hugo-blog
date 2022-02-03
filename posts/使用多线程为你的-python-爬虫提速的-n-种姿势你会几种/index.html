@@ -1,20 +1,14 @@
 <!doctype html><html lang=en-us>
 <head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="最近博主在优化一个爬虫程序，它是博主在 2017 年左右刚接触 Python 时写下的一个程序。时过境迁，当 Python 2.X 终于寿终正寝成为过去，当博主终于一只脚迈进 30 岁的大门，一切都来得猝不及防，像一阵龙卷风裹挟着回忆呼啸而去。和大多数学习 Python 的人一样，博主学习 Python 是从写爬虫开始的，而这个爬虫程序刚好是那种抓取“宅男女神”的程序，下载图片无疑是整个流程里最关键的环节，所以，整个优化的核心，无外乎提升程序的稳定性、提高抓取速度。所以，接下来，我会带大家走近 Python 中的多线程编程，涉及到的概念主要有线程(池)、进程(池)、异步I/O、协程、GIL等，而理解这些概念，对我们而言是非常重要的，因为它将会告诉你选择什么方案更好一点。想让你的爬虫更高效、更快吗？在这里就能找到你的答案。
-楔子 现在，假设我们有一组图片的地址(URL)，我们希望通过requests来实现图片的下载，为此我们定义了Spider类。在这个类中，我们提供了getImage()方法来完成下载这个动作。我们可以非常容易地写出一个“单线程”的版本，但这显然这不是我们今天这篇博客的目的。此时，我们来考虑一个问题，怎么样实现一个“多线程”的版本？
-1class Spider: 2 3 def __init__(self, urls): 4 self.session = requests.session() 5 self.session.headers[&amp;#39;User-Agent&amp;#39;] = fake_useragent.UserAgent().random 6 self.session.headers[&amp;#34;Referer&amp;#34;] = &amp;#34;https://www.nvshens.org&amp;#34; 7 self.urls = urls 8 9 # 下载图片 10 def getImage(self, url, fileName, retries=5): 11 try: 12 print(f&amp;#39;{threading.currentThread().name}-&amp;gt; {url}&amp;#39;) 13 response = self.session.get(url, 14 allow_redirects=False, 15 timeout=10, 16 proxies=None 17 ) 18 response.raise_for_status() 19 data = response."><title>使用多线程为你的 Python 爬虫提速的 N 种姿势，你会几种？</title>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="最近博主在优化一个爬虫程序，它是博主在 2017 年左右刚接触 Python 时写下的一个程序。时过境迁，当 Python 2.X 终于寿终正寝成为过去，当博主终于一只脚迈进 30 岁的大门"><title>使用多线程为你的 Python 爬虫提速的 N 种姿势，你会几种？</title>
 <link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%BA%E4%BD%A0%E7%9A%84-python-%E7%88%AC%E8%99%AB%E6%8F%90%E9%80%9F%E7%9A%84-n-%E7%A7%8D%E5%A7%BF%E5%8A%BF%E4%BD%A0%E4%BC%9A%E5%87%A0%E7%A7%8D/>
 <link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="使用多线程为你的 Python 爬虫提速的 N 种姿势，你会几种？">
-<meta property="og:description" content="最近博主在优化一个爬虫程序，它是博主在 2017 年左右刚接触 Python 时写下的一个程序。时过境迁，当 Python 2.X 终于寿终正寝成为过去，当博主终于一只脚迈进 30 岁的大门，一切都来得猝不及防，像一阵龙卷风裹挟着回忆呼啸而去。和大多数学习 Python 的人一样，博主学习 Python 是从写爬虫开始的，而这个爬虫程序刚好是那种抓取“宅男女神”的程序，下载图片无疑是整个流程里最关键的环节，所以，整个优化的核心，无外乎提升程序的稳定性、提高抓取速度。所以，接下来，我会带大家走近 Python 中的多线程编程，涉及到的概念主要有线程(池)、进程(池)、异步I/O、协程、GIL等，而理解这些概念，对我们而言是非常重要的，因为它将会告诉你选择什么方案更好一点。想让你的爬虫更高效、更快吗？在这里就能找到你的答案。
-楔子 现在，假设我们有一组图片的地址(URL)，我们希望通过requests来实现图片的下载，为此我们定义了Spider类。在这个类中，我们提供了getImage()方法来完成下载这个动作。我们可以非常容易地写出一个“单线程”的版本，但这显然这不是我们今天这篇博客的目的。此时，我们来考虑一个问题，怎么样实现一个“多线程”的版本？
-1class Spider: 2 3 def __init__(self, urls): 4 self.session = requests.session() 5 self.session.headers[&amp;#39;User-Agent&amp;#39;] = fake_useragent.UserAgent().random 6 self.session.headers[&amp;#34;Referer&amp;#34;] = &amp;#34;https://www.nvshens.org&amp;#34; 7 self.urls = urls 8 9 # 下载图片 10 def getImage(self, url, fileName, retries=5): 11 try: 12 print(f&amp;#39;{threading.currentThread().name}-&amp;gt; {url}&amp;#39;) 13 response = self.session.get(url, 14 allow_redirects=False, 15 timeout=10, 16 proxies=None 17 ) 18 response.raise_for_status() 19 data = response.">
+<meta property="og:description" content="最近博主在优化一个爬虫程序，它是博主在 2017 年左右刚接触 Python 时写下的一个程序。时过境迁，当 Python 2.X 终于寿终正寝成为过去，当博主终于一只脚迈进 30 岁的大门">
 <meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%BA%E4%BD%A0%E7%9A%84-python-%E7%88%AC%E8%99%AB%E6%8F%90%E9%80%9F%E7%9A%84-n-%E7%A7%8D%E5%A7%BF%E5%8A%BF%E4%BD%A0%E4%BC%9A%E5%87%A0%E7%A7%8D/">
 <meta property="og:site_name" content="素履独行">
 <meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Python"><meta property="article:tag" content="多线程"><meta property="article:tag" content="爬虫"><meta property="article:tag" content="技巧"><meta property="article:published_time" content="2021-01-14T20:35:47+00:00"><meta property="article:modified_time" content="2021-01-14T20:35:47+00:00">
 <meta name=twitter:title content="使用多线程为你的 Python 爬虫提速的 N 种姿势，你会几种？">
-<meta name=twitter:description content="最近博主在优化一个爬虫程序，它是博主在 2017 年左右刚接触 Python 时写下的一个程序。时过境迁，当 Python 2.X 终于寿终正寝成为过去，当博主终于一只脚迈进 30 岁的大门，一切都来得猝不及防，像一阵龙卷风裹挟着回忆呼啸而去。和大多数学习 Python 的人一样，博主学习 Python 是从写爬虫开始的，而这个爬虫程序刚好是那种抓取“宅男女神”的程序，下载图片无疑是整个流程里最关键的环节，所以，整个优化的核心，无外乎提升程序的稳定性、提高抓取速度。所以，接下来，我会带大家走近 Python 中的多线程编程，涉及到的概念主要有线程(池)、进程(池)、异步I/O、协程、GIL等，而理解这些概念，对我们而言是非常重要的，因为它将会告诉你选择什么方案更好一点。想让你的爬虫更高效、更快吗？在这里就能找到你的答案。
-楔子 现在，假设我们有一组图片的地址(URL)，我们希望通过requests来实现图片的下载，为此我们定义了Spider类。在这个类中，我们提供了getImage()方法来完成下载这个动作。我们可以非常容易地写出一个“单线程”的版本，但这显然这不是我们今天这篇博客的目的。此时，我们来考虑一个问题，怎么样实现一个“多线程”的版本？
-1class Spider: 2 3 def __init__(self, urls): 4 self.session = requests.session() 5 self.session.headers[&amp;#39;User-Agent&amp;#39;] = fake_useragent.UserAgent().random 6 self.session.headers[&amp;#34;Referer&amp;#34;] = &amp;#34;https://www.nvshens.org&amp;#34; 7 self.urls = urls 8 9 # 下载图片 10 def getImage(self, url, fileName, retries=5): 11 try: 12 print(f&amp;#39;{threading.currentThread().name}-&amp;gt; {url}&amp;#39;) 13 response = self.session.get(url, 14 allow_redirects=False, 15 timeout=10, 16 proxies=None 17 ) 18 response.raise_for_status() 19 data = response.">
+<meta name=twitter:description content="最近博主在优化一个爬虫程序，它是博主在 2017 年左右刚接触 Python 时写下的一个程序。时过境迁，当 Python 2.X 终于寿终正寝成为过去，当博主终于一只脚迈进 30 岁的大门">
 </head>
 <body class="article-page has-toc">
 <script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
@@ -43,7 +37,7 @@ extended">
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <time class=article-time--reading>
-阅读时长: 4 分钟
+阅读时长: 11 分钟
 </time>
 </div>
 </footer>

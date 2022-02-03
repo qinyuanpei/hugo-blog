@@ -1,29 +1,14 @@
 <!doctype html><html lang=en-us>
 <head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="C# 版本历史记录  从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览 
- 说明：因为Markdown下维护这样复杂的表格有一点麻烦，故，这里以图片形式展示出来，如后续内容有更新，请点击 这里 访问原始笔记链接。为知笔记 的表格渲染在移动端表现不佳，为了获得更好的阅读体验，请在电脑端访问查看。
- C# 版本特性说明 现在是 2021 年，相信 C# 7.0 以前的版本大家都应该没有什么问题，因为像博主这样的 90 后“中年”男人，接触的都是这个版本的 C#。所以，在这里我们主要讲解大家C# 7.0、8.0 以及 9.0 的语法特性。考虑到文章篇幅有限，这里选取的都是博主个人比较喜欢的语法特性，如果这里没有你喜欢的特性，请参考文章末尾的参考链接。如果这里的特性你都不喜欢，请你马上关掉这个网页，愿这个世界：Love &amp;amp; Peace。可能你会感觉到我说话变得小心翼翼起来，因为这个世界上有种叫做“杠精”的生物，当它从我的只言片语里读出那些挫败感的时候，终于有了嘲笑我们这批步入30岁行列的90后的底气，没错，我在最近的博客评论中被读者“嘲讽”了，让暴风雨来得更猛烈一些吧！
-C# 7.0 在 C# 7.0 中，我个人比较喜欢的特性主要有以下几个：元组和弃元、更多的 expression-bodied 成员、out 变量、异步 Main 方法、模式匹配 和 引发表达式。
-元组和弃元 这个概念乍听起来可能会有一点陌生，其实，按我的理解，这就是增强的元组语法，终于可以摆脱Item1、Item2&amp;hellip;&amp;hellip;啦：
-1 //示例1 2(string Alpha, string Beta) namedLetters = (&amp;#34;a&amp;#34;, &amp;#34;b&amp;#34;); 3Console.WriteLine($&amp;#34;{namedLetters.Alpha}, {namedLetters.Beta}&amp;#34;); 4 //示例2 5var alphabetStart = (Alpha: &amp;#34;a&amp;#34;, Beta: &amp;#34;b&amp;#34;); 6Console."><title>从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览</title>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="C# 版本历史记录 从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览 说明：因为Markdown下维护这样复杂的表格有一点麻烦，故，这里以图片形式展示出来，如后"><title>从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览</title>
 <link rel=canonical href=/posts/%E4%BB%8E-c#-1.0-%E5%88%B0-c%23-9.0%E5%8E%86%E4%BB%A3-c%23-%E8%AF%AD%E8%A8%80%E7%89%B9%E6%80%A7%E4%B8%80%E8%A7%88/>
 <link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览">
-<meta property="og:description" content="C# 版本历史记录  从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览 
- 说明：因为Markdown下维护这样复杂的表格有一点麻烦，故，这里以图片形式展示出来，如后续内容有更新，请点击 这里 访问原始笔记链接。为知笔记 的表格渲染在移动端表现不佳，为了获得更好的阅读体验，请在电脑端访问查看。
- C# 版本特性说明 现在是 2021 年，相信 C# 7.0 以前的版本大家都应该没有什么问题，因为像博主这样的 90 后“中年”男人，接触的都是这个版本的 C#。所以，在这里我们主要讲解大家C# 7.0、8.0 以及 9.0 的语法特性。考虑到文章篇幅有限，这里选取的都是博主个人比较喜欢的语法特性，如果这里没有你喜欢的特性，请参考文章末尾的参考链接。如果这里的特性你都不喜欢，请你马上关掉这个网页，愿这个世界：Love &amp;amp; Peace。可能你会感觉到我说话变得小心翼翼起来，因为这个世界上有种叫做“杠精”的生物，当它从我的只言片语里读出那些挫败感的时候，终于有了嘲笑我们这批步入30岁行列的90后的底气，没错，我在最近的博客评论中被读者“嘲讽”了，让暴风雨来得更猛烈一些吧！
-C# 7.0 在 C# 7.0 中，我个人比较喜欢的特性主要有以下几个：元组和弃元、更多的 expression-bodied 成员、out 变量、异步 Main 方法、模式匹配 和 引发表达式。
-元组和弃元 这个概念乍听起来可能会有一点陌生，其实，按我的理解，这就是增强的元组语法，终于可以摆脱Item1、Item2&amp;hellip;&amp;hellip;啦：
-1 //示例1 2(string Alpha, string Beta) namedLetters = (&amp;#34;a&amp;#34;, &amp;#34;b&amp;#34;); 3Console.WriteLine($&amp;#34;{namedLetters.Alpha}, {namedLetters.Beta}&amp;#34;); 4 //示例2 5var alphabetStart = (Alpha: &amp;#34;a&amp;#34;, Beta: &amp;#34;b&amp;#34;); 6Console.">
+<meta property="og:description" content="C# 版本历史记录 从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览 说明：因为Markdown下维护这样复杂的表格有一点麻烦，故，这里以图片形式展示出来，如后">
 <meta property="og:url" content="/posts/%E4%BB%8E-c#-1.0-%E5%88%B0-c%23-9.0%E5%8E%86%E4%BB%A3-c%23-%E8%AF%AD%E8%A8%80%E7%89%B9%E6%80%A7%E4%B8%80%E8%A7%88/">
 <meta property="og:site_name" content="素履独行">
 <meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content=".NET"><meta property="article:tag" content="CSharp"><meta property="article:tag" content="语言"><meta property="article:tag" content="总结"><meta property="article:published_time" content="2021-02-01T22:36:47+00:00"><meta property="article:modified_time" content="2021-02-01T22:36:47+00:00">
 <meta name=twitter:title content="从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览">
-<meta name=twitter:description content="C# 版本历史记录  从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览 
- 说明：因为Markdown下维护这样复杂的表格有一点麻烦，故，这里以图片形式展示出来，如后续内容有更新，请点击 这里 访问原始笔记链接。为知笔记 的表格渲染在移动端表现不佳，为了获得更好的阅读体验，请在电脑端访问查看。
- C# 版本特性说明 现在是 2021 年，相信 C# 7.0 以前的版本大家都应该没有什么问题，因为像博主这样的 90 后“中年”男人，接触的都是这个版本的 C#。所以，在这里我们主要讲解大家C# 7.0、8.0 以及 9.0 的语法特性。考虑到文章篇幅有限，这里选取的都是博主个人比较喜欢的语法特性，如果这里没有你喜欢的特性，请参考文章末尾的参考链接。如果这里的特性你都不喜欢，请你马上关掉这个网页，愿这个世界：Love &amp;amp; Peace。可能你会感觉到我说话变得小心翼翼起来，因为这个世界上有种叫做“杠精”的生物，当它从我的只言片语里读出那些挫败感的时候，终于有了嘲笑我们这批步入30岁行列的90后的底气，没错，我在最近的博客评论中被读者“嘲讽”了，让暴风雨来得更猛烈一些吧！
-C# 7.0 在 C# 7.0 中，我个人比较喜欢的特性主要有以下几个：元组和弃元、更多的 expression-bodied 成员、out 变量、异步 Main 方法、模式匹配 和 引发表达式。
-元组和弃元 这个概念乍听起来可能会有一点陌生，其实，按我的理解，这就是增强的元组语法，终于可以摆脱Item1、Item2&amp;hellip;&amp;hellip;啦：
-1 //示例1 2(string Alpha, string Beta) namedLetters = (&amp;#34;a&amp;#34;, &amp;#34;b&amp;#34;); 3Console.WriteLine($&amp;#34;{namedLetters.Alpha}, {namedLetters.Beta}&amp;#34;); 4 //示例2 5var alphabetStart = (Alpha: &amp;#34;a&amp;#34;, Beta: &amp;#34;b&amp;#34;); 6Console.">
+<meta name=twitter:description content="C# 版本历史记录 从 C# 1.0 到 C# 9.0，历代 C# 语言特性一览 说明：因为Markdown下维护这样复杂的表格有一点麻烦，故，这里以图片形式展示出来，如后">
 </head>
 <body class="article-page has-toc">
 <script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
@@ -52,7 +37,7 @@ extended">
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <time class=article-time--reading>
-阅读时长: 5 分钟
+阅读时长: 9 分钟
 </time>
 </div>
 </footer>

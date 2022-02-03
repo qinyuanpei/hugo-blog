@@ -1,26 +1,14 @@
 <!doctype html><html lang=en-us>
 <head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="重构我的 独立博客 ，是博主今年的计划之一，这个基于 Hexo 的静态博客，最早搭建于2014年，可以说是比女朋友更亲密的存在，陪伴着博主走过了毕业、求职以及此刻的而立之年。其间虽然尝试过像 Jekyll 和 Hugo 这样的静态博客生成器，可是考虑到模板、插件等周边生态，这个想法一直被搁置下来。直到最近，突然涌现出通过 Blazor 重写博客的想法，尤其是它对于 WebAssembly 的支持，而类似 Vue 和 React的组件化开发模式，在开发体验上有着同样不错的表现。所以，今天这篇博客就来聊聊在重写博客过程中的一点收获，即如何让 Blazor 访问本地的静态文件。
-从内嵌资源说起 首先，我们要引入一个概念，即：内嵌资源。我们平时接触的更多的是本地文件系统，或者是 FTP 、对象存储这类运行在远程服务器上的文件系统，这些都是非内嵌资源，所以，内嵌资源主要是指那些没有目录层级的文件资源，因为它会在编译的时候“嵌入”到动态链接库(DLL)中。一个典型的例子是Swagger，它在.NET Core平台下的实现是Swashbuckle.AspNetCore，它允许使用自定义的HTML页面。这里可以注意到，它使用到了GetManifestResourceStream()方法：
-1app.UseSwaggerUI(c =&amp;gt; 2{ 3 // requires file to be added as an embedded resource 4 c.IndexStream = () =&amp;gt; GetType().Assembly 5 .GetManifestResourceStream(&amp;#34;CustomUIIndex.Swagger.index.html&amp;#34;); 6}); 其实，这里使用的就是一个内嵌资源。关于内嵌资源，我们有两种方式来定义它：
- 在 Visual Studio 中选中指定文件，在其属性窗口中选择生成操作为嵌入的资源：   如何定义一个文件资源为内嵌资源 
- 在项目文件(.csproj)中修改对应ItemGroup节点，参考示例如下：  1&amp;lt;Project Sdk=&amp;#34;Microsoft.NET.Sdk.Web&amp;#34;&amp;gt; 2&amp;lt;!-- ... --&amp;gt; 3 &amp;lt;ItemGroup&amp;gt; 4 &amp;lt;EmbeddedResource Include=&amp;#34;_config.yml&amp;#34;&amp;gt; 5 &amp;lt;CopyToOutputDirectory&amp;gt;Always&amp;lt;/CopyToOutputDirectory&amp;gt; 6 &amp;lt;/EmbeddedResource&amp;gt; 7 &amp;lt;/ItemGroup&amp;gt; 8&amp;lt;!"><title>通过 EmbededFileProvider 实现 Blazor 的静态文件访问</title>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="重构我的 独立博客 ，是博主今年的计划之一，这个基于 Hexo 的静态博客，最早搭建于2014年，可以说是比女朋友更亲密的存在，陪伴着博主走过了毕业、求职"><title>通过 EmbededFileProvider 实现 Blazor 的静态文件访问</title>
 <link rel=canonical href=/posts/%E9%80%9A%E8%BF%87-embededfileprovider-%E5%AE%9E%E7%8E%B0-blazor-%E7%9A%84%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE/>
 <link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="通过 EmbededFileProvider 实现 Blazor 的静态文件访问">
-<meta property="og:description" content="重构我的 独立博客 ，是博主今年的计划之一，这个基于 Hexo 的静态博客，最早搭建于2014年，可以说是比女朋友更亲密的存在，陪伴着博主走过了毕业、求职以及此刻的而立之年。其间虽然尝试过像 Jekyll 和 Hugo 这样的静态博客生成器，可是考虑到模板、插件等周边生态，这个想法一直被搁置下来。直到最近，突然涌现出通过 Blazor 重写博客的想法，尤其是它对于 WebAssembly 的支持，而类似 Vue 和 React的组件化开发模式，在开发体验上有着同样不错的表现。所以，今天这篇博客就来聊聊在重写博客过程中的一点收获，即如何让 Blazor 访问本地的静态文件。
-从内嵌资源说起 首先，我们要引入一个概念，即：内嵌资源。我们平时接触的更多的是本地文件系统，或者是 FTP 、对象存储这类运行在远程服务器上的文件系统，这些都是非内嵌资源，所以，内嵌资源主要是指那些没有目录层级的文件资源，因为它会在编译的时候“嵌入”到动态链接库(DLL)中。一个典型的例子是Swagger，它在.NET Core平台下的实现是Swashbuckle.AspNetCore，它允许使用自定义的HTML页面。这里可以注意到，它使用到了GetManifestResourceStream()方法：
-1app.UseSwaggerUI(c =&amp;gt; 2{ 3 // requires file to be added as an embedded resource 4 c.IndexStream = () =&amp;gt; GetType().Assembly 5 .GetManifestResourceStream(&amp;#34;CustomUIIndex.Swagger.index.html&amp;#34;); 6}); 其实，这里使用的就是一个内嵌资源。关于内嵌资源，我们有两种方式来定义它：
- 在 Visual Studio 中选中指定文件，在其属性窗口中选择生成操作为嵌入的资源：   如何定义一个文件资源为内嵌资源 
- 在项目文件(.csproj)中修改对应ItemGroup节点，参考示例如下：  1&amp;lt;Project Sdk=&amp;#34;Microsoft.NET.Sdk.Web&amp;#34;&amp;gt; 2&amp;lt;!-- ... --&amp;gt; 3 &amp;lt;ItemGroup&amp;gt; 4 &amp;lt;EmbeddedResource Include=&amp;#34;_config.yml&amp;#34;&amp;gt; 5 &amp;lt;CopyToOutputDirectory&amp;gt;Always&amp;lt;/CopyToOutputDirectory&amp;gt; 6 &amp;lt;/EmbeddedResource&amp;gt; 7 &amp;lt;/ItemGroup&amp;gt; 8&amp;lt;!">
+<meta property="og:description" content="重构我的 独立博客 ，是博主今年的计划之一，这个基于 Hexo 的静态博客，最早搭建于2014年，可以说是比女朋友更亲密的存在，陪伴着博主走过了毕业、求职">
 <meta property="og:url" content="/posts/%E9%80%9A%E8%BF%87-embededfileprovider-%E5%AE%9E%E7%8E%B0-blazor-%E7%9A%84%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE/">
 <meta property="og:site_name" content="素履独行">
 <meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Blazor"><meta property="article:tag" content=".NET Core"><meta property="article:tag" content="文件"><meta property="article:tag" content="WebAssembly"><meta property="article:published_time" content="2021-02-23T05:37:47+00:00"><meta property="article:modified_time" content="2021-02-23T05:37:47+00:00">
 <meta name=twitter:title content="通过 EmbededFileProvider 实现 Blazor 的静态文件访问">
-<meta name=twitter:description content="重构我的 独立博客 ，是博主今年的计划之一，这个基于 Hexo 的静态博客，最早搭建于2014年，可以说是比女朋友更亲密的存在，陪伴着博主走过了毕业、求职以及此刻的而立之年。其间虽然尝试过像 Jekyll 和 Hugo 这样的静态博客生成器，可是考虑到模板、插件等周边生态，这个想法一直被搁置下来。直到最近，突然涌现出通过 Blazor 重写博客的想法，尤其是它对于 WebAssembly 的支持，而类似 Vue 和 React的组件化开发模式，在开发体验上有着同样不错的表现。所以，今天这篇博客就来聊聊在重写博客过程中的一点收获，即如何让 Blazor 访问本地的静态文件。
-从内嵌资源说起 首先，我们要引入一个概念，即：内嵌资源。我们平时接触的更多的是本地文件系统，或者是 FTP 、对象存储这类运行在远程服务器上的文件系统，这些都是非内嵌资源，所以，内嵌资源主要是指那些没有目录层级的文件资源，因为它会在编译的时候“嵌入”到动态链接库(DLL)中。一个典型的例子是Swagger，它在.NET Core平台下的实现是Swashbuckle.AspNetCore，它允许使用自定义的HTML页面。这里可以注意到，它使用到了GetManifestResourceStream()方法：
-1app.UseSwaggerUI(c =&amp;gt; 2{ 3 // requires file to be added as an embedded resource 4 c.IndexStream = () =&amp;gt; GetType().Assembly 5 .GetManifestResourceStream(&amp;#34;CustomUIIndex.Swagger.index.html&amp;#34;); 6}); 其实，这里使用的就是一个内嵌资源。关于内嵌资源，我们有两种方式来定义它：
- 在 Visual Studio 中选中指定文件，在其属性窗口中选择生成操作为嵌入的资源：   如何定义一个文件资源为内嵌资源 
- 在项目文件(.csproj)中修改对应ItemGroup节点，参考示例如下：  1&amp;lt;Project Sdk=&amp;#34;Microsoft.NET.Sdk.Web&amp;#34;&amp;gt; 2&amp;lt;!-- ... --&amp;gt; 3 &amp;lt;ItemGroup&amp;gt; 4 &amp;lt;EmbeddedResource Include=&amp;#34;_config.yml&amp;#34;&amp;gt; 5 &amp;lt;CopyToOutputDirectory&amp;gt;Always&amp;lt;/CopyToOutputDirectory&amp;gt; 6 &amp;lt;/EmbeddedResource&amp;gt; 7 &amp;lt;/ItemGroup&amp;gt; 8&amp;lt;!">
+<meta name=twitter:description content="重构我的 独立博客 ，是博主今年的计划之一，这个基于 Hexo 的静态博客，最早搭建于2014年，可以说是比女朋友更亲密的存在，陪伴着博主走过了毕业、求职">
 </head>
 <body class="article-page has-toc">
 <script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
@@ -49,7 +37,7 @@ extended">
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <time class=article-time--reading>
-阅读时长: 2 分钟
+阅读时长: 8 分钟
 </time>
 </div>
 </footer>

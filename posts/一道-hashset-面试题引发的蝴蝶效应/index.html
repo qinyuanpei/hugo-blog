@@ -1,20 +1,14 @@
 <!doctype html><html lang=en-us>
 <head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="没错，我又借着“面试题”的名头来搞事情了，今天要说的是 HashSet ，而这确实是一个实际面试中遇到的问题。当时的场景大概是这样的，面试官在了解了你的知识广度以后，决心来考察一番你的基本功底，抛出了一个看起来平平无奇的问题：说一说你平时工作中都用到了哪些数据结构。你心想，这还不简单，Array、ArrayList、List、Dictionary、HashSet、Stack、Queue&amp;hellip;等等各种集合类简直如数家珍，甚至你还能说出这些数据结构间的优劣以及各自使用的场景。可没想到，面试官话锋一转，直接来一句，“你能说说 HashSet 去重的原理吗”，好家伙，你这简直不按套路出牌啊&amp;hellip;本着每次面试都有一点收获的初心，于是就有了今天这篇博客，不同的是，顺着这个思路继续深挖下去，博主又发现了几个平时关注不到的技术盲点，所以，博主称之为：一道 HashSet 面试题引发的蝴蝶效应。
-HashSet 源代码解读 OK，首先，我们来回答第一个问题，即：HashSet 去重的原理是什么？。为此，博主翻阅了 HashSet 的 源代码。首先，我们会注意到 HashSet 的构造函数，它需要一个类型为IEqualityComparer&amp;lt;T&amp;gt;的参数。从这个命名上我们就可以知道，这是一个用于相等性比较的接口，我们初步推测，HashSet 去重应该和这个接口有关：
-1 public HashSet() 2 : this(EqualityComparer&amp;lt;T&amp;gt;.Default) { } 3 4 public HashSet(int capacity) 5 : this(capacity, EqualityComparer&amp;lt;T&amp;gt;.Default) { } 6 7 public HashSet(IEqualityComparer&amp;lt;T&amp;gt; comparer) { } 8 9 public HashSet(IEnumerable&amp;lt;T&amp;gt; collection) 10 : this(collection, EqualityComparer&amp;lt;T&amp;gt;.Default) { } 11 12 public HashSet(IEnumerable&amp;lt;T&amp;gt; collection, IEqualityComparer&amp;lt;T&amp;gt; comparer) 13 : this(comparer) { } 我们都知道 HashSet 可以去重，比如，我们向 HashSet 添加多个相同的元素，实际上 HashSet 中最终只会有一个元素。所以，我们自然而然地想到，看看 HashSet 中的 Add() 方法呗，或许能从这里看出一点端倪。HashSet 中一共有两个 Add() 方法，它们内部都调用了 AddIfNotPresent() 方法："><title>一道 HashSet 面试题引发的蝴蝶效应</title>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="没错，我又借着“面试题”的名头来搞事情了，今天要说的是 HashSet ，而这确实是一个实际面试中遇到的问题。当时的场景大概是这样的，面试官在了解了你的知识"><title>一道 HashSet 面试题引发的蝴蝶效应</title>
 <link rel=canonical href=/posts/%E4%B8%80%E9%81%93-hashset-%E9%9D%A2%E8%AF%95%E9%A2%98%E5%BC%95%E5%8F%91%E7%9A%84%E8%9D%B4%E8%9D%B6%E6%95%88%E5%BA%94/>
 <link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="一道 HashSet 面试题引发的蝴蝶效应">
-<meta property="og:description" content="没错，我又借着“面试题”的名头来搞事情了，今天要说的是 HashSet ，而这确实是一个实际面试中遇到的问题。当时的场景大概是这样的，面试官在了解了你的知识广度以后，决心来考察一番你的基本功底，抛出了一个看起来平平无奇的问题：说一说你平时工作中都用到了哪些数据结构。你心想，这还不简单，Array、ArrayList、List、Dictionary、HashSet、Stack、Queue&amp;hellip;等等各种集合类简直如数家珍，甚至你还能说出这些数据结构间的优劣以及各自使用的场景。可没想到，面试官话锋一转，直接来一句，“你能说说 HashSet 去重的原理吗”，好家伙，你这简直不按套路出牌啊&amp;hellip;本着每次面试都有一点收获的初心，于是就有了今天这篇博客，不同的是，顺着这个思路继续深挖下去，博主又发现了几个平时关注不到的技术盲点，所以，博主称之为：一道 HashSet 面试题引发的蝴蝶效应。
-HashSet 源代码解读 OK，首先，我们来回答第一个问题，即：HashSet 去重的原理是什么？。为此，博主翻阅了 HashSet 的 源代码。首先，我们会注意到 HashSet 的构造函数，它需要一个类型为IEqualityComparer&amp;lt;T&amp;gt;的参数。从这个命名上我们就可以知道，这是一个用于相等性比较的接口，我们初步推测，HashSet 去重应该和这个接口有关：
-1 public HashSet() 2 : this(EqualityComparer&amp;lt;T&amp;gt;.Default) { } 3 4 public HashSet(int capacity) 5 : this(capacity, EqualityComparer&amp;lt;T&amp;gt;.Default) { } 6 7 public HashSet(IEqualityComparer&amp;lt;T&amp;gt; comparer) { } 8 9 public HashSet(IEnumerable&amp;lt;T&amp;gt; collection) 10 : this(collection, EqualityComparer&amp;lt;T&amp;gt;.Default) { } 11 12 public HashSet(IEnumerable&amp;lt;T&amp;gt; collection, IEqualityComparer&amp;lt;T&amp;gt; comparer) 13 : this(comparer) { } 我们都知道 HashSet 可以去重，比如，我们向 HashSet 添加多个相同的元素，实际上 HashSet 中最终只会有一个元素。所以，我们自然而然地想到，看看 HashSet 中的 Add() 方法呗，或许能从这里看出一点端倪。HashSet 中一共有两个 Add() 方法，它们内部都调用了 AddIfNotPresent() 方法：">
+<meta property="og:description" content="没错，我又借着“面试题”的名头来搞事情了，今天要说的是 HashSet ，而这确实是一个实际面试中遇到的问题。当时的场景大概是这样的，面试官在了解了你的知识">
 <meta property="og:url" content="/posts/%E4%B8%80%E9%81%93-hashset-%E9%9D%A2%E8%AF%95%E9%A2%98%E5%BC%95%E5%8F%91%E7%9A%84%E8%9D%B4%E8%9D%B6%E6%95%88%E5%BA%94/">
 <meta property="og:site_name" content="素履独行">
 <meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="HashSet"><meta property="article:tag" content="编程"><meta property="article:tag" content="面试"><meta property="article:tag" content="源码"><meta property="article:published_time" content="2020-10-20T12:19:02+00:00"><meta property="article:modified_time" content="2020-10-20T12:19:02+00:00">
 <meta name=twitter:title content="一道 HashSet 面试题引发的蝴蝶效应">
-<meta name=twitter:description content="没错，我又借着“面试题”的名头来搞事情了，今天要说的是 HashSet ，而这确实是一个实际面试中遇到的问题。当时的场景大概是这样的，面试官在了解了你的知识广度以后，决心来考察一番你的基本功底，抛出了一个看起来平平无奇的问题：说一说你平时工作中都用到了哪些数据结构。你心想，这还不简单，Array、ArrayList、List、Dictionary、HashSet、Stack、Queue&amp;hellip;等等各种集合类简直如数家珍，甚至你还能说出这些数据结构间的优劣以及各自使用的场景。可没想到，面试官话锋一转，直接来一句，“你能说说 HashSet 去重的原理吗”，好家伙，你这简直不按套路出牌啊&amp;hellip;本着每次面试都有一点收获的初心，于是就有了今天这篇博客，不同的是，顺着这个思路继续深挖下去，博主又发现了几个平时关注不到的技术盲点，所以，博主称之为：一道 HashSet 面试题引发的蝴蝶效应。
-HashSet 源代码解读 OK，首先，我们来回答第一个问题，即：HashSet 去重的原理是什么？。为此，博主翻阅了 HashSet 的 源代码。首先，我们会注意到 HashSet 的构造函数，它需要一个类型为IEqualityComparer&amp;lt;T&amp;gt;的参数。从这个命名上我们就可以知道，这是一个用于相等性比较的接口，我们初步推测，HashSet 去重应该和这个接口有关：
-1 public HashSet() 2 : this(EqualityComparer&amp;lt;T&amp;gt;.Default) { } 3 4 public HashSet(int capacity) 5 : this(capacity, EqualityComparer&amp;lt;T&amp;gt;.Default) { } 6 7 public HashSet(IEqualityComparer&amp;lt;T&amp;gt; comparer) { } 8 9 public HashSet(IEnumerable&amp;lt;T&amp;gt; collection) 10 : this(collection, EqualityComparer&amp;lt;T&amp;gt;.Default) { } 11 12 public HashSet(IEnumerable&amp;lt;T&amp;gt; collection, IEqualityComparer&amp;lt;T&amp;gt; comparer) 13 : this(comparer) { } 我们都知道 HashSet 可以去重，比如，我们向 HashSet 添加多个相同的元素，实际上 HashSet 中最终只会有一个元素。所以，我们自然而然地想到，看看 HashSet 中的 Add() 方法呗，或许能从这里看出一点端倪。HashSet 中一共有两个 Add() 方法，它们内部都调用了 AddIfNotPresent() 方法：">
+<meta name=twitter:description content="没错，我又借着“面试题”的名头来搞事情了，今天要说的是 HashSet ，而这确实是一个实际面试中遇到的问题。当时的场景大概是这样的，面试官在了解了你的知识">
 </head>
 <body class="article-page has-toc">
 <script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
@@ -43,7 +37,7 @@ extended">
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <time class=article-time--reading>
-阅读时长: 8 分钟
+阅读时长: 11 分钟
 </time>
 </div>
 </footer>

@@ -13,17 +13,17 @@ date: 2022-01-14 16:46:23
 ---
 当我们的应用架构，从单体系统演变为微服务时，一个永远不可能回避的现实是，业务逻辑会被拆分到不同的服务中。因此，微服务实际就是不同服务间的互相请求和调用。更重要的是，随着容器/虚拟化技术的发展，传统的物理服务器开始淡出我们的视野，软件被大量地部署在云服务器或者虚拟资源上。在这种情况下，分布式环境中的运维和诊断变得越来越复杂。如果按照功能来划分，目前主要有 Logging、Metrics 和 Tracing 三个方向，如下图所示，可以注意到，这三个方向上彼此都有交叉、重叠的部分。在我过去的博客里，我分享过关于 [ELK](/posts/3687594958) 和 [Prometheus](/posts/1519021197) 的内容，可以粗略地认为，这是对 Logging 和 Metrics 这两个方向的涉猎。所以，这篇文章我想和大家分享是 Tracing，即分布式跟踪，本文会结合 Envoy、Jaeger 以及 .NET Core 来实现一个分布式链路跟踪的案例，希望能带给大家一点 Amazing 的东西。
 
-![可观测性：Metrics、Tracing & Logging](Obserability_Metrics_Tracing_Logging.jpg)
+![可观测性：Metrics、Tracing & Logging](/posts/Envoy-集成-Jaeger-实现分布式链路追踪/Obserability_Metrics_Tracing_Logging.jpg)
 
 # 分布式跟踪
 
 如果要追溯分布式跟踪的起源，我想，Google 的这篇名为 [《Dapper, a Large-Scale Distributed Systems Tracing Infrastructure》](https://dirtysalt.github.io/html/dapper.html) 的论文功不可没，因为后来主流的分布式跟踪系统，譬如 [Zipkin](https://zipkin.io/)、[Jeager](https://www.jaegertracing.io/)、[Skywalking](https://skywalking.apache.org/)、[LightStep](https://lightstep.com)……等等，均以这篇论文作为理论基础，它们在功能上或许存在差异，原理上则是一脉相承，一个典型的分布式跟踪系统，大体上可以分为代码埋点、数据存储和查询展示三个步骤，如下图所示，Tracing 系统可以展示出服务在时序上的调用层级，这对于我们分析微服务系统中的调用关系会非常有用。
 
-![分布式跟踪系统基本原理](Basic-Principles-Of-Distributed-Tracking-System.png)
+![分布式跟踪系统基本原理](/posts/Envoy-集成-Jaeger-实现分布式链路追踪/Basic-Principles-Of-Distributed-Tracking-System.png)
 
 一个非常容易想到的思路是，我们在前端发出的请求的时候，动态生成一个唯一的 `x-request-id`，并保证它可以传递到与之交互的所有服务中去，那么，此时系统产生的日志中就会携带这一信息，只要以此作为关键字，就可以检索到当前请求的所有日志。这的确是个不错的方案，但它无法告诉你每个调用完成的先后顺序，以及每个调用花费了多少时间。基于这样的想法，人们在这上面传递了更多的信息(`Tag`)，使得它可以表达层级关系、调用时长等等的特征。如图所示，这是一个由 `Jaeger` 产生的跟踪信息，我们从中甚至可以知道请求由哪台服务器处理，以及上/下游集群信息等等：
 
-![通过 Jaeger 收集 gRPC 请求信息](Jaeger-Works-On-gRPC.png)
+![通过 Jaeger 收集 gRPC 请求信息](/posts/Envoy-集成-Jaeger-实现分布式链路追踪/Jaeger-Works-On-gRPC.png)
 
 目前，为了统一不同 Tracing 系统在 API、数据格式等方面上的差异，社区主导并产生了 [OpenTracing](https://opentracing.io/) 规范，在这个 [规范](https://github.com/opentracing/specification/blob/master/specification.md) 中，一个 Trace，即调用链，是由多个 `Span` 组成的有向无环图，而每个 `Span` 则可以含有多个键值对组成的 Tag。如图所示，下面是 [OpenTracing](https://opentracing.io/) 规范的一个简单示意图，此时，图中一共有 8 个 `Span`，其中 `Span A` 是根节点，`Span C` 是 `Span A` 的子节点， `Span G` 和  `Span F` 之间没有通过任何一个子节点连接，称为 `FollowsFrom`。
 
@@ -48,7 +48,7 @@ date: 2022-01-14 16:46:23
 
 目前，主流的服务网格平台如 [Istio](https://istio.io/latest)，选择 [Envoy](https://www.envoyproxy.io/) 作为其数据平面的核心组件。通俗地来讲，Envoy 主要是作为代理层来调节服务网格中所有服务的进/出站流量，它可以实现诸如负载均衡、服务发现、流量转移、速率限制、可观测性等等的功能。考虑到不同的服务都可以通过 `Gateway` 或者 `Sidecar` 来互相访问，我们更希望通过 Envoy 这个代理层来实现分布式跟踪，而不是在每个应用内都去集成 SDK，这正是服务网格区别于传统微服务的地方，即微服务治理需要的各种能力，逐步下沉到基础设施层。如果你接触过微软的 [Dapr](https://docs.microsoft.com/zh-cn/dotnet/architecture/dapr-for-net-developers/getting-started)，大概就能体会到我这里描述的这种变化。
 
-![Envoy 在 Istio 中扮演着重要角色](Manaing-Microservice-With-Istio.png)
+![Envoy 在 Istio 中扮演着重要角色](/posts/Envoy-集成-Jaeger-实现分布式链路追踪/Manaing-Microservice-With-Istio.png)
 
 事实上，Envoy 提供了入口来接入不同的 Tracing 系统，以 [Zipkin](https://zipkin.io/) 或者 [Jeager](https://www.jaegertracing.io/) 为例，除了前面提到的 `x-request-id`，它可以帮我们生成类似 `x-b3-traceid`、`x-b3-spanid` 等等的请求头。参照 [官方文档](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/observability/tracing#arch-overview-tracing)，它大体上提供了下面 3 种策略来支撑系统范围内的跟踪：
 
@@ -59,19 +59,19 @@ date: 2022-01-14 16:46:23
 
 这意味着，我们可以从客户端或者由 Envoy 来产生一个 `x-request-id`，只要应用转发这个 `x-request-id` 或者 外部跟踪系统需要的 HTTP 头部，Envoy 就可以帮我们完成把这些跟踪信息告诉这些外部跟踪系统，甚至在 `Sidecar` 模式下这一切都是自动完成的。我在写这篇博客时发现，官方还是比较推崇 `Sidecar` 模式，即一个服务就是一个 `Pod`，每个 `Pod` 里自带一个 Envoy 作为代理，对于 `Sidecar` 模式而言，它的分布式跟踪呈现出下面这样的结构，如果你认真阅读过官方的文档和示例，就会发现其 [示例](https://github.com/envoyproxy/envoy/tree/main/examples) 基本都是这种结构：
 
-![Sidecar 模式下的分布式跟踪示意图](Envoy-Tracing-Sidecar.drawio.png)
+![Sidecar 模式下的分布式跟踪示意图](/posts/Envoy-集成-Jaeger-实现分布式链路追踪/Envoy-Tracing-Sidecar.drawio.png)
 
 考虑到，2022 年还有没有用上 `K8S` 的人，以及 [Catcher Wong](https://www.cnblogs.com/catcher1994/) 大佬反映 `Sidecar` 模式比较浪费资源，这里我们还是用 `Gateway` 模式来实现，譬如我们有两个服务，订单服务(`OrderSevice`) 和 支付服务(`PaymentService`)，它们都由同一个 Envoy 来代理，当我们在订单服务中调用支付服务时，就会产生一条调用链。对于大多数的微服务而言，从它被拆分地那一刻起，就不可避免地走向了像蜘蛛网一般错综复杂的结局，此时，它的分布式跟踪呈现出下面的结构：
 
-![Gateway 模式下的分布式跟踪示意图](Envoy-Tracing-Gateway.drawio.png)
+![Gateway 模式下的分布式跟踪示意图](/posts/Envoy-集成-Jaeger-实现分布式链路追踪/Envoy-Tracing-Gateway.drawio.png)
 
 如果从代码侵入角度来审视这个问题，`Sidecar` 模式，每个服务都由 Envoy 去生成或者是设置一系列相关的请求头；而如果采取 `Gateway` 模式，当你在订单服务里调用支付服务时，无论你使用 `HttpClient` 还是 `gRPC`，你都需要确保这一系列的请求头能传递下去，这意味着我们要写一点无关紧要的代码，这样看起来前者更好一点，不是吗？可惜，合适和正确，就像鱼和熊掌一样，永远不可兼得。
 
-![Span 模型示意图](Jaeger-Span-Model.png)
+![Span 模型示意图](/posts/Envoy-集成-Jaeger-实现分布式链路追踪/Jaeger-Span-Model.png)
 
 关于 Jeager，这是一个由 Uber 开发的、受 Dapper 和 Zipkin 启发的分布式跟踪系统，它主要适用于：分布式跟踪信息传递、分布式事务监控、问题分析、服务依赖性分析、性能优化这些场景，因为它兼容 OpenTracing 标准，所以 `Span` 这个术语对它来说依然使用，什么是 `Span` 呢？它是一个跟踪的最小逻辑单位，可以记录操作名，操作开始时间 和 操作耗时，下面是 Jaeger 的架构示意图，大家可以混个眼熟：
 
-![Jaeger 的架构示意图](Jaeger-Architecture-v1.png)
+![Jaeger 的架构示意图](/posts/Envoy-集成-Jaeger-实现分布式链路追踪/Jaeger-Architecture-v1.png)
 
 # 第一个实例
 
@@ -218,15 +218,15 @@ services:
 
 如上所示，如果我们希望 Envoy 能记录我们的请求，那么，我们的请求必须要从它这里经过。这听起来像一句废话，可是在我调用 `PaymentService`已经确保我的请求是从 `/Payment` 这个路由上发起。默认情况下，在生成 `Span` 的时候，Envoy 会使用 `--service-cluster` 这个参数来作为 `Span` 的名称，这个参数通常写在 Envoy 的启动命令里，在这个示例中，它的取值是 `reverse-proxy`。仔细一想，会觉得哪里不太对，这样一来，所以的 `Span` 不就是同一个名字了吗？事实上，一开始我做实验的时候，确实是这个结果。解决方是设置一个 `operation`。此时，如果我们通过 `Postman` 访问订单接口 `/Order`，不出意外的话，我们会收到订单创建成功的结果，在浏览器里输入`http://localhost:16686`，我们来看看 Jeager 都收集到了哪些信息：
 
-![JeagerUI 数据查询](Envoy-JeagerUI-01.png)
+![JeagerUI 数据查询](/posts/Envoy-集成-Jaeger-实现分布式链路追踪/Envoy-JeagerUI-01.png)
 
 从图中我们可以非常容易地识别出 Service 和 Operation 在 Envoy 中分别对应着什么，我们注意到这里检索到了三个 Span，因为博主后来又加了一个 `EchoService`，从这里我们能看到它整个过程从何时开始，经过多长时间以后结束。如果我们点击它，会看到更加详细的说明，如下图所示：
 
-![JeagerUI 数据展示](Envoy-JeagerUI-02.png)
+![JeagerUI 数据展示](/posts/Envoy-集成-Jaeger-实现分布式链路追踪/Envoy-JeagerUI-02.png)
 
 显然，这个调用关系是符合我们预期的，即客户端调用了`OrderService`，`OrderService`调用了`PaymentService`，对于每一次调用，我们均可以从 Span 的 Tag 中获得更多信息，文章中的第三张图，实际上就是出自这里，有了这些信息以后，我们排查或者分析微服务中的问题，是不是感觉容易了很多呢？结合 ELK，你可以知道要去找哪里的日志，而这些正是分布式跟踪的意义所在！
 
-![通过 Jaeger 收集 gRPC 请求信息](Jaeger-Works-On-gRPC.png)
+![通过 Jaeger 收集 gRPC 请求信息](/posts/Envoy-集成-Jaeger-实现分布式链路追踪/Jaeger-Works-On-gRPC.png)
 
 好了，到这里为止，关于 Envoy 在分布式跟踪上的探索，终于可以告一段落，完整的项目文件我已经放在 [Github](https://github.com/Regularly-Archive/2022/tree/master/src/EnvoyTrace) 上供大家参考，谢谢大家！
 

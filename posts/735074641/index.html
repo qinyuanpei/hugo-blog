@@ -48,15 +48,15 @@ extended">
 <h1 id=思路说明>思路说明</h1>
 <p>其实，我一直觉得这个东西，完全不需要特意写一篇文章，因为用毕导的话说，这个东西我们在小学二年级就学过。相信只要我说出 <a class=link href=https://ws.wiki.gaogevip.com/wiki/%e6%9c%80%e5%b0%8f%e4%ba%8c%e4%b9%98%e6%b3%95 target=_blank rel=noopener>最小二乘法</a> 和 <a class=link href=https://zh.wikipedia.ryancray.com/zh-hans/%e7%b7%9a%e6%80%a7%e5%9b%9e%e6%ad%b8 target=_blank rel=noopener>线性回归</a> 这样两个关键词，各位就知道我在说什么了！博主从网上收集了从 2009 年至今历年双十一的交易额数据，如果我们将其绘制在二维坐标系内，就会得到一张散点图，而我们要做的事情，就是找到一条曲线或者方程，来对这些散点进行拟合，一旦我们确定了这样一条曲线或者方程，我们就可以预测某一年双十一的交易额。如图所示，是 2009 年至今历年双十一的交易额数据，在 Excel 中我们可以非常容易地得到对应的散点图：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/10/27/mf3h4oXLiswzPOq.png>
-<img src=/https:/i.loli.net/2021/10/27/mf3h4oXLiswzPOq.png loading=lazy alt="在 Excel 中绘制散点图">
+<a href=https://i.loli.net/2021/10/27/mf3h4oXLiswzPOq.png>
+<img src=https://i.loli.net/2021/10/27/mf3h4oXLiswzPOq.png loading=lazy alt="在 Excel 中绘制散点图">
 </a>
 <figcaption>在 Excel 中绘制散点图</figcaption>
 </figure></p>
 <p>如果有朋友做过化学或者生物实验，对接下来的事情应该不会感到陌生，通常我们会在这类图表中添加趋势线，由此得到一个公式，实际上这就是一个回归或者说拟合的过程，因为 Excel 内置了线性、指数型、对数型等多种曲线模型，所以，我们可以非常容易地切换到不同的曲线，而评估一个方程好坏与否的指标为 $R^2$，该值越接近 1 表示拟合效果越好，如图是博主在 Excel 中得到的一条拟合方程：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/10/27/D5xHLIfrJsZNi1B.png>
-<img src=/https:/i.loli.net/2021/10/27/D5xHLIfrJsZNi1B.png loading=lazy alt="在 Excel 中添加趋势线">
+<a href=https://i.loli.net/2021/10/27/D5xHLIfrJsZNi1B.png>
+<img src=https://i.loli.net/2021/10/27/D5xHLIfrJsZNi1B.png loading=lazy alt="在 Excel 中添加趋势线">
 </a>
 <figcaption>在 Excel 中添加趋势线</figcaption>
 </figure></p>
@@ -73,8 +73,8 @@ extended">
 <span class=ln>3</span><span class=n>plt</span><span class=o>.</span><span class=n>ylabel</span><span class=p>(</span><span class=s1>&#39;交易额(亿)&#39;</span><span class=p>)</span>
 <span class=ln>4</span><span class=n>plt</span><span class=o>.</span><span class=n>title</span><span class=p>(</span><span class=s1>&#39;历年双十一交易额变化趋势&#39;</span><span class=p>)</span>
 </code></pre></div><p><figure>
-<a href=/https:/i.loli.net/2021/10/27/wD2b8lhjmIsETeP.png>
-<img src=/https:/i.loli.net/2021/10/27/wD2b8lhjmIsETeP.png loading=lazy alt="通过 matplotlib 绘制散点图">
+<a href=https://i.loli.net/2021/10/27/wD2b8lhjmIsETeP.png>
+<img src=https://i.loli.net/2021/10/27/wD2b8lhjmIsETeP.png loading=lazy alt="通过 matplotlib 绘制散点图">
 </a>
 <figcaption>通过 matplotlib 绘制散点图</figcaption>
 </figure></p>
@@ -95,8 +95,8 @@ extended">
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=ln>1</span><span class=nb>print</span><span class=p>(</span><span class=s1>&#39;R^2：&#39;</span><span class=p>,</span> <span class=n>lr</span><span class=o>.</span><span class=n>score</span><span class=p>(</span><span class=n>X_test</span><span class=p>,</span> <span class=n>Y_test</span><span class=p>))</span>
 </code></pre></div><p>没错，<code>score()</code> 函数需要这样一组测试数据，我们利用前面划分 <strong>训练集</strong> 和 <strong>测试集</strong> 的方法就可以得到它。我们发现，这个值大概是 0.73，这要不离谱都说不过去，这一点我们从图上就可以看出来：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/10/27/UerVa9mZ5NSPwTC.png>
-<img src=/https:/i.loli.net/2021/10/27/UerVa9mZ5NSPwTC.png loading=lazy alt=历年双十一交易额变化趋势预测：一次方程>
+<a href=https://i.loli.net/2021/10/27/UerVa9mZ5NSPwTC.png>
+<img src=https://i.loli.net/2021/10/27/UerVa9mZ5NSPwTC.png loading=lazy alt=历年双十一交易额变化趋势预测：一次方程>
 </a>
 <figcaption>历年双十一交易额变化趋势预测：一次方程</figcaption>
 </figure></p>
@@ -108,22 +108,22 @@ extended">
 <span class=ln>2</span><span class=n>X</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>concatenate</span><span class=p>([</span><span class=n>X</span><span class=o>**</span><span class=mi>3</span><span class=p>,</span> <span class=n>X</span><span class=o>**</span><span class=mi>2</span><span class=p>,</span> <span class=n>X</span><span class=p>],</span> <span class=n>axis</span><span class=o>=</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
 </code></pre></div><p>对于二次多项式，我们可以得到下面的结果，其 $R^2$ 为 0.92，预测 2021 年双十一交易额为 5218 亿：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/10/27/1RF3LtQr4pTidb6.png>
-<img src=/https:/i.loli.net/2021/10/27/1RF3LtQr4pTidb6.png loading=lazy alt=历年双十一交易额变化趋势预测：二次方程>
+<a href=https://i.loli.net/2021/10/27/1RF3LtQr4pTidb6.png>
+<img src=https://i.loli.net/2021/10/27/1RF3LtQr4pTidb6.png loading=lazy alt=历年双十一交易额变化趋势预测：二次方程>
 </a>
 <figcaption>历年双十一交易额变化趋势预测：二次方程</figcaption>
 </figure></p>
 <p>同理，对于三次多项式，我们可以得到下面的结果，其 $R^2$ 为 0.96，预测 2021 年双十一交易额为 6213 亿：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/10/27/DlHcQUIXf1pORob.png>
-<img src=/https:/i.loli.net/2021/10/27/DlHcQUIXf1pORob.png loading=lazy alt=历年双十一交易额变化趋势预测：三次方程>
+<a href=https://i.loli.net/2021/10/27/DlHcQUIXf1pORob.png>
+<img src=https://i.loli.net/2021/10/27/DlHcQUIXf1pORob.png loading=lazy alt=历年双十一交易额变化趋势预测：三次方程>
 </a>
 <figcaption>历年双十一交易额变化趋势预测：三次方程</figcaption>
 </figure></p>
 <p>整体上看，三次方程的拟合效果更好一点，达到了 0.96，但这个和大学时候做实验追求的 0.99 相比，多少有一点尴尬，屏幕前的你，是否想到了更好的曲线模型呢，我们常常说某某行业取得了指数级的增长，难道说指数模型更适合这个问题？关于这一点博主没能去亲自验证，因为看起来在 <a class=link href=https://scikit-learn.org.cn/ target=_blank rel=noopener>scikit-learn</a> 中没有指数型函数的计算模型，可当博主在 Excel 中添加了指数型的趋势线以后，发现结果有点出人意料，因为它的 $R^2$ 只有 0.8314，而按这个方程计算出的交易额则约为2万多亿，好家伙，这都赶上恒大目前拖欠的债务了，想想就觉得离谱，指数型函数对应的曲线如下：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/10/27/ZBN5RgXiqUDLym3.png>
-<img src=/https:/i.loli.net/2021/10/27/ZBN5RgXiqUDLym3.png loading=lazy alt=历年双十一交易额变化趋势预测：指数函数>
+<a href=https://i.loli.net/2021/10/27/ZBN5RgXiqUDLym3.png>
+<img src=https://i.loli.net/2021/10/27/ZBN5RgXiqUDLym3.png loading=lazy alt=历年双十一交易额变化趋势预测：指数函数>
 </a>
 <figcaption>历年双十一交易额变化趋势预测：指数函数</figcaption>
 </figure></p>

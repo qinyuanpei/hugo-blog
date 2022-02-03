@@ -108,22 +108,22 @@ TravisCI 提供了主流编程语言如 C#、Java、JavaScript、Ruby、PHP、No
 <p>前者和我们平时使用 Git 时配置 SSH-Key 是一样的，但考虑到公开密钥产生的安全性问题，TravisCI 建议我们使用官方的一个工具来对密钥进行加密，这是一个基于 Ruby 开发的命令行工具，加密后的内容可以在 TravisCI 中解密，这种方案需要安装 Ruby，博主选择放弃。如果你要问我为什么放弃 Ruby，大概是因为我忘不了曾经被 Jekyll 支配的恐惧感。而后者的原理是将 Github 生成的 Token 作为一个环境变量存储在 TravisCI 中，我们在定义 TravisCI 中的 Build 任务时可以引用这些环境变量，我们只需要在执行 Git 命令时带上这个 Token 就可以了。显然这种方式更合我的胃口，它的缺点是对此 Github 采用了粗放式的权限控制，即这个 Token 时可以访问所有代码仓库的，这一点大家自己可以根据自身情况来决定要使用哪一种方式。</p>
 <p>我们在 Github 中的 Setting->Developer Settings 找到 Personal Access Token，然后选择所有 repo 相关的权限，生成这个 token 后将其复制下来备用，因为它只有在这个地方是可见的。接下来我们打开<a class=link href=https://www.travis-ci.org target=_blank rel=noopener>TravisCI</a>，在使用 Github 登录后我们就可以在这里看到所有的项目，如图是我个人的 TravisCI 界面：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixz3sbutj20j70cvjrz.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixz3sbutj20j70cvjrz.jpg loading=lazy alt=TravisCI主界面>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixz3sbutj20j70cvjrz.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixz3sbutj20j70cvjrz.jpg loading=lazy alt=TravisCI主界面>
 </a>
 <figcaption>TravisCI主界面</figcaption>
 </figure></p>
 <p>大家可以注意到，这里我开启了 qinyuanpei.github.io 这个仓库的持续集成服务，如果大家没有在这里看到项目列表，可以点击"Sync account"按钮进行同步。好了，现在我们继续配置：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixbn0vv8j20sa0euq3r.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixbn0vv8j20sa0euq3r.jpg loading=lazy alt=配置TravisCI>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixbn0vv8j20sa0euq3r.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixbn0vv8j20sa0euq3r.jpg loading=lazy alt=配置TravisCI>
 </a>
 <figcaption>配置TravisCI</figcaption>
 </figure></p>
 <p>在这里我们配置了名为 CI_TOKEN 的环境变量，该值对应.travis.yml 文件中的${CI_TOKEN}。现在我们在本地提交代码到 blog 分支，就会触发 TravisCI 执行 Build 任务，在这里 Build 任务是从 blog 分支拉取博客内容及主题，通过 npm 安装依赖的 nodejs 模块，最终 Hexo 生成的静态页面会被推送到 master 分支，这样就完成了整个自动化构建的流程。下面是 TravisCI 执行 Build 过程中的日志界面：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix8yak5xj20rx0gg3za.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix8yak5xj20rx0gg3za.jpg loading=lazy alt=TravisCI日志>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzix8yak5xj20rx0gg3za.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix8yak5xj20rx0gg3za.jpg loading=lazy alt=TravisCI日志>
 </a>
 <figcaption>TravisCI日志</figcaption>
 </figure></p>

@@ -116,8 +116,8 @@ extended">
 <span class=ln>3</span><span class=kt>var</span> <span class=n>channel</span> <span class=p>=</span> <span class=n>connection</span><span class=p>..</span><span class=n>CreateModel</span><span class=p>();</span>
 </code></pre></div><p>回到我们的 EventBus 中，因为<code>RabbitMQ</code>的链接可能会在一段时间后自动关闭，所以，在微软的 <a class=link href=https://github.com/dotnet-architecture/eShopOnContainers target=_blank rel=noopener>eShopOnContainers</a> 项目，它设计了一个支持自动重连的链接持久化类，我们这里同样有这个机制，当发现链接断开的时候，自动尝试重连，而接下来就由我们熟悉的<code>Channel</code>登场啦！这个时候，我们发现又出现了一个新面孔——交换器(<strong>Exchange</strong>)，好吧，这又要引出 RabbitMQ 中消息投递的原理，即 RabbitMQ 中消息并非由发布者直接发送给消费者，而是需要经过交换器这个中介者，虽然你可以直接去读写队列，但是实际应用中通常都不会这么做。其实，在某种意义上，我们的 EventBus 一样承担着中介者的角色，我们只需要关注怎么发布消息，这个消息将由哪一个订阅者来消费完全不需要我来关心，一个典型的消息投递过程如下图所示：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/07/31/geWGI6M39fcw2S1.png>
-<img src=/https:/i.loli.net/2020/07/31/geWGI6M39fcw2S1.png loading=lazy alt=RabbitMQ消息投递示意图>
+<a href=https://i.loli.net/2020/07/31/geWGI6M39fcw2S1.png>
+<img src=https://i.loli.net/2020/07/31/geWGI6M39fcw2S1.png loading=lazy alt=RabbitMQ消息投递示意图>
 </a>
 <figcaption>RabbitMQ消息投递示意图</figcaption>
 </figure></p>
@@ -225,29 +225,29 @@ extended">
 <p>在实现 EventBus 的过程中，博主用到了<code>direct</code>类型的交换器，并说这是 RabbitMQ 内置的发布-订阅实现，实际上，这里应该有<code>direct</code>、<code>fanout</code>、<code>topic</code>和<code>head</code>四种类型的交换器，下面我们来逐个地进行说明。</p>
 <p>1、<code>fanout</code>相当于广播，所有绑定了该交换器的队列都会收到消息。如下图所示：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/07/30/I6Ape3W5C1nOvxV.gif>
-<img src=/https:/i.loli.net/2020/07/30/I6Ape3W5C1nOvxV.gif loading=lazy alt=RabbitMQ-fanout模式>
+<a href=https://i.loli.net/2020/07/30/I6Ape3W5C1nOvxV.gif>
+<img src=https://i.loli.net/2020/07/30/I6Ape3W5C1nOvxV.gif loading=lazy alt=RabbitMQ-fanout模式>
 </a>
 <figcaption>RabbitMQ-fanout模式</figcaption>
 </figure></p>
 <p>2、<code>direct</code>相当于发布订阅，只有绑定了该交换器且 routingKey 完全匹配的队列会收到消息。如下图所示：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/07/31/xcNezCmHov3UL5D.gif>
-<img src=/https:/i.loli.net/2020/07/31/xcNezCmHov3UL5D.gif loading=lazy alt=RabbitMQ-driect模式>
+<a href=https://i.loli.net/2020/07/31/xcNezCmHov3UL5D.gif>
+<img src=https://i.loli.net/2020/07/31/xcNezCmHov3UL5D.gif loading=lazy alt=RabbitMQ-driect模式>
 </a>
 <figcaption>RabbitMQ-driect模式</figcaption>
 </figure></p>
 <p>3、<code>topic</code>相当于<code>direct</code> + 模糊匹配，所有绑定了该交换器的队列，且 routingKey 符合给定的模式，就会收到消息。如下图所示：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/07/31/j6H5dOX4FsJPgxC.gif>
-<img src=/https:/i.loli.net/2020/07/31/j6H5dOX4FsJPgxC.gif loading=lazy alt=RabbitMQ-topic模式>
+<a href=https://i.loli.net/2020/07/31/j6H5dOX4FsJPgxC.gif>
+<img src=https://i.loli.net/2020/07/31/j6H5dOX4FsJPgxC.gif loading=lazy alt=RabbitMQ-topic模式>
 </a>
 <figcaption>RabbitMQ-topic模式</figcaption>
 </figure></p>
 <p>4、<code>header</code>相当于给每条消息定义了一个“头”，只有当头中的一个键值对(Any)或者全部键值对(All)匹配的时候，才会收到消息，这种实际应用中非常少，如下图所示：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/07/31/Q7CkMVsL4jFRtNT.png>
-<img src=/https:/i.loli.net/2020/07/31/Q7CkMVsL4jFRtNT.png loading=lazy alt=RabbitMQ-header模式>
+<a href=https://i.loli.net/2020/07/31/Q7CkMVsL4jFRtNT.png>
+<img src=https://i.loli.net/2020/07/31/Q7CkMVsL4jFRtNT.png loading=lazy alt=RabbitMQ-header模式>
 </a>
 <figcaption>RabbitMQ-header模式</figcaption>
 </figure></p>

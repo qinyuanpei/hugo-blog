@@ -184,8 +184,8 @@ extended">
 <span class=ln>22</span>await _context.SaveChangesAsync();
 </code></pre></div><p>下面是最终生成的审计日志信息：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/04/26/yefcJ1749L5TiMD.png>
-<img src=/https:/i.loli.net/2020/04/26/yefcJ1749L5TiMD.png loading=lazy alt=审计日志表展示>
+<a href=https://i.loli.net/2020/04/26/yefcJ1749L5TiMD.png>
+<img src=https://i.loli.net/2020/04/26/yefcJ1749L5TiMD.png loading=lazy alt=审计日志表展示>
 </a>
 <figcaption>审计日志表展示</figcaption>
 </figure></p>
@@ -262,8 +262,8 @@ extended">
 </code></pre></div><h1 id=思路延伸领域事件>思路延伸：领域事件</h1>
 <p>最近这段时间，对于数据同步这类“需求”略有感触，譬如某种单据在两个互为上下游的系统里流转，譬如不同系统间实时地对基础资料进行同步等。这类需求可能会通过<code>ETL</code>、<code>DBLink</code>这类“数据库”手段实现，亦有可能是通过互相调用 API 的方式实现，再者无非是通过数据库实现类似消息队列的功能……而我个人，更推崇通过事件来处理，因为它更接近人类思考的本质，希望在适当的时机来“通知”对方，而论询实际上是一种相当低效的沟通方式。一个订单被创建，一条记录被修改，本质上都是一个特定事件，而在业务上对此感兴趣的任何第三方，都可以去订阅这个事件，这就是事件驱动的思想。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/04/24/8sgUqxmF5n2CdYO.png>
-<img src=/https:/i.loli.net/2020/04/24/8sgUqxmF5n2CdYO.png loading=lazy alt=领域事件>
+<a href=https://i.loli.net/2020/04/24/8sgUqxmF5n2CdYO.png>
+<img src=https://i.loli.net/2020/04/24/8sgUqxmF5n2CdYO.png loading=lazy alt=领域事件>
 </a>
 <figcaption>领域事件</figcaption>
 </figure></p>

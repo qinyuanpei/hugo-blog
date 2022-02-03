@@ -52,8 +52,8 @@ extended">
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span>SHOW VARIABLES LIKE <span class=s1>&#39;LOG_BIN&#39;</span>
 </code></pre></div><p>如果可以看到下面的结果，则表示 Binlog 功能已开启。
 <figure>
-<a href=/https:/i.loli.net/2020/07/19/IRX3DzsPkG1MgnW.png>
-<img src=/https:/i.loli.net/2020/07/19/IRX3DzsPkG1MgnW.png loading=lazy alt=Binlog已开启示意图>
+<a href=https://i.loli.net/2020/07/19/IRX3DzsPkG1MgnW.png>
+<img src=https://i.loli.net/2020/07/19/IRX3DzsPkG1MgnW.png loading=lazy alt=Binlog已开启示意图>
 </a>
 <figcaption>Binlog已开启示意图</figcaption>
 </figure>
@@ -87,8 +87,8 @@ extended">
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span>SHOW MASTER STATUS
 </code></pre></div><p>此时，我们会得到下面的结果：
 <figure>
-<a href=/https:/i.loli.net/2020/07/19/Xc4B7KZltr9MjAP.png>
-<img src=/https:/i.loli.net/2020/07/19/Xc4B7KZltr9MjAP.png loading=lazy alt=查看Binlog状态>
+<a href=https://i.loli.net/2020/07/19/Xc4B7KZltr9MjAP.png>
+<img src=https://i.loli.net/2020/07/19/Xc4B7KZltr9MjAP.png loading=lazy alt=查看Binlog状态>
 </a>
 <figcaption>查看Binlog状态</figcaption>
 </figure>
@@ -96,8 +96,8 @@ extended">
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span>SHOW BINLOG EVENTS IN <span class=s1>&#39;MYSQL-BIN.000388&#39;</span> FROM <span class=m>135586062</span>
 </code></pre></div><p>此时，ROW 模式下的 Binlog 如下图所示：
 <figure>
-<a href=/https:/i.loli.net/2020/07/19/YFAb8POCyf4EM3c.png>
-<img src=/https:/i.loli.net/2020/07/19/YFAb8POCyf4EM3c.png loading=lazy alt=ROW模式下的Binlog>
+<a href=https://i.loli.net/2020/07/19/YFAb8POCyf4EM3c.png>
+<img src=https://i.loli.net/2020/07/19/YFAb8POCyf4EM3c.png loading=lazy alt=ROW模式下的Binlog>
 </a>
 <figcaption>ROW模式下的Binlog</figcaption>
 </figure>
@@ -110,8 +110,8 @@ extended">
 <h1 id=业内主流方案>业内主流方案</h1>
 <p>如果你觉得通过第一节的内容，可以非常容易地实现 Binlog 的解析，那么，我觉得你并没有想清楚 Binlog 处理过程中的难点在哪里？首先，每次读取 Binlog，必须要知道对应的日志文件和位置，而如果在新的 Binlog 产生前，没有处理完原来的 Binlog，就必须要记录对应的日志文件和位置，而且经过博主本人测试，Binlog 无法直接给查询语句追加过滤条件，来达到筛选某些数据库、表以及事件的目的，而且日志文件的格式会因为模式的不同而不同，最主要的一点是，直接在主库上读取 Binlog 会给数据库带来访问压力，所以，主流的方案，是让客户端伪装成“从库”，关于一点，我们可以配合下面的图片来理解。
 <figure>
-<a href=/https:/i.loli.net/2020/07/20/N8A24sEK1RnjBdv.png>
-<img src=/https:/i.loli.net/2020/07/20/N8A24sEK1RnjBdv.png loading=lazy alt=MySQL主从复制原理>
+<a href=https://i.loli.net/2020/07/20/N8A24sEK1RnjBdv.png>
+<img src=https://i.loli.net/2020/07/20/N8A24sEK1RnjBdv.png loading=lazy alt=MySQL主从复制原理>
 </a>
 <figcaption>MySQL主从复制原理</figcaption>
 </figure>
@@ -186,8 +186,8 @@ extended">
 <p>众所知周，我是一个有一点“懒惰”的人，考虑到前面两种方案都比较重，即使通过 Docker 来安装。对我来说，这是一个验证想法的过程，所以，我选择的搭配是 RabbitMQ + .NET Core + Python 的方案，因为 Kafka 需要 ZooKeeper，而在验证想法的阶段，自然是越简单越好。我正打算参考微软的 eShopOnContainers 的项目， 实现一个消息总线(EventBus)，恰好这个项目中使用了 RabbitMQ，而且从某种意义上来说，RabbitMQ 更接近传统意义上的消息队列，它提供的重试、确认、死信等这些机制都比较完善，可以让我把精力集中在快速实现上，毕竟你看到这些博客，都是我挤出时间来完成的。选择 Python 就更直接了，因为安装、运行都非常容易，或许 Kafka 的吞吐性能更好，但我觉得掌握核心思想才是最重要的吧！</p>
 <p>总而言之，在这里，我选择了自己最熟悉的技术栈。整体思路是，首先，.NET Core + RabbitMQ 实现一个消息总线，并对外提供发布事件的 API 接口。其次，利用 Python-Mysql-Replication 实现一个读取 Binlog 的后台程序，这些 Binlog 最终会以 JSON 的形式发布到 RabbitMQ 上。最后，实现针对特定事件的 IEventHandler接口，消息总线会自动调用这些 Handler 去处理消息。至此，就实现了针对 Binlog 的订阅和消费。众所周知，消息总线的一大优点就是解耦，我们就可以摆脱以往定时轮询 + 打标记(Flag)的宿命轮回，只需要编写对应的 Handler 即可，其实我觉得这是一种思维上的转变，就是"主动"到"被动"的转变，并不是说我们帮客户做得越多越好，而是我们能让客户意识到它可以做哪些事情。同样的，我绘制了一个简单的流程图来作为说明：
 <figure>
-<a href=/https:/i.loli.net/2020/07/22/5irw4tcNnapVRbD.png>
-<img src=/https:/i.loli.net/2020/07/22/5irw4tcNnapVRbD.png loading=lazy alt=基于RabbitMQ的EventBus实现>
+<a href=https://i.loli.net/2020/07/22/5irw4tcNnapVRbD.png>
+<img src=https://i.loli.net/2020/07/22/5irw4tcNnapVRbD.png loading=lazy alt=基于RabbitMQ的EventBus实现>
 </a>
 <figcaption>基于RabbitMQ的EventBus实现</figcaption>
 </figure></p>

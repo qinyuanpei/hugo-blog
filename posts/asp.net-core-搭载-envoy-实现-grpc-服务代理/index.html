@@ -115,8 +115,8 @@ extended">
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=ln>1</span>protoc --descriptor_set_out<span class=o>=</span>./Protos/descriptor/greet.pb --include_imports Protos<span class=se>\g</span>reet.proto
 </code></pre></div><p>这条命令行的含义是，为 <code>Protos\greet.proto</code> 生成对应的服务描述文件 <code>/Protos/descriptor/greet.pb</code>。下图即为博主生成的服务描述文件：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/08/lhPofJFKytHGWja.png>
-<img src=/https:/i.loli.net/2021/08/08/lhPofJFKytHGWja.png loading=lazy alt="通过命令行生成 Protobuf 描述文件">
+<a href=https://i.loli.net/2021/08/08/lhPofJFKytHGWja.png>
+<img src=https://i.loli.net/2021/08/08/lhPofJFKytHGWja.png loading=lazy alt="通过命令行生成 Protobuf 描述文件">
 </a>
 <figcaption>通过命令行生成 Protobuf 描述文件</figcaption>
 </figure></p>
@@ -139,8 +139,8 @@ extended">
 </span><span class=ln>16</span><span class=w>      </span><span class=nt>ASPNETCORE_ENVIRONMENT</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;Development&#34;</span><span class=w>
 </span></code></pre></div><p>启动服务后，如果我们像调用 gRPC 服务中的 <code>SayHello()</code>方法，此时，对应的路由为：<code>/greet.Greeter/SayHello</code>，即：<code>包名.服务名/方法名</code>。好了，我们用 Postman 或者 Apifox 对接口进行测试：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/08/RZpux1nwWDh6eJK.png>
-<img src=/https:/i.loli.net/2021/08/08/RZpux1nwWDh6eJK.png loading=lazy alt="像调用一个 JSON API 一样调用 gRPC ">
+<a href=https://i.loli.net/2021/08/08/RZpux1nwWDh6eJK.png>
+<img src=https://i.loli.net/2021/08/08/RZpux1nwWDh6eJK.png loading=lazy alt="像调用一个 JSON API 一样调用 gRPC ">
 </a>
 <figcaption>像调用一个 JSON API 一样调用 gRPC</figcaption>
 </figure></p>

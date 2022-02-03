@@ -54,8 +54,8 @@ extended">
 </ul>
 <p>在今天的这篇文章中，除了 Envoy 以外，我们还需要两位新朋友的帮助，它们分别是<a class=link href=https://prometheus.io/ target=_blank rel=noopener>Prometheus</a> 和 <a class=link href=https://grafana.com/ target=_blank rel=noopener>Grafana</a>。其中，Prometheus 是一个开源的完整监控解决方案，其对传统监控系统如 Nagios、Zabbix 等的测试和告警模型进行了彻底的颠覆，形成了基于中央化的规则计算、统一分析和告警的新模型。可以说，Prometheus 是完整监控解决方案中当之无愧的后起之秀，它最为人所称道的是它强大的数据模型，在 Prometheus 中所有采集到的监控数据吗，都以指标(<strong>Metrics</strong>)的形式存储在时序数据库中。和传统的关系型数据库中使用的 SQL 不同，Prometheus 定义一种叫做 PromQL 的查询语言，来实现对监控数据的查询、聚合、可视化、告警等功能。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/12/N4tRgsYJWPLaBlS.png>
-<img src=/https:/i.loli.net/2021/07/12/N4tRgsYJWPLaBlS.png loading=lazy alt="Prometheus & Grafana 的奇妙组合">
+<a href=https://i.loli.net/2021/07/12/N4tRgsYJWPLaBlS.png>
+<img src=https://i.loli.net/2021/07/12/N4tRgsYJWPLaBlS.png loading=lazy alt="Prometheus & Grafana 的奇妙组合">
 </a>
 <figcaption>Prometheus & Grafana 的奇妙组合</figcaption>
 </figure></p>
@@ -119,43 +119,43 @@ extended">
 </span><span class=ln>18</span><span class=w>
 </span></code></pre></div><p>大家还记得 Envoy 中提供的管理接口吗？我们说 Envoy 提供了 Prometheus 格式的指标数据，其实就是指 Envoy 管理接口中的 <code>stats/prometheus</code> 接口，它对应的地址为：<code>http://localhost:9091/stats/prometheus</code>，直接访问这个地址，我们就可以得到下面的结果，这就是 Prometheus 需要的指标数据格式：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/10/PIQHEutC8SZasOF.png>
-<img src=/https:/i.loli.net/2021/07/10/PIQHEutC8SZasOF.png loading=lazy alt=" Prometheus 需要的指标数据格式">
+<a href=https://i.loli.net/2021/07/10/PIQHEutC8SZasOF.png>
+<img src=https://i.loli.net/2021/07/10/PIQHEutC8SZasOF.png loading=lazy alt=" Prometheus 需要的指标数据格式">
 </a>
 <figcaption>Prometheus 需要的指标数据格式</figcaption>
 </figure></p>
 <h1 id=数据源与可视化>数据源与可视化</h1>
 <p>现在，万事俱备，我们通过<code>docker-compose</code>启动服务即可，默认情况下，Prometheus 使用<code>9090</code>端口，Grafana 使用<code>3000</code>端口，其中，Grafana 默认的账号为<code>admin</code>/<code>admin</code>，建议大家第一次登录后，及时修改默认的账号密码。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/12/WD1bSxfy6w7cU8X.png>
-<img src=/https:/i.loli.net/2021/07/12/WD1bSxfy6w7cU8X.png loading=lazy alt="Prometheus 运行效果展示">
+<a href=https://i.loli.net/2021/07/12/WD1bSxfy6w7cU8X.png>
+<img src=https://i.loli.net/2021/07/12/WD1bSxfy6w7cU8X.png loading=lazy alt="Prometheus 运行效果展示">
 </a>
 <figcaption>Prometheus 运行效果展示</figcaption>
 </figure></p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/10/sQyt21AKm4qr9CY.png>
-<img src=/https:/i.loli.net/2021/07/10/sQyt21AKm4qr9CY.png loading=lazy alt="Grafana 运行效果展示">
+<a href=https://i.loli.net/2021/07/10/sQyt21AKm4qr9CY.png>
+<img src=https://i.loli.net/2021/07/10/sQyt21AKm4qr9CY.png loading=lazy alt="Grafana 运行效果展示">
 </a>
 <figcaption>Grafana 运行效果展示</figcaption>
 </figure></p>
 <p>接下来，我们可以注意到，Prometheus 中两个 target 都已正常启动，这表示它们开始采集数据，我们还可以通过 Graph 菜单来查看当前采集到的数据。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/12/sbZTMlukpd9SrKc.png>
-<img src=/https:/i.loli.net/2021/07/12/sbZTMlukpd9SrKc.png loading=lazy alt="Prometheus 采集数据">
+<a href=https://i.loli.net/2021/07/12/sbZTMlukpd9SrKc.png>
+<img src=https://i.loli.net/2021/07/12/sbZTMlukpd9SrKc.png loading=lazy alt="Prometheus 采集数据">
 </a>
 <figcaption>Prometheus 采集数据</figcaption>
 </figure></p>
 <p>那么，数据采集到 Prometheus 以后，如何在 Grafana 中进行图表的可视化展示呢？首先，我们需要在 Grafana 中添加一个数据源，点击左侧第6个图标就可以找到入口。显然，这里的数据源就是 Prometheus ：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/12/3dsXEfRqFzHNvMb.png>
-<img src=/https:/i.loli.net/2021/07/12/3dsXEfRqFzHNvMb.png loading=lazy alt="Grafana 添加数据源">
+<a href=https://i.loli.net/2021/07/12/3dsXEfRqFzHNvMb.png>
+<img src=https://i.loli.net/2021/07/12/3dsXEfRqFzHNvMb.png loading=lazy alt="Grafana 添加数据源">
 </a>
 <figcaption>Grafana 添加数据源</figcaption>
 </figure></p>
 <p>接下来，我们可以到官方的 <a class=link href=https://grafana.com/grafana/dashboards target=_blank rel=noopener>社区</a> 里找一个 Envoy 的模板，这是一个别人做好的 Dashboard，我们暂时用这个模板来看看效果。随着学习的深入，我们会先从自定义图表开始做起，最终，我们会拥有一个属于自己的 Dashboard 。这里，我们选择一个 Dashboard 模板后，复制其ID，并在 Grafana 中进行导入，导入的时候需要选择数据源，我们选择 Prometheus 即可。接下来，就是见证奇迹的时刻：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/10/GSNo7xaWLPzeIXT.png>
-<img src=/https:/i.loli.net/2021/07/10/GSNo7xaWLPzeIXT.png loading=lazy alt="Envoy 监控面板效果展示">
+<a href=https://i.loli.net/2021/07/10/GSNo7xaWLPzeIXT.png>
+<img src=https://i.loli.net/2021/07/10/GSNo7xaWLPzeIXT.png loading=lazy alt="Envoy 监控面板效果展示">
 </a>
 <figcaption>Envoy 监控面板效果展示</figcaption>
 </figure></p>
@@ -171,15 +171,15 @@ extended">
 </span><span class=ln>3</span><span class=w></span><span class=kr>rate</span><span class=o>(</span><span class=nv>http_requests_total</span><span class=p>[</span><span class=s>5m</span><span class=p>]</span><span class=o>)</span><span class=w>
 </span></code></pre></div><p>在这里，我们给出的示例，它表示的是5分钟内 HTTP 请求的平均数目。我们可以在 Prometheus 中的 Graph 菜单对其结果进行查看：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/12/h5vwA1CjJIqs84T.png>
-<img src=/https:/i.loli.net/2021/07/12/h5vwA1CjJIqs84T.png loading=lazy alt="在 Prometheus 中查询 Envoy 指标数据">
+<a href=https://i.loli.net/2021/07/12/h5vwA1CjJIqs84T.png>
+<img src=https://i.loli.net/2021/07/12/h5vwA1CjJIqs84T.png loading=lazy alt="在 Prometheus 中查询 Envoy 指标数据">
 </a>
 <figcaption>在 Prometheus 中查询 Envoy 指标数据</figcaption>
 </figure></p>
 <p>通常，我们可以在这里对查询语句做简单的调试，而如果需要将其集成到 Grafana 中，我们就需要在 Grafana 新建一个图表，可以注意到，两者的语法是完全相同的，这里唯一的不同点在于，时间间隔从固定的5分钟变成了一个变量：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/12/5YzSxcUnIPE43Xm.png>
-<img src=/https:/i.loli.net/2021/07/12/5YzSxcUnIPE43Xm.png loading=lazy alt="在 Grafana 中查询 Envoy 指标数据">
+<a href=https://i.loli.net/2021/07/12/5YzSxcUnIPE43Xm.png>
+<img src=https://i.loli.net/2021/07/12/5YzSxcUnIPE43Xm.png loading=lazy alt="在 Grafana 中查询 Envoy 指标数据">
 </a>
 <figcaption>在 Grafana 中查询 Envoy 指标数据</figcaption>
 </figure></p>

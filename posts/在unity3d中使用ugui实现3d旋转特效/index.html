@@ -56,8 +56,8 @@ Unity3D
 <li>其二是采用伪 3D 来制作，即我们通过在 2D 平面内对图片的层次进行合理化调整实现伪 3D 效果，配合插值、缩放等技巧来实现 2D 平面上的旋转，然后给用户一种视觉上的 3D 效果。</li>
 </ul>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy4xe3bqj20zk0m8grl.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy4xe3bqj20zk0m8grl.jpg loading=lazy alt=需求设定>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziy4xe3bqj20zk0m8grl.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy4xe3bqj20zk0m8grl.jpg loading=lazy alt=需求设定>
 </a>
 <figcaption>需求设定</figcaption>
 </figure></p>
@@ -67,15 +67,15 @@ Unity3D
 <h1 id=具体实现>具体实现</h1>
 <p>首先我们来搭建一个基本的场景，我们这里将一切浮华褪尽，我们可以看到在场景中有两个按钮，它们可以让我们当前选中的卡片，而界面底部的标签会显示我们当前选择的角色名称。虽然在这里采用触屏滑动的效果更好，可我们这里主要的目的是为了说明如何实现我们的思路，当引入这部分功能的设计以后，会增加大家在整体理解上的难度，所以我们这里以快速实现功能为主。注意到场景中的卡片此时都是相当“任性”地放置在界面上，这是因为我们稍后会采用算法计算每个卡片的实际位置，所以在这里完全可以忽略其“美观性”。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixyfcuz1j20i90e7dld.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixyfcuz1j20i90e7dld.jpg loading=lazy alt=场景展示>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixyfcuz1j20i90e7dld.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixyfcuz1j20i90e7dld.jpg loading=lazy alt=场景展示>
 </a>
 <figcaption>场景展示</figcaption>
 </figure></p>
 <p>这里，我们设定场景的大小为 800x460，那么在这种情况下，我们可以按照下面图中所示的曲线轨迹来构造一条曲线，考虑到椭圆方程比贝塞尔曲线更加简单易用，所以我们这里选择椭圆方程来作为场景中这些卡片排列的曲线方程。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixbd5ajtj20kz0gtk0w.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixbd5ajtj20kz0gtk0w.jpg loading=lazy alt=曲线方程>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixbd5ajtj20kz0gtk0w.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixbd5ajtj20kz0gtk0w.jpg loading=lazy alt=曲线方程>
 </a>
 <figcaption>曲线方程</figcaption>
 </figure></p>
@@ -157,8 +157,8 @@ Unity3D
 </code></pre></div><p>我们在对数组内的元素重新组织后，需要重新计算每个精灵的位置和深度。我这里在思考的一个问题是：精灵的位置和深度实际上是确定的，所以我们可以考虑将它们存储起来“复用”，这样可以减少每次的重复计算。其实，代码的优化和重构是一个需要时间来酝酿的过程，没有人能够在写代码的时候，就可以意识到代码中的瑕疵，而这种发现问题的眼光通常需要长时间的培养，这是我们之所以提倡不要过早优化的原因，除非你能够快速地找到代码中的优化点。好了，现在采用类似的思路，我们可以实现向前翻页的逻辑啦，这里的代码非常简单不再赘述。</p>
 <p>好了，现在我们可以看看到目前为止我们实现了一个怎样的功能吧！</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix8dwz8rg20l90gpb29.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix8dwz8rg20l90gpb29.jpg loading=lazy alt=效果展示>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzix8dwz8rg20l90gpb29.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix8dwz8rg20l90gpb29.jpg loading=lazy alt=效果展示>
 </a>
 <figcaption>效果展示</figcaption>
 </figure></p>

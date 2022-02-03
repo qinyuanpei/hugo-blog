@@ -53,22 +53,22 @@ extended">
 <p>如果我们讲各种语言的"打印"理解为 Hello World，那么对前端而言最浅显的 Hello World 是什么呢？我个人以为是登录，想象一下，这是任何一个 Web 应用里都有的功能，我们输入用户名和密码以后，点击“登录”按钮就可以登录到系统。虽然，此时此刻的你我，都知道这是一个简单的 POST 请求，甚至对于用户名和密码这两个字段，我们有多种方法可以将其传递到服务器上。那么，各位是否知道，我们通过 Form 表单来登录时，这个过程中到底发生了什么呢？既然提到了登录，那么我们这里通过下面的例子来分析。</p>
 <p>如你所见，这是一个相当“简陋”的 Web 页面。对一名后端开发人员而言，精致的 Web 页面就是一段被套在华丽外壳里的代码(不知道这样会不会被前端网红们打死)。所以，排除了样式相关的 CSS，可以让我们更加专注于核心原理。同样地，我们编写了一个简单的 Web API，来处理前端发送来的 HTTP 请求，这不是本文的重点，我们假设它存在且可以工作就好。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy867pz8j20ig07laa5.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy867pz8j20ig07laa5.jpg loading=lazy alt=HTML结构/界面>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziy867pz8j20ig07laa5.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy867pz8j20ig07laa5.jpg loading=lazy alt=HTML结构/界面>
 </a>
 <figcaption>HTML结构/界面</figcaption>
 </figure></p>
 <p>这里已经说过，比起炫酷的 Web 页面和后端接口，我们这里更关心的是，登录时到底发生了什么。所以，大家都猜对了，通过 Chrome 自带的开发人员工具，我们可以捕捉到点击“登录”按钮时发出的 HTTP 请求，我们一起来看看它的报文内容是什么吧，相信大家都会有一种恍然大悟的感觉，让我们拭目以待吧！
 <figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy5kad23j20if08k3z9.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy5kad23j20if08k3z9.jpg loading=lazy alt=encrypt为x-www-form-urlencode时的请求报文>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziy5kad23j20if08k3z9.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy5kad23j20if08k3z9.jpg loading=lazy alt=encrypt为x-www-form-urlencode时的请求报文>
 </a>
 <figcaption>encrypt为x-www-form-urlencode时的请求报文</figcaption>
 </figure></p>
 <p>通过这个报文内容，我们可以发现，“登录”实际上是一个 POST 请求，这是因为我们在 HTML 结构中声明了，Form 表单用什么样的方式去提交数据。而实际上呢，Form 表单默认的行为是 GET。我们同样会注意到报文中的 Content-Type 为 application/x-www-form-urlencode，它的特点是采用类似 key1=value1&key2=value2……的形式来提交数据，并且每一个 value 都会被编码。这样，我们就不得不提到 Form 表单的 encrypt 属性，它有三种基本取值：text/plain、application/x-www-form-urlencode 和 multipart/form-data。其中，text/plain 这种不必再说，因为它传递的是纯文本数据。而对于 multipart/form-data 来说，它的特点是采用一系列的 boundary 来分割不同的值，如果我们将示例中 Form 表单的 encrypt 属性设为 multipart/form-data，就会得到下面的报文内容，可以注意到，它和我们预期是一致的。
 <figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixzg5fsdj20rv0dv75u.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixzg5fsdj20rv0dv75u.jpg loading=lazy alt=encrypt为multipart/form-data时的请求报文>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixzg5fsdj20rv0dv75u.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixzg5fsdj20rv0dv75u.jpg loading=lazy alt=encrypt为multipart/form-data时的请求报文>
 </a>
 <figcaption>encrypt为multipart/form-data时的请求报文</figcaption>
 </figure></p>
@@ -76,14 +76,14 @@ extended">
 <h1 id=神奇的-input-控件>神奇的 Input 控件</h1>
 <p>OK，在本文的第一节，我们使用的是最简单的 Input 控件，即它的 type 属性为“text”。事实上，Input 控件是一个神奇的控件，因为不同的 type 会有不同的作用。例如，type 为 password 对应密码域；type 为 checkbox 对应复选；type 为 radio 对应单选域；type 为 button 对应按钮域等等……有很多朋友可能会问，你说的这个和这篇文章有什么关系吗？我想说的是，当然有关系而且关系密切，因为我们下面要提到的这种 Input 控件，和本文想要说明的 HTTP 上传，在本质上有着千丝万缕的联系。具体是什么样的联系呢？我们来一起看下面的这个例子。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05o9mcsoj20h606uq2s.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05o9mcsoj20h606uq2s.jpg loading=lazy alt=HTTP_Upload_06>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05o9mcsoj20h606uq2s.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05o9mcsoj20h606uq2s.jpg loading=lazy alt=HTTP_Upload_06>
 </a>
 <figcaption>HTTP_Upload_06</figcaption>
 </figure></p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05ljreo8j20me08vt98.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05ljreo8j20me08vt98.jpg loading=lazy alt=HTTP_Upload_05>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05ljreo8j20me08vt98.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05ljreo8j20me08vt98.jpg loading=lazy alt=HTTP_Upload_05>
 </a>
 <figcaption>HTTP_Upload_05</figcaption>
 </figure></p>
@@ -91,15 +91,15 @@ extended">
 <h1 id=http-与文件上传>HTTP 与文件上传</h1>
 <p>好了，说了这多么内容，是时候来说说 HTTP 与文件上传啦！现在大家都知道了，HTTP 上传实际上是在 multipart/form-data 基础上扩展而来的。早期人们在制定 HTTP 协议的时候，并没有想到用它来作为文件上传的协议，因为事实上 TPC/IP 或者 FTP 都可以提供更好的上传支持。当我们回顾 Form 表单中关于 HTTP 的部分，我们就会发现，HTTP 中具备上传文件可能性的方式只有两种，即 multipart/form-data 和 x-www-form-urlencode。这里为什么不考虑 text/plain 呢？尽管从理论上来讲，它可以作为文件上传的一种方式，此时，它相当于把整个文件的内容全部放在请求体(body)中。从实用性角度来讲，text/pain 在实际应用中并不多见，因为采用纯文本意味着客户端与服务端必须按照某种规则去解析报文。而从功能性角度来讲，把整个文件的内容全部放在请求体中，则会造成文件信息的不完整，因为此时文件名等信息是没有办法传输到服务器端的，所以，这样综合下来再看的话，HTTP 协议本身留给我们的选择的空间并不大，我们能够选择的就只有 multipart/form-data 和 x-www-form-urlencode 这两种啦，下面着重来分析下这种数据加密方式。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05f46qf1j20rv0dvjso.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05f46qf1j20rv0dvjso.jpg loading=lazy alt=HTTP_Upload_07>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05f46qf1j20rv0dvjso.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05f46qf1j20rv0dvjso.jpg loading=lazy alt=HTTP_Upload_07>
 </a>
 <figcaption>HTTP_Upload_07</figcaption>
 </figure></p>
 <p>对于 Content-Type 为 multipart/form-data 而言，首先，它会在请求头部的 Content-Type 字段中，声明当前的内容类型为 multipart/form-data，并指定一个名为 boundary 的随机字符串，它的含义是说，从现在开始，请求中的每一个“字段”都会用这个名为 boundary 的随机字符串进行分割。而对于每一个“字段”而言，它可以拥有部分子头部字段，一个最为常见的头部字段是 Content-Disposition，其取值为 form-data。除此之外，每一个“字段”可以在**Content-Disposition: form-data;**后追加若干个字段，譬如 name、filename 以及用以指定文件类型的 Content-Type(假如这个“字段”是一个文件的话)。HTTP 协议中还规定这里可以支持扩展字段。我们通过 type 为 file 的 Input 控件进行上传时，默认的 name 为 multipartfile，当服务器端接受到类似的字段时，就会根据报文对文件进行拼接，所以，对于 HTTP 上传来说，它可以支持多个文件并发上传，但并不直接支持断点续传。注意这里我说的是，不直接支持断点续传，实际上它可以通过请求头部中的 Range 字段来实现，当然这已经超出了这篇文章的范畴。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz020zu3ooj20t90903zd.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz020zu3ooj20t90903zd.jpg loading=lazy alt=HTTP_Upload_08>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz020zu3ooj20t90903zd.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz020zu3ooj20t90903zd.jpg loading=lazy alt=HTTP_Upload_08>
 </a>
 <figcaption>HTTP_Upload_08</figcaption>
 </figure></p>

@@ -58,8 +58,8 @@ extended">
 </code></pre></div><p>这意味着我们只需要发布一个npm的包，就可以使用它提供的加速服务。CDN加速的好处我这里就不再多说了，只要我们的项目中用到了第三方的静态资源，譬如JavaScript/CSS等等都应该考虑接入到CDN中。有人常常担心CDN挂掉或者是私有化部署无法接入外网环境。我想说，我们目光应该长远一点，现在早已不是早年那种单打独斗式的开发模式了，我们不可能把所有资源都放到本地来。随着云计算的概念越发地深入人心，越来越多的基础服务都运行在一台又一台虚拟化的“云服务器”上，这种情况下，搞这种集中化配置的做法，是完全违背分布式的发展趋势的。</p>
 <p>如果说，针对npm包的CDN加速服务离我们还有点遥远，因为我们大多数情况下都是在使用别人写好的库。那么，接下来，针对Github的CDN加速服务应该会让我们无比兴奋吧，毕竟Github Pages的“慢”大家是可以感受得到的。不然，为什么大家要用Coding Pages做国内/国外的双线部署呢？首先，我们在浏览器里输入下面这个地址：<a class=link href=https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@latest/ target=_blank rel=noopener>https://cdn.jsdelivr.net/gh/qinyuanpei/qinyuanpei.github.io@latest/</a>
 <figure>
-<a href=/https:/i.loli.net/2020/02/05/HtmhUdsSRLW4Q9A.png>
-<img src=/https:/i.loli.net/2020/02/05/HtmhUdsSRLW4Q9A.png loading=lazy alt=jsDelivr提供的CDN加速资源>
+<a href=https://i.loli.net/2020/02/05/HtmhUdsSRLW4Q9A.png>
+<img src=https://i.loli.net/2020/02/05/HtmhUdsSRLW4Q9A.png loading=lazy alt=jsDelivr提供的CDN加速资源>
 </a>
 <figcaption>jsDelivr提供的CDN加速资源</figcaption>
 </figure>
@@ -96,14 +96,14 @@ extended">
 <span class=ln>2</span> git push --force --quiet <span class=s2>&#34;https://</span><span class=si>${</span><span class=nv>CI_TOKEN</span><span class=si>}</span><span class=s2>@</span><span class=si>${</span><span class=nv>GH_REF</span><span class=si>}</span><span class=s2>&#34;</span> master:master --tags
 </code></pre></div><p>好了，现在重新生成、部署，来看看效果吧：
 <figure>
-<a href=/https:/i.loli.net/2020/02/05/FZJi9esXWQzxLYf.png>
-<img src=/https:/i.loli.net/2020/02/05/FZJi9esXWQzxLYf.png loading=lazy alt="Coding Pages速度">
+<a href=https://i.loli.net/2020/02/05/FZJi9esXWQzxLYf.png>
+<img src=https://i.loli.net/2020/02/05/FZJi9esXWQzxLYf.png loading=lazy alt="Coding Pages速度">
 </a>
 <figcaption>Coding Pages速度</figcaption>
 </figure></p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/02/05/E3WYBRQk4DJCZr5.png>
-<img src=/https:/i.loli.net/2020/02/05/E3WYBRQk4DJCZr5.png loading=lazy alt="Github Pages速度">
+<a href=https://i.loli.net/2020/02/05/E3WYBRQk4DJCZr5.png>
+<img src=https://i.loli.net/2020/02/05/E3WYBRQk4DJCZr5.png loading=lazy alt="Github Pages速度">
 </a>
 <figcaption>Github Pages速度</figcaption>
 </figure>

@@ -51,8 +51,8 @@ extended">
 <h1 id=漫话-unity3d-的-assetbundle>漫话 Unity3D 的 AssetBundle</h1>
 <p>对于 AssetBundle，其实博主是在以前的文章中是有提到的。不知道大家还记不记得，博主曾经在写游戏开发和 Lua 的不解之缘这个系列文章的时候，提到并且使用过 AssetBundle 这种技术。具体来说呢，AssetBundle 在 Unity3D 中是一种用于资源打包盒资源动态加载的解决方法，比如我们平时玩的单机游戏容量一般都比较大，这是因为制作人员在制作游戏的时候将所有的项目资源都整合到了一起。可是如果我们用 AssetBundle 来做这个游戏的话，我们就可以只在发布的游戏中提供支持游戏功能的核心部分，而将游戏当中的场景、模型等资源以 AssetBundle 的形式打包然后放到服务器上，这样当游戏客户端处于联网的时候就可以从服务器上下载这些资源，从而实现游戏资源的动态加载，由此可见 AssetBundle 可以帮助我们减少游戏的容量。如果是在需要安装包的场合下，那么游戏包容量的大小无疑会为游戏加些印象分。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05d2nsnpj20rs0fn457.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05d2nsnpj20rs0fn457.jpg loading=lazy alt=为什么这幅图总让我想起仙剑四里四人在即墨那晚的时光呢？>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05d2nsnpj20rs0fn457.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05d2nsnpj20rs0fn457.jpg loading=lazy alt=为什么这幅图总让我想起仙剑四里四人在即墨那晚的时光呢？>
 </a>
 <figcaption>为什么这幅图总让我想起仙剑四里四人在即墨那晚的时光呢？</figcaption>
 </figure></p>
@@ -115,22 +115,22 @@ extended">
 <pre tabindex=0><code class=language-Sheel data-lang=Sheel>disunity extract C:\Users\Robin\Desktop\s049.unity3d
 </code></pre><p>接下来程序会在桌面上生成一个上 s049 的文件夹，打开文件夹一看，尼玛，竟然直接拿到了模型的网格数据(.obj)和贴图数据(.dds)以及相关的 Shader。这让我突然间有点不能接受啊，马上打开 Blender 将网格数据导入，结果童年的林月如就出现在了我们的面前：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz01ykrzepj20l70dpwfe.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz01ykrzepj20l70dpwfe.jpg loading=lazy alt=林月如灰模>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz01ykrzepj20l70dpwfe.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz01ykrzepj20l70dpwfe.jpg loading=lazy alt=林月如灰模>
 </a>
 <figcaption>林月如灰模</figcaption>
 </figure></p>
 <p>因为博主不会在 Blender 中给模型贴图，所以我们到 Unity3D 中完成贴图，首先需要将模型导出为 FBX 格式。好了，将模型导入 Unity3D 后，将贴图赋给模型，童年的林月如就闪亮登场了，哈哈！</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fyzcuaxphej20k10h70vr.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fyzcuaxphej20k10h70vr.jpg loading=lazy alt=林月如贴图效果>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fyzcuaxphej20k10h70vr.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fyzcuaxphej20k10h70vr.jpg loading=lazy alt=林月如贴图效果>
 </a>
 <figcaption>林月如贴图效果</figcaption>
 </figure></p>
 <p>好了，再来一张，不过这张没有贴图，需要大家自己来辨别这是谁啊，哈哈！</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fyzcu53oytj20hj0fdmyd.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fyzcu53oytj20hj0fdmyd.jpg loading=lazy alt=柳梦璃灰模>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fyzcu53oytj20hj0fdmyd.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fyzcu53oytj20hj0fdmyd.jpg loading=lazy alt=柳梦璃灰模>
 </a>
 <figcaption>柳梦璃灰模</figcaption>
 </figure></p>

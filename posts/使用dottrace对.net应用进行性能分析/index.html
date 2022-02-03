@@ -48,8 +48,8 @@ extended">
 <h1 id=快速开始quick-start>快速开始(Quick Start)</h1>
 <p>安装软件的过程此处不表，这里建议大家同时安装 <a class=link href=https://www.jetbrains.com/profiler/ target=_blank rel=noopener>dotTrace</a> 和 <a class=link href=https://www.jetbrains.com/dotmemory/ target=_blank rel=noopener>dotMemery</a>。因为这都是 <code>JetBrains</code> 全家桶中的软件，安装的时候选一下就可以了，可谓是举手之劳。安装好以后的界面是这样的，可以注意到，它可以对进程中的 .NET 应用、本机的 .NET 应用以及远程的 .NET 应用进行检测，因为这里写一个 .NET Core 应用来作为演示，所以，我们选择 <code>Profile Local App</code>：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/11/01/MJA1avuHhIOSnsZ.png>
-<img src=/https:/i.loli.net/2020/11/01/MJA1avuHhIOSnsZ.png loading=lazy alt=dotTrace主界面>
+<a href=https://i.loli.net/2020/11/01/MJA1avuHhIOSnsZ.png>
+<img src=https://i.loli.net/2020/11/01/MJA1avuHhIOSnsZ.png loading=lazy alt=dotTrace主界面>
 </a>
 <figcaption>dotTrace主界面</figcaption>
 </figure></p>
@@ -95,22 +95,22 @@ extended">
 </code></pre></div><p>其中，<code>CPUHack()</code>方法来自：<a class=link href=https://www.cnblogs.com/weihanli/p/implement-full-cpu.html target=_blank rel=noopener>打爆你的 CPU</a>; <code>MemeryHack()</code>方法来自：<a class=link href=https://www.cnblogs.com/weihanli/p/implement-out-of-memory.html target=_blank rel=noopener>通过代码实现 OutOfMemory</a>。顾名思义，我们将利用这两个方法来分别测试 <a class=link href=https://www.jetbrains.com/profiler/ target=_blank rel=noopener>dotTrace</a> 和 <a class=link href=https://www.jetbrains.com/dotmemory/ target=_blank rel=noopener>dotMemery</a>。</p>
 <p><a class=link href=https://www.jetbrains.com/profiler/ target=_blank rel=noopener>dotTrace</a> 目前支持以下平台：.NET、.NET Core、WPF、UWP(<strong>Universal Windows Platform</strong>)、ASP.NET、Windows 服务、WCF、Mono 和 Unity。可以注意到它有四种监测方式，即 Sampling、Tracing、Line by Line 以及 Timeline。按照界面上的描述，Sampling 适用于大多数场景下调用时间的精确测量、Tracing 适用于算法复杂度分析场景下调用次数的精确测量、Line by Line 适用于更高级别的使用场景，Timeline 适用于含多线程在内的数据处理的精确测量。所以，我们这里选择好一个可执行文件，然后选择 Sampling，再点击 “Run”：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/11/01/FSvbD5wlE43CJxd.png>
-<img src=/https:/i.loli.net/2020/11/01/FSvbD5wlE43CJxd.png loading=lazy alt=对进行程序进行采样、生成快照>
+<a href=https://i.loli.net/2020/11/01/FSvbD5wlE43CJxd.png>
+<img src=https://i.loli.net/2020/11/01/FSvbD5wlE43CJxd.png loading=lazy alt=对进行程序进行采样、生成快照>
 </a>
 <figcaption>对进行程序进行采样、生成快照</figcaption>
 </figure></p>
 <p>此时，我们会看到对应程序的的工具栏，我们可以点击 “Get Snapshot and Wait” 进行采样，每次采样会生成一个快照，默认情况下会自动打开生成的快照。我们还可以点击 “Start” 重新进行采样，直至采集到满意的样本为止，而在完成采样后，则可以点击 “Kill” 结束采样。下面来看看生成的快照：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/11/01/NCO8flxrA7c69mB.png>
-<img src=/https:/i.loli.net/2020/11/01/NCO8flxrA7c69mB.png loading=lazy alt=dotTrace性能快照>
+<a href=https://i.loli.net/2020/11/01/NCO8flxrA7c69mB.png>
+<img src=https://i.loli.net/2020/11/01/NCO8flxrA7c69mB.png loading=lazy alt=dotTrace性能快照>
 </a>
 <figcaption>dotTrace性能快照</figcaption>
 </figure></p>
 <p>通过这两图，我们可以非常清晰的看到，最耗时的正是我们这里的<code>CPUHack()</code>方法，并且这里一共有四个线程，这是因为博主的计算机使用的是一款 4 核的 i3 处理器，并且在<a class=link href=https://www.jetbrains.com/profiler/ target=_blank rel=noopener>dotTrace</a>中可以直接看到相关的代码片段，当然，这一切的前提是你没有对应用程序做过混淆处理，这样，我们就完成了一个简单的性能分析。类似地，我们启动<a class=link href=https://www.jetbrains.com/dotmemory/ target=_blank rel=noopener>dotMemery</a>。此时，可以得到下面的结果：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/11/01/JMKZajbkWwGPT3v.png>
-<img src=/https:/i.loli.net/2020/11/01/JMKZajbkWwGPT3v.png loading=lazy alt=dotMemery内存分析>
+<a href=https://i.loli.net/2020/11/01/JMKZajbkWwGPT3v.png>
+<img src=https://i.loli.net/2020/11/01/JMKZajbkWwGPT3v.png loading=lazy alt=dotMemery内存分析>
 </a>
 <figcaption>dotMemery内存分析</figcaption>
 </figure></p>
@@ -132,21 +132,21 @@ extended">
 </code></pre></div><h1 id=从-dump-文件进行分析>从 Dump 文件进行分析</h1>
 <p>到此为止，关于 <a class=link href=https://www.jetbrains.com/profiler/ target=_blank rel=noopener>dotTrace</a> 和 <a class=link href=https://www.jetbrains.com/dotmemory/ target=_blank rel=noopener>dotMemery</a> 的使用就基本上讲解完啦！可能这时候有些朋友会产生疑问，如果性能问题发生在生产环境怎么办啊。不错，这里我们调试的都是本地的程序，生产环境是没有机会让你这样去搞的。此时，我们可以借助内存转储文件(<strong>Dump</strong>)文件，它是进程的内存镜像，可以把程序的执行状态通过调试器保存在 Dump 文件中，试想一下，如果程序在前一秒崩溃了，而你在这一瞬间获得了当时程序的状态信息，相当于拿到了“故障”遗留在现场的“罪证”。在 Windows 系统中创建 Dump 文件是非常简单的，通过<code>任务管理器</code>-><code>创建转储文件</code>即可完成，我们继续使用上面提到的例子：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/11/01/fWZ4dGENeUcoOI7.jpg>
-<img src=/https:/i.loli.net/2020/11/01/fWZ4dGENeUcoOI7.jpg loading=lazy alt=创建Dump文件>
+<a href=https://i.loli.net/2020/11/01/fWZ4dGENeUcoOI7.jpg>
+<img src=https://i.loli.net/2020/11/01/fWZ4dGENeUcoOI7.jpg loading=lazy alt=创建Dump文件>
 </a>
 <figcaption>创建Dump文件</figcaption>
 </figure></p>
 <p>其实，拿到 Dump 文件以后，分析它的工具非常多，比如常见的 WinDBG、DebugDiag 等等，这里我们可以直接使用 <a class=link href=https://www.jetbrains.com/dotmemory/ target=_blank rel=noopener>dotMemery</a> ，因为它本身就支持 Dump 文件的导入，相比前面两种在使用上要更加友好一点。此时，导入这个 Dump 文件，我们就可以获得下面的结果：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/11/02/wa7ok2LcGuVh9v1.png>
-<img src=/https:/i.loli.net/2020/11/02/wa7ok2LcGuVh9v1.png loading=lazy alt=大对象堆分布情况>
+<a href=https://i.loli.net/2020/11/02/wa7ok2LcGuVh9v1.png>
+<img src=https://i.loli.net/2020/11/02/wa7ok2LcGuVh9v1.png loading=lazy alt=大对象堆分布情况>
 </a>
 <figcaption>大对象堆分布情况</figcaption>
 </figure></p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/11/02/upfPZQkhNgTi6nH.png>
-<img src=/https:/i.loli.net/2020/11/02/upfPZQkhNgTi6nH.png loading=lazy alt=一、二代GC分布情况>
+<a href=https://i.loli.net/2020/11/02/upfPZQkhNgTi6nH.png>
+<img src=https://i.loli.net/2020/11/02/upfPZQkhNgTi6nH.png loading=lazy alt=一、二代GC分布情况>
 </a>
 <figcaption>一、二代GC分布情况</figcaption>
 </figure></p>

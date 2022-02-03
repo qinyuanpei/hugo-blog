@@ -51,22 +51,22 @@ extended">
 </blockquote>
 <p>我们可以注意到，在这个定义中，使用负载均衡技术的直接原因是<strong>避免过载</strong>，而根本原因则是为了<strong>优化资源使用</strong>，确保<strong>最大吞吐量</strong>、<strong>最小响应时间</strong>。所以，这本质上是一个局部最优解的问题，而具体的手段就是"多个"。有人说，技术世界不过是真实世界的一个镜像，联系生活中实际的案例，我们发现负载均衡比比皆是。譬如车站在面对春运高峰时增加售票窗口，银行通过多个业务窗口来为客户办理业务……等等。这样做的好处显而易见，可以大幅度地减少排队时间，增加"窗口"这个行为，在技术领域我们将其称为：<strong>水平扩展</strong>，因为有多个"窗口"，发生单点故障的概率就会大大降低，而这正是现在软件追求的三"高"：高性能、高可用、高并发。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/05/jymw8KCeEgROcZN.png>
-<img src=/https:/i.loli.net/2021/07/05/jymw8KCeEgROcZN.png loading=lazy alt=银行柜员窗口示意图>
+<a href=https://i.loli.net/2021/07/05/jymw8KCeEgROcZN.png>
+<img src=https://i.loli.net/2021/07/05/jymw8KCeEgROcZN.png loading=lazy alt=银行柜员窗口示意图>
 </a>
 <figcaption>银行柜员窗口示意图</figcaption>
 </figure></p>
 <p>每次坐地铁经过小寨，时常听到地铁工作人员举着喇叭引导人们往不同的出口方向走动。此时，工作人员就是一个负载均衡器，它要做的就是避免某一个出口人流量过载。**从熵的角度来看，人流量过载，意味着无序/混乱状态加剧，现代社会通过道德和法律来对抗熵增，人类个体通过自律来对抗熵增。**有时候，我会忍不住去想，大人与小孩儿愈发内卷的恶性竞争，除了给这个世界带来更多的熵以外，还能带来什么？<strong>如果参考社会达尔文主义的理论，在这个弱肉强食的世界里，增加熵是人为的选择，而同样的，你亦可以选择"躺平"。</strong></p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/05/hIAUw8JHkjWnxm6.png>
-<img src=/https:/i.loli.net/2021/07/05/hIAUw8JHkjWnxm6.png loading=lazy alt=负载均衡器示意图>
+<a href=https://i.loli.net/2021/07/05/hIAUw8JHkjWnxm6.png>
+<img src=https://i.loli.net/2021/07/05/hIAUw8JHkjWnxm6.png loading=lazy alt=负载均衡器示意图>
 </a>
 <figcaption>负载均衡器示意图</figcaption>
 </figure></p>
 <p>OK，将思绪拉回到负载均衡，它所做的事情，本质上就是控制信息或者说流量流动的方向。一个网站，以集群的方式对外提供服务，你只需要输入一个域名，它就可以把请求分发到不同的机器上面去，而这就是所谓的负载均衡。目前，负载均衡器从种类上可以分为：基于<code>DNS</code>、基于<code>MAC</code>地址(二层)、基于<code>IP</code>(三层)、基于<code>IP</code>和<code>Port</code>(四层)、基于<code>HTTP</code>(七层)。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/04/giY1R8PVZB9JdWQ.jpg>
-<img src=/https:/i.loli.net/2021/07/04/giY1R8PVZB9JdWQ.jpg loading=lazy alt=OSI七层模型与TCP/IP五层模型>
+<a href=https://i.loli.net/2021/07/04/giY1R8PVZB9JdWQ.jpg>
+<img src=https://i.loli.net/2021/07/04/giY1R8PVZB9JdWQ.jpg loading=lazy alt=OSI七层模型与TCP/IP五层模型>
 </a>
 <figcaption>OSI七层模型与TCP/IP五层模型</figcaption>
 </figure></p>
@@ -74,8 +74,8 @@ extended">
 <h1 id=envoy中的负载均衡>Envoy中的负载均衡</h1>
 <p>通过上一篇博客，我们已经了解到，<code>Envoy</code>中一个<code>HTTP</code>请求的走向，大致会经历：客户端、侦听器(<strong>Listeners</strong>)、集群(<strong>Clusters</strong>)、终结点(<strong>Endpoints</strong>)、服务(<strong>ervices</strong>)这样几个阶段。其中，一个集群可以有多个终结点(<strong>Endpoints</strong>)。所以，这里天然地就存在着负载均衡的设计。因为，负载均衡本质上就是告诉集群，它应该选择哪一个终结点(<strong>Endpoints</strong>)来提供服务。而之所以我们需要负载均衡，一个核心的原因，其实是因为我们选择了分布式。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/02/k2DhXMudnibrzgt.png>
-<img src=/https:/i.loli.net/2021/07/02/k2DhXMudnibrzgt.png loading=lazy alt=Envoy架构图：负载均衡器连接集群和服务>
+<a href=https://i.loli.net/2021/07/02/k2DhXMudnibrzgt.png>
+<img src=https://i.loli.net/2021/07/02/k2DhXMudnibrzgt.png loading=lazy alt=Envoy架构图：负载均衡器连接集群和服务>
 </a>
 <figcaption>Envoy架构图：负载均衡器连接集群和服务</figcaption>
 </figure></p>
@@ -190,15 +190,15 @@ extended">
 </span><span class=ln>54</span><span class=w>    </span><span class=nt>socket_address</span><span class=p>:</span><span class=w> </span>{<span class=w> </span><span class=nt>address: 0.0.0.0, port_value</span><span class=p>:</span><span class=w> </span><span class=m>9091</span><span class=w> </span>}<span class=w>
 </span></code></pre></div><p>使用<code>docker compose up</code>启动容器，我们可以注意到熟悉的<code>ASP.NET Core</code>的身影，这意味着，我们需要的服务都成功地跑起来了。简单调用下API看看，果然，可以正确地返回结果呢(逃……果然，我是一个喜新厌旧的人，自打用了<code>Encoy</code>以后，再不想用<code>Nginx</code>来做类似的事情(逃……</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/04/lBIAyPZnSxiD3M8.png>
-<img src=/https:/i.loli.net/2021/07/04/lBIAyPZnSxiD3M8.png loading=lazy alt=通过管理接口查看集群的请求情况>
+<a href=https://i.loli.net/2021/07/04/lBIAyPZnSxiD3M8.png>
+<img src=https://i.loli.net/2021/07/04/lBIAyPZnSxiD3M8.png loading=lazy alt=通过管理接口查看集群的请求情况>
 </a>
 <figcaption>通过管理接口查看集群的请求情况</figcaption>
 </figure></p>
 <p>好了，如何验证我们选择的负载均衡策略呢？这是一个问题。不知道大家还记不记得<code>Envoy</code>的管理接口，它里面可以统计请求的次数，所以，我们只要看看两个服务各自请求了多少次里有好啦！这里以<code>RANDON</code>这个策略为例：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/04/1U8RgZxaVcOFiXK.png>
-<img src=/https:/i.loli.net/2021/07/04/1U8RgZxaVcOFiXK.png loading=lazy alt=两个实例拥有不同的请求次数>
+<a href=https://i.loli.net/2021/07/04/1U8RgZxaVcOFiXK.png>
+<img src=https://i.loli.net/2021/07/04/1U8RgZxaVcOFiXK.png loading=lazy alt=两个实例拥有不同的请求次数>
 </a>
 <figcaption>两个实例拥有不同的请求次数</figcaption>
 </figure></p>

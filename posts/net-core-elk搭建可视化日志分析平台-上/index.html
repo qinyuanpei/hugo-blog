@@ -55,8 +55,8 @@ extended">
 </blockquote>
 <p>下面这张图，展示了<code>Elastaicsearch</code>、<code>Logstash</code>和<code>Kibana</code>三款软件间的协作关系。可以注意到，<code>Logstash</code>负责从应用服务器收集日志。我们知道，现在的应用程序都是跨端应用，程序可能运行在 PC、移动端、H5、小程序等等各种各样的终端上，而<code>Logstash</code>则可以将这些不同的日志信息通过管道转换为统一的数据接口。这些日志将被存储到<code>Elasticsearch</code>中。我们提到<code>Elastaicsearch</code>是一个开源的全文搜索引擎，故而它在数据查询上相对传统的数据库有着更好的优势，并且<code>Elasticsearch</code>可以根据需要搭建单机或者集群。最终，<code>Kibana</code>从<code>Elasticsearch</code>中查询数据并绘制可视化图表，并展示在浏览器中。在最新的 ELK 架构中，新增了<code>FireBeat</code>这个软件，它是它是一个轻量级的日志收集处理工具(Agent)，适合于在各个服务器上搜集日志后传输给<code>Logstash</code>。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/02/15/mbJRXGo56YA9jQP.png>
-<img src=/https:/i.loli.net/2020/02/15/mbJRXGo56YA9jQP.png loading=lazy alt=ELK-01.png>
+<a href=https://i.loli.net/2020/02/15/mbJRXGo56YA9jQP.png>
+<img src=https://i.loli.net/2020/02/15/mbJRXGo56YA9jQP.png loading=lazy alt=ELK-01.png>
 </a>
 <figcaption>ELK-01.png</figcaption>
 </figure></p>
@@ -86,15 +86,15 @@ extended">
 <span class=ln>17</span><span class=p>}</span>
 </code></pre></div><p>接下来，我们继续在浏览器中输入地址：<code>http://localhost:5601/app/kibana</code>。显然，这是<code>Kibana</code>的默认地址，至此<strong>ELK</strong>的“庐山真面目”<strong>终于揭晓，首次安装完</strong>ELK，<code>Kibana</code>的界面应该试类似下面这样：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/02/15/uOQSCUxfWYManK6.png>
-<img src=/https:/i.loli.net/2020/02/15/uOQSCUxfWYManK6.png loading=lazy alt=ELK的庐山真面目>
+<a href=https://i.loli.net/2020/02/15/uOQSCUxfWYManK6.png>
+<img src=https://i.loli.net/2020/02/15/uOQSCUxfWYManK6.png loading=lazy alt=ELK的庐山真面目>
 </a>
 <figcaption>ELK的庐山真面目</figcaption>
 </figure></p>
 <p>按照指引，我们可以添加示例数据来感受下<strong>ELK</strong>全家桶的魅力：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/02/15/j6xFzedsPf7y9gL.png>
-<img src=/https:/i.loli.net/2020/02/15/j6xFzedsPf7y9gL.png loading=lazy alt="ELK示例 - Global Flight Dashboard">
+<a href=https://i.loli.net/2020/02/15/j6xFzedsPf7y9gL.png>
+<img src=https://i.loli.net/2020/02/15/j6xFzedsPf7y9gL.png loading=lazy alt="ELK示例 - Global Flight Dashboard">
 </a>
 <figcaption>ELK示例 - Global Flight Dashboard</figcaption>
 </figure></p>
@@ -131,29 +131,29 @@ extended">
 <span class=ln>8</span><span class=p>}</span>
 </code></pre></div><p>至此，ELK 在 ASP.NET Core 中的集成已经全部结束，这意味着我们所有的日志都会写入到 ELK 中。那么，要到那里去找这些日志信息呢？且听博主娓娓道来。我们在<code>Kibana</code>中点击左侧导航栏最底下的设置按钮，然后再点击右侧的<code>Create index pattern</code>按钮创建一个索引。什么叫做索引呢？在<code>Elasticsearch</code>中索引相当于一张"表"，而这个“表”中的一条行记录则被称为<code>Document</code>，如图：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/02/15/fywAlQcH45mId1F.png>
-<img src=/https:/i.loli.net/2020/02/15/fywAlQcH45mId1F.png loading=lazy alt=为Kibana创建索引1>
+<a href=https://i.loli.net/2020/02/15/fywAlQcH45mId1F.png>
+<img src=https://i.loli.net/2020/02/15/fywAlQcH45mId1F.png loading=lazy alt=为Kibana创建索引1>
 </a>
 <figcaption>为Kibana创建索引1</figcaption>
 </figure></p>
 <p>创建索引的时候，会发现列表中列出了目前<code>Elasticsearch</code>中可用的数据。以博主为例，这里的<code>logstash-2020.02.15</code>就是本文中的 ASP.NET Core 应用产生的日志信息。在这里，我们可以通过一个模糊匹配来匹配同种类型的数据。通常这里需要我们选择一个过滤字段，我们选择时间戳即可：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/02/15/8fD1EabSUV7OeZM.png>
-<img src=/https:/i.loli.net/2020/02/15/8fD1EabSUV7OeZM.png loading=lazy alt=为Kibana创建索引2>
+<a href=https://i.loli.net/2020/02/15/8fD1EabSUV7OeZM.png>
+<img src=https://i.loli.net/2020/02/15/8fD1EabSUV7OeZM.png loading=lazy alt=为Kibana创建索引2>
 </a>
 <figcaption>为Kibana创建索引2</figcaption>
 </figure></p>
 <p>创建完索引，就可以看到目前收集的日志信息了，在此基础上，我们可以做进一步的检索、过滤，来生成各种各样的“查询”。而每一个“查询”实际上就是一个数据源。我们就可以利用这些数据源来完成可视化，这是利用 ELK 进行可视化分析的一般流程：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/02/15/m5jufkQW4qEiZAJ.png>
-<img src=/https:/i.loli.net/2020/02/15/m5jufkQW4qEiZAJ.png loading=lazy alt=在Kibana中查看当前日志信息>
+<a href=https://i.loli.net/2020/02/15/m5jufkQW4qEiZAJ.png>
+<img src=https://i.loli.net/2020/02/15/m5jufkQW4qEiZAJ.png loading=lazy alt=在Kibana中查看当前日志信息>
 </a>
 <figcaption>在Kibana中查看当前日志信息</figcaption>
 </figure></p>
 <p>下面是博主自己制作的一个简单的可视化看板，果然很长时间没有再用过<code>Kibana</code>，我都快忘记了要怎么做一个折线图。这实在是一篇迟到的博客，我早该在 2019 年的时候就完成这个系列的，这要命的拖延症啊，虽然没有新冠病毒恐怖，可终究不是什么好习惯！</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/02/15/me7v2LBIOCUfM5a.png>
-<img src=/https:/i.loli.net/2020/02/15/me7v2LBIOCUfM5a.png loading=lazy alt=一个简单的可视化看板>
+<a href=https://i.loli.net/2020/02/15/me7v2LBIOCUfM5a.png>
+<img src=https://i.loli.net/2020/02/15/me7v2LBIOCUfM5a.png loading=lazy alt=一个简单的可视化看板>
 </a>
 <figcaption>一个简单的可视化看板</figcaption>
 </figure></p>

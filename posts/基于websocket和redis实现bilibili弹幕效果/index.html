@@ -81,15 +81,15 @@ OK，现在我们来一起看看最终的效果，如你所见，在视频播放
 <p>OK，在编写“消息推送”中间件的时候，我们会注意到，我们使用了一个名为 SimpleMessageQueue 的类来取得消息，而服务端会负责将该消息群发到所有的客户端。这个其实就是博主写的一个简单的消息队列啦，如此简洁直白的命名证明它的确非常简单。有多简单呢？我想一会儿大家就会找到答案。在此之前，我想和大家讨论这样一个问题。其实，聊天室和弹幕挺像的吧，理论上服务端接收到客户端发的消息，就可以直接群发过去啊，为什么要搞一个消息队列在这里呢？而且更扯的一点是，既然博主你选择用 Redis 啦，你难道不知道 Redis 天生就支持发布订阅(<strong>Pub-Sub</strong>)吗？为什么要搞一个消息队列在这里呢？</p>
 <p>对这个问题，我的想法其实是这样的，我最初想做的是：后端定期推送数据到前端，再由前端通过这些数据来绘制图表。此时，无论后端还是前端，其实都是数据的消费者，这些数据当然不能一股脑儿全给它们啊，这吃撑着了可怎么办，所以，为了避免它们消化不良，我得有一个东西帮助它维持秩序啊，这就是消息队列啊。简单来说，如果数据量超过程序的处理能力，这个时候我们就需要消息队列在前面帮忙“挡”一下。想象一下，如果去银行办理业务的人，都不排队一股脑儿涌向柜台，银行柜员大概会感到崩溃。我们的程序模拟的是现实生活，所以，我们需要消息队列。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05kt1cubj20j0091t8s.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05kt1cubj20j0091t8s.jpg loading=lazy alt=为什么需要消息队列>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05kt1cubj20j0091t8s.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05kt1cubj20j0091t8s.jpg loading=lazy alt=为什么需要消息队列>
 </a>
 <figcaption>为什么需要消息队列</figcaption>
 </figure></p>
 <p>那么，有朋友要问啦，就算你要用消息队列，那博主你为什么不用 RabbitMQ，再不济可以考虑微软自带的 MQ 啊，为什么要用 Redis 做一个 MQ 呢？就算你坚持要用 Redis 做 MQ，为什么不考虑用的 Redis 的发布-订阅(<strong>Pub-Sub</strong>)呢？对于第一个问题，你可以理解为我穷或者懒(<strong>穷个什么鬼啊，你特么就是懒_(:з」∠)_</strong>)。我就是懒得去搞 RabbitMQ，谁让我电脑 C 盘都快爆炸了呢，自从我把玩了几次<strong>Docker for Windows</strong>以后，而且我们项目上还真有不被允许用 MQ 的情况。所以，基于以上原因，我选择了 Redis。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05edd27tj209l06njre.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05edd27tj209l06njre.jpg loading=lazy alt=Redis中的Pub-Sub>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05edd27tj209l06njre.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05edd27tj209l06njre.jpg loading=lazy alt=Redis中的Pub-Sub>
 </a>
 <figcaption>Redis中的Pub-Sub</figcaption>
 </figure></p>
@@ -169,8 +169,8 @@ OK，现在我们来一起看看最终的效果，如你所见，在视频播放
 </code></pre></div><h1 id=翻滚吧弹幕>翻滚吧，弹幕</h1>
 <p>OK，现在我们来一起看看最终的效果，如你所见，在视频播放过程中，我们可以通过视频下方的输入框发送弹幕，弹幕会首先经由 Redis 缓存起来，当到达一定的时间间隔以后，我们就会将消息推送到客户端，这样所有的客户端都会看到这条弹幕，而对于客户端来说，它在和服务端建立 WebSocket 连接以后，唯一要做的事情就是在 onmessage 回调中取得弹幕数据，并将其追加到弹幕数组中，关于弹幕绘制的细节，我们在本文的第三节已经做了相关说明，在此不再赘述。
 <figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz0206huayg20jo0h3npj.gif>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz0206huayg20jo0h3npj.gif loading=lazy alt=弹幕效果展示>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz0206huayg20jo0h3npj.gif>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz0206huayg20jo0h3npj.gif loading=lazy alt=弹幕效果展示>
 </a>
 <figcaption>弹幕效果展示</figcaption>
 </figure>

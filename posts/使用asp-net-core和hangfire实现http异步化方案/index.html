@@ -77,8 +77,8 @@ extended">
 <span class=ln>19</span><span class=p>}</span>
 </code></pre></div><p>注意到在配置持久化的部分，我们使用了一个数据库连接字符串 Hangfire，它需要我们在 appsettings.json 中配置 ConnectionStrings 部分。这里我们为 Hangfire 设置了默认队列 default、默认服务器 default、并发数目为 5。与此同时，我们开启了 Hangfire 中自带的 Dashboard，可以通过这个界面来监控后台任务的执行情况。此时运行项目，输入以下地址：http://locahost:/hangfire，就会看到下面的画面，这说明 Hangfire 配置成功：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g4vsktdif4j21hb0rz406.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g4vsktdif4j21hb0rz406.jpg loading=lazy alt="Hangfire Dashboard">
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g4vsktdif4j21hb0rz406.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g4vsktdif4j21hb0rz406.jpg loading=lazy alt="Hangfire Dashboard">
 </a>
 <figcaption>Hangfire Dashboard</figcaption>
 </figure></p>
@@ -228,15 +228,15 @@ extended">
 <span class=ln>15</span><span class=p>}</span>
 </code></pre></div><p>在这里，我们以 HealthCheck 这个接口为例，来展示 HttpJob 是如何工作的。顾名思义，这是一个负责健康检查的接口。我们现在通过 Postman 来触发健康检查这个后台任务。在这里，该接口是一个 GET 请求：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g4v4si2z4tj20t10cvaam.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g4v4si2z4tj20t10cvaam.jpg loading=lazy alt=通过Postman创建后台任务>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g4v4si2z4tj20t10cvaam.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g4v4si2z4tj20t10cvaam.jpg loading=lazy alt=通过Postman创建后台任务>
 </a>
 <figcaption>通过Postman创建后台任务</figcaption>
 </figure></p>
 <p>接下来，我们我们就会在 Hangfire 的 Dashborad 中找到对应的记录，因为这是一个<strong>Fire & Forget</strong>类型的任务，因此我们几乎看不到中间的过程，它就已经执行结束啦。我们可以在 Dashboard 中找到对应的任务，然后了解它的具体执行情况。值得一提的是，Hangfire 自带了重试机制，对于执行失败的任务，我们可以重试栏目下看到，这里是其中一条任务的执行记录。可以注意到，Hangfire 会把每个 Job 的参数序列化为 JSON 并持久化起来，仔细对照的话，你会发现，它和我们在 Postman 中传入的参数是完全一样的！</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g4v55j6cgfj21160j8wfq.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g4v55j6cgfj21160j8wfq.jpg loading=lazy alt=Hangfire中Job执行详情查看>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g4v55j6cgfj21160j8wfq.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g4v55j6cgfj21160j8wfq.jpg loading=lazy alt=Hangfire中Job执行详情查看>
 </a>
 <figcaption>Hangfire中Job执行详情查看</figcaption>
 </figure></p>
@@ -267,8 +267,8 @@ extended">
 <span class=ln>24</span><span class=p>}</span>
 </code></pre></div><p>为什么我说这个 Filter 有点鸡肋呢？因为你看下面的图就会明白了啊！</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g4vs8s6f2zj21f2074mxq.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g4vs8s6f2zj21f2074mxq.jpg loading=lazy alt=使用Serilog记录日志>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g4vs8s6f2zj21f2074mxq.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g4vs8s6f2zj21f2074mxq.jpg loading=lazy alt=使用Serilog记录日志>
 </a>
 <figcaption>使用Serilog记录日志</figcaption>
 </figure></p>

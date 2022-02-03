@@ -53,8 +53,8 @@ RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe begin /k:"Sonar-Http
 <h1 id=构建过程>构建过程</h1>
 <p>完成整个项目的构建，需要覆盖到代码编译、单元测试、静态检查、版本发布这四个基本环节，我们整体上使用 Jenkins 作为内部持续集成的平台，这意味着我们只需要在提交代码或者合并代码的时候，触发一个构建指令即可。这里我们考虑通过 Docker 来完成这些工作，一个整体上的设计思路如下图所示：</p>
 <p><figure>
-<a href=/http:/7wy477.com1.z0.glb.clouddn.com/Docker%20Flow.png>
-<img src=/http:/7wy477.com1.z0.glb.clouddn.com/Docker%20Flow.png loading=lazy alt=构建思路>
+<a href=http://7wy477.com1.z0.glb.clouddn.com/Docker%20Flow.png>
+<img src=http://7wy477.com1.z0.glb.clouddn.com/Docker%20Flow.png loading=lazy alt=构建思路>
 </a>
 <figcaption>构建思路</figcaption>
 </figure></p>
@@ -143,8 +143,8 @@ RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe begin /k:"Sonar-Http
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>docker build -t httpserver:v1 . 
 </code></pre></div><p>可以看到，我们整个过程除了单元测试没有通过以外，其它的环节都非常顺利，这其中一个重要的原因是，博主这个项目对 Window 依赖较少，它是一个 C# 开发的简易 Web 服务器，主要是类库和控制台程序，可以完美地运行在 Linux 平台下，所以，跨平台最终考验的还是开发人员。
 <figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz0200fqctj212i0op77q.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz0200fqctj212i0op77q.jpg loading=lazy alt=Docker中构建的结果>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz0200fqctj212i0op77q.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz0200fqctj212i0op77q.jpg loading=lazy alt=Docker中构建的结果>
 </a>
 <figcaption>Docker中构建的结果</figcaption>
 </figure></p>

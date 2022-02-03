@@ -48,8 +48,8 @@ extended">
 <h1 id=容器的启动顺序>容器的启动顺序</h1>
 <p>使用服务编排以后，大家最关心的问题是，如果服务间存在依赖关系，那么如何保证容器的启动顺序？我承认，这是一个真实存在的问题，譬如，你的应用依赖某个数据库，理论上数据库要先启动，抑或者是像<code>Redis</code>、<code>Kafka</code>、<code>Envoy</code>这样的基础设施，总是要优先于应用服务本身启动。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/15/LnAh6GSdMJ2NkVx.png>
-<img src=/https:/i.loli.net/2021/08/15/LnAh6GSdMJ2NkVx.png loading=lazy alt=假如章鱼的这些脚互相影响会怎么样？>
+<a href=https://i.loli.net/2021/08/15/LnAh6GSdMJ2NkVx.png>
+<img src=https://i.loli.net/2021/08/15/LnAh6GSdMJ2NkVx.png loading=lazy alt=假如章鱼的这些脚互相影响会怎么样？>
 </a>
 <figcaption>假如章鱼的这些脚互相影响会怎么样？</figcaption>
 </figure></p>
@@ -78,8 +78,8 @@ extended">
 </span><span class=ln>22</span><span class=w>  </span><span class=nt>backend</span><span class=p>:</span><span class=w>
 </span></code></pre></div><p>可以注意到，为了证明<code>city_service</code>服务不会等待<code>redis_server</code>服务，我故意让子弹飞了一会儿，结果如何呢？我们一起来看看：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/15/BqDRtbJkpVcno3s.png>
-<img src=/https:/i.loli.net/2021/08/15/BqDRtbJkpVcno3s.png loading=lazy alt=" Docker Compose 启动顺序：一厢情愿">
+<a href=https://i.loli.net/2021/08/15/BqDRtbJkpVcno3s.png>
+<img src=https://i.loli.net/2021/08/15/BqDRtbJkpVcno3s.png loading=lazy alt=" Docker Compose 启动顺序：一厢情愿">
 </a>
 <figcaption>Docker Compose 启动顺序：一厢情愿</figcaption>
 </figure></p>
@@ -114,8 +114,8 @@ extended">
 </span><span class=ln>28</span><span class=w>  </span><span class=nt>backend</span><span class=p>:</span><span class=w>
 </span></code></pre></div><p>这里，我们用了一种取巧的方法，<code>Ubuntu</code>中的<code>nc</code>命令可以对指定主机、指定端口进行检测，换言之，我们简单粗暴的认为，只要<code>6379</code>这个端口可以访问，就认为<code>Redis</code>准备就绪啦，因为我们没有办法在<code>city_service</code>这个容器中调用<code>redis-cli</code>，这个做法本身并不严谨，我们这里更多的是验证想法：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/15/Hhx4R7obZL5FBrv.png>
-<img src=/https:/i.loli.net/2021/08/15/Hhx4R7obZL5FBrv.png loading=lazy alt="Docker Compose 启动顺序：检测 Redis">
+<a href=https://i.loli.net/2021/08/15/Hhx4R7obZL5FBrv.png>
+<img src=https://i.loli.net/2021/08/15/Hhx4R7obZL5FBrv.png loading=lazy alt="Docker Compose 启动顺序：检测 Redis">
 </a>
 <figcaption>Docker Compose 启动顺序：检测 Redis</figcaption>
 </figure></p>
@@ -144,8 +144,8 @@ extended">
 </span><span class=ln>3</span><span class=err></span><span class=k>COPY</span> --from<span class=o>=</span>wait-for-it /usr/bin/wait-for-it .<span class=err>
 </span></code></pre></div><p>不过，不太明白为什么这里一直提示路径不对：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/16/jgbwuVHeJNvG5BY.png>
-<img src=/https:/i.loli.net/2021/08/16/jgbwuVHeJNvG5BY.png loading=lazy alt="Docker Compose 启动顺序：wait-for-it.sh">
+<a href=https://i.loli.net/2021/08/16/jgbwuVHeJNvG5BY.png>
+<img src=https://i.loli.net/2021/08/16/jgbwuVHeJNvG5BY.png loading=lazy alt="Docker Compose 启动顺序：wait-for-it.sh">
 </a>
 <figcaption>Docker Compose 启动顺序：wait-for-it.sh</figcaption>
 </figure></p>
@@ -153,8 +153,8 @@ extended">
 <h1 id=容器的健康检查>容器的健康检查</h1>
 <p>不知道大家有没有这样的经历，就是你明明看到一个容器的状态变成<code>Up</code> ，可对应的微服务就是死活调不通。面对来自前端同事的戏谑与嘲讽，你不禁仰天长叹一声，开始在容器里翻箱倒柜，一通操作如虎。过了许久，你终于发现是容器内部出现了始料不及的错误。看来，容器状态显示为<code>Up</code>，并不代表容器内的服务就是可用的啊！果然，还是需要一种机制来判断容器内的服务是否可用啊！等等，这不就是传说中的健康检查？恭喜你，答对了！</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/15/fplPBvICiEOYsKR.jpg>
-<img src=/https:/i.loli.net/2021/08/15/fplPBvICiEOYsKR.jpg loading=lazy alt=" Docker 经典集装箱形象">
+<a href=https://i.loli.net/2021/08/15/fplPBvICiEOYsKR.jpg>
+<img src=https://i.loli.net/2021/08/15/fplPBvICiEOYsKR.jpg loading=lazy alt=" Docker 经典集装箱形象">
 </a>
 <figcaption>Docker 经典集装箱形象</figcaption>
 </figure></p>
@@ -170,15 +170,15 @@ extended">
 </span></code></pre></div><p>可以注意到，<code>Docker</code>原生的健康机制，需要通过<code>CMD</code>的方式来执行一个命令行，如果该命令行返回 0 ，则表示成功；返回 1，则表示失败。</p>
 <p>此处，我们还可以配置以下三个参数，<code>--interval=&lt;间隔></code>表示健康检查的间隔，默认为 30 秒；<code>--timeout=&lt;时长></code>表示健康检查命令超时时间，超过该时间即表示<code>unhealthy</code>，默认为 30 秒；<code>--retries=&lt;次数></code>表示连续失败的次数，超过该次数即表示<code>unhealthy</code>。对于我们这里的<code>ASP.NET Core</code>应用而言，如果程序正常启动，显然这个地址是可以调通的，我们可以用这个来作为一个“探针”。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/14/QnuPZ8vsCYKbVHm.png>
-<img src=/https:/i.loli.net/2021/08/14/QnuPZ8vsCYKbVHm.png loading=lazy alt=" Docker 健康检查：healthy ">
+<a href=https://i.loli.net/2021/08/14/QnuPZ8vsCYKbVHm.png>
+<img src=https://i.loli.net/2021/08/14/QnuPZ8vsCYKbVHm.png loading=lazy alt=" Docker 健康检查：healthy ">
 </a>
 <figcaption>Docker 健康检查：healthy</figcaption>
 </figure></p>
 <p>我们可以注意到，在容器启动的第 14 秒，其状态为：<code>health：starting</code>。而等到容器启动的第 16 秒，其状态则为：<code>healthy</code>，这表明我们的服务是健康的。此时此刻，如果我们耍点小心思，让<code>curl</code>去访问一个不存在的地址会怎么样呢？可以注意到，此时状态变成了：<code>unhealthy</code>:</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/14/oNtX8G7UAqEDIzS.png>
-<img src=/https:/i.loli.net/2021/08/14/oNtX8G7UAqEDIzS.png loading=lazy alt="Docker 健康检查：unhealthy ">
+<a href=https://i.loli.net/2021/08/14/oNtX8G7UAqEDIzS.png>
+<img src=https://i.loli.net/2021/08/14/oNtX8G7UAqEDIzS.png loading=lazy alt="Docker 健康检查：unhealthy ">
 </a>
 <figcaption>Docker 健康检查：unhealthy</figcaption>
 </figure></p>
@@ -237,8 +237,8 @@ extended">
 </span><span class=ln>23</span><span class=w>  </span><span class=nt>backend</span><span class=p>:</span><span class=w>
 </span></code></pre></div><p>简单来说，我们使用了<code>Redis</code>内置的命令对<code>redis_server</code>服务进行健康检查，而<code>city_service</code>服务则依赖于<code>redis_server</code>服务的健康状态，只有当<code>Redis</code>准备就绪了以后，<code>city_service</code>才会开始启动。下面是实际启动过程的截图，看看是不是和我们想的一样：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/15/HKvjmoCdznlW6FV.png>
-<img src=/https:/i.loli.net/2021/08/15/HKvjmoCdznlW6FV.png loading=lazy alt=" Docker 健康检查：容器启动顺序">
+<a href=https://i.loli.net/2021/08/15/HKvjmoCdznlW6FV.png>
+<img src=https://i.loli.net/2021/08/15/HKvjmoCdznlW6FV.png loading=lazy alt=" Docker 健康检查：容器启动顺序">
 </a>
 <figcaption>Docker 健康检查：容器启动顺序</figcaption>
 </figure></p>
@@ -253,8 +253,8 @@ extended">
 </ul>
 <p>为了帮助大家理解和区分这四种模式，博主绘制了下面的图示来补充说明：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/16/DJq3CBrmktaRNex.png>
-<img src=/https:/i.loli.net/2021/08/16/DJq3CBrmktaRNex.png loading=lazy alt=容器的网络模式(主机、容器、网桥)示意图>
+<a href=https://i.loli.net/2021/08/16/DJq3CBrmktaRNex.png>
+<img src=https://i.loli.net/2021/08/16/DJq3CBrmktaRNex.png loading=lazy alt=容器的网络模式(主机、容器、网桥)示意图>
 </a>
 <figcaption>容器的网络模式(主机、容器、网桥)示意图</figcaption>
 </figure></p>
@@ -313,8 +313,8 @@ extended">
 </span><span class=ln>20</span><span class=w>    </span><span class=nt>driver</span><span class=p>:</span><span class=w> </span><span class=l>bridge</span><span class=w>
 </span></code></pre></div><p>此时，我们可以注意到，<code>Docker Compose</code>会创建两个网络，即<code>network_mode_default</code>和<code>network_mode_test-network</code>：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/16/Sgsbpt1huUlmTQM.png>
-<img src=/https:/i.loli.net/2021/08/16/Sgsbpt1huUlmTQM.png loading=lazy alt="Docker Compose 中使用自定义网络">
+<a href=https://i.loli.net/2021/08/16/Sgsbpt1huUlmTQM.png>
+<img src=https://i.loli.net/2021/08/16/Sgsbpt1huUlmTQM.png loading=lazy alt="Docker Compose 中使用自定义网络">
 </a>
 <figcaption>Docker Compose 中使用自定义网络</figcaption>
 </figure></p>

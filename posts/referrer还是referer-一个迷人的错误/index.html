@@ -57,15 +57,15 @@ extended">
 <h1 id=后世不忘前世之锅>后世不忘，前世之锅</h1>
 <p>故事要追溯到上个世纪 90 年代，当时 HTTP 协议中需要有一个用来表示页面或资源来源的请求头部，Philip Hallam-Baker 将这个请求头部定义为 Referer，并将其写入了<a class=link href="https://datatracker.ietf.org/doc/rfc1945/?include_text=1" target=_blank rel=noopener>RFC1945</a>，这就是著名的 HTTP/1.0 协议。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2019/12/07/GE2WydKMf6HSk5n.png>
-<img src=/https:/i.loli.net/2019/12/07/GE2WydKMf6HSk5n.png loading=lazy alt=HTTP/1.0协议中定义的Referer>
+<a href=https://i.loli.net/2019/12/07/GE2WydKMf6HSk5n.png>
+<img src=https://i.loli.net/2019/12/07/GE2WydKMf6HSk5n.png loading=lazy alt=HTTP/1.0协议中定义的Referer>
 </a>
 <figcaption>HTTP/1.0协议中定义的Referer</figcaption>
 </figure></p>
 <p>然而这里发生一件有趣的事情，这个单词实际上是被作者给拼错了，即正确的拼写应该是<code>Referrer</code>。因为发现这个错误时为时已晚，大量的服务端和客户端都采用了这个错误的拼写，谁让它被写到了 HTTP 协议里呢？这其中就有像 Nginx 里的<code>ngx_http_referer_module</code>、Django 里的<code>HttpRequest.META.HTTP_REFERER</code>等等。考虑到这个错误波及的范围过大，HTTP 标准制定者奉决心将错就错，于是在接下来的<a class=link href="https://datatracker.ietf.org/doc/rfc2616/?include_text=1" target=_blank rel=noopener>RFC2616</a>，即 HTTP/1.1 中，HTTP 标准制定者追加了针对这个错误的说明:</p>
 <p><figure>
-<a href=/https:/i.loli.net/2019/12/07/IwMpYPSls485CHx.png>
-<img src=/https:/i.loli.net/2019/12/07/IwMpYPSls485CHx.png loading=lazy alt=HTTP/1.1协议中定义的Referer>
+<a href=https://i.loli.net/2019/12/07/IwMpYPSls485CHx.png>
+<img src=https://i.loli.net/2019/12/07/IwMpYPSls485CHx.png loading=lazy alt=HTTP/1.1协议中定义的Referer>
 </a>
 <figcaption>HTTP/1.1协议中定义的Referer</figcaption>
 </figure></p>

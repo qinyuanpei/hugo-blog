@@ -69,8 +69,8 @@ extended">
 <span class=ln>2</span><span class=n>friends</span> <span class=o>=</span> <span class=n>itchat</span><span class=o>.</span><span class=n>get_friends</span><span class=p>(</span><span class=n>update</span> <span class=o>=</span> <span class=kc>True</span><span class=p>)</span>
 </code></pre></div><p>同平时登录网页版微信一样，我们使用手机扫描二维码就可以登录，这里返回的 friends 对象是一个集合，第一个元素是当前用户。所以，在下面的数据分析流程中，我们始终取 friends[1:]作为原始输入数据，集合中的每一个元素都是一个字典结构，以我本人为例，可以注意到这里有 Sex、City、Province、HeadImgUrl、Signature 这四个字段，我们下面的分析就从这四个字段入手：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fziyue7akej217904zabg.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fziyue7akej217904zabg.jpg loading=lazy alt=好友信息结构展示>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziyue7akej217904zabg.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziyue7akej217904zabg.jpg loading=lazy alt=好友信息结构展示>
 </a>
 <figcaption>好友信息结构展示</figcaption>
 </figure></p>
@@ -97,8 +97,8 @@ extended">
 <span class=ln>19</span>    <span class=n>plt</span><span class=o>.</span><span class=n>show</span><span class=p>()</span>
 </code></pre></div><p>这里简单解释下这段代码，微信中性别字段的取值有 Unkonw、Male 和 Female 三种，其对应的数值分别为 0、1、2。通过 Collection 模块中的 Counter()对这三种不同的取值进行统计，其 items()方法返回的是一个元组的集合，该元组的第一维元素表示键，即 0、1、2，该元组的第二维元素表示数目，且该元组的集合是排序过的，即其键按照 0、1、2 的顺序排列，所以通过 map()方法就可以得到这三种不同取值的数目，我们将其传递给 matplotlib 绘制即可，这三种不同取值各自所占的百分比由 matplotlib 计算得出。下图是 matplotlib 绘制的好友性别分布图：
 <figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fziyb6mxjqj20hs0b40ss.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fziyb6mxjqj20hs0b40ss.jpg loading=lazy alt=微信好友性别分析>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziyb6mxjqj20hs0b40ss.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziyb6mxjqj20hs0b40ss.jpg loading=lazy alt=微信好友性别分析>
 </a>
 <figcaption>微信好友性别分析</figcaption>
 </figure></p>
@@ -176,14 +176,14 @@ extended">
 <span class=ln>69</span>    <span class=n>plt</span><span class=o>.</span><span class=n>show</span><span class=p>()</span>
 </code></pre></div><p>这里我们会在当前目录新建一个 HeadImages 目录，用以存储所有好友的头像，然后我们这里会用到一个名为 FaceApi 类，这个类由腾讯优图的 SDK 封装而来，这里分别调用了<a class=link href=http://youtu.qq.com/#/develop/api-face-analysis-detect target=_blank rel=noopener>人脸检测</a>和<a class=link href=http://youtu.qq.com/#/develop/api-image-tag target=_blank rel=noopener>图像标签识别</a>两个 API 接口，前者会统计"使用人脸头像"和"不使用人脸头像"的好友各自的数目，后者会累加每个头像中提取出来的标签。其分析结果如下图所示：
 <figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy7pojhzj20zk0hb0ta.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy7pojhzj20zk0hb0ta.jpg loading=lazy>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziy7pojhzj20zk0hb0ta.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy7pojhzj20zk0hb0ta.jpg loading=lazy>
 </a>
 </figure></p>
 <p>可以注意到，在所有微信好友中，约有接近 1/4 的微信好友使用了人脸头像， 而有接近 3/4 的微信好友没有人脸头像，这说明在所有微信好友中对"颜值 &ldquo;有自信的人，仅仅占到好友总数的 25%，或者说 75%的微信好友行事风格偏低调为主，不喜欢用人脸头像做微信头像。这是否说明"好看的皮囊"并非是千篇一律，长得好看的人实在是少数中的少数。所以，当女生的妆容越来越向着"韩式半永久粗平眉&rdquo;、&ldquo;瓜子脸"和"大红唇"靠拢的时候，当男生的服饰越来越向着"大背头&rdquo;、&ldquo;高领毛衣"和"长款大衣"靠拢的时候，我们能不能真正得个性一次。生命中有太多被世俗绑架着的事情，既要和别人不一样 ，同时还要和大多数人一样，这是人生在世的无可奈何。考虑到腾讯优图并不能真正得识别"人脸&rdquo;，我们这里对好友头像中的标签再次进行提取，来帮助我们了解微信好友的头像中有哪些 关键词，其分析结果如图所示：
 <figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy4ztxq6j20zk0hbgnv.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy4ztxq6j20zk0hbgnv.jpg loading=lazy alt=微信好友头像标签词云展示>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziy4ztxq6j20zk0hbgnv.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy4ztxq6j20zk0hbgnv.jpg loading=lazy alt=微信好友头像标签词云展示>
 </a>
 <figcaption>微信好友头像标签词云展示</figcaption>
 </figure></p>
@@ -243,15 +243,15 @@ extended">
 <span class=ln>51</span>    <span class=n>plt</span><span class=o>.</span><span class=n>show</span><span class=p>()</span>
 </code></pre></div><p>通过词云，我们可以发现：在微信好友的签名信息中，出现频率相对较高的关键词有：努力、长大、美好、快乐、生活、幸福、人生、远方、时光、散步。果然我的微信好友都是温暖、正直的好青年啊！ :smile:其实，签名这个设定，从某种程度上是在反映人的一种心态，人在年轻时不免"为赋新词强说愁"，等到你真正到了这个精神境界，突然发现年轻时图样图森破，或许这就是我们不愿意让别人了解过去的原因，因为伴随着人的成长，某一种瞬间的状态简直不忍直视，QQ 空间陪伴了我们这代人的整个青春，令人印象深刻的"那年今日"功能，有时让我们感到回忆的温暖，有时让我们感到岁月的萧杀，&ldquo;当时只道是寻常"的物是人非，&ldquo;回首向来萧瑟处"的淡定从容，&ldquo;今夕复何夕"的失落惆怅……都在这一行行签名里留下深深浅浅的印记。在知乎上有关于<a class=link href=https://www.zhihu.com/topic/19665970/hot target=_blank rel=noopener>签名</a>的话题讨论，对此感兴趣的朋友不妨找时间看看。:smile:</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixyiqv1lj20zk0hbgpc.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixyiqv1lj20zk0hbgpc.jpg loading=lazy alt=微信好友签名信息词云展示>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixyiqv1lj20zk0hbgpc.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixyiqv1lj20zk0hbgpc.jpg loading=lazy alt=微信好友签名信息词云展示>
 </a>
 <figcaption>微信好友签名信息词云展示</figcaption>
 </figure></p>
 <p>通过柱状图，我们可以发现：在微信好友的签名信息中，正面积极的情感判断约占到 55.56%，中立的情感判断约占到 32.10%，负面消极的情感判断约占到 12.35%。这个结果和我们通过词云展示的结果基本吻合，这说明在微信好友的签名信息中，约有 87.66%的签名信息，传达出来都是一种积极向上的态度。朋友圈中基本上有两类用户，第一类用户使用朋友圈记录自己的生活，第二类用户使用朋友圈输出自己的观点。显然，对于第二类用户，它并不介意别人了解它的过去，它更在乎它从始至终输出的观点是否一致。所以，不管朋友圈里别人在或晒美食、或晒旅游、或秀恩爱、或晒宝宝、或煲鸡汤等等，在我看来这都是一种生活方式，精神层次和物质层次比你高的人群，觉得你朋友圈里的内容"无趣&rdquo;，这是符合人类一贯的认知方式的，在大多数情况下，反而是那些和你层次差不多的人群，对不熟悉的人或者事物妄加判断，如果你不喜欢我朋友圈里的内容，请直接屏蔽我就好，因为这样我们还可以做朋友；如果你因为喜欢 A 而在我这里和我说 B 不好，这就真的是三观不合啦。我相信没有完全兴趣匹配的两个人，即使是男女朋友或者情侣之间，总之人与人相处嘛，真诚和互相尊重是基本要求。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixbgepihj20hs0dcjrn.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixbgepihj20hs0dcjrn.jpg loading=lazy alt=微信好友签名信息情感分析展示>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixbgepihj20hs0dcjrn.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixbgepihj20hs0dcjrn.jpg loading=lazy alt=微信好友签名信息情感分析展示>
 </a>
 <figcaption>微信好友签名信息情感分析展示</figcaption>
 </figure></p>
@@ -270,8 +270,8 @@ extended">
 <span class=ln>11</span>           <span class=n>writer</span><span class=o>.</span><span class=n>writerow</span><span class=p>(</span><span class=n>row</span><span class=p>)</span>
 </code></pre></div><p>下图是 BDP 中生成的微信好友地理分布图，可以发现：我的微信好友主要集中在宁夏和陕西两个省份。数字时代的神经牵动着每一个社交关系链的人，我们想要竭力去保护的那点隐私，在这些数据中一点点地折射出来。人类或许可以不断地伪装自己，可这些从数据背后抽离出来的规律和联系不会欺骗人类。数学曾经被人称为最没有用的学科，因为生活中并不需要神圣而纯粹的计算，在不同的学科知识里，经验公式永远比理论公式更为常用。可是此时此刻，你看，这世界就像一只滴滴答答转动着的时钟，每一分每一秒都是严丝合缝的。
 <figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix8lyfsuj20m80jw74u.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix8lyfsuj20m80jw74u.jpg loading=lazy alt=微信好友地理分布图>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzix8lyfsuj20m80jw74u.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix8lyfsuj20m80jw74u.jpg loading=lazy alt=微信好友地理分布图>
 </a>
 <figcaption>微信好友地理分布图</figcaption>
 </figure></p>

@@ -98,15 +98,15 @@ extended">
 </table></div>
 <p>那么，我们就不仅要问啦，现在微服务啊、RESTful 啊这些概念非常流行，在我们实际的工作中，调用第三方的 WebAPI 甚至 WebService，这难道不是非常合理的场景吗？前端的 Ajax，即 XMLHttpRequest，和我们平时用到的 RestSharp、HttpClient、OkHttp 等类似，都可以发起一个 Http 请求，怎么在客户端里用的好好的东西，到了前端这里就突然出来一个**“跨域”<strong>的概念呢？这是因为从原理上来说，这些客户端都是受信的“用户”(<strong>好吧，假装是被信任的</strong>)，而浏览器的环境则是一个</strong>“开放”**的环境。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhbqwfadj20to02sdfw.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhbqwfadj20to02sdfw.jpg loading=lazy alt=URI_Syntax_Diagram>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g0nhbqwfadj20to02sdfw.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g0nhbqwfadj20to02sdfw.jpg loading=lazy alt=URI_Syntax_Diagram>
 </a>
 <figcaption>URI_Syntax_Diagram</figcaption>
 </figure></p>
 <p>举一个例子，你在家的时候，可以随意地把手插进自己的口袋，因为这是你的私有环境。可是当你在公共环境中时，你是不允许把手插进别人口袋的。所以，浏览器有“跨域”限制，本质上是为了保护用户的数据安全，避免危险地跨域行为。试想，没有跨域的话，我们带上 Cookie 就可以为所欲为了，不是吗？实际上，同源限制和 JavaScript 没有一丁点关系，因为它是 W3C 中的内容，是浏览器厂商要这样做的，我们的请求其实是被发出去了，而它的响应则被浏览器给拦截了，所以我们在控制台中看到“同源策略限制”的错误。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhciom21j211q04lx2k.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhciom21j211q04lx2k.jpg loading=lazy alt=喜闻乐见的跨域拦截>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g0nhciom21j211q04lx2k.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g0nhciom21j211q04lx2k.jpg loading=lazy alt=喜闻乐见的跨域拦截>
 </a>
 <figcaption>喜闻乐见的跨域拦截</figcaption>
 </figure></p>
@@ -115,8 +115,8 @@ extended">
 <h2 id=jsonp>JSONP</h2>
 <p>首先，我们来说说 JSONP，什么是 JSONP 呢？我们知道，通常 RESTful 接口返回的都是 JSON，而 JSONP 返回的是一段可以执行的 JavaScript 代码，我们所需要的数据就被“包裹”在这段代码中，这就是 JSONP，即<strong>JSON Padding</strong>的得名由来。在实际应用中，服务的提供方会根据调用方传入的回调函数(callback)来组织返回数据，譬如<strong>callback({&ldquo;name&rdquo;:&ldquo;tom&rdquo;,“gender”:&ldquo;male&rdquo;})</strong>。这就说到一个点，<strong>并不是所有的 API 接口在调用的时候出现跨域问题，都可以通过 JSONP 的方式来解决，因为它需要后端来配合组织返回数据</strong>。这里我们以“不蒜子”这个静态博客中使用最多的访问量统计工具为例，通过查看页面源代码，我们了解到它是通过 JSONP 来返回数据的。为什么它要用这种方式来返回数据呢？其实，我们仔细想想就能明白其中的缘由，因为像 Hexo、Jekyll 这种静态博客大多都是没有后端服务支持的，所以，它要访问“不蒜子”的统计服务，就必然会存在跨域的问题啊！那怎么解决这个问题呢？当然是选择 JSONP 啦！这里我们以 Postman 调用不蒜子接口为例，可以发现它的返回值是下面这个样子：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhe1rnprj218u08sx6p.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhe1rnprj218u08sx6p.jpg loading=lazy alt=在Postman中调用不蒜子接口>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g0nhe1rnprj218u08sx6p.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g0nhe1rnprj218u08sx6p.jpg loading=lazy alt=在Postman中调用不蒜子接口>
 </a>
 <figcaption>在Postman中调用不蒜子接口</figcaption>
 </figure></p>
@@ -160,8 +160,8 @@ extended">
 <span class=ln>10</span><span class=p>}</span>
 </code></pre></div><p>果然，就算使用最新的 Fetch API，浏览器还是会因为同源限制策略而拦截我们的请求</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhhcqa78j211s04nq3k.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhhcqa78j211s04nq3k.jpg loading=lazy alt=浏览器中再次出现同源限制错误>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g0nhhcqa78j211s04nq3k.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g0nhhcqa78j211s04nq3k.jpg loading=lazy alt=浏览器中再次出现同源限制错误>
 </a>
 <figcaption>浏览器中再次出现同源限制错误</figcaption>
 </figure></p>
@@ -175,8 +175,8 @@ extended">
 <span class=ln>5</span><span class=p>}</span>
 </code></pre></div><p>现在，我们可以注意到，在控制台中输出了我们期望的结果，这说明页面中定义的 showUser()方法确实被执行了，所以，到这里我们可以对 JSONP 做一个简单总结：<strong>JSONP 是一种利用 script 标签实现跨域的方案，它需要对后端接口进行适当改造以返回可以执行的 JavaScript，客户端需要事先定义好接收数据的方法，两者通过 callback 参数建立起联系，返回类似 callback({&ldquo;name&rdquo;:&ldquo;tom&rdquo;,“gender”:&ldquo;male&rdquo;})结构的数据，因此 JSONP 请求必然且只能是一个 GET 请求</strong>。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhf0sls2j21h8090gn0.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhf0sls2j21h8090gn0.jpg loading=lazy alt=通过Script标签调用JSONP>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g0nhf0sls2j21h8090gn0.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g0nhf0sls2j21h8090gn0.jpg loading=lazy alt=通过Script标签调用JSONP>
 </a>
 <figcaption>通过Script标签调用JSONP</figcaption>
 </figure></p>
@@ -273,23 +273,23 @@ extended">
 <li>Content-Type 的值仅限于下列三者之一：text/plain、multipart/form-data、application/x-www-form-urlencoded。</li>
 </ul>
 <p><figure>
-<a href=/https:/mdn.mozillademos.org/files/14293/simple_req.png>
-<img src=/https:/mdn.mozillademos.org/files/14293/simple_req.png loading=lazy alt=MDN中对简单请求的图解>
+<a href=https://mdn.mozillademos.org/files/14293/simple_req.png>
+<img src=https://mdn.mozillademos.org/files/14293/simple_req.png loading=lazy alt=MDN中对简单请求的图解>
 </a>
 <figcaption>MDN中对简单请求的图解</figcaption>
 </figure></p>
 <h3 id=非简单请求>非简单请求</h3>
 <p>非简单请求和简单请求相反，即不满足简单请求中任一条件的请求都被成为非简单请求。非简单请求，相对简单请求多了一次<a class=link href=https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Access_control_CORS#Preflighted_requests target=_blank rel=noopener>CORS 预检请求</a>。其过程是，首先由浏览器自动发起一个 OPTION 请求，该请求中携带 HTTP 头部字段 Origin。在本例中，前端页面部署在<code>http://localhost:8888</code>服务器上，所以，它的 Origin 字段即为<code>http://localhost:8888</code>。接下来，服务端会返回 Access-Control-Allow-Origin/Access-Control-Allow-Headers/Access-Control-Allow-Methods 等字段，它对应我们后端定义的 AllowOne，注意到这里我们有两个自定义字段 X-ASP-NET-Core 和 X-UserName。在通过预检以后，我们在发起正式请求(本例中为 GET 请求)的时候，设置后端允许的源，即<code>http://localhost:8888</code>，这样就可以实现基于 CORS 的跨域请求啦！</p>
 <p><figure>
-<a href=/https:/mdn.mozillademos.org/files/14289/prelight.png>
-<img src=/https:/mdn.mozillademos.org/files/14289/prelight.png loading=lazy alt=MDN中对非简单请求的图解>
+<a href=https://mdn.mozillademos.org/files/14289/prelight.png>
+<img src=https://mdn.mozillademos.org/files/14289/prelight.png loading=lazy alt=MDN中对非简单请求的图解>
 </a>
 <figcaption>MDN中对非简单请求的图解</figcaption>
 </figure></p>
 <p>所以，我们可以注意到，这里会有一个 OPTION 请求，即“预检请求”。对于 AllowOne 这个 CORS 策略而言，它允许来自 localhost:8888 的跨域请求，允许的请求方法有 GET、PUT、POST 和 OPTION，客户端必须携带一个自定义 HTTP 头：X-ASP-NET-Core。当这三个条件满足时，即表示通过“预检”。此时，服务端会返回 Access-Control-Allow-Origin/Access-Control-Allow-Methods/Access-Control-Allow-Headers 等字段。接下来，浏览器发起的正式请求会带上这些字段，并返回我们所需要的 JSON 数据，这就是 CORS 跨域的实际过程。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhfm5iprj21h60kcb2d.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g0nhfm5iprj21h60kcb2d.jpg loading=lazy alt=OPTION预检请求>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g0nhfm5iprj21h60kcb2d.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g0nhfm5iprj21h60kcb2d.jpg loading=lazy alt=OPTION预检请求>
 </a>
 <figcaption>OPTION预检请求</figcaption>
 </figure></p>

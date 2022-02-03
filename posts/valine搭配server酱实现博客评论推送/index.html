@@ -123,8 +123,8 @@ on-phone--column extended">
 <p>Valine 本身是利用 LeanCloud 的数据存储 SDK 来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能。可话说回来，以国内这种“敏感”的网络环境，其实没有一家云服务提供商敢打这样的包票，像阿里云、LeanCloud、七牛云存储这些服务，都曾经出现过宕机或者封杀域名的事情，所以，趁着数据还在自己手上，尽可能地做好备份工作吧！Valine 本身并没有提供评论推送的功能，我还是挺怀念过去“多说”推送评论到邮箱的功能。虽然<a class=link href=https://github.com/DesertsP/Valine-Admin target=_blank rel=noopener>Valine-Admin</a>这个项目提供了类似的功能，但我感觉使用起来并不顺手，尤其是配置邮箱的时候，国内像 QQ、163 这些都非常麻烦，遇到一两个废弃的手机号，你就会发现短信验证码，是件多么尴尬而繁琐的事情，如同扫码使用的共享电话一般魔幻。</p>
 <p>为了解决这个问题，我想到了 Valine 搭配 Server 酱实现评论推送的方案。首先，Valine 是基于 LeanCloud 而开发的，用户发表评论实际上就是向<code>Comment</code>表插入记录。因此，我们可以利用 LeanCloud 提供的<a class=link href=https://leancloud.cn/docs/leanengine_cloudfunction_guide-node.html#hash1095356413 target=_blank rel=noopener>Hooks</a>来捕获写入评论的事件。所谓“Hooks”呢，通俗地说就是数据库里触发器的概念，我们可以在数据写入前后做点“小动作”。而<a class=link href=http://sc.ftqq.com/ target=_blank rel=noopener>Server 酱</a>则是一个消息推送服务，它提供了一个基于 HTTP 的请求接口，通过这个接口，我们就能实现向微信推送消息，前提是关注“方糖”公众号。关于 Server 酱的原理大家可以进一步去看它的<a class=link href="http://sc.ftqq.com/?c=code" target=_blank rel=noopener>文档</a>，我们这里只需要考虑怎么样把它们结合起来，这就是工程师和科学家的区别所在[doge]。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2019/11/07/DlxWPgGNoKMVeOw.png>
-<img src=/https:/i.loli.net/2019/11/07/DlxWPgGNoKMVeOw.png loading=lazy alt=运行在Valine云引擎中代码>
+<a href=https://i.loli.net/2019/11/07/DlxWPgGNoKMVeOw.png>
+<img src=https://i.loli.net/2019/11/07/DlxWPgGNoKMVeOw.png loading=lazy alt=运行在Valine云引擎中代码>
 </a>
 <figcaption>运行在Valine云引擎中代码</figcaption>
 </figure></p>
@@ -160,8 +160,8 @@ on-phone--column extended">
 <span class=ln>29</span><span class=p>});</span>
 </code></pre></div><p>这里主要利用了 Nodejs 中的<code>requests</code>模块来发送 HTTP 请求，其中 token 是 Server 酱经过 Github 授权以后获得的，具体可以参考 Server 酱的<a class=link href="http://sc.ftqq.com/?c=code" target=_blank rel=noopener>文档</a>。这里有一点要注意，Comment 表里的记录是无法区分发出人的，因为有时候我们可能忘记填写邮箱或者昵称，所以，目前只要写入记录都会发送消息到手机。这个消息模板是 Server 酱作者提供的，我们无法对它的样式进行自定义，收到消息以后需要点击查看详情。不过，我认为这个方案可以满足我的日常使用，因为博客的评论数量并不多，而 Servet 酱的接口调用次数完全足够。免费的 LeanCloud 实例虽然会强制休眠，只要大部分时间能覆盖到就可以啦，谁让这些东西都是免费的呢，博主表示已经相当知足啦，哈哈！好了，看看消息推送到手机的效果吧！</p>
 <p><figure>
-<a href=/https:/i.loli.net/2019/11/07/BSsu4cPFe1ZvhGN.png>
-<img src=/https:/i.loli.net/2019/11/07/BSsu4cPFe1ZvhGN.png loading=lazy alt=博客评论推送到手机上的展示效果>
+<a href=https://i.loli.net/2019/11/07/BSsu4cPFe1ZvhGN.png>
+<img src=https://i.loli.net/2019/11/07/BSsu4cPFe1ZvhGN.png loading=lazy alt=博客评论推送到手机上的展示效果>
 </a>
 <figcaption>博客评论推送到手机上的展示效果</figcaption>
 </figure></p>

@@ -49,14 +49,14 @@ extended">
 <section class=article-content>
 <p>各位朋友大家好，我是<strong>秦元培</strong>，欢迎大家关注我的博客，我的博客地址是<a class=link href=http://qinyuanpei.com target=_blank rel=noopener>http://qinyuanpei.com</a>。最近开始研究 Unity3D 游戏场景优化，每次提及游戏优化这个话题的时候，我的脑海中都会浮现出《仙剑奇侠传六》这个让四路泰坦都光荣陨落的神奇游戏，作为一个使用 Unity3D 引擎进行游戏开发的仙剑玩家，我曾经天真的以为，这款使用 Unity3D 引擎打造的仙剑二十周年献礼之作，会让我对《仙剑奇侠传》这个系列游戏的未来充满更多期待，然而当游戏真正呈现在我眼前的时候，我感受到了在历代仙剑游戏中从未有过的尴尬和失望，我尴尬的是 Unity3D 这样一个比较强大的游戏引擎硬生生地被北软玩成了这个鬼样子，我失望的是这部游戏除了剧情和跳跳乐以外并没有什么让人看到希望的东西。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/10/25/3JpmquPZnhvRw51.jpg>
-<img src=/https:/i.loli.net/2021/10/25/3JpmquPZnhvRw51.jpg loading=lazy alt=仙剑奇侠传六>
+<a href=https://i.loli.net/2021/10/25/3JpmquPZnhvRw51.jpg>
+<img src=https://i.loli.net/2021/10/25/3JpmquPZnhvRw51.jpg loading=lazy alt=仙剑奇侠传六>
 </a>
 <figcaption>仙剑奇侠传六</figcaption>
 </figure></p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/10/25/ezlNEVh15Gmqvuj.jpg>
-<img src=/https:/i.loli.net/2021/10/25/ezlNEVh15Gmqvuj.jpg loading=lazy alt=不到20帧的优化>
+<a href=https://i.loli.net/2021/10/25/ezlNEVh15Gmqvuj.jpg>
+<img src=https://i.loli.net/2021/10/25/ezlNEVh15Gmqvuj.jpg loading=lazy alt=不到20帧的优化>
 </a>
 <figcaption>不到20帧的优化</figcaption>
 </figure></p>
@@ -119,14 +119,14 @@ extended">
 <span class=ln>48</span>    <span class=p>}</span>
 </code></pre></div><p>这段脚本的核心是 CombineMeshes()方法，该方法有三个参数，第一个参数是合并实例的数组，第二个参数是是否对子物体的网格进行合并，第三个参数是是否共享材质，如果希望物体共享材质则第三个参数为 true，否则为 false。在我测试的过程中发现，如果选择了对子物体的网格进行合并，那么每个子物体都不能再使用单独的材质，默认会以第一个材质作为合并后物体的材质，下面演示的是合并前的多个物体和合并后的一个物体的对比：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/10/25/3YdaSehRTorOuVy.png>
-<img src=/https:/i.loli.net/2021/10/25/3YdaSehRTorOuVy.png loading=lazy alt=合并前>
+<a href=https://i.loli.net/2021/10/25/3YdaSehRTorOuVy.png>
+<img src=https://i.loli.net/2021/10/25/3YdaSehRTorOuVy.png loading=lazy alt=合并前>
 </a>
 <figcaption>合并前</figcaption>
 </figure></p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/10/25/YADCWR89NTSOJds.png>
-<img src=/https:/i.loli.net/2021/10/25/YADCWR89NTSOJds.png loading=lazy alt=合并后>
+<a href=https://i.loli.net/2021/10/25/YADCWR89NTSOJds.png>
+<img src=https://i.loli.net/2021/10/25/YADCWR89NTSOJds.png loading=lazy alt=合并后>
 </a>
 <figcaption>合并后</figcaption>
 </figure></p>

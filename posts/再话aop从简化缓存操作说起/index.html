@@ -182,15 +182,15 @@ extended">
 <span class=ln>24</span><span class=p>}</span>
 </code></pre></div><p>此时，我们可以得到下面的结果，可以注意到，第一次调用的时候，因为缓存不存在，调用的时间相对更长一点，而当缓存存在的时候，调用的时间会明显缩短。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/04/FdafGyS7zrl53W1.png>
-<img src=/https:/i.loli.net/2021/08/04/FdafGyS7zrl53W1.png loading=lazy alt=有无缓存对调用时长的影响>
+<a href=https://i.loli.net/2021/08/04/FdafGyS7zrl53W1.png>
+<img src=https://i.loli.net/2021/08/04/FdafGyS7zrl53W1.png loading=lazy alt=有无缓存对调用时长的影响>
 </a>
 <figcaption>有无缓存对调用时长的影响</figcaption>
 </figure></p>
 <p>虽然这个性能提升与缓存不无关系，可对于调用者来说，它完全不用关心缓存里有没有数据这件事情，它只需要像往常一样调用接口方法即可，这就是 AOP 之于缓存的意义所在，为了证明我没有说谎，我们可以看到 Redis 中对应的数据：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/04/wkAQGMRKr8xuol3.png>
-<img src=/https:/i.loli.net/2021/08/04/wkAQGMRKr8xuol3.png loading=lazy alt=Redis中对应的缓存数据>
+<a href=https://i.loli.net/2021/08/04/wkAQGMRKr8xuol3.png>
+<img src=https://i.loli.net/2021/08/04/wkAQGMRKr8xuol3.png loading=lazy alt=Redis中对应的缓存数据>
 </a>
 <figcaption>Redis中对应的缓存数据</figcaption>
 </figure></p>

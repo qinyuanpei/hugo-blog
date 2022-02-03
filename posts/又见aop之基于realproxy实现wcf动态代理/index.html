@@ -51,16 +51,16 @@ extended">
 <h1 id=故事背景>故事背景</h1>
 <p>在我们的业务系统中，对内是使用 WCF 来进行相互通信的，而对外则是使用 Web API 来进行数据交换。关于 RPC 还是 REST 的争论由来已有，严格地来说，两者没有绝对的高下之分，从风格上而言，RPC 倾向于让接口映射到一个方法上，而 REST 则倾向于让接口映射到一个资源上。从我们实际的使用情况来看，REST 在系统中应用得并不是很完美，因为大多数情况下，我们实现的仅仅是 HTTP+JSON 这样一种协议组合，因此业务系统中存在着大量的 WCF 接口供系统内部调用。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g2wasftjc2j20dl0b6t8z.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g2wasftjc2j20dl0b6t8z.jpg loading=lazy alt=内部服务调用示意图>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g2wasftjc2j20dl0b6t8z.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g2wasftjc2j20dl0b6t8z.jpg loading=lazy alt=内部服务调用示意图>
 </a>
 <figcaption>内部服务调用示意图</figcaption>
 </figure></p>
 <p>最早的时候，是通过 T4 模板来生成针对某个接口的代理类，而代理类中通常封装了 ChannelFactory 的创建、释放等等 WCF 相关的代码，实际应用中还会对 WCF 接口的异常进行捕获、记录日志、统计调用时间等，因此早期的 T4 模板实际上承担了生成代理类的职责。虽然业务的不断推进，接口中加入的新方法越来越多，导致具体业务类中的代码越来越多，动辄出现单个文件中代码行数达 3000 行以上，与此同时，每当 WCF 接口中增加了新方法，就不得不在其相关的代理类中增加代理方法。坦白地讲，就是增加一个看起来差不多的方法，因为你依然要处理 ChannelFactory 的创建、释放、异常处理、日志记录等等的工作。</p>
 <p>其实，WCF 可以直接生成客户端代码，因为每个 WCF 的服务都可以以 WebService 服务的形式暴露出来，而只要是 WebService，总可以通过 WSDL 生成一个代理类。不过这显然不利于团队间的协作，更不利于服务终结点配置的集中化，更失去了异常处理、日志记录等等这些“通用”工作的可能性。T4 应该可以基于“工作”，可显然大家觉得手写比生成要来得更容易些，所以，这个故事最终演变成这样一个局面，我们不得不通过局部类(Partial Class)的方式来开辟新的类文件。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g2wad7ddv6j20tn09bt9o.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g2wad7ddv6j20tn09bt9o.jpg loading=lazy alt=系统中充斥着大量类似的代码>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g2wad7ddv6j20tn09bt9o.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g2wad7ddv6j20tn09bt9o.jpg loading=lazy alt=系统中充斥着大量类似的代码>
 </a>
 <figcaption>系统中充斥着大量类似的代码</figcaption>
 </figure></p>
@@ -158,8 +158,8 @@ extended">
 <span class=ln>6</span><span class=n>calculator</span><span class=p>.</span><span class=n>Divide</span><span class=p>(</span><span class=m>36</span><span class=p>,</span> <span class=m>12</span><span class=p>);</span>
 </code></pre></div><p>现在，我们可以说，刚刚所说的一切都是真的，因为我们真的创建了一个 ICalculator 接口的实例，它真的记录了每个方法调用的参数、结果和执行时间。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g2w7brst4dj20rm0eqgmc.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g2w7brst4dj20rm0eqgmc.jpg loading=lazy alt=RealPrxoy牛刀小试>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g2w7brst4dj20rm0eqgmc.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g2w7brst4dj20rm0eqgmc.jpg loading=lazy alt=RealPrxoy牛刀小试>
 </a>
 <figcaption>RealPrxoy牛刀小试</figcaption>
 </figure></p>
@@ -259,8 +259,8 @@ extended">
 <span class=ln>2</span><span class=kt>var</span> <span class=n>serviceUrl</span> <span class=p>=</span> <span class=s>&#34;http://localhost:8502/Calculator.svc&#34;</span><span class=p>;</span>
 <span class=ln>3</span><span class=kt>var</span> <span class=n>calculator</span> <span class=p>=</span> <span class=n>ServiceProxyFactory</span><span class=p>.</span><span class=n>CreatePorxy</span><span class=p>&lt;</span><span class=n>Server</span><span class=p>.</span><span class=n>Service</span><span class=p>.</span><span class=n>ICalculator</span><span class=p>&gt;(</span><span class=n>binding</span><span class=p>,</span> <span class=n>serviceUrl</span><span class=p>);</span>
 </code></pre></div><p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g2w85svbrfj20rp0eqq41.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g2w85svbrfj20rp0eqq41.jpg loading=lazy alt=通过RealPrxoy动态代理WCF服务>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g2w85svbrfj20rp0eqq41.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g2w85svbrfj20rp0eqq41.jpg loading=lazy alt=通过RealPrxoy动态代理WCF服务>
 </a>
 <figcaption>通过RealPrxoy动态代理WCF服务</figcaption>
 </figure></p>

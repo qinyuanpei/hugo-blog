@@ -46,8 +46,8 @@ extended">
 <section class=article-content>
 <p><code>gRPC</code>是微软在<code>.NET Core</code> 及其后续版本中主推的 RPC 框架，它使用 <code>Google</code> 的 <code>Protocol Buffers</code> 作为序列化协议，使用 <strong>HTTP/2</strong> 作为通信协议，具有<strong>跨语言</strong>、<strong>高性能</strong>、<strong>双向流式调用</strong>等优点。考虑到，接下来要参与的是，一个以<code>gRPC</code>为核心而构建的微服务项目。因此，博主准备调研一下<code>gRPC</code>的相关内容，而首当其冲的，则是从 .NET Core 3.1 开始就有的拦截器，它类似于<code>ASP.NET Core</code>中的过滤器和中间件，体现了一种面向切面编程(<strong>AOP</strong>)的思想，非常适合在 RPC 服务调用的时候做某种统一处理，譬如参数校验、身份验证、日志记录等等。在今天这篇博客中，博主主要和大家分享的是，利用 .NET Core gRPC 中的拦截器实现日志记录的简单技巧，希望能给大家带来一点启发。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/05/28/1MgBG2uRHwEqXvt.jpg>
-<img src=/https:/i.loli.net/2021/05/28/1MgBG2uRHwEqXvt.jpg loading=lazy alt="开源、多语言、高性能的 gRPC">
+<a href=https://i.loli.net/2021/05/28/1MgBG2uRHwEqXvt.jpg>
+<img src=https://i.loli.net/2021/05/28/1MgBG2uRHwEqXvt.jpg loading=lazy alt="开源、多语言、高性能的 gRPC">
 </a>
 <figcaption>开源、多语言、高性能的 gRPC</figcaption>
 </figure></p>
@@ -203,8 +203,8 @@ extended">
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=n>services</span><span class=p>.</span><span class=n>AddGrpc</span><span class=p>(</span><span class=n>options</span> <span class=p>=&gt;</span> <span class=n>options</span><span class=p>.</span><span class=n>Interceptors</span><span class=p>.</span><span class=n>Add</span><span class=p>&lt;</span><span class=n>GRPCServerLoggingInterceptor</span><span class=p>&gt;());</span>
 </code></pre></div><p>此时，我们可以得到下面的结果：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/05/27/3nZXelLPVwJ7AjS.png>
-<img src=/https:/i.loli.net/2021/05/27/3nZXelLPVwJ7AjS.png loading=lazy alt=gRPC服务器端拦截器效果展示>
+<a href=https://i.loli.net/2021/05/27/3nZXelLPVwJ7AjS.png>
+<img src=https://i.loli.net/2021/05/27/3nZXelLPVwJ7AjS.png loading=lazy alt=gRPC服务器端拦截器效果展示>
 </a>
 <figcaption>gRPC服务器端拦截器效果展示</figcaption>
 </figure></p>
@@ -252,8 +252,8 @@ extended">
 <span class=ln>9</span><span class=k>await</span> <span class=n>client</span><span class=p>.</span><span class=n>SayHelloAsync</span><span class=p>(</span><span class=k>new</span> <span class=n>HelloRequest</span><span class=p>()</span> <span class=p>{</span> <span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;长安书小妆&#34;</span> <span class=p>});</span>
 </code></pre></div><p>此时，我们可以得到下面的结果：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/05/28/XcwmOQbzKTJPtUj.png>
-<img src=/https:/i.loli.net/2021/05/28/XcwmOQbzKTJPtUj.png loading=lazy alt=gRPC客户端拦截器效果展示>
+<a href=https://i.loli.net/2021/05/28/XcwmOQbzKTJPtUj.png>
+<img src=https://i.loli.net/2021/05/28/XcwmOQbzKTJPtUj.png loading=lazy alt=gRPC客户端拦截器效果展示>
 </a>
 <figcaption>gRPC客户端拦截器效果展示</figcaption>
 </figure></p>

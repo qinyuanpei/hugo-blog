@@ -143,8 +143,8 @@ async void 方法引发异常时，因为它没有 Task 对象来放置异常，
 <span class=ln>5</span><span class=p>}</span>
 </code></pre></div><p>我们注意到这里声明了两个 Action，即两个没有返回值的委托类型，它们的不同点在于前者使用了 async/await 这两个关键字，而后者则是一个普通的同步方法，那么这两者生成的 IL 代码是否有区别呢？我们可以通过 IL DASM 或者是 IL Spy 这两个工具来查看 IL 代码：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix8rsjiej20sh0g0tav.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix8rsjiej20sh0g0tav.jpg loading=lazy alt=查看IL代码>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzix8rsjiej20sh0g0tav.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix8rsjiej20sh0g0tav.jpg loading=lazy alt=查看IL代码>
 </a>
 <figcaption>查看IL代码</figcaption>
 </figure></p>

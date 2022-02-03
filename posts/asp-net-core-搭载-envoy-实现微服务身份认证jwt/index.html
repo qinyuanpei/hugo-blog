@@ -81,57 +81,57 @@ extended">
 </code></pre></div><p>此时，我们运行<code>docker compose up</code>命令就可以得到一个 Keycloak 环境，它将作为我们整个微服务里的认证中心，负责对用户、角色、权限、客户端等进行管理。于此同时，接口消费方可以通过 Keycloak 获取令牌、JWKS，而 Envoy 正是利用 JWKS 来对令牌进行校验的。这个 JWKS 到底是何方神圣，我们暂且按下不表。在正式使用 Keycloak 前，我们需要做一点简单的配置工作，具体来说，就是指创建用户、角色和客户端，我们一起来看一下。</p>
 <p>首先，是创建一个用户，这里以《天龙八部》中壮志未酬的“<strong>慕容龙城</strong>”为例：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/U9Pm3HFLn1y6dYB.png>
-<img src=/https:/i.loli.net/2021/07/23/U9Pm3HFLn1y6dYB.png loading=lazy alt=" Keycloak 创建用户">
+<a href=https://i.loli.net/2021/07/23/U9Pm3HFLn1y6dYB.png>
+<img src=https://i.loli.net/2021/07/23/U9Pm3HFLn1y6dYB.png loading=lazy alt=" Keycloak 创建用户">
 </a>
 <figcaption>Keycloak 创建用户</figcaption>
 </figure></p>
 <p>《天龙八部》中提到，“<strong>慕容龙城</strong>”一心想光复大燕，可惜时不我与，正好遇上宋太祖建立宋朝，即使他创造出“<strong>斗转星移</strong>”的武功绝学，依然免不了郁郁而终的结局。慕容龙城算是第一代创业者，我们准备一个<code>Developer</code>的角色：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/H8xy3BYDz1XmWf9.png>
-<img src=/https:/i.loli.net/2021/07/23/H8xy3BYDz1XmWf9.png loading=lazy alt=" Keycloak 创建角色">
+<a href=https://i.loli.net/2021/07/23/H8xy3BYDz1XmWf9.png>
+<img src=https://i.loli.net/2021/07/23/H8xy3BYDz1XmWf9.png loading=lazy alt=" Keycloak 创建角色">
 </a>
 <figcaption>Keycloak 创建角色</figcaption>
 </figure></p>
 <p>在权限系统的设计中，角色总是需要和用户关联在一起。同样地，在 Keycloak 中，我们需要给“<strong>慕容龙城</strong>”分配一个<code>Developer</code>的角色：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/ZDui9X3weq5NMs8.png>
-<img src=/https:/i.loli.net/2021/07/23/ZDui9X3weq5NMs8.png loading=lazy alt=" Keycloak 分配角色">
+<a href=https://i.loli.net/2021/07/23/ZDui9X3weq5NMs8.png>
+<img src=https://i.loli.net/2021/07/23/ZDui9X3weq5NMs8.png loading=lazy alt=" Keycloak 分配角色">
 </a>
 <figcaption>Keycloak 分配角色</figcaption>
 </figure></p>
 <p>到了“<strong>慕容复</strong>”这一代，“<strong>慕容垂</strong>”假借死亡之名秘密活动，而活跃在台前的“<strong>慕容复</strong>”，实际上是作为慕容家族的“<strong>代理人</strong>”出现。在今天这篇文章中，Envoy 会充当认证服务的代理，因为我们希望 Envoy 可以对所有进站的 API 请求进行统一的认证。所以，这里，我们还需要创建一个客户端：<code>envoy-client</code>，并为其分配客户端角色：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/MJC3dVkE7UxopyO.png>
-<img src=/https:/i.loli.net/2021/07/23/MJC3dVkE7UxopyO.png loading=lazy alt=" Keycloak 创建客户端">
+<a href=https://i.loli.net/2021/07/23/MJC3dVkE7UxopyO.png>
+<img src=https://i.loli.net/2021/07/23/MJC3dVkE7UxopyO.png loading=lazy alt=" Keycloak 创建客户端">
 </a>
 <figcaption>Keycloak 创建客户端</figcaption>
 </figure></p>
 <p>OK，我们都知道，<a class=link href=https://oauth.net/2/ target=_blank rel=noopener>OAuth 2.0</a> 有这样四种认证方式：密码模式、客户端模式、简化模式、授权码模式。这四种认证方式如何在 Keycloak 中实现呢？目前，博主基本搞清楚了前面两种。我们在创建完客户端以后，可以通过设置访问类型来决定客户端使用哪种认证方式，目前已知，当访问类型的取值为<code>public</code>时，表示密码模式。当访问类型的取值为<code>confidential</code>时，表示客户端模式。这里，我们以客户端模式为例：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/le5rstobVOh91m3.png>
-<img src=/https:/i.loli.net/2021/07/23/le5rstobVOh91m3.png loading=lazy alt=" Keycloak 客户端模式">
+<a href=https://i.loli.net/2021/07/23/le5rstobVOh91m3.png>
+<img src=https://i.loli.net/2021/07/23/le5rstobVOh91m3.png loading=lazy alt=" Keycloak 客户端模式">
 </a>
 <figcaption>Keycloak 客户端模式</figcaption>
 </figure></p>
 <p>此时，我们就可以拿到一个重要的信息：<code>client_secret</code>，如果大家使用过客户端模式，就会知道它是获取令牌的重要参数之一。好了，当我们有了这些信息以后，该怎么样去获取令牌呢？我们只需要用 POST 的方式，将<code>grant_type</code>、<code>client_id</code>、<code>client_secret</code>、<code>username</code>、<code>password</code>、<code>scope</code>传过去即可：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/S5rgmZaGEqQkHUK.png>
-<img src=/https:/i.loli.net/2021/07/23/S5rgmZaGEqQkHUK.png loading=lazy alt="从 Keycloak 获取令牌 ">
+<a href=https://i.loli.net/2021/07/23/S5rgmZaGEqQkHUK.png>
+<img src=https://i.loli.net/2021/07/23/S5rgmZaGEqQkHUK.png loading=lazy alt="从 Keycloak 获取令牌 ">
 </a>
 <figcaption>从 Keycloak 获取令牌</figcaption>
 </figure></p>
 <p>如果需要刷新令牌，则只需要再追加一个<code>refresh_token</code>参数即可，它是我们第一次获取到的令牌：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/ukdNami5yMERWDc.png>
-<img src=/https:/i.loli.net/2021/07/23/ukdNami5yMERWDc.png loading=lazy alt="从 Keycloak 刷新令牌">
+<a href=https://i.loli.net/2021/07/23/ukdNami5yMERWDc.png>
+<img src=https://i.loli.net/2021/07/23/ukdNami5yMERWDc.png loading=lazy alt="从 Keycloak 刷新令牌">
 </a>
 <figcaption>从 Keycloak 刷新令牌</figcaption>
 </figure></p>
 <p>可能大家会疑惑，博主是从哪里知道这些 API 的端点地址的呢？其实，和 Identity Server 4 类似， Keycloak 提供了一个用于服务发现的接口地址：<code>/auth/realms/master/.well-known/openid-configuration</code>，通过这个接口地址，我们可以获得一份 API 列表：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/bDYNASUw23qLyml.png>
-<img src=/https:/i.loli.net/2021/07/23/bDYNASUw23qLyml.png loading=lazy alt=" Keycloak 提供的 “服务发现” 能力">
+<a href=https://i.loli.net/2021/07/23/bDYNASUw23qLyml.png>
+<img src=https://i.loli.net/2021/07/23/bDYNASUw23qLyml.png loading=lazy alt=" Keycloak 提供的 “服务发现” 能力">
 </a>
 <figcaption>Keycloak 提供的 “服务发现” 能力</figcaption>
 </figure></p>
@@ -139,8 +139,8 @@ extended">
 <h1 id=配置-envoy>配置 Envoy</h1>
 <p>在上一节内容中，博主卖了一个关子，说要等到这一节再说 JWKS 是何方神圣？不过，博主以为，“<strong>饭要一口一口吃，步子迈太大，咔，容易扯着蛋</strong>”，我们还是先来说说 JWT ，因为只要你了解了它的结构，你才能了解如何去检验一个令牌。我们说，JWT，是 JSON Web Token 的简称，那这个 JSON 到底体现在哪里呢？而这要从 JWT 的结构开始说起。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/Tdag82VsSGJxD9u.png>
-<img src=/https:/i.loli.net/2021/07/23/Tdag82VsSGJxD9u.png loading=lazy alt="JSON Web Token 结构说明图">
+<a href=https://i.loli.net/2021/07/23/Tdag82VsSGJxD9u.png>
+<img src=https://i.loli.net/2021/07/23/Tdag82VsSGJxD9u.png loading=lazy alt="JSON Web Token 结构说明图">
 </a>
 <figcaption>JSON Web Token 结构说明图</figcaption>
 </figure></p>
@@ -156,30 +156,30 @@ extended">
 </ul>
 <p>需要注意的是，<code>header</code>和<code>payload</code>这两部分，默认是不加密的，这意味着任何人都可以读到这里的信息，所以，一个重要的原则是，不要在<code>payload</code>中存放重要的、敏感的信息。无论是<code>header</code>还是<code>payload</code>，最终都需要通过 <a class=link href=https://www.base64url.com/ target=_blank rel=noopener>Base64URL</a> 算法将其转化为普通的字符串，该算法和 <a class=link href=https://www.sojson.com/base64.html target=_blank rel=noopener>Base64</a> 算法类似，唯一的不同点在于它会对<code>+</code>、<code>/</code> 和 <code>=</code> 这三个符号进行替换，因为这三个符号在网址中有着特殊的含义。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/zDx765FpRMaP8mK.png>
-<img src=/https:/i.loli.net/2021/07/23/zDx765FpRMaP8mK.png loading=lazy alt="Base64 & Base64URL 算法对比">
+<a href=https://i.loli.net/2021/07/23/zDx765FpRMaP8mK.png>
+<img src=https://i.loli.net/2021/07/23/zDx765FpRMaP8mK.png loading=lazy alt="Base64 & Base64URL 算法对比">
 </a>
 <figcaption>Base64 & Base64URL 算法对比</figcaption>
 </figure></p>
 <p>第三部分，<code>signature</code>，即通常意义上的签名，主要是防止数据篡改。对于 HMAC 系列的加密算法，需要指定一个密钥，以 HMACSHA256 算法为例，其签名函数为：<code>HMACSHA256(base64UrlEncode(header) + "." + base64UrlEncode(payload), secret)</code>。对于 RSA 和 ECDSA 这两个系列的加密算法，需要指定公钥和私钥，以 ECDSASHA512 算法为例，其签名函数为：<code>ECDSASHA512(base64UrlEncode(header) + "." + base64UrlEncode(payload), PublicKey, PrivateKey)</code>。一旦计算出签名，就可以将这三部分合成一个令牌，而这就是 JWT 的产生原理，而如果我们对第一节中获得的令牌进行解密，我们就会得到下面的结果：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/mpVo8vasYWL4gPN.png>
-<img src=/https:/i.loli.net/2021/07/23/mpVo8vasYWL4gPN.png loading=lazy alt="解密 Keycloak 生成的令牌">
+<a href=https://i.loli.net/2021/07/23/mpVo8vasYWL4gPN.png>
+<img src=https://i.loli.net/2021/07/23/mpVo8vasYWL4gPN.png loading=lazy alt="解密 Keycloak 生成的令牌">
 </a>
 <figcaption>解密 Keycloak 生成的令牌</figcaption>
 </figure></p>
 <p>所以，JSON Web Token 中的 JSON，其实是指 <code>header</code> 和 <code>payload</code> 这两个 JSON 对象，并且我们可以注意到，Keycloak 中生成的令牌实际上携带了更多的信息，例如，客户端、IP 地址、<code>realm_access</code> 以及 <code>resource_access</code>等等，所以。 JWT 其实是一个相对宽松的规范，在实现<code>payload</code>这部分时，可以结合实际场景做更多的扩展，唯一的要求还是那句话，不要在<code>payload</code>中存放重要的、敏感的信息。至此，我们讲清楚了 JWT 的底层原理。</p>
 <p>OK，解释清楚了 JWT，我们再来说 JWKS，这位又是何方神圣呢？我们提到，JWT 至少需要一个密钥或者一对公/私钥来进行签名的校验，因为对于<code>header</code>和<code>payload</code>这两个部分而言，它的加密算法始终都是 Base64URL，所以，我们总是可以反推出原始的 JSON 字符串。接下来，我们只需要按签名函数计算签名即可，对于 HMAC 系列的加密算法，需要指定一个密钥；对于 RSA 和 ECDSA 这两个系列的加密算法，需要指定公钥和私钥。由此，我们就可以计算出一个签名，此时，我们只需要比较两个签名是否一致即可。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/23/N6ybGazKBUSfE2H.png>
-<img src=/https:/i.loli.net/2021/07/23/N6ybGazKBUSfE2H.png loading=lazy alt=" JWT 校验过程示意图">
+<a href=https://i.loli.net/2021/07/23/N6ybGazKBUSfE2H.png>
+<img src=https://i.loli.net/2021/07/23/N6ybGazKBUSfE2H.png loading=lazy alt=" JWT 校验过程示意图">
 </a>
 <figcaption>JWT 校验过程示意图</figcaption>
 </figure></p>
 <p>通过 JWKS 的 <a class=link href=https://auth0.com/docs/tokens/json-web-tokens/json-web-key-sets target=_blank rel=noopener>官网</a>，我们可以了解到一件事情，那就是 JWKS 本质上是 Json Web Key Set 的简称，顾名思义，这是一组可以校验任意 JWT 的公钥，并且这些 JWT 必须是通过 RS256 算法进行签名的，RS256 则是我们上面这张图里的 RSA 非对唱加密算法，它需要一个公钥和一个私钥，通常强况下，私钥用来生成签名，公钥用来校验签名。这个 JWKS 呢？同样是一个 JSON 对象，它只有一个属性<code>keys</code>，以 Keycloak 中获得的 JWKS 为例：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/24/lQrXThYCvk9RPLm.png>
-<img src=/https:/i.loli.net/2021/07/24/lQrXThYCvk9RPLm.png loading=lazy alt=" Keycloak 产生的 JWKS">
+<a href=https://i.loli.net/2021/07/24/lQrXThYCvk9RPLm.png>
+<img src=https://i.loli.net/2021/07/24/lQrXThYCvk9RPLm.png loading=lazy alt=" Keycloak 产生的 JWKS">
 </a>
 <figcaption>Keycloak 产生的 JWKS</figcaption>
 </figure></p>
@@ -333,15 +333,15 @@ extended">
 </span></code></pre></div><p>等所有的服务都启动起来以后，我们来验证下这个网关，是不是真的像我们期待的那样。注意到，Envoy 对外暴露出来的端口是<code>6060</code>，这里我们以<code>CItyService</code>为例：</p>
 <p>首先，是不带令牌直接访问接口，我们发现接口返回了<code>401</code>状态码，并提示：<strong>Jwt is missing</strong>。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/24/Bg5r8dAIbEp4eFy.png>
-<img src=/https:/i.loli.net/2021/07/24/Bg5r8dAIbEp4eFy.png loading=lazy alt=" 不携带令牌，Envoy 认证失败">
+<a href=https://i.loli.net/2021/07/24/Bg5r8dAIbEp4eFy.png>
+<img src=https://i.loli.net/2021/07/24/Bg5r8dAIbEp4eFy.png loading=lazy alt=" 不携带令牌，Envoy 认证失败">
 </a>
 <figcaption>不携带令牌，Envoy 认证失败</figcaption>
 </figure></p>
 <p>我们带上令牌会怎么样呢？可以注意到，接口成功地返回了数据，这表示我们的目的达到了，这些经由 Envoy 代理的 API 接口，今后都必须携带令牌进行访问：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/24/rCcUBWDyJVtOxkd.png>
-<img src=/https:/i.loli.net/2021/07/24/rCcUBWDyJVtOxkd.png loading=lazy alt="携带令牌，Envoy 返回数据">
+<a href=https://i.loli.net/2021/07/24/rCcUBWDyJVtOxkd.png>
+<img src=https://i.loli.net/2021/07/24/rCcUBWDyJVtOxkd.png loading=lazy alt="携带令牌，Envoy 返回数据">
 </a>
 <figcaption>携带令牌，Envoy 返回数据</figcaption>
 </figure></p>

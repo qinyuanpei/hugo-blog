@@ -51,8 +51,8 @@ Unity3D
 <h1 id=easyar-的基本流程>EasyAR 的基本流程</h1>
 <p>首先我们来看看官方给出的一张 EasyAR 的基本流程示意图：
 <figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix180mu7j20g0057dft.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix180mu7j20g0057dft.jpg loading=lazy alt=EasyAR基本流程示意图>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzix180mu7j20g0057dft.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix180mu7j20g0057dft.jpg loading=lazy alt=EasyAR基本流程示意图>
 </a>
 <figcaption>EasyAR基本流程示意图</figcaption>
 </figure>
@@ -85,8 +85,8 @@ Unity3D
 <span class=ln>15</span><span class=p>}</span>
 </code></pre></div><p>从这个文件中我们可以发现每一张图片都具有某些不同的属性，从目前博主掌握的资料来看，每张图片最重要的两个属性是 image 和 name。其中 image 是指图片的相对路径，该路径相对于 StreamingAssets 目录，因为我们做 Unity3D 游戏开发的时候都知道这个目录下的资源在编译的时候不会被压缩，当导出 APK 安装包的时候它会被完整的保留到根目录下的 assets 目录中。同样地，name 是指图片的名称即 ID，EasyAR 正是通过这个 ID 来和图片资源关联起来的。比如在默认的 SDK 项目中身份证背面这张图片是和 idback 这个 ID 对应的，如图所示，在这里 Easy 提供了四种存储方案即 Assets、App、Absolute、Json。和官方的人交流的时候说可以支持路径和 Json 字符串两种形式，但是对更加具体的这四种存储方案上的区别和优缺点目前并没有一个确切的说法，所以在这里我们就继续沿用 Assets 这种存储方案吧！我们可以注意到 idback 这张图片和 mousepad 这张图片相比增加了两个属性，即 uid 和 size。size 目前基本可以了解为 Unity3D 中的缩放，因为这个值表示的是在物理空间里的范围大小，单位是米，而我们知道 Unity3D 里默认的单位就是米，所以这个数值可以暂时理解为 Unity3D 里的缩放，它对应到下图里的 Size，我已经用红色字体标示出来。对于 uid 这个属性嘛，既然配置文件里都有 todo 标识出来了，那么我们就姑且认为这是一个暂时没有启用的属性值吧！</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/None.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/None.jpg loading=lazy alt=配置文件和ImagTarget的对应关系>
+<a href=https://ww1.sinaimg.cn/large/None.jpg>
+<img src=https://ww1.sinaimg.cn/large/None.jpg loading=lazy alt=配置文件和ImagTarget的对应关系>
 </a>
 <figcaption>配置文件和ImagTarget的对应关系</figcaption>
 </figure></p>
@@ -118,8 +118,8 @@ Unity3D
 <li>在场景中找到 ImageTargetDataSet-idback 节点，修改其附加的 SimpleImageTargetBehaviour 脚本下的 Name 属性，将其修改为 ziying，同时将第二步创建的材质赋给 ImageTargetDataSet-idback 节点。此时场景效果如图所示，这意味着我们使用手机摄像头来扫描这张图片就可以看到场景中的这个模型啦！</li>
 </ul>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/None.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/None.jpg loading=lazy alt=自定义Markder效果>
+<a href=https://ww1.sinaimg.cn/large/None.jpg>
+<img src=https://ww1.sinaimg.cn/large/None.jpg loading=lazy alt=自定义Markder效果>
 </a>
 <figcaption>自定义Markder效果</figcaption>
 </figure></p>
@@ -127,8 +127,8 @@ Unity3D
 <li>好了，现在编译这个项目并部署到手机上可以得到我们期望的结果，哈哈，慕容紫英站在桌面上和我一起玩对一个仙剑迷来说是不是特别有趣呢？</li>
 </ul>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz68j4zrs5j20dc0m8al9.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz68j4zrs5j20dc0m8al9.jpg loading=lazy alt=站在手机上的慕容紫英>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz68j4zrs5j20dc0m8al9.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz68j4zrs5j20dc0m8al9.jpg loading=lazy alt=站在手机上的慕容紫英>
 </a>
 <figcaption>站在手机上的慕容紫英</figcaption>
 </figure></p>

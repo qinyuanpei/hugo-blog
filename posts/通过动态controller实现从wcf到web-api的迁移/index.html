@@ -96,8 +96,8 @@ DynamicControllerActivator 实现了 IHttpControllerActivator 接口，这里我
 <span class=ln>43</span> <span class=n>methodInfo</span><span class=p>.</span><span class=n>Invoke</span> <span class=p>(</span><span class=n>emptyClass</span><span class=p>,</span> <span class=k>new</span> <span class=kt>object</span><span class=p>[]</span> <span class=p>{</span> <span class=s>&#34;Dynamic WebApi&#34;</span> <span class=p>});</span>
 </code></pre></div><p>此时，我们会发现通过 Castle 动态生成的代理类，同时具备了类和接口的功能。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g4a1c3r3i8j20rz0f43yj.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g4a1c3r3i8j20rz0f43yj.jpg loading=lazy alt=通过Castle实现类和接口的组合功能>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g4a1c3r3i8j20rz0f43yj.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g4a1c3r3i8j20rz0f43yj.jpg loading=lazy alt=通过Castle实现类和接口的组合功能>
 </a>
 <figcaption>通过Castle实现类和接口的组合功能</figcaption>
 </figure></p>
@@ -105,8 +105,8 @@ DynamicControllerActivator 实现了 IHttpControllerActivator 接口，这里我
 <p>OK，通过第一个例子，我们已经达到了第一个目的。接下来，顺着这个思路，我们不妨想象一下，如果把这个 BaseClass 换成 BaseController 会怎么样呢？因为在一个 OO 的语言里，一切都是 Class，所以，Web 开发中的 Controller 同样不会脱离这个体系。不过，在这之前，我们需要复习下 ASP.NET MVC 的原理，为什么要说这个呢？因为接下来的内容，都和它有重大的关联，我们实际上是自己实现了 ASP.NET MVC 中几个关键的环节，所以，在博主看来，这部分内容是非常重要的，这几乎是这篇文章中实现的最细节部分，因为第一个目标，说句实话，Castle 帮我们简化到了只有 4 行代码。</p>
 <h2 id=一张图了解mvc>一张图了解MVC</h2>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g49w0oxqkej20p50fuwfa.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g49w0oxqkej20p50fuwfa.jpg loading=lazy alt=" 一张图了解MVC">
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g49w0oxqkej20p50fuwfa.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g49w0oxqkej20p50fuwfa.jpg loading=lazy alt=" 一张图了解MVC">
 </a>
 <figcaption>一张图了解MVC</figcaption>
 </figure></p>
@@ -230,8 +230,8 @@ DynamicControllerActivator 实现了 IHttpControllerActivator 接口，这里我
 <span class=ln>7</span><span class=n>GlobalConfiguration</span><span class=p>.</span><span class=n>Configuration</span><span class=p>.</span><span class=n>Services</span><span class=p>.</span><span class=n>Replace</span><span class=p>(</span><span class=k>typeof</span><span class=p>(</span><span class=n>IHttpControllerActivator</span><span class=p>),</span> <span class=n>dynamicHttpControllerActivtor</span><span class=p>);</span>
 </code></pre></div><p>假设现在我希望调用 ICalcultor 接口中的 Add 方法，理论上它的 URL 应该是<strong>http://localhost/Service/Calculator/Add</strong>，因为截至到目前为止，所有的接口默认都是通过 Get 来访问的，下面是整个流程第一次跑通时的截图：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g49z1cvrw3j20pe05njrj.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g49z1cvrw3j20pe05njrj.jpg loading=lazy alt=迁移后的ICalculator接口>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g49z1cvrw3j20pe05njrj.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g49z1cvrw3j20pe05njrj.jpg loading=lazy alt=迁移后的ICalculator接口>
 </a>
 <figcaption>迁移后的ICalculator接口</figcaption>
 </figure></p>
@@ -301,8 +301,8 @@ DynamicControllerActivator 实现了 IHttpControllerActivator 接口，这里我
 <span class=ln>33</span><span class=p>}</span>
 </code></pre></div><p>从代码中大家大致可以猜出 DynamicApiResult 的结构了，它包含三个属性：Flag、Msg、Result。这是一个最常见的 Web API 的返回值封装，即通过 Flag 判断方法是否调用成功，通过 Msg 来返回异常信息，通过 Result 来返回具体的返回值。最近对接某公司的 API 接口的时候，发现一个非常奇葩的现象，一般没有返回值可以返回 null 或者空字符串，可这家公司居然返回的是**”无数据"**，你以为这是放在 Msg 里的吗？不，人家是放在 Result 里的。对此，我只能说，互联网发展到 2019 年了，那些年野蛮生长留下的坑却还一直都在。好了，现在我们来看看接口调用的结果，喏，这次是不是感觉顺眼多啦！</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g49z2ku45tj20il06dmxa.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g49z2ku45tj20il06dmxa.jpg loading=lazy alt=优化后的ICalculator接口返回值>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g49z2ku45tj20il06dmxa.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g49z2ku45tj20il06dmxa.jpg loading=lazy alt=优化后的ICalculator接口返回值>
 </a>
 <figcaption>优化后的ICalculator接口返回值</figcaption>
 </figure></p>

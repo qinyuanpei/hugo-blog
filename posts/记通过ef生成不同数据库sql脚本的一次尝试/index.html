@@ -101,8 +101,8 @@ extended">
 <span class=ln>12</span><span class=p>}</span>
 </code></pre></div><p>现在，我们需要将这个拦截器注册到 EF 中，注册过程非常简单，一旦拦截器注册完成，当我们在 EF 中执行相应操作的时候，就可以在日志中看到相对应的 SQ 语句了，这样我们就达到了用 EF 生成 SQL 语句的目的，虽然说这样可能还没手写来快，可它至少让你知道了，这个世界上有一种不需要手写 SQL 的可能性啊，你说对吗？</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05glt2tij20j306x74e.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05glt2tij20j306x74e.jpg loading=lazy alt=EF生成SQL语句比想象中更为复杂>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05glt2tij20j306x74e.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05glt2tij20j306x74e.jpg loading=lazy alt=EF生成SQL语句比想象中更为复杂>
 </a>
 <figcaption>EF生成SQL语句比想象中更为复杂</figcaption>
 </figure></p>
@@ -156,8 +156,8 @@ extended">
 <span class=ln>19</span><span class=p>}</span>
 </code></pre></div><p>好啦，接下来就非常简单啦，我们在 DbContext 里对 EF 的 Logger 进行配置，把我们定义的 SQLGenLoggerProvider 注入到 EF 里，可以注意到，它可以如我们期望得那样，输出由 EF 生成的 SQL 脚本，这实在是有趣，Ok，打完收工！</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz02250ixxj20u904w74c.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz02250ixxj20u904w74c.jpg loading=lazy alt=通过注入日志获取EF生成的SQL>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz02250ixxj20u904w74c.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz02250ixxj20u904w74c.jpg loading=lazy alt=通过注入日志获取EF生成的SQL>
 </a>
 <figcaption>通过注入日志获取EF生成的SQL</figcaption>
 </figure></p>

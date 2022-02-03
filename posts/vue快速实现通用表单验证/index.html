@@ -112,8 +112,8 @@ extended">
 <span class=ln>59</span><span class=p>&lt;/</span><span class=nt>script</span><span class=p>&gt;</span>
 </code></pre></div><p>为了排除无关内容对大家的影响，写这个例子的时候，博主排除了一切复杂的 HTML 结构和 CSS 样式，经过简单润色以后，这个例子的效果展示如下，果然 GUI 满足了人们颜控的一面，可让这个世界高速运行的是 CLI，Bootstrap 是博主这种“全栈工程师”的最爱之一。这种验证方式简直是人类本能的反应，可这恰好是最糟糕的一个例子，因为这个代码完全没法复用，可以想象得到，如果再继续增加针对密码强度，譬如大小写、数字等等的验证，这个代码会混乱成什么样子，所以，这是最简单的表单验证，同样是最糟糕的表单验证。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g6q1v1x70cj20n50aa3yq.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g6q1v1x70cj20n50aa3yq.jpg loading=lazy alt=第一个表单验证的例子>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g6q1v1x70cj20n50aa3yq.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g6q1v1x70cj20n50aa3yq.jpg loading=lazy alt=第一个表单验证的例子>
 </a>
 <figcaption>第一个表单验证的例子</figcaption>
 </figure></p>
@@ -154,8 +154,8 @@ extended">
 <span class=ln>32</span><span class=p>});</span>
 </code></pre></div><p>对于当前表单 loginFrom，其验证规则为 validators，它完全参照<code>jQuery Validation</code>的 API 文档而来，具体大家可以从<code>jQuery Validation</code>的文档来做进一步了解。这里唯一看起来不爽的就是<code>#loginFrom</code>，因为它和整个 Vue 看起来格格不入。不过，像博主目前项目的处境，如果老项目里使用<code>jQuery</code>来对表单进行验证，而使用 Vue 开发的新项目要兼容老项目的设计风格，使用 jQuery 有什么不可以呢？不得不说，Vue 作为一个渐进式的开发框架，真正照顾了各个"年龄"段的前端工程师。使用<code>jQuery Validation</code>以后的表单验证效果如下：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g6q3nex2jhj20nk0anq36.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g6q3nex2jhj20nk0anq36.jpg loading=lazy alt=基于jQuery的表单验证>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g6q3nex2jhj20nk0anq36.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g6q3nex2jhj20nk0anq36.jpg loading=lazy alt=基于jQuery的表单验证>
 </a>
 <figcaption>基于jQuery的表单验证</figcaption>
 </figure></p>
@@ -254,8 +254,8 @@ extended">
 <span class=ln>2</span><span class=p>&lt;</span><span class=nt>p</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;alert alert-danger&#34;</span> <span class=na>role</span><span class=o>=</span><span class=s>&#34;alert&#34;</span> <span class=na>v-show</span><span class=o>=</span><span class=s>&#34;errors.has(&#39;email&#39;)&#34;</span><span class=p>&gt;</span>{{ errors.first(&#39;email&#39;) }}<span class=p>&lt;/</span><span class=nt>p</span><span class=p>&gt;</span>
 </code></pre></div><p>这些语法在 Vue 中被称为指令，而<code>data-vv-as</code>则是 HTML5 中的一个特性，用来给提示信息中的字段起一个别名。实际上，这个插件里同样内置了一批常见的校验规则。当控件中的值不满足校验条件时，就会在<code>errors</code>中产生错误信息，所以，我们根据错误信息中是否包含指定字段来决定要不要展示错误信息，这就是这个插件的作用。运行这个例子，我们会得到下面的结果。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g6rebtg81jj20n70hj74u.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g6rebtg81jj20n70hj74u.jpg loading=lazy alt=基于Vue的表单校验>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g6rebtg81jj20n70hj74u.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g6rebtg81jj20n70hj74u.jpg loading=lazy alt=基于Vue的表单校验>
 </a>
 <figcaption>基于Vue的表单校验</figcaption>
 </figure></p>

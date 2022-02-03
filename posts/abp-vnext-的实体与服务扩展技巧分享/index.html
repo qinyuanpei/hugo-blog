@@ -48,8 +48,8 @@ extended">
 <h1 id=扩展实体>扩展实体</h1>
 <p>首先，我们要说的是扩展实体，什么是实体呢？这其实是领域驱动设计(<strong>DDD</strong>)中的概念，相信对于实体、聚合根和值对象，大家早就耳熟能详了。在 ABP vNext 中，实体对应的类型为<code>Entity</code>，聚合根对应的类型为<code>AggregateRoot</code>。所以，你可以片面地认为，只要继承自<code>Entity</code>基类的类都是实体。通常，实体都会有一个唯一的标识(<strong>Id</strong>)，所以，订单、商品或者是用户，都属于实体的范畴。不过，按照业务边界上的不同，它们会在核心域、支撑域和通用域三者间频繁切换。而对于大多数系统而言，用户都将是一个通用的域。在 ABP vNext 中，其用户信息由<code>AbpUsers</code>表承载，它在架构上定义了<code>IUser</code>接口，借助于EF Core的表映射支持，我们所使用的<code>AppUser</code>本质上是映射到了<code>AbpUsers</code>表中。针对实体的扩展，在面向数据库编程的业务系统中，一个最典型的问题就是，我怎么样可以给<code>AppUser</code>添加字段。所以，下面我们以<code>AppUser</code>为例，来展示如何对实体进行扩展。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/04/19/dtANSYQqyDz9blw.jpg>
-<img src=/https:/i.loli.net/2021/04/19/dtANSYQqyDz9blw.jpg loading=lazy alt="DDD 中的实体、聚合根与值对象">
+<a href=https://i.loli.net/2021/04/19/dtANSYQqyDz9blw.jpg>
+<img src=https://i.loli.net/2021/04/19/dtANSYQqyDz9blw.jpg loading=lazy alt="DDD 中的实体、聚合根与值对象">
 </a>
 <figcaption>DDD 中的实体、聚合根与值对象</figcaption>
 </figure></p>
@@ -138,8 +138,8 @@ extended">
 <span class=ln>24</span><span class=p>});</span>
 </code></pre></div><p>经过这一系列的“<strong>套路</strong>”，此时，我们会发现，新的字段已经生效：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/04/19/WExbQrs61ltcqzy.png>
-<img src=/https:/i.loli.net/2021/04/19/WExbQrs61ltcqzy.png loading=lazy alt="ABP vNext 实体扩展效果展示">
+<a href=https://i.loli.net/2021/04/19/WExbQrs61ltcqzy.png>
+<img src=https://i.loli.net/2021/04/19/WExbQrs61ltcqzy.png loading=lazy alt="ABP vNext 实体扩展效果展示">
 </a>
 <figcaption>ABP vNext 实体扩展效果展示</figcaption>
 </figure></p>
@@ -249,8 +249,8 @@ extended">
 <span class=ln>81</span><span class=p>}</span>
 </code></pre></div><p>这里做一点补充说明，应用服务，即<code>ApplicationService</code>类，它集成了诸如<code>ObjectMapper</code>、<code>LoggerFactory</code>、<code>GuidGenerator</code>、国际化、<code>AsyncExecuter</code>等等的特性，继承该类可以让我们更加得心应手地编写代码。曾经，博主写过一篇关于“<strong>动态API</strong>”的<a class=link href=https://blog.yuanpei.me/posts/4236649/ target=_blank rel=noopener>博客</a>，它可以为我们免去从 Service 到 Controller 的这一层封装，当时正是受到了ABP 框架的启发。当博主再次在 ABP vNext 中看到这个功能时，不免会感慨逝者如斯，而事实上，这个功能真的好用，真香！下面是经过改造以后的用户列表。考虑到，在上一篇博客里，博主已经同大家分享过分页查询方面的实现技巧，这里就不再展开讲啦！</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/04/19/B6SO8Wk4EVh3Pcx.png>
-<img src=/https:/i.loli.net/2021/04/19/B6SO8Wk4EVh3Pcx.png loading=lazy alt=对“用户服务”进行扩展>
+<a href=https://i.loli.net/2021/04/19/B6SO8Wk4EVh3Pcx.png>
+<img src=https://i.loli.net/2021/04/19/B6SO8Wk4EVh3Pcx.png loading=lazy alt=对“用户服务”进行扩展>
 </a>
 <figcaption>对“用户服务”进行扩展</figcaption>
 </figure></p>

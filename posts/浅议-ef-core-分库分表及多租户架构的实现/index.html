@@ -48,16 +48,16 @@ extended">
 <h1 id=分库>分库</h1>
 <p>首先，我们一起来探讨分库这个话题。从字面含义上了解，分库就是指<strong>应用程序拥有多个数据库，而这些数据库则拥有相同的表结构</strong>。你可能会问，为什么我们需要分库、分表？答案自然是<strong>性能</strong>，<strong>性能</strong>，还是TM的<strong>性能</strong>。我相信，大家都曾经或多或少地听到过<strong>垂直拆分</strong>、<strong>水平拆分</strong>这样的术语，下图展示了如何在<strong>数据库</strong>这一层级上进行拆分：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/03/29/nX8NBbhP9ToQa2M.png>
-<img src=/https:/i.loli.net/2021/03/29/nX8NBbhP9ToQa2M.png loading=lazy alt=数据库的垂直拆分与水平拆分>
+<a href=https://i.loli.net/2021/03/29/nX8NBbhP9ToQa2M.png>
+<img src=https://i.loli.net/2021/03/29/nX8NBbhP9ToQa2M.png loading=lazy alt=数据库的垂直拆分与水平拆分>
 </a>
 <figcaption>数据库的垂直拆分与水平拆分</figcaption>
 </figure></p>
 <p>其实，我们可以从<strong>索引存储</strong>、<strong>B+树高度</strong>、<strong>QPS</strong> 和 <strong>连接数</strong> 这四个不同的角度来审视这个话题。相关观点认为，当单表数据量达到一定量级(阿里巴巴Java开发手册中为500W)时，由于内存无法存储其索引，此时SQL查询会产生磁盘IO；行记录的大小决定了B+树的每个叶子节点能存储多少记录，所以，行记录的大小会影响B+树的高度；单个MySQL物理机实例写QPS峰值大概为1万，一旦业务量达到某个量级，这个瓶颈会逐步凸显出来；单个MySQL实例最大连接数有限，更多的访问量意味着需要更多的连接数。</p>
 <p>在谈论分库、分表的时候，我们忍不住会去想譬如“<strong>自动分表</strong>”和“<strong>路由</strong>”这样的问题，这些子库、子表，到底是提前在数据库里分好呢，还是在运行时期间自动去拆分呢，以及我对库/表进行拆分以后，我应该怎么样找到某条数据对应的库/表。我承认，这些问题并不简单，但当我们对问题进行简化以后，分库本质上就是动态地切换数据库，对不对？无非是拆分后的数据库可能会是类似db_0、db_1等等这样的序列。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/03/29/pmhOTFkZYjAsLXq.png>
-<img src=/https:/i.loli.net/2021/03/29/pmhOTFkZYjAsLXq.png loading=lazy alt="对 Chinook 进行水平拆分">
+<a href=https://i.loli.net/2021/03/29/pmhOTFkZYjAsLXq.png>
+<img src=https://i.loli.net/2021/03/29/pmhOTFkZYjAsLXq.png loading=lazy alt="对 Chinook 进行水平拆分">
 </a>
 <figcaption>对 Chinook 进行水平拆分</figcaption>
 </figure></p>
@@ -74,22 +74,22 @@ extended">
 <span class=ln>9</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>chinookContext</span><span class=p>.</span><span class=n>Artist</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
 </code></pre></div><p>事实上，如果选择性地忽略 “<strong>路由</strong>” 和 “<strong>自动分表</strong>” 这两个特性，我们已经在 EF 层面上局部的实现了 “<strong>分库</strong>” 功能：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/03/29/jLxlK3fro8qXSas.png>
-<img src=/https:/i.loli.net/2021/03/29/jLxlK3fro8qXSas.png loading=lazy alt=分库场景>
+<a href=https://i.loli.net/2021/03/29/jLxlK3fro8qXSas.png>
+<img src=https://i.loli.net/2021/03/29/jLxlK3fro8qXSas.png loading=lazy alt=分库场景>
 </a>
 <figcaption>分库场景</figcaption>
 </figure></p>
 <h1 id=分表>分表</h1>
 <p>好了，聊完分库，我们再来聊聊分表。分表就是指同一个数据库里拥有多张结构(<strong>Schema</strong>)相同的表。一个典型的例子是，Excel里的多张Sheet，只要它们拥有相同的结构(<strong>Schema</strong>)，就可以视为同一类型的数据，虽然它们拥有不同的表名。和分库类似，分表的着眼点是避免产生“大表”，从而达到提高查询性能的目的。而对应到 EF(<strong>EntityFramework</strong>) 的场景中，<strong>分表本质上就是在解决 EF 动态适配表名的问题</strong>。同样的，下面两张图展示了如何在<strong>表</strong>这个层级进行拆分：</p>
 <p><figure>
-<a href=/https:/img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153851001-806440217.jpg>
-<img src=/https:/img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153851001-806440217.jpg loading=lazy alt=表的垂直拆分>
+<a href=https://img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153851001-806440217.jpg>
+<img src=https://img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153851001-806440217.jpg loading=lazy alt=表的垂直拆分>
 </a>
 <figcaption>表的垂直拆分</figcaption>
 </figure></p>
 <p><figure>
-<a href=/https:/img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153912863-301123895.jpg>
-<img src=/https:/img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153912863-301123895.jpg loading=lazy alt=表的水平拆分>
+<a href=https://img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153912863-301123895.jpg>
+<img src=https://img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153912863-301123895.jpg loading=lazy alt=表的水平拆分>
 </a>
 <figcaption>表的水平拆分</figcaption>
 </figure></p>
@@ -98,8 +98,8 @@ extended">
 </blockquote>
 <p>譬如，我们以年为单位，产生了<code>Album_2020</code>和<code>Album_2021</code>两张表。那么，在已经定义好了实体<code>Album</code>的情况下，有没有办法可以让实体<code>Album</code>动态地去适配这两张表呢？或许，熟悉 EF 的你，此刻正在心里暗笑道，这有何难，只要在对应实体的<code>OnModelCreating()</code>方法中，修改<code>ToTable()</code>方法的参数就好了啊。可如果你亲自试一试，就会知道这是你的一厢情愿啦！</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/03/29/cIFp74gUAX2Q8xq.png>
-<img src=/https:/i.loli.net/2021/03/29/cIFp74gUAX2Q8xq.png loading=lazy alt="针对 Album 和 Artist 按年份进行拆分">
+<a href=https://i.loli.net/2021/03/29/cIFp74gUAX2Q8xq.png>
+<img src=https://i.loli.net/2021/03/29/cIFp74gUAX2Q8xq.png loading=lazy alt="针对 Album 和 Artist 按年份进行拆分">
 </a>
 <figcaption>针对 Album 和 Artist 按年份进行拆分</figcaption>
 </figure></p>
@@ -189,8 +189,8 @@ extended">
 <span class=ln>6</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>shardingContext</span><span class=p>.</span><span class=n>Artist</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
 </code></pre></div><p>此时，我们会得到下面的结果：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/03/29/Evj8wXCIsV1Ddme.png>
-<img src=/https:/i.loli.net/2021/03/29/Evj8wXCIsV1Ddme.png loading=lazy alt="EF Core 分表效果演示">
+<a href=https://i.loli.net/2021/03/29/Evj8wXCIsV1Ddme.png>
+<img src=https://i.loli.net/2021/03/29/Evj8wXCIsV1Ddme.png loading=lazy alt="EF Core 分表效果演示">
 </a>
 <figcaption>EF Core 分表效果演示</figcaption>
 </figure></p>
@@ -247,8 +247,8 @@ extended">
 <span class=ln>11</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>chinookContext</span><span class=p>.</span><span class=n>Artist</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
 </code></pre></div><p>可以注意到，一切如我们所预料的一样，程序自动切换到<code>01</code>这个租户：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/03/29/S5QeCjzdcgG9wpT.png>
-<img src=/https:/i.loli.net/2021/03/29/S5QeCjzdcgG9wpT.png loading=lazy alt="多租户 + 多数据库">
+<a href=https://i.loli.net/2021/03/29/S5QeCjzdcgG9wpT.png>
+<img src=https://i.loli.net/2021/03/29/S5QeCjzdcgG9wpT.png loading=lazy alt="多租户 + 多数据库">
 </a>
 <figcaption>多租户 + 多数据库</figcaption>
 </figure></p>
@@ -309,8 +309,8 @@ extended">
 <span class=ln>7</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>mulitiTenancyContext</span><span class=p>.</span><span class=n>Artist</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
 </code></pre></div><p>可以注意到，打印出的 SQL 语句中自动带出了过滤条件：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/03/29/7na2eIo4suLhTGY.png>
-<img src=/https:/i.loli.net/2021/03/29/7na2eIo4suLhTGY.png loading=lazy alt="多租户 + 多数据库">
+<a href=https://i.loli.net/2021/03/29/7na2eIo4suLhTGY.png>
+<img src=https://i.loli.net/2021/03/29/7na2eIo4suLhTGY.png loading=lazy alt="多租户 + 多数据库">
 </a>
 <figcaption>多租户 + 多数据库</figcaption>
 </figure></p>

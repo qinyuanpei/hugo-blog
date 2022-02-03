@@ -51,16 +51,16 @@ extended">
 <h1 id=问题还原>问题还原</h1>
 <p>根据 IP 定位至用户所在城市后，后台一次性查询出近一个月内的订单，然后将其全部在地图上展示出来。当用户点击或者框选标注物时，对应的订单配载到当前运单中。当用户再次点击标注物，则对应的订单从当前运单中删除。以西安市为例，一次性加载 850 个左右的订单，用户操作一段时间后，Chrome 内存占用达 250 多兆，拖拽地图的过程中可以明显地感觉到页面卡顿。因为自始至终，地图上的订单数量不变，即不会移除覆盖物，同时需要在内存中持久化订单相关的信息。所以，在城市配载 1.0 版本的时候，测试同事给我提了一个性能方面的 Bug。可开始提方案并坚持这样做的，难道不是产品吗？为什么要给开发提 Bug 呢？OK，我们来给不靠谱的产品一点点填坑吧，大概想到了下面三种方案，分别是<code>标注物聚合</code>、<code>Canvas API</code>和<code>视野内可见</code>。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g74q1ff3exj217w0l74au.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g74q1ff3exj217w0l74au.jpg loading=lazy alt=密密麻麻的地图>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g74q1ff3exj217w0l74au.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g74q1ff3exj217w0l74au.jpg loading=lazy alt=密密麻麻的地图>
 </a>
 <figcaption>密密麻麻的地图</figcaption>
 </figure></p>
 <h1 id=标注物聚合方案>标注物聚合方案</h1>
 <p>所谓“标注物聚合”，就是指在一定的地图层级上，地图上的覆盖物主要是以聚合的形式显示的，譬如显示某一个省份里共有多少个订单，而不是把所有订单都展示出来，除非地图放大到一定的层级。这种其实在我们产品上是有应用的，比如运单可视化基本上是全国范围内的车辆位置，这个时候在省一级缩放比例上使用聚合展示就非常有必要。可在城市配载这里就相当尴尬啦，因为据说客户会把地图放大到市区街道这种程度来对订单进行配载，所以，这种标注物聚合方案的效果简直是微乎其微，而且更尴尬的问题在于，官方的 <a class=link href=http://api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer.js target=_blank rel=noopener>MarkerClusterer</a> 插件支持的是标准的覆盖物，即 Marker 类。而我们的产品为了好看、做更复杂的交互，设计了更复杂的标记物原型，这就迫使我们必须使用<a class=link href=http://lbsyun.baidu.com/jsdemo.htm#c1_11 target=_blank rel=noopener>自定义覆盖物</a>，而自定义覆盖物通常会用 HTML+CSS 来实现。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g74qdli87bj21200mktj6.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g74qdli87bj21200mktj6.jpg loading=lazy alt=标注聚合器MarkerClusterer>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g74qdli87bj21200mktj6.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g74qdli87bj21200mktj6.jpg loading=lazy alt=标注聚合器MarkerClusterer>
 </a>
 <figcaption>标注聚合器MarkerClusterer</figcaption>
 </figure></p>

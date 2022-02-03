@@ -49,8 +49,8 @@ extended">
 <p>首先，我们来考虑微博热搜的数据来源。 <a class=link href=https://weibo.com/ target=_blank rel=noopener>微博</a> 官方提供了一个热搜排行榜的页面：<a class=link href=https://s.weibo.com/top/summary target=_blank rel=noopener>https://s.weibo.com/top/summary</a>，可惜这个网站只支持查看当天的热搜，显然这无法满足我们的需求。在搜索引擎的帮助下，找到了两个网站，它们分别是：<a class=link href=https://www.weibotop.cn/ target=_blank rel=noopener>微博时光机</a> 和 <a class=link href=https://www.enlightent.cn/research/rank/weiboSearchRank target=_blank rel=noopener>热搜神器</a>。经过一番权衡，决定选择页面结构更简单一点的 <a class=link href=https://www.weibotop.cn/ target=_blank rel=noopener>微博时光机</a> 。</p>
 <p>通过抓包，可以快速获得两个关键的接口，它们分别是 <a class=link href="https://www.weibotop.cn/apis/androidrouter/?versioncode=1&=&data=WyJnZXRjbG9zZXN0dGltZSIsWyIyMDIxLTAxLTIwVDIzOjA4OjAyIl1d" target=_blank rel=noopener>获取 timeId 接口</a> 和 <a class=link href="https://www.eecso.com/test/weibo/apis/currentitems.php?timeid=326021" target=_blank rel=noopener>获取历史热搜接口</a>。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/22/1pFhJkgodvP5U3G.png>
-<img src=/https:/i.loli.net/2021/01/22/1pFhJkgodvP5U3G.png loading=lazy alt=Firefox抓包示意图>
+<a href=https://i.loli.net/2021/01/22/1pFhJkgodvP5U3G.png>
+<img src=https://i.loli.net/2021/01/22/1pFhJkgodvP5U3G.png loading=lazy alt=Firefox抓包示意图>
 </a>
 <figcaption>Firefox抓包示意图</figcaption>
 </figure></p>
@@ -58,14 +58,14 @@ extended">
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=ln>1</span>[&#34;getclosesttime&#34;,[&#34;2021-01-20T23:08:02&#34;]]
 </code></pre></div><p>这意味着我们只需要改变这里的日期就可以啦，因此，我们的思路无非就是从 2020 年 1 月 1 日开始，依次请求热搜接口获取数据，直到 2020 年 12 月 31 日。这里想顺便吐槽下这个网站的接口设计，居然清一色地全部用数组来返回结果，难道是为了省掉这几个字段来节省流量吗？</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/22/G9x8LiybNanBVg2.png>
-<img src=/https:/i.loli.net/2021/01/22/G9x8LiybNanBVg2.png loading=lazy alt=接口返回值说明-1>
+<a href=https://i.loli.net/2021/01/22/G9x8LiybNanBVg2.png>
+<img src=https://i.loli.net/2021/01/22/G9x8LiybNanBVg2.png loading=lazy alt=接口返回值说明-1>
 </a>
 <figcaption>接口返回值说明-1</figcaption>
 </figure></p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/22/zamj3Fntp9kbQws.png>
-<img src=/https:/i.loli.net/2021/01/22/zamj3Fntp9kbQws.png loading=lazy alt=接口返回值说明-2>
+<a href=https://i.loli.net/2021/01/22/zamj3Fntp9kbQws.png>
+<img src=https://i.loli.net/2021/01/22/zamj3Fntp9kbQws.png loading=lazy alt=接口返回值说明-2>
 </a>
 <figcaption>接口返回值说明-2</figcaption>
 </figure></p>
@@ -109,15 +109,15 @@ extended">
 <h2 id=全年热搜热度分析>全年热搜热度分析</h2>
 <p>首先，我们要分析的是全年热搜的热度。何谓热度呢？我个人认为，可以从话题的使用频率和话题的持续时间两个方面来考虑，即，一个话题转发或者参与的人越多，话题持续的时间越长，则认为该话题越“热”。例如罗翔老师说 2020 年进入了“<strong>全民网课</strong>”的时代，因为“网课”是一个热门话题，而当时的背景则是因为疫情原因无法上学(班)，一时间远程会议/办公/教育变得炙手可热。所以，分析全年的热搜热度，可以让我们去关注每个月都发生了什么事情，而这样，我们就有了和这个世界建立联系的思绪，想想当时的你在做什么，心里又作何感想，这会是一件非常有趣的事情：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/26/OvqeDkFz8IRnKbc.jpg>
-<img src=/https:/i.loli.net/2021/01/26/OvqeDkFz8IRnKbc.jpg loading=lazy alt=2020全年微博热搜热度变化趋势>
+<a href=https://i.loli.net/2021/01/26/OvqeDkFz8IRnKbc.jpg>
+<img src=https://i.loli.net/2021/01/26/OvqeDkFz8IRnKbc.jpg loading=lazy alt=2020全年微博热搜热度变化趋势>
 </a>
 <figcaption>2020全年微博热搜热度变化趋势</figcaption>
 </figure></p>
 <p>首先，我们看到的是：<strong>2020 全年微博热搜热度变化趋势</strong>。通过这张图，我们可以注意到：在 3 月份左右国内疫情得到控制以后，大家都渐渐地回归到日常的工作和生活中，相应地，人们在社交媒体上的关注是逐渐下降的，直到 7 月份以后逐渐开始出现回升。我个人认为可能与下面这件事情有关，**第一，是腾讯公司因为一份虚假合同而起诉老干妈的事件；第二、因为疫情而姗姗来迟的高考推迟到了 7 月 7 日和 7 月 8 日这两天；第三、张一山、宋妍霏、阚清子、宋茜等一众明星频频登上热搜榜。**对于前两个因素，可以覆盖整个 7 月份的大多数时间段；对于第三个因素，更多的是从微博这样一个泛娱乐化的平台的属性去考虑，还有什么比吃明星的瓜更开心的事情吗？再往后，我们都知道，迎来了美国大选，不管这场大选闹出了多少风波，此时此刻，终于尘埃落定。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/26/A2gsuvdGqCylpoP.jpg>
-<img src=/https:/i.loli.net/2021/01/26/A2gsuvdGqCylpoP.jpg loading=lazy alt=2020全年微博热搜数量变化趋势>
+<a href=https://i.loli.net/2021/01/26/A2gsuvdGqCylpoP.jpg>
+<img src=https://i.loli.net/2021/01/26/A2gsuvdGqCylpoP.jpg loading=lazy alt=2020全年微博热搜数量变化趋势>
 </a>
 <figcaption>2020全年微博热搜数量变化趋势</figcaption>
 </figure></p>
@@ -125,8 +125,8 @@ extended">
 <h2 id=全年热搜情感分析>全年热搜情感分析</h2>
 <p>李诞在 2020 年年底策划了一期反跨年晚会，从头到尾都是脱口秀这种“语言类”节目，在这期节目里，有人以毛不易的“歌词”调侃了 2020 年大家的心境变化，从“<strong>像我这样优秀的人</strong>”到“<strong>消愁</strong>”，有时候打脸就是这么的猝不及防。坦白来说，我有段时间过得特别“<strong>丧</strong>”，“<strong>丧</strong>”到要靠《当幸福来敲门》来打鸡血。那么，整个 2020 年“<strong>活</strong>”在热搜里的人们的心态变化又是怎么样的呢？所以，接下来我们通过 <a class=link href=https://github.com/isnowfy/snownlp target=_blank rel=noopener>SnowNLP</a> 对 2020 年全年的热搜话题的情感倾向进行分析，到底大家是过得“<strong>积极</strong>”还是“<strong>消极</strong>”呢，让我们一起拭目以待，为了达到更好的效果，博主提前对 <a class=link href=https://github.com/isnowfy/snownlp target=_blank rel=noopener>SnowNLP</a> 进行了训练，因为 <a class=link href=https://github.com/isnowfy/snownlp target=_blank rel=noopener>SnowNLP</a> 自带的语料库主要是电商评论，与我们此刻的场景多少有一点差异。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/26/gCcHX7vWlwsZhnI.jpg>
-<img src=/https:/i.loli.net/2021/01/26/gCcHX7vWlwsZhnI.jpg loading=lazy alt=2020全年微博热搜情感变化趋势>
+<a href=https://i.loli.net/2021/01/26/gCcHX7vWlwsZhnI.jpg>
+<img src=https://i.loli.net/2021/01/26/gCcHX7vWlwsZhnI.jpg loading=lazy alt=2020全年微博热搜情感变化趋势>
 </a>
 <figcaption>2020全年微博热搜情感变化趋势</figcaption>
 </figure></p>
@@ -134,23 +134,23 @@ extended">
 <h2 id=全年热搜词云分析>全年热搜词云分析</h2>
 <p>其实，在做这个分析的时候，我一直在想，也许“<strong>新冠</strong>”或者“<strong>疫情</strong>”这样的字眼会成为 2020 年的共同记忆吧！至少对博主这样即将步入中年的 90 后而言，这场疫情留下的深刻记忆丝毫不亚于 08 年的汶川地震。可转念间又安慰自己道，相比国外愈演愈烈的疫情，我们在三月份左右的时候就基本得到了控制，如果说互联网是没有记忆的，人们对这一切应该会遗忘地非常快，就像这热搜榜上的话题，简直是“你方唱罢我登场”。可惜，互联网的确是有记忆的，即使过去了整整一年，这一切还是通过数据被挖掘出来。这里，我们通过结巴分词对热搜话题进行分词，再通过这些关键词来绘制词云。对于这个结果，突然就变得感性起来，可能这就是所谓的“冥冥之中自有天意”吧，甚至对于 2021 年来说，<strong>疫情</strong>目前依然是人们关注的热搜话题：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/22/dTVD9lNIP4OwefC.png>
-<img src=/https:/i.loli.net/2021/01/22/dTVD9lNIP4OwefC.png loading=lazy alt=2020年全年微博热搜关键词词云>
+<a href=https://i.loli.net/2021/01/22/dTVD9lNIP4OwefC.png>
+<img src=https://i.loli.net/2021/01/22/dTVD9lNIP4OwefC.png loading=lazy alt=2020年全年微博热搜关键词词云>
 </a>
 <figcaption>2020年全年微博热搜关键词词云</figcaption>
 </figure></p>
 <h2 id=全年热搜人物分析>全年热搜人物分析</h2>
 <p>曾经在知乎上读到过这样一句话，“<strong>人们宁愿去关心一个蹩脚电影演员的吃喝拉撒和鸡毛蒜皮，而不愿了解一个普通人波涛汹涌的内心世界</strong>”，这句话如果放到 2020 年的语境中，或许就是，人们在危难的时候会突然关心“<strong>国士无双</strong>”，而在安稳的时候则会更关注“<strong>娱乐八卦</strong>”，考虑到新浪微博是借鉴新浪博客的“名人效应”而起家，所以，我更关心在过去一年里有哪些人都登上过热搜。说实话，我挺怀念某位七十多岁高龄的老人，他和我奶奶差不多同龄，在这个“丧”如此普遍的年代，他带给了我们多少欢乐啊，虽然我预感到会有许多明星靠着“<strong>否认</strong>”、“<strong>道歉</strong>”、“<strong>心疼</strong>”、“<strong>回应</strong>”、“<strong>声明</strong>”等等字眼而登上热搜，可我还是想知道答案啊……</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/25/ZV2zgo7Ssi6XFL8.png>
-<img src=/https:/i.loli.net/2021/01/25/ZV2zgo7Ssi6XFL8.png loading=lazy alt=2020全年微博热搜上榜人物分析.png>
+<a href=https://i.loli.net/2021/01/25/ZV2zgo7Ssi6XFL8.png>
+<img src=https://i.loli.net/2021/01/25/ZV2zgo7Ssi6XFL8.png loading=lazy alt=2020全年微博热搜上榜人物分析.png>
 </a>
 <figcaption>2020全年微博热搜上榜人物分析.png</figcaption>
 </figure></p>
 <p>果然，“<strong>说曹操曹操到</strong>”，2020 年以压倒性优势多次登上微博热搜的，居然真的是前美国总统特朗普。虽然说这位美国前总统喜欢孜孜不倦地发推特，史称“<strong>推特治国</strong>”，可在一个某明星代孕风波快速令“<strong>拼夕夕</strong>”事件烟消云散的社交平台上，这位老人能频频进入我们的视野，大概就能说明过去一年里国际形势的风起云涌。我们嘲笑他为“懂王”，甚至“亲切”地称之为“川建国”同志。<strong>有一段时间里，好像每一个人都觉得自己比这位老人更会做总统；同样地，好像每一个人都觉得自己比张小龙更懂得微信</strong>。我无意讨论政治相关的东西，可我依然感谢这位老人在疫情期间带给我们的欢乐，因为我并不觉得，他像媒体眼中的那样滑稽而愚蠢，一个能在商人、明星和总统多重身份中切换自如的人，无论如何会都有他的过人之处，疫情这件事情，换一个人来当这个总统未必会做得比他好。回过头来看，他在 2020 年都做了哪些事情呢？</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/25/9FL8ZMc6blYjy5u.png>
-<img src=/https:/i.loli.net/2021/01/25/9FL8ZMc6blYjy5u.png loading=lazy alt=2020年特朗普的微博热搜>
+<a href=https://i.loli.net/2021/01/25/9FL8ZMc6blYjy5u.png>
+<img src=https://i.loli.net/2021/01/25/9FL8ZMc6blYjy5u.png loading=lazy alt=2020年特朗普的微博热搜>
 </a>
 <figcaption>2020年特朗普的微博热搜</figcaption>
 </figure></p>

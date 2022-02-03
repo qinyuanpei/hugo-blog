@@ -59,8 +59,8 @@ extended">
 </span><span class=ln>4</span><span class=se></span>  pseudomuto/protoc-gen-doc
 </code></pre></div><p>默认情况下，它会生成 HTML 格式的接口文档，看一眼就会发现，就是那种传统的 Word 文档的感觉：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/28/h756tJjApsGgcDW.png>
-<img src=/https:/i.loli.net/2021/09/28/h756tJjApsGgcDW.png loading=lazy alt="通过 protoc-gen-doc 生成的接口文档">
+<a href=https://i.loli.net/2021/09/28/h756tJjApsGgcDW.png>
+<img src=https://i.loli.net/2021/09/28/h756tJjApsGgcDW.png loading=lazy alt="通过 protoc-gen-doc 生成的接口文档">
 </a>
 <figcaption>通过 protoc-gen-doc 生成的接口文档</figcaption>
 </figure></p>
@@ -81,8 +81,8 @@ extended">
 <span class=ln>7</span><span class=p>}</span>
 </code></pre></div><p>其中，<code>info</code> 节点里存放的是接口文档的基本信息，例如标题、作者、许可证等。<code>servers</code> 节点里存放的是接口所属服务的主机名、端口号等。<code>paths</code> 节点里存放的是每个 API 端点的信息，例如路由、请求参数、返回值等。<code>components</code> 节点里存放的是类型信息，例如请求参数、返回值中每个属性或者字段的具体类型等。一旦搞清楚了这些内容，我们发现这个里面最关键的两个信息是：<code>paths</code> 和 <code>components</code>，如果我们回过头来看 Protobuf 的声明文件，就会发现这两个东西，分别对应的是 <code>rpc</code> 和 <code>message</code>，如下图所示：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/28/nPN5QgY2MWrGJBK.png>
-<img src=/https:/i.loli.net/2021/09/28/nPN5QgY2MWrGJBK.png loading=lazy alt="Swagger 与 Protobuf 的对应关系">
+<a href=https://i.loli.net/2021/09/28/nPN5QgY2MWrGJBK.png>
+<img src=https://i.loli.net/2021/09/28/nPN5QgY2MWrGJBK.png loading=lazy alt="Swagger 与 Protobuf 的对应关系">
 </a>
 <figcaption>Swagger 与 Protobuf 的对应关系</figcaption>
 </figure></p>
@@ -191,15 +191,15 @@ extended">
 <span class=ln>43</span><span class=p>}</span>
 </code></pre></div><p>接下来，就是见证奇迹的时刻，gRPC 和 Swagger 牵手成功。从此，查阅和调试 gRPC 接口，我们有了更时尚的做法：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/28/Uj9Z3EcbQmdhriD.png>
-<img src=/https:/i.loli.net/2021/09/28/Uj9Z3EcbQmdhriD.png loading=lazy alt=" gRPC 成功牵手 Swagger ">
+<a href=https://i.loli.net/2021/09/28/Uj9Z3EcbQmdhriD.png>
+<img src=https://i.loli.net/2021/09/28/Uj9Z3EcbQmdhriD.png loading=lazy alt=" gRPC 成功牵手 Swagger ">
 </a>
 <figcaption>gRPC 成功牵手 Swagger</figcaption>
 </figure></p>
 <p>调一下接口看看效果：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/28/z9Umj6t5hcSQeTv.png>
-<img src=/https:/i.loli.net/2021/09/28/z9Umj6t5hcSQeTv.png loading=lazy alt=" 通过 Swagger 调试 gRPC 接口">
+<a href=https://i.loli.net/2021/09/28/z9Umj6t5hcSQeTv.png>
+<img src=https://i.loli.net/2021/09/28/z9Umj6t5hcSQeTv.png loading=lazy alt=" 通过 Swagger 调试 gRPC 接口">
 </a>
 <figcaption>通过 Swagger 调试 gRPC 接口</figcaption>
 </figure></p>

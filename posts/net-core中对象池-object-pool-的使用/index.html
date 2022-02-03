@@ -48,8 +48,8 @@ extended">
 <h1 id=什么是对象池>什么是对象池</h1>
 <p>首先，我们来回答第一个问题，什么是对象池？简单来说，它就是一种为对象提供可复用性能力的软件设计思路。俗话说**“有借有还，再借不难”**，而对象池就是通过“借”和“还”这样两个动作来保证对象可以被重复使用，进而节省频繁创建对象的性能开销。对象池在游戏设计中使用的更普遍一点，因为游戏中大量存在着像子弹、怪物等等这类可复用的对象，你在玩第一人称射击游戏(FPS)时，总是有源源不断的子弹或者丧尸出现，可事实上这不过是数字世界的循环再生，因为玩家的电脑内存始终都有一个上限。而在数据库的世界里，则存在着一个被称为“连接池”的东西，每当出现数据库无法连接的情况时，经验丰富的开发人员往往会先检查“连接池”是否满了，这其实就是对象池模式在特定领域的具体实现啦，所以，对象池本质上就是负责一组对象创建和销毁的容器，下面是一个基本的对象池示意图：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/08/22/lReo7LQa1SODZpc.png>
-<img src=/https:/i.loli.net/2020/08/22/lReo7LQa1SODZpc.png loading=lazy alt=对象池示意图>
+<a href=https://i.loli.net/2020/08/22/lReo7LQa1SODZpc.png>
+<img src=https://i.loli.net/2020/08/22/lReo7LQa1SODZpc.png loading=lazy alt=对象池示意图>
 </a>
 <figcaption>对象池示意图</figcaption>
 </figure></p>
@@ -82,8 +82,8 @@ extended">
 <h1 id=net-core-中的对象池>.NET Core 中的对象池</h1>
 <p>在.NET Core 中，微软已经为我们提供了对象池的实现，即<code>Microsoft.Extensions.ObjectPool</code>。它主要提供了三个核心的组件，分别是<code>ObjectPool</code>、<code>ObjectPoolProvider</code>和<code>IPooledObjectPolicy</code>，关于这三者间的关系，我绘制了下面的 UML 图来作为说明：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/08/22/M6ojLtqgKc5pfCA.png>
-<img src=/https:/i.loli.net/2020/08/22/M6ojLtqgKc5pfCA.png loading=lazy alt=ObjectPool核心组件及其关系>
+<a href=https://i.loli.net/2020/08/22/M6ojLtqgKc5pfCA.png>
+<img src=https://i.loli.net/2020/08/22/M6ojLtqgKc5pfCA.png loading=lazy alt=ObjectPool核心组件及其关系>
 </a>
 <figcaption>ObjectPool核心组件及其关系</figcaption>
 </figure></p>

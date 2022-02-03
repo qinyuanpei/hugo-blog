@@ -48,8 +48,8 @@ extended">
 <h1 id=核心流程>核心流程</h1>
 <p>关于 <a class=link href=https://github.com/dotnet/aspnetcore target=_blank rel=noopener>ASP.NET Core</a> 中的 <a class=link href=https://hub.fastgit.org/dotnet/aspnetcore/tree/main/src/Middleware/CORS/src target=_blank rel=noopener>CORS</a>，大家都知道的是，可以通过<code>UseCors()</code>方法在整个 HTTP 请求管道中启用跨域中间件，或者是通过<code>AddCors()</code>方法来定义跨域策略，亦或者通过<code>[EnableCors]</code>来显式地指定跨域策略，更多的细节大家可以参考微软的<a class=link href="https://docs.microsoft.com/zh-cn/aspnet/core/security/cors?view=aspnetcore-5.0" target=_blank rel=noopener>官方文档</a>，而在这里，我想聊一点大家可能不知道的东西，譬如：服务器端如何处理来自浏览器端的跨域请求？而这一切在 <a class=link href=https://github.com/dotnet/aspnetcore target=_blank rel=noopener>ASP.NET Core</a> 中又如何实现？带着这些问题来解读 <a class=link href=https://hub.fastgit.org/dotnet/aspnetcore/tree/main/src/Middleware/CORS/src target=_blank rel=noopener>CORS</a> 中间件的源代码，我们能更快的找到我们想得到的答案。一图胜千言，请允许博主使用这张流程图来“开宗明义”，我们这就开始今天的“<strong>探案</strong>”：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/03/16/m1geMX8PfJwN3Bb.png>
-<img src=/https:/i.loli.net/2021/03/16/m1geMX8PfJwN3Bb.png loading=lazy alt="一张图览尽 CORS 中间件">
+<a href=https://i.loli.net/2021/03/16/m1geMX8PfJwN3Bb.png>
+<img src=https://i.loli.net/2021/03/16/m1geMX8PfJwN3Bb.png loading=lazy alt="一张图览尽 CORS 中间件">
 </a>
 <figcaption>一张图览尽 CORS 中间件</figcaption>
 </figure></p>
@@ -222,8 +222,8 @@ extended">
 <p>好了，行文至此。既然这篇博客的主题是“<strong>跨域</strong>”，那么，我们不妨多说一点。我们知道，“<strong>跨域</strong>”产生的背景是，浏览器作为一个公共环境，它本身是不被信任的，所以，为了杜绝非当前域的资源，例如Cookie、API等等被“<strong>窃取</strong>”，浏览器便增加了“<strong>跨域</strong>”这一限制。而为了顺应“<strong>前后端分离</strong>”、“<strong>微服务</strong>”等等的开发思想，“<strong>跨域</strong>”这个问题开始频繁地出现在人们的视野中，从最初的<strong>JSONP</strong>，到如今成为事实标准的<strong>CORS</strong>，甚至从<strong>Vue</strong>里的代理服务器、<strong>Nginx</strong>里的反向代理，我们总是能窥出一点“<strong>跨域</strong>”的影子，“<strong>跨域</strong>”可谓是无处不在。</p>
 <p>那么，什么是 CORS 呢？ CORS ，即跨域资源共享，是一种利用 HTTP 头部来指示服务器端对除自身以外的源(域、协议、端口)是否可以访问指定的资源。你可能会联想到<strong>OAuth2</strong>、<strong>JWT</strong>等等关于认证授权的词汇，请注意，“跨域”始终发生在浏览器端，相对于浏览器，一般意义上的客户端都被视为可信任的。除此之外，CORS提供了一种被称之为“预检”的机制，它可以用来检测服务器端支持的 HTTP 请求头、HTTP 动词，在预检中，浏览器发送的头中标示有 HTTP 方法和真实请求中会用到的头。</p>
 <p><figure>
-<a href=/https:/media.prod.mdn.mozit.cloud/attachments/2016/10/28/14295/a21a85eaccd405d608395b4ca8d82538/CORS_principle.png>
-<img src=/https:/media.prod.mdn.mozit.cloud/attachments/2016/10/28/14295/a21a85eaccd405d608395b4ca8d82538/CORS_principle.png loading=lazy alt=为什么会发生跨域？>
+<a href=https://media.prod.mdn.mozit.cloud/attachments/2016/10/28/14295/a21a85eaccd405d608395b4ca8d82538/CORS_principle.png>
+<img src=https://media.prod.mdn.mozit.cloud/attachments/2016/10/28/14295/a21a85eaccd405d608395b4ca8d82538/CORS_principle.png loading=lazy alt=为什么会发生跨域？>
 </a>
 <figcaption>为什么会发生跨域？</figcaption>
 </figure></p>
@@ -241,8 +241,8 @@ extended">
 <h2 id=复杂请求>复杂请求</h2>
 <p>与简单请求不同，<strong>复杂请求</strong> 要求必须首先使用 <a class=link href=https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods/OPTIONS target=_blank rel=noopener>OPTIONS</a> 方法发起一个预检请求到服务器，以获知服务器是否允许该实际请求。"<strong>预检请求</strong>&ldquo;的使用，可以避免跨域请求对服务器的用户数据产生未预期的影响。</p>
 <p><figure>
-<a href=/https:/media.prod.mdn.mozit.cloud/attachments/2019/06/19/16753/b32f78ac26d18e3e155205e4f0057b73/preflight_correct.png>
-<img src=/https:/media.prod.mdn.mozit.cloud/attachments/2019/06/19/16753/b32f78ac26d18e3e155205e4f0057b73/preflight_correct.png loading=lazy alt=预检请求>
+<a href=https://media.prod.mdn.mozit.cloud/attachments/2019/06/19/16753/b32f78ac26d18e3e155205e4f0057b73/preflight_correct.png>
+<img src=https://media.prod.mdn.mozit.cloud/attachments/2019/06/19/16753/b32f78ac26d18e3e155205e4f0057b73/preflight_correct.png loading=lazy alt=预检请求>
 </a>
 <figcaption>预检请求</figcaption>
 </figure></p>

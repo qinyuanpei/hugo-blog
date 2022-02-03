@@ -61,36 +61,36 @@ extended">
 <h1 id=第一个net-项目>第一个.NET 项目</h1>
 <p>好了，下面我们来使用 SonarCloud 对博主的一个项目<a class=link href=https://github.com/qinyuanpei/HttpServer target=_blank rel=noopener>HttpServer</a>进行分析。首先，我们需要在 SonarCloud 中创建一个项目。如下图所示，我们首先选择 Organization，默认情况下，通过 Github 授权登录以后，会生成一个格式为：${UserName}-github 的组织名称，例如我这里是：qinyuanpei-github。这里我们选择默认组织，然后点击：Continue。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy4wzsedj21h40jcjsm.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fziy4wzsedj21h40jcjsm.jpg loading=lazy alt=设置组织名称>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziy4wzsedj21h40jcjsm.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy4wzsedj21h40jcjsm.jpg loading=lazy alt=设置组织名称>
 </a>
 <figcaption>设置组织名称</figcaption>
 </figure></p>
 <p>接下来，我们需要设置一个 Token，其目的是通过这个 Token 登录 SonarCloud，然后把 SonarScanner 在本地扫描的结果发送到 SonarCloud。这里我们可以选择生成一个新的 Token 或者是使用一个已经存在的 Token。建议使用一个 Token 来管理所有的项目，因为这个 Token 显示一次后就不再显示，同时维护多个 Token 实在是太痛苦啦，当然，如果你能管理好所有 Token 的 Key 的话。设置完 Token 点击下一步：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixye65qqj21gn0j7dh1.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixye65qqj21gn0j7dh1.jpg loading=lazy alt=设置Token>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixye65qqj21gn0j7dh1.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixye65qqj21gn0j7dh1.jpg loading=lazy alt=设置Token>
 </a>
 <figcaption>设置Token</figcaption>
 </figure></p>
 <p>设置完 Token 以后需要选择项目类型以及设置项目名称，在这个例子中，博主的项目名称是 HttpServer，建议使用 Sonar-${Project Name}的形式来为项目命名，而项目类型显然应该选择“C# or VB.NET”。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05nliq9vj21ef0bhaaj.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05nliq9vj21ef0bhaaj.jpg loading=lazy alt=设置项目名称>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05nliq9vj21ef0bhaaj.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05nliq9vj21ef0bhaaj.jpg loading=lazy alt=设置项目名称>
 </a>
 <figcaption>设置项目名称</figcaption>
 </figure></p>
 <p>接下来我们就得到最关键的信息，如图所示，这里有三条命令，我们将其复制下来，然后将其写到批处理(.bat)或者 PowerShll 脚本里。以后运行这三条命令，就可以对当前项目进行静态检查，是不是很简单啊？简单分析下，这三条命令，第一条命令根据我们设置的 Token、项目名称、组织等信息“开始”对项目进行分析，注意到这里有一个“begin”；第二条命令是一个 MSBuild 命令，其目的是对整个项目重新构建；第三条命令是将静态分析的提交到 SonarCloud，注意到这里有一个“end”。具体文档可以参考 <a class=link href=https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner+for+MSBuild target=_blank rel=noopener>这里</a> 哦！</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05k8xmafj20r60h1t9n.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05k8xmafj20r60h1t9n.jpg loading=lazy alt=复制3条命令>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05k8xmafj20r60h1t9n.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05k8xmafj20r60h1t9n.jpg loading=lazy alt=复制3条命令>
 </a>
 <figcaption>复制3条命令</figcaption>
 </figure></p>
 <p>好了，现在我们在 SonarCloud 中就可以看到扫描结果啦，开心！如果执行命令出现问题，请确保正确安装了相关工具，并检查这些工具是否被添加到系统变量中，特别是 Java 需要设置 JAVA_HOME。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05e26i0aj21h40pmdj2.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05e26i0aj21h40pmdj2.jpg loading=lazy alt=扫描结果>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05e26i0aj21h40pmdj2.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05e26i0aj21h40pmdj2.jpg loading=lazy alt=扫描结果>
 </a>
 <figcaption>扫描结果</figcaption>
 </figure></p>
@@ -158,8 +158,8 @@ sonar.sources=.
 </span><span class=ln>39</span><span class=w>    </span>- <span class=s1>&#39;$HOME/.sonar/cache&#39;</span><span class=w>
 </span></code></pre></div><p>好啦，感受技术的魅力吧！可以注意到，我这里有 4 个单元测试，其中 2 个通过、2 个失败。虽然单元测试没有通过，可我代码没有 Bug 呀！
 <figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz01zprsfuj20jr0a73z5.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz01zprsfuj20jr0a73z5.jpg loading=lazy alt=NUnit运行结果>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz01zprsfuj20jr0a73z5.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz01zprsfuj20jr0a73z5.jpg loading=lazy alt=NUnit运行结果>
 </a>
 <figcaption>NUnit运行结果</figcaption>
 </figure></p>

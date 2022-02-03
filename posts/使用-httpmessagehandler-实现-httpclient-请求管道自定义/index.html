@@ -49,8 +49,8 @@ extended">
 <p>相信大家读过我提到的文章以后，都能找到这里面最核心的一个点：<code>HttpMessageHandler</code>。于是，我们今天要面对的第一个问题就是，什么是 <code>HttpMessageHandler</code>？此时，我们需要一张历久弥新的示意图，来自 <a class=link href=https://www.asp.net/media/4071077/aspnet-web-api-poster.pdf target=_blank rel=noopener>微软官方</a>。这里，我们重点关注的是 <code>DelegatingHandler</code>，它继承自 <code>HttpMessageHandler</code>。通过这张图，我们能够获得哪些信息呢？</p>
 <p>我认为，主要有以下几点：<strong>第一，HttpMessageHandler 处于整个 Http 请求管道的第一梯队，每一个路由匹配的请求都会从这里“进入”和“离开”；第二，HttpMessageHandler 可以是全局配置或者针对某个特定的路由，只要这个路由被匹配到就会执行；第三，HttpMessageHandler 可以直接构造 Http 响应并且返回，跳过剩余的管道流程</strong>。不知道大家看到这里会想到什么？坦白讲，我联想到了.NET Core 中的中间件，而唯一不同的地方或许是，中间件是 ASP.NET Core 里的概念，这里则是 ASP.NET Web API 里的概念。尤其是第三点，它对于我们的意义非常重大，因为它，我们才可以做到对一个 Http 请求进行模拟。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/04/28/AwLZDdqXc5KERky.png>
-<img src=/https:/i.loli.net/2021/04/28/AwLZDdqXc5KERky.png loading=lazy alt="HttpMessageHandler 与 ASP.NET Web API">
+<a href=https://i.loli.net/2021/04/28/AwLZDdqXc5KERky.png>
+<img src=https://i.loli.net/2021/04/28/AwLZDdqXc5KERky.png loading=lazy alt="HttpMessageHandler 与 ASP.NET Web API">
 </a>
 <figcaption>HttpMessageHandler 与 ASP.NET Web API</figcaption>
 </figure></p>
@@ -134,8 +134,8 @@ extended">
 <span class=ln>13</span><span class=kt>var</span> <span class=n>client</span> <span class=p>=</span> <span class=k>new</span> <span class=n>HttpClient</span><span class=p>(</span><span class=n>handler</span><span class=p>)</span>
 </code></pre></div><p>此时，我们就可以得到下面的结果，可以注意到的是，两个<code>Handler</code>的执行顺序与注册顺序一致：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/04/29/URNWavrVgyzMAxe.png>
-<img src=/https:/i.loli.net/2021/04/29/URNWavrVgyzMAxe.png loading=lazy alt=Handler执行顺序与注册顺序>
+<a href=https://i.loli.net/2021/04/29/URNWavrVgyzMAxe.png>
+<img src=https://i.loli.net/2021/04/29/URNWavrVgyzMAxe.png loading=lazy alt=Handler执行顺序与注册顺序>
 </a>
 <figcaption>Handler执行顺序与注册顺序</figcaption>
 </figure></p>
@@ -169,8 +169,8 @@ extended">
 <span class=ln>25</span><span class=p>}</span>
 </code></pre></div><p>此时，我们可以得到下面的结果：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/04/29/aORFS3ZQEw8pNbT.png>
-<img src=/https:/i.loli.net/2021/04/29/aORFS3ZQEw8pNbT.png loading=lazy alt="HttpMessageHandler 实现日志记录">
+<a href=https://i.loli.net/2021/04/29/aORFS3ZQEw8pNbT.png>
+<img src=https://i.loli.net/2021/04/29/aORFS3ZQEw8pNbT.png loading=lazy alt="HttpMessageHandler 实现日志记录">
 </a>
 <figcaption>HttpMessageHandler 实现日志记录</figcaption>
 </figure></p>
@@ -208,8 +208,8 @@ extended">
 <span class=ln>2</span><span class=kt>var</span> <span class=n>response</span> <span class=p>=</span> <span class=k>await</span> <span class=n>client</span><span class=p>.</span><span class=n>GetAsync</span><span class=p>(</span><span class=s>&#34;/api/fail&#34;</span><span class=p>);</span>
 </code></pre></div><p>此时，我们可以得到下面的结果：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/04/30/OaUyhNF7XYsA8mI.png>
-<img src=/https:/i.loli.net/2021/04/30/OaUyhNF7XYsA8mI.png loading=lazy alt="HttpMessageHandler 实现请求重试">
+<a href=https://i.loli.net/2021/04/30/OaUyhNF7XYsA8mI.png>
+<img src=https://i.loli.net/2021/04/30/OaUyhNF7XYsA8mI.png loading=lazy alt="HttpMessageHandler 实现请求重试">
 </a>
 <figcaption>HttpMessageHandler 实现请求重试</figcaption>
 </figure></p>
@@ -352,8 +352,8 @@ extended">
 </span><span class=ln>21</span><span class=c1></span><span class=kt>var</span> <span class=n>response</span> <span class=p>=</span> <span class=k>await</span> <span class=n>httpClient</span><span class=p>.</span><span class=n>GetAsync</span><span class=p>(</span><span class=s>&#34;/api/order&#34;</span><span class=p>);</span>
 </code></pre></div><p>下图是模拟接口返回的结果，与我们期望的完全一致：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/04/30/k9lX12aSpcr8ReV.png>
-<img src=/https:/i.loli.net/2021/04/30/k9lX12aSpcr8ReV.png loading=lazy alt="HttpMessageHandler 实现接口模拟">
+<a href=https://i.loli.net/2021/04/30/k9lX12aSpcr8ReV.png>
+<img src=https://i.loli.net/2021/04/30/k9lX12aSpcr8ReV.png loading=lazy alt="HttpMessageHandler 实现接口模拟">
 </a>
 <figcaption>HttpMessageHandler 实现接口模拟</figcaption>
 </figure></p>

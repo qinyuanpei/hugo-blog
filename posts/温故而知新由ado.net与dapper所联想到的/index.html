@@ -48,8 +48,8 @@ extended">
 <h1 id=重温-adonet>重温 ADO.NET</h1>
 <p>相信大家都知道，我这里提到的<code>DbConnection</code>、<code>DbCommand</code>、<code>DbDataReader</code>、<code>DbDataAdapte</code>以及<code>DataTable</code>、<code>DataSet</code>，实际上就是 ADO.NET 中核心的组成部分，譬如<code>DbConnection</code>负责管理数据库连接，<code>DbCommand</code>负责 SQL 语句的执行，<code>DbDataReader</code>和<code>DbDataAdapter</code>负责数据库结果集的读取。需要注意的是，这些类型都是抽象类，而各个数据库的具体实现，则是由对应的厂商来完成，即我们称之为“驱动”的部分，它们都遵循同一套接口规范，而<code>DataTable</code>和<code>DataSet</code>则是“装”数据库结果集的容器。关于 ADO.NET 的设计理念，可以从下图中得到更清晰的答案：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2020/12/31/dEN2tajehboDiTl.png>
-<img src=/https:/i.loli.net/2020/12/31/dEN2tajehboDiTl.png loading=lazy alt=ADO.NET架构>
+<a href=https://i.loli.net/2020/12/31/dEN2tajehboDiTl.png>
+<img src=https://i.loli.net/2020/12/31/dEN2tajehboDiTl.png loading=lazy alt=ADO.NET架构>
 </a>
 <figcaption>ADO.NET架构</figcaption>
 </figure></p>

@@ -184,15 +184,15 @@ extended">
 </code></pre></div><p>可以注意到我们这里构造了一个 HttpResponse ，这是我这里定义的 HTTP 响应报文，我们这里响应的内容是一段简单的 HTML 采用 UTF-8 编码。在构造完 HttpResponse 以后我们设定了它的相关状态，熟悉 Web 开发的朋友应该可以想到这是抓包工具抓包时得到的服务端报文信息，最近博主最喜欢的某个妹子写真集网站开始反爬虫了，因此博主以前写的 Python 脚本现在执行会被告知 403，这是一个禁止访问的状态码。解决方案其实非常简单地，将 HTTP 请求伪装成一个“浏览器”即可，思路就是在 HTTP 请求报文中增加相关字段，这样就可以“骗”过服务器，当然更深层次的“欺骗”就是 Cookie 和 Session 级别的伪装了，这个话题我们有时间再说。这里我们设定状态码为 200，这是一个正常的请求，其次 ContentType 等字段可以自行阅读 HTTP 协议中头部字段的相关资料，最后我们通过 ProcessResponse 这个方法来处理响应，其内部是一个使用 Socket 发送消息的基本实现，详细的设计细节大家可以看项目代码。</p>
 <p>现在让我们怀着无比激动的心情运行我们的服务器，此时服务器运行情况是：</p>
 <p><figure>
-<a href=/https:/ws3.sinaimg.cn/large/4c36074fly1fzixbakcruj20jt0drq3y.jpg>
-<img src=/https:/ws3.sinaimg.cn/large/4c36074fly1fzixbakcruj20jt0drq3y.jpg loading=lazy alt=服务器运行情况>
+<a href=https://ws3.sinaimg.cn/large/4c36074fly1fzixbakcruj20jt0drq3y.jpg>
+<img src=https://ws3.sinaimg.cn/large/4c36074fly1fzixbakcruj20jt0drq3y.jpg loading=lazy alt=服务器运行情况>
 </a>
 <figcaption>服务器运行情况</figcaption>
 </figure></p>
 <p>这样是不是有一种恍若隔世的感觉啊，每次打开 Hexo 的时候看到它自带的本地服务器，感觉非常高大上啊，结果万万没想到有朝一日你就自己实现了它，这叫做“长大以后我就成了你吗”？哈哈，现在是见证奇迹的时刻：</p>
 <p><figure>
-<a href=/https:/ws3.sinaimg.cn/large/4c36074fly1fzix86uszuj20nj0frmyx.jpg>
-<img src=/https:/ws3.sinaimg.cn/large/4c36074fly1fzix86uszuj20nj0frmyx.jpg loading=lazy alt=浏览器运行情况>
+<a href=https://ws3.sinaimg.cn/large/4c36074fly1fzix86uszuj20nj0frmyx.jpg>
+<img src=https://ws3.sinaimg.cn/large/4c36074fly1fzix86uszuj20nj0frmyx.jpg loading=lazy alt=浏览器运行情况>
 </a>
 <figcaption>浏览器运行情况</figcaption>
 </figure></p>

@@ -56,8 +56,8 @@ extended">
 </blockquote>
 <p>这两个定义依然让你感到云里雾里？没关系，请看下面这张图：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/02/k2DhXMudnibrzgt.png>
-<img src=/https:/i.loli.net/2021/07/02/k2DhXMudnibrzgt.png loading=lazy alt=Envoy架构图>
+<a href=https://i.loli.net/2021/07/02/k2DhXMudnibrzgt.png>
+<img src=https://i.loli.net/2021/07/02/k2DhXMudnibrzgt.png loading=lazy alt=Envoy架构图>
 </a>
 <figcaption>Envoy架构图</figcaption>
 </figure></p>
@@ -68,8 +68,8 @@ extended">
 <li>非侵入式的架构： 独立进程、对应用透明的<code>Sidecar</code>模式</li>
 </ul>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/02/lMnPhZzBd38tpVF.png>
-<img src=/https:/i.loli.net/2021/07/02/lMnPhZzBd38tpVF.png loading=lazy alt="Envoy 的 Sidecar 模式">
+<a href=https://i.loli.net/2021/07/02/lMnPhZzBd38tpVF.png>
+<img src=https://i.loli.net/2021/07/02/lMnPhZzBd38tpVF.png loading=lazy alt="Envoy 的 Sidecar 模式">
 </a>
 <figcaption>Envoy 的 Sidecar 模式</figcaption>
 </figure></p>
@@ -117,8 +117,8 @@ extended">
 <h3 id=过滤器filters>过滤器(Filters)</h3>
 <p>我们知道，单单侦听一个或者多个端口，是无法完成一个<code>HTTP</code>请求的，因为它还不具备处理<code>HTTP</code>请求的能力。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/02/CQftjTErndyNh7q.png>
-<img src=/https:/i.loli.net/2021/07/02/CQftjTErndyNh7q.png loading=lazy alt="Envoy Filters 架构图">
+<a href=https://i.loli.net/2021/07/02/CQftjTErndyNh7q.png>
+<img src=https://i.loli.net/2021/07/02/CQftjTErndyNh7q.png loading=lazy alt="Envoy Filters 架构图">
 </a>
 <figcaption>Envoy Filters 架构图</figcaption>
 </figure></p>
@@ -243,8 +243,8 @@ extended">
 </span><span class=ln>4</span><span class=err></span><span class=k>CMD</span> <span class=p>[</span><span class=s2>&#34;/usr/local/bin/envoy&#34;</span><span class=p>,</span> <span class=s2>&#34;-c&#34;</span><span class=p>,</span> <span class=s2>&#34;/etc/envoy.yaml&#34;</span><span class=p>,</span> <span class=s2>&#34;--service-cluster&#34;</span><span class=p>,</span> <span class=s2>&#34;reverse-proxy&#34;</span><span class=p>]</span><span class=err>
 </span></code></pre></div><p>除此之外，Envoy通过<code>9091</code>端口提供管理功能，我们可以通过这个端口来获得集群、请求、统计等信息，这一特性我们将会在接下来的文章里用到：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/02/1OlNJ7um6BnLFeb.png>
-<img src=/https:/i.loli.net/2021/07/02/1OlNJ7um6BnLFeb.png loading=lazy alt="Envoy 管理界面功能一览">
+<a href=https://i.loli.net/2021/07/02/1OlNJ7um6BnLFeb.png>
+<img src=https://i.loli.net/2021/07/02/1OlNJ7um6BnLFeb.png loading=lazy alt="Envoy 管理界面功能一览">
 </a>
 <figcaption>Envoy 管理界面功能一览</figcaption>
 </figure></p>
@@ -266,8 +266,8 @@ extended">
 </span><span class=ln>15</span><span class=w>                </span><span class=nt>port_value</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
 </span></code></pre></div><p>接下来，如果每一个服务的<code>Dockerfile</code>都编写正确的话，我们就可以通过<code>docker compose up</code>命令启动这一组服务，通过命令行下打印出来的信息，我们可以确认，基于<code>Envoy</code>的网关服务、两个基于<code>ASP.NET Core</code>的后端服务都已经成功运行起来：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/02/KMo4dn17m9p8NSg.png>
-<img src=/https:/i.loli.net/2021/07/02/KMo4dn17m9p8NSg.png loading=lazy alt="在 Docker-Compose 中成功启动服务">
+<a href=https://i.loli.net/2021/07/02/KMo4dn17m9p8NSg.png>
+<img src=https://i.loli.net/2021/07/02/KMo4dn17m9p8NSg.png loading=lazy alt="在 Docker-Compose 中成功启动服务">
 </a>
 <figcaption>在 Docker-Compose 中成功启动服务</figcaption>
 </figure></p>
@@ -278,8 +278,8 @@ extended">
 </ul>
 <p>实际的情况如何呢？我们不妨来验证一下：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/07/02/YX4VywtkOCJ2rSI.png>
-<img src=/https:/i.loli.net/2021/07/02/YX4VywtkOCJ2rSI.png loading=lazy alt="通过 Envoy 调用 WeatcherService ">
+<a href=https://i.loli.net/2021/07/02/YX4VywtkOCJ2rSI.png>
+<img src=https://i.loli.net/2021/07/02/YX4VywtkOCJ2rSI.png loading=lazy alt="通过 Envoy 调用 WeatcherService ">
 </a>
 <figcaption>通过 Envoy 调用 WeatcherService</figcaption>
 </figure></p>

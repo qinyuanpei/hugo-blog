@@ -51,8 +51,8 @@ extended">
 <h1 id=从观察者模式说起>从观察者模式说起</h1>
 <p>  如果你熟悉常见的<a class=link href=https://gof.quanke.name/ target=_blank rel=noopener>设计模式</a>，就应该会知道在 24 种设计模式中，有一种称为<strong>观察者模式</strong>的设计模式，该模式又被称为<strong>发布-订阅模式</strong>。在正式讨论 Redis 中的<strong>发布-订阅</strong>特性前，我想先花点时间来为大家讲解下这种设计模式。观察者模式定义了一种一对多的依赖关系，让多个观察者同时监听同一个主题对象，当该主题对象在状态发生变化时，会通知所有观察者对象并使其自动更新自己。下面是该模式的 UML 类图：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/20/fc6qCHwAosTU28y.png>
-<img src=/https:/i.loli.net/2021/08/20/fc6qCHwAosTU28y.png loading=lazy alt=设计者模式的UML类图>
+<a href=https://i.loli.net/2021/08/20/fc6qCHwAosTU28y.png>
+<img src=https://i.loli.net/2021/08/20/fc6qCHwAosTU28y.png loading=lazy alt=设计者模式的UML类图>
 </a>
 <figcaption>设计者模式的UML类图</figcaption>
 </figure></p>
@@ -109,8 +109,8 @@ extended">
 <span class=ln>4</span><span class=n>blog</span><span class=p>.</span><span class=n>Notify</span><span class=p>(</span><span class=s>&#34;Payne更新了Redis缓存技术学习系列文章&#34;</span><span class=p>);</span>
 </code></pre></div><p>好了，现在通过下面的截图，我们就可以看到两个观察者 EmailObserver 和 WechatObserver，都接收到了来自主题 Blog 的消息推送。这就是观察者模式啦，看起来是不是非常简单。可是相信大家使用公众号以后就会发现一个问题，随着你订阅的内容越来越多，你的微信消息列表里出现的消息推送就越来越多，这个时候如果你不想接收消息推送该怎么办呢？答案好像只有一个，那就是取消订阅。这个场景可以看出"推送模式"让订阅者饱受消息骚扰，而为了解决这个问题，我们就有了"拉取模式"，此时主题仅仅是告诉观察者博客内容有更新，而更新的内容需要观察者自己去处理，这种模式大同小异，大家可以参照"推送模式"来自己实现。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/20/hOvJQzxLkNbRgXI.png>
-<img src=/https:/i.loli.net/2021/08/20/hOvJQzxLkNbRgXI.png loading=lazy alt=观察者模式基本实例>
+<a href=https://i.loli.net/2021/08/20/hOvJQzxLkNbRgXI.png>
+<img src=https://i.loli.net/2021/08/20/hOvJQzxLkNbRgXI.png loading=lazy alt=观察者模式基本实例>
 </a>
 <figcaption>观察者模式基本实例</figcaption>
 </figure></p>
@@ -119,8 +119,8 @@ extended">
 <p>好了，了解完观察者模式即发布-订阅模式以后，我们现在就可以开始学习 Redis 中的发布-订阅模式啦。为什么我们要在开始学习 Redis 中的发布-订阅模式前，了解设计模式相关的概念呢？这是因为 Redis 中的发布-订阅模式和 Gof 设计模式一脉相承，譬如事件机制、消息机制等概念其实都是观察者模式的一种实际应用，一旦我们掌握了观察者模式的核心思想，即使这个世界充满了套路，可是这对你我而言又有什么不同呢？我们学习设计模式不是为了记住这些类图，而是能在最恰当的场景中合理使用这些模式来解决问题，这是我们学习的最终目的。</p>
 <p>Redis 中的发布-订阅模式是一种消息通信模式，即发布者发布消息，订阅者接收消息。在 Redis 中客户端可以订阅任意个频道，当该频道内接收到一个新消息时，所有订阅该频道的客户端都会收到这条新消息。我们可以这样理解这种消息通信模式，我们每个微信账号都是一个客户端，每个客户端都可以订阅任意个微信公众号，当微信的后台服务上接收到某个微信公众号的请求消息时，所有订阅了该微信公众号的客户端都会收到该推送。一个简单的图示如下：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/20/JHZ3poADkdwxRQU.png>
-<img src=/https:/i.loli.net/2021/08/20/JHZ3poADkdwxRQU.png loading=lazy alt=Redis中的消息模式>
+<a href=https://i.loli.net/2021/08/20/JHZ3poADkdwxRQU.png>
+<img src=https://i.loli.net/2021/08/20/JHZ3poADkdwxRQU.png loading=lazy alt=Redis中的消息模式>
 </a>
 <figcaption>Redis中的消息模式</figcaption>
 </figure></p>
@@ -157,8 +157,8 @@ extended">
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=ln>1</span>&gt; PUBLISH News <span class=s2>&#34;This is a message sent by 127.0.0.1:6379&#34;</span>
 </code></pre></div><p>此时我们可以看到下图中所示的结果：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz68j9g791j20j80c7abz.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz68j9g791j20j80c7abz.jpg loading=lazy alt=Redis中发布订阅模式>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz68j9g791j20j80c7abz.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz68j9g791j20j80c7abz.jpg loading=lazy alt=Redis中发布订阅模式>
 </a>
 <figcaption>Redis中发布订阅模式</figcaption>
 </figure></p>

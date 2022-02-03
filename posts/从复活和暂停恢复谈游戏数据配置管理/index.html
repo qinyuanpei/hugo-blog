@@ -54,8 +54,8 @@ extended">
 <p>首先我们来从游戏当中的两个常见的应用场景:&ldquo;复活"和"暂停/恢复"来看看游戏数据配置和管理的重要性。
 这里以博主的一款<a class=link href=https://github.com/qinyuanpei/ProfileGameShow/tree/master/Unity3D_RunningGirl target=_blank rel=noopener>跑酷游戏</a>为例：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05dfu1kyj20ih0ihaef.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz05dfu1kyj20ih0ihaef.jpg loading=lazy alt=游戏截图>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05dfu1kyj20ih0ihaef.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05dfu1kyj20ih0ihaef.jpg loading=lazy alt=游戏截图>
 </a>
 <figcaption>游戏截图</figcaption>
 </figure></p>
@@ -87,8 +87,8 @@ extended">
 </ul>
 <p>调整游戏的状态特别容易，因为 GameManager 是一个典型的单例模式，因此我们可以直接将 GameState 从 Over 变成 Noral。可是对于玩家状态的调整，我们却遇到了困难。问题出在什么地方呢？问题出在我们将玩家的生命值等一系列属性都写在了 PlayerController 这个类中，如果我们将玩家的属性全部都设为 Private，那么我们将无法从外部来调整这些属性。比如我们想让玩家满血复活，可是因为这些属性都是私有的，我们无法从外部访问，所以我们在给玩家恢复生命值的时候，无法获得玩家当前的生命值以及最大生命值。可是如果我们将玩家的属性全部都设为 Public，我们可能不得不去面对在编辑器窗口中为每一个属性去赋值，因为一旦我们试图调整游戏双方力量的平衡时，这将是我们不得不去面对的问题，更为致命的玩家的属性并不是永远不变的，比如在 RPG 游戏中玩家的生命值等属性会随着角色等级的提升而不断增加。因此不管我们将这些属性设为 Public 还是 Private，我们都无法保证每次访问到的这些数据都是最新的数据。换句话说，我们不能想当然地在脚本中将玩家的属性写成一个不变的值，因为这些数据随时都在发生着变化，当然如果像敌人和 Boss 这种数值相对稳定的情况，我们可以直接在脚本中将其写成一个固定值，不过我并不推荐大家这样做。由此可见，游戏中数据配置和管理的一个重要作用是维持各个状态间的正常切换。如图是雨血前传.蜃楼中的复活界面，每次复活需要消耗一个复活玉：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/10/19/P1gzUhJMeSiQ9Lj.jpg>
-<img src=/https:/i.loli.net/2021/10/19/P1gzUhJMeSiQ9Lj.jpg loading=lazy alt=雨血>
+<a href=https://i.loli.net/2021/10/19/P1gzUhJMeSiQ9Lj.jpg>
+<img src=https://i.loli.net/2021/10/19/P1gzUhJMeSiQ9Lj.jpg loading=lazy alt=雨血>
 </a>
 <figcaption>雨血</figcaption>
 </figure></p>
@@ -112,8 +112,8 @@ extended">
 <span class=ln>14</span><span class=p>}</span>
 </code></pre></div><p>通过这段代码我们就能够实现一个基本的游戏"暂停/恢复"的功能。在游戏管理类 GameManager 中我们定义了一个玩家的得分。正常情况下，当玩家没有死亡的时候会在 GUI 中更新玩家的得分，而玩家的得分是直接采用在 Update()中累加的方式实现的，因此玩家的得分会在游戏暂停后继续更新，这当然是不符合实际情况的，因此可以在这个增量前乘上一个 Time.deltaTime 就可以解决这个问题了。博主举这个例子无非就是想告诉大家使用这种方法来暂停游戏会存在这样的问题，希望大家以后注意啊！</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz01z0gczpj20m70dd11a.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz01z0gczpj20m70dd11a.jpg loading=lazy alt=跑酷游戏复活界面>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz01z0gczpj20m70dd11a.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz01z0gczpj20m70dd11a.jpg loading=lazy alt=跑酷游戏复活界面>
 </a>
 <figcaption>跑酷游戏复活界面</figcaption>
 </figure></p>

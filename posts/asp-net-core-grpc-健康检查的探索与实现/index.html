@@ -46,8 +46,8 @@ extended">
 <section class=article-content>
 <p>各位朋友，大家好，欢迎大家关注我的博客。在上一篇 <a class=link href=https://blog.yuanpei.me/posts/1679688265/ target=_blank rel=noopener>博客</a> 中，博主和大家分享了<code>gRPC</code>的拦截器在日志记录方面的简单应用，今天我们继续来探索<code>gRPC</code>在构建微服务架构方面的可能性。其实，从博主个人的理解而言，不管我们的微服务架构是采用<code>RPC</code>方式还是采用<code>RESTful</code>方式，我们最终要面对的问题本质上都是一样的，博主这里将其归纳为：服务划分、服务编写 和 服务治理。首先，服务划分决定了每一个服务的上下文边界以及服务颗粒度大小，如果按照领域驱动设计(<strong>DDD</strong>)的思想来描述微服务，我认为它更接近于限界上下文(<strong>BoundedContext</strong>)的概念。其次，服务编写决定了每一个服务的具体实现方式，譬如是采用无状态的<code>RESTful</code>风格的<code>API</code>，还是采用强类型的、基于代理的<code>RPC</code>风格的<code>API</code>。最后，服务治理是微服务架构中永远避不开的话题，服务注册、服务发现、健康检查、日志监控等等一切的话题，其实都是在围绕着<strong>服务治理</strong>而展开，尤其是当我们编写了一个又一个的服务以后，此时该如何管理这些浩如“<strong>星</strong>”海的服务呢？所以，在今天这篇博客中，博主想和大家一起探索下<code>gRPC</code>的健康检查，希望能给大家带来一点启发。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/02/oVS3YkPIncr2xM9.jpg>
-<img src=/https:/i.loli.net/2021/06/02/oVS3YkPIncr2xM9.jpg loading=lazy alt=健康检查-服务注册-服务发现示意图>
+<a href=https://i.loli.net/2021/06/02/oVS3YkPIncr2xM9.jpg>
+<img src=https://i.loli.net/2021/06/02/oVS3YkPIncr2xM9.jpg loading=lazy alt=健康检查-服务注册-服务发现示意图>
 </a>
 <figcaption>健康检查-服务注册-服务发现示意图</figcaption>
 </figure></p>
@@ -151,8 +151,8 @@ extended">
 <span class=ln>15</span><span class=p>}</span>
 </code></pre></div><p>如果大家对上一篇博客中的拦截器还有印象，对于下面的结果应该会感到非常亲切：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/02/vx2QLUoMzXaWpZY.png>
-<img src=/https:/i.loli.net/2021/06/02/vx2QLUoMzXaWpZY.png loading=lazy alt="基于 IHostedService 的 gRPC 健康检查">
+<a href=https://i.loli.net/2021/06/02/vx2QLUoMzXaWpZY.png>
+<img src=https://i.loli.net/2021/06/02/vx2QLUoMzXaWpZY.png loading=lazy alt="基于 IHostedService 的 gRPC 健康检查">
 </a>
 <figcaption>基于 IHostedService 的 gRPC 健康检查</figcaption>
 </figure></p>
@@ -193,8 +193,8 @@ extended">
 <span class=ln>2</span>docker run --name consul -d -p 8500:8500 consul
 </code></pre></div><p>默认情况下，<code>Consul</code>的端口号为：8500，我们可以直接访问：<code>http://localhost:8500</code>：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/02/Gjb9XhpRCI7g2w5.png>
-<img src=/https:/i.loli.net/2021/06/02/Gjb9XhpRCI7g2w5.png loading=lazy alt="Consul 界面效果展示">
+<a href=https://i.loli.net/2021/06/02/Gjb9XhpRCI7g2w5.png>
+<img src=https://i.loli.net/2021/06/02/Gjb9XhpRCI7g2w5.png loading=lazy alt="Consul 界面效果展示">
 </a>
 <figcaption>Consul 界面效果展示</figcaption>
 </figure></p>
@@ -272,15 +272,15 @@ extended">
 <span class=ln>17</span><span class=p>}</span>
 </code></pre></div><p>OK，此时，我们注意到<code>Consul</code>中有两个服务注册进去，它们分别是：<code>GreeterService</code> 和 <code>CalculatorService</code>：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/02/eTBj7Iqn256GXKw.png>
-<img src=/https:/i.loli.net/2021/06/02/eTBj7Iqn256GXKw.png loading=lazy alt="gRPC 服务成功注册到 Consul 中">
+<a href=https://i.loli.net/2021/06/02/eTBj7Iqn256GXKw.png>
+<img src=https://i.loli.net/2021/06/02/eTBj7Iqn256GXKw.png loading=lazy alt="gRPC 服务成功注册到 Consul 中">
 </a>
 <figcaption>gRPC 服务成功注册到 Consul 中</figcaption>
 </figure></p>
 <p>以其中一个<code>CalculatorService</code>为例，我们可以注意到，它的确注册了<code>5001</code>和<code>6001</code>两个实例：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/03/xlhMjJ1ZcN3nwBe.png>
-<img src=/https:/i.loli.net/2021/06/03/xlhMjJ1ZcN3nwBe.png loading=lazy alt="CalculatorService 的两个实例">
+<a href=https://i.loli.net/2021/06/03/xlhMjJ1ZcN3nwBe.png>
+<img src=https://i.loli.net/2021/06/03/xlhMjJ1ZcN3nwBe.png loading=lazy alt="CalculatorService 的两个实例">
 </a>
 <figcaption>CalculatorService 的两个实例</figcaption>
 </figure></p>
@@ -347,8 +347,8 @@ extended">
 <span class=ln>2</span>docker run -e <span class=nv>GRPCUI_SERVER</span><span class=o>=</span>localhost:5001 -p 8080:8080 wongnai/grpcui
 </code></pre></div><p>这里有两个重要的参数，其中，<code>8080</code>是<code>grpcui</code>的服务地址，可以按个人喜好进行修改，<code>GRPCUI_SERVER</code>是<code>gRPC</code>服务地址，该工具运行效果如下：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/03/gGMaVKquDbtdWUN.png>
-<img src=/https:/i.loli.net/2021/06/03/gGMaVKquDbtdWUN.png loading=lazy alt="gRPCUI 接口测试工具">
+<a href=https://i.loli.net/2021/06/03/gGMaVKquDbtdWUN.png>
+<img src=https://i.loli.net/2021/06/03/gGMaVKquDbtdWUN.png loading=lazy alt="gRPCUI 接口测试工具">
 </a>
 <figcaption>gRPCUI 接口测试工具</figcaption>
 </figure></p>

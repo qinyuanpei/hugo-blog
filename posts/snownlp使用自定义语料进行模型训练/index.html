@@ -119,8 +119,8 @@ on-phone--column extended">
 <p><a class=link href=https://github.com/isnowfy/snownlp target=_blank rel=noopener>SnowNLP</a> 是一个功能强大的中文文本处理库，它囊括了中文分词、词性标注、情感分析、文本分类、关键字/摘要提取、<code>TF/IDF</code>、文本相似度等诸多功能，像<strong>隐马尔科夫模型</strong>、<strong>朴素贝叶斯</strong>、<code>TextRank</code>等算法均在这个库中有对应的应用。如果大家仔细观察过博主的博客，就会发现博主使用了摘要提取这一功能来增强博客的<code>SEO</code>，即通过自然语言处理(<strong>NLP</strong>)技术，提取每一篇文章中的摘要信息。因为 <a class=link href=https://github.com/isnowfy/snownlp target=_blank rel=noopener>SnowNLP</a> 本身使用的语料是电商网站评论，所以，当我们面对不同的使用场景时，它自带的这个模型难免会出现“水土不服”。因此，如果我们希望得到更接近实际的结果，最好的方案是使用自定义语料进行模型训练。值得庆幸的是，这一切在 <a class=link href=https://github.com/isnowfy/snownlp target=_blank rel=noopener>SnowNLP</a> 中实施起来非常简单，并不需要我们去钻研那些高深莫测的算法。至此，就引出了今天这篇博客的主题，即 SnowNLP 使用自定义语料进行模型训练。</p>
 <p>不知道大家是否还有印象，博主曾经在 <a class=link href=https://blog.yuanpei.me/posts/2758545080/ target=_blank rel=noopener>《通过 Python 分析 2020 年全年微博热搜数据》</a> 这篇文章中提到过 SnowNLP 的模型训练。当时，博主采集了整个 2020 年的微博热搜话题，因为要体现整个一年里的情感变化，博主特意找了两份微博语料，并以此为基础训练出了一个模型文件。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/26/gCcHX7vWlwsZhnI.jpg>
-<img src=/https:/i.loli.net/2021/01/26/gCcHX7vWlwsZhnI.jpg loading=lazy alt=2020全年微博热搜情感变化趋势>
+<a href=https://i.loli.net/2021/01/26/gCcHX7vWlwsZhnI.jpg>
+<img src=https://i.loli.net/2021/01/26/gCcHX7vWlwsZhnI.jpg loading=lazy alt=2020全年微博热搜情感变化趋势>
 </a>
 <figcaption>2020全年微博热搜情感变化趋势</figcaption>
 </figure></p>
@@ -130,15 +130,15 @@ on-phone--column extended">
 <span class=ln>3</span><span class=n>sentiment</span><span class=o>.</span><span class=n>save</span><span class=p>(</span><span class=s1>&#39;weibo.marshal&#39;</span><span class=p>)</span>
 </code></pre></div><p>千万不要怀疑你的眼睛，因为它真的只有短短的三行代码。简单来说，我们只需要准备一个“<strong>积极</strong>”的语料文件，一个“<strong>消极</strong>”的语料文件，它就可以训练出一个模型文件。特别注意的是，如果是在<code>Python 3.X</code>的版本下，最终生成的模型文件的扩展名将会是<code>.3</code>，下图是博主这里训练出的模型文件：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/05/20/EQnaXv3x6Vyfm7j.png>
-<img src=/https:/i.loli.net/2021/05/20/EQnaXv3x6Vyfm7j.png loading=lazy alt="SnowNLP 使用自定义语料进行模型训练">
+<a href=https://i.loli.net/2021/05/20/EQnaXv3x6Vyfm7j.png>
+<img src=https://i.loli.net/2021/05/20/EQnaXv3x6Vyfm7j.png loading=lazy alt="SnowNLP 使用自定义语料进行模型训练">
 </a>
 <figcaption>SnowNLP 使用自定义语料进行模型训练</figcaption>
 </figure></p>
 <p>好了，一旦训练出这个模型文件，我们就可以考虑替换掉 SnowNLP 的默认模型文件，我们可以在以下位置：<code>\Lib\site-packages\snownlp\sentiment</code> 找到下列文件。为了安全起见，我们首先将原来的模型文件重命名，然后再放入我们自己的模型文件。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/05/20/C5QS3uhvt1liqXc.png>
-<img src=/https:/i.loli.net/2021/05/20/C5QS3uhvt1liqXc.png loading=lazy alt="SnowNLP 使用自定义模型替换默认模型">
+<a href=https://i.loli.net/2021/05/20/C5QS3uhvt1liqXc.png>
+<img src=https://i.loli.net/2021/05/20/C5QS3uhvt1liqXc.png loading=lazy alt="SnowNLP 使用自定义模型替换默认模型">
 </a>
 <figcaption>SnowNLP 使用自定义模型替换默认模型</figcaption>
 </figure></p>
@@ -159,36 +159,36 @@ on-phone--column extended">
 </code></pre></div><p>有人说，双子座是一个白天自愈、晚上孤独的星座，我确信这是真的，因为从我出生的那一刻起，那种宏大宇宙中的孤独感就一直笼罩着我，用一句话来形容，大概就是“<strong>热闹是人家的，我什么都没有</strong>”，因为内心世界里的两个灵魂，从来没有一刻闲歇地在纠缠和撕裂。我一直都想了解一件事情，如果这些基于概率或者是公式的算法，都可以琢磨出人类某个时刻的心境，我们期望别人能懂自己是不是太过矫情，我们是真的了解自己吗？</p>
 <p>OK，说完微博话题这个场景，我们再来说说电影评论这个场景。回想今年过年的时候，一部<a class=link href=https://movie.douban.com/subject/34841067/ target=_blank rel=noopener>《你好，李焕英》</a>，成为贺岁档电影中的一匹黑马，而相比之下，<a class=link href=https://movie.douban.com/subject/27619748/ target=_blank rel=noopener>《唐人街探案 3》</a>则有点“<strong>滑铁卢</strong>”的感觉。为了搞清楚某一部电影真实的评价情况，此时，我们可以考虑使用 SnowNLP ，对影评的情感趋向进行打分。同样地，这里我们找了一部分影评语料，为 SnowNLP 训练一个单独的模型。接下来，我们不妨从豆瓣上抓取一定数量的影评，来验证下我们这里训练好的模型，这里以<a class=link href=https://movie.douban.com/subject/27619748/ target=_blank rel=noopener>《唐人街探案 3》</a>为例：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/05/22/5Mo1ncNyEO2K69j.png>
-<img src=/https:/i.loli.net/2021/05/22/5Mo1ncNyEO2K69j.png loading=lazy alt=从豆瓣上抓取到的电影评论>
+<a href=https://i.loli.net/2021/05/22/5Mo1ncNyEO2K69j.png>
+<img src=https://i.loli.net/2021/05/22/5Mo1ncNyEO2K69j.png loading=lazy alt=从豆瓣上抓取到的电影评论>
 </a>
 <figcaption>从豆瓣上抓取到的电影评论</figcaption>
 </figure></p>
 <p>可以发现，这些影评的情感趋向介于 0 到 0.1 这个区间的数量最多，占到 160 以上，这意味着约有 30%的观众认为这部电影是个不折不扣的烂片。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/05/22/1hvXtjciPlWBzD9.jpg>
-<img src=/https:/i.loli.net/2021/05/22/1hvXtjciPlWBzD9.jpg loading=lazy alt=唐人街探案3豆瓣影评情感分布>
+<a href=https://i.loli.net/2021/05/22/1hvXtjciPlWBzD9.jpg>
+<img src=https://i.loli.net/2021/05/22/1hvXtjciPlWBzD9.jpg loading=lazy alt=唐人街探案3豆瓣影评情感分布>
 </a>
 <figcaption>唐人街探案3豆瓣影评情感分布</figcaption>
 </figure></p>
 <p>目前，<a class=link href=https://movie.douban.com/subject/27619748/ target=_blank rel=noopener>《唐人街探案 3》</a> 在豆瓣上的评分只有 5.5 分，其中，2 星和 3 星的评价占到 70%以上。由于豆瓣接口的限制，我们大概只能抓到 500 条左右的影评信息，可即使如此，可以看出大家对这部电影的情绪多少有一点不满。博主当时看这个电影，最大的感受是里面充斥着太多强行搞笑的东西，例如开篇机场那一场打砸抢的戏份，我完全不明白它存在的意义是什么，虽然日本演员们的表演可圈可点，可在这样一个推理和叙事都非常脆弱的故事里，大概就剩下翻来覆去重复使用的搞笑伎俩啦，你敢说医院这场戏和第一部阿香家那场戏没有相似的地方吗？更不用说，医院这场戏大家都在评论里无限吐槽啦！</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/05/22/MRsAc76vgmTEK4z.png>
-<img src=/https:/i.loli.net/2021/05/22/MRsAc76vgmTEK4z.png loading=lazy alt=豆瓣电影-唐人街探案3>
+<a href=https://i.loli.net/2021/05/22/MRsAc76vgmTEK4z.png>
+<img src=https://i.loli.net/2021/05/22/MRsAc76vgmTEK4z.png loading=lazy alt=豆瓣电影-唐人街探案3>
 </a>
 <figcaption>豆瓣电影-唐人街探案3</figcaption>
 </figure></p>
 <p>其实，对于情感，我一直不知道该怎么来讲，可能是程序员的这份理性，让我在维系亲密关系或者说的情感的时候，有时候会生出一种近乎漠然的、置身事外的错觉，换句话说，也许是那种被人称为“<strong>天性凉薄</strong>”的东西。前任同我讲，我最爱的人其实是我自己，并不是她。因为站在她的角度上来讲，她并没有感受到我给予她的爱。我该怎么回答这个问题呢？在一切看似理性的数学计算背后，人类这些极为在乎的情感到底又是什么形式？也许有一天，两个人的感情说变淡就突然变淡，不管我们曾经说过什么样的话，在那一刻都会变得苍白无力，逐年攀升的离婚率触目惊心，可我们每个人都像扑向火焰的飞蛾，在这爱与欲望无法随心所欲的世界里，被欲望裹挟着不断向前。人会变的绝情、冷漠，我们自以为那是成长，可那不过是心变硬了，可这是我们当初期待的长大吗？</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/08/HrQbtvcjeI1h9M3.png>
-<img src=/https:/i.loli.net/2021/06/08/HrQbtvcjeI1h9M3.png loading=lazy alt=欢迎来到无法随心所欲的爱与欲望的世界>
+<a href=https://i.loli.net/2021/06/08/HrQbtvcjeI1h9M3.png>
+<img src=https://i.loli.net/2021/06/08/HrQbtvcjeI1h9M3.png loading=lazy alt=欢迎来到无法随心所欲的爱与欲望的世界>
 </a>
 <figcaption>欢迎来到无法随心所欲的爱与欲望的世界</figcaption>
 </figure></p>
 <p>今天，听到袁隆平爷爷去世的消息，除了不断地提醒我们这代人已然老去这个事实以外，也许最大的体会应该是，我们在这个世界上追求的名利、身份和爱，最终都会无可避免地走向消亡，就如同我们身上这具躯壳一样，而真正能流传下去、泽被后世地，永远都是思想、是文化、是技术、是精神。佛家云：人死身灭，大概我们都不得不去接受这个残酷的事实，所以，请放下那些爱而不得、求而不得的执念吧，你一辈子不管遇见多少人，在某一个时候也许就会荡然无存，爱会消失、身会毁灭，这一切都是宇宙间的自然法则，与其去纠结那些“<strong>薛定谔态</strong>”的事物，不如多为这个世界做一点有意义的事情，正如尼采的那句名言，“<strong>对待生命你不妨大胆冒险一点, 因为无论如何你都要失去它</strong>”，我也许并不真正懂得人类的情感，因为它在理性面前毫无意义，世间万物毫无例外地走向那个坍塌的奇点，这难道不是一种荒凉的美感吗？</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/05/22/kjR2nVSHlDNrCLi.jpg>
-<img src=/https:/i.loli.net/2021/05/22/kjR2nVSHlDNrCLi.jpg loading=lazy alt=人的心情难道不是一个黑洞>
+<a href=https://i.loli.net/2021/05/22/kjR2nVSHlDNrCLi.jpg>
+<img src=https://i.loli.net/2021/05/22/kjR2nVSHlDNrCLi.jpg loading=lazy alt=人的心情难道不是一个黑洞>
 </a>
 <figcaption>人的心情难道不是一个黑洞</figcaption>
 </figure></p>

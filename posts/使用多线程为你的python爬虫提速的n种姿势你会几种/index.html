@@ -96,8 +96,8 @@ extended">
 <span class=ln>13</span>        <span class=n>thread</span><span class=o>.</span><span class=n>start</span><span class=p>()</span>
 </code></pre></div><p>可以注意到，当我们需要构造一个线程时，只需要指定<code>target</code>和<code>args</code>两个参数，其中，前者是指线程执行的方法，后者是指传递给线程所执行的方法的参数。当我们需要启动线程时，只需要调用线程的<code>start()</code>方法，而通过<code>setDaemon()</code>方法则可以设置一个线程为守护线程。关于守护线程，这里简单说明一下，一旦一个线程被设置为守护线程，那么，只要线程执行的方法中存在等待时间譬如<code>time.sleep(1)</code>，此时等待时间下面的代码都不会再执行。如果线程中执行的方法是一个耗时的操作，此时，我们还可以通过<code>join()</code>方法来阻塞主线程，以确保主线程再子线程执行完后再结束。除了这种函数式的使用方法以外，我们还可以通过继承<code>Thread</code>类并重写其<code>run()</code>方法的方式，对于这一点可以参考官方文档中的<a class=link href=https://docs.python.org/zh-cn/3/library/threading.html#thread-objects target=_blank rel=noopener>线程对象</a>。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/15/I6jZ35R8dDvJUsW.png>
-<img src=/https:/i.loli.net/2021/01/15/I6jZ35R8dDvJUsW.png loading=lazy alt=使用Thread下载>
+<a href=https://i.loli.net/2021/01/15/I6jZ35R8dDvJUsW.png>
+<img src=https://i.loli.net/2021/01/15/I6jZ35R8dDvJUsW.png loading=lazy alt=使用Thread下载>
 </a>
 <figcaption>使用Thread下载</figcaption>
 </figure></p>
@@ -120,8 +120,8 @@ extended">
 <span class=ln>15</span>    <span class=n>pool</span><span class=o>.</span><span class=n>wait</span><span class=p>()</span>
 </code></pre></div><p>在这里，我们声明了一个指定大小的线程池，通过一个方法<code>getImage()</code>和一组参数<code>args</code>来构造“请求”，再将这些请求全部放进线程池里，此时，线程池会自动等待这些“请求”执行完毕。这里唯一比较难理解的，可能是如何构造参数<code>args</code>，尤其是当被执行的方法需要传递多个参数的时候。其实这里有两种传参的方式，第一种是按数组来解构，此时我们可以写<code>[(['',''], None), (['',''], None)]</code>；而第二种则是按字典来解构，此时我们可以写<code>[(None, {'url':'', 'fileName':''}), (None, {'url':'', 'fileName':''})</code>。两者的区别主要在<code>None</code>的位置，不知道大家有没有发现规律。这里我们准备了张图片，而线程池最大线程是 3 个，理论上某个线程会被重复使用，实际结果又是如何呢？</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/15/kGgPXS8vHMwxoIN.png>
-<img src=/https:/i.loli.net/2021/01/15/kGgPXS8vHMwxoIN.png loading=lazy alt=使用ThreadPool下载>
+<a href=https://i.loli.net/2021/01/15/kGgPXS8vHMwxoIN.png>
+<img src=https://i.loli.net/2021/01/15/kGgPXS8vHMwxoIN.png loading=lazy alt=使用ThreadPool下载>
 </a>
 <figcaption>使用ThreadPool下载</figcaption>
 </figure></p>
@@ -147,8 +147,8 @@ extended">
 <span class=ln>18</span>    <span class=c1># tasks = pool.map(lambda arg:self.getImage(arg[&#39;url&#39;], arg[&#39;fileName&#39;]), args)</span>
 </code></pre></div><p>这里需要注意的是，<code>submit()</code>方法和<code>map()</code>方法的区别，前者相当于声明线程后并不立即执行，故而，需要<code>wait()</code>方法来等待所有任务执行结束；而后者则相当于声明线程并理解执行，故而，返回值实际是每一个任务执行的结果的集合，这里就隐隐有一点 .NET 中 <code>Task</code> 的味道啦！同样地，我们给了一个最大线程数：3，它能否得到和<code>threadpool</code> 类似的结果呢？我们拭目以待：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/15/jeJTHlkiuors4zw.png>
-<img src=/https:/i.loli.net/2021/01/15/jeJTHlkiuors4zw.png loading=lazy alt=使用ThreadPoolExecutor下载>
+<a href=https://i.loli.net/2021/01/15/jeJTHlkiuors4zw.png>
+<img src=https://i.loli.net/2021/01/15/jeJTHlkiuors4zw.png loading=lazy alt=使用ThreadPoolExecutor下载>
 </a>
 <figcaption>使用ThreadPoolExecutor下载</figcaption>
 </figure></p>
@@ -170,8 +170,8 @@ extended">
 <span class=ln>12</span>        <span class=n>proc</span><span class=o>.</span><span class=n>start</span><span class=p>()</span>
 </code></pre></div><p>此时，我们可以得到下面的结果，可以发现它都是在主线程上运行：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/16/oyJKlOCazQX3RcZ.png>
-<img src=/https:/i.loli.net/2021/01/16/oyJKlOCazQX3RcZ.png loading=lazy alt=使用Process下载>
+<a href=https://i.loli.net/2021/01/16/oyJKlOCazQX3RcZ.png>
+<img src=https://i.loli.net/2021/01/16/oyJKlOCazQX3RcZ.png loading=lazy alt=使用Process下载>
 </a>
 <figcaption>使用Process下载</figcaption>
 </figure></p>
@@ -193,8 +193,8 @@ extended">
 <span class=ln>14</span>        <span class=n>pool</span><span class=o>.</span><span class=n>apply</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>getImage</span><span class=p>,</span> <span class=n>arg</span><span class=p>)</span>
 </code></pre></div><p>有朋友难免会好奇“进程池”和“线程池”有什么不一样，我想，下面这张图会告诉你答案：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/15/jGKQ2qnVtz9c4DL.png>
-<img src=/https:/i.loli.net/2021/01/15/jGKQ2qnVtz9c4DL.png loading=lazy alt=使用multiprocessing.Pool()下载>
+<a href=https://i.loli.net/2021/01/15/jGKQ2qnVtz9c4DL.png>
+<img src=https://i.loli.net/2021/01/15/jGKQ2qnVtz9c4DL.png loading=lazy alt=使用multiprocessing.Pool()下载>
 </a>
 <figcaption>使用multiprocessing.Pool()下载</figcaption>
 </figure></p>
@@ -216,8 +216,8 @@ extended">
 <span class=ln>14</span>        <span class=n>pool</span><span class=o>.</span><span class=n>submit</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>getImage</span><span class=p>(</span><span class=n>arg</span><span class=p>[</span><span class=s1>&#39;url&#39;</span><span class=p>],</span> <span class=n>arg</span><span class=p>[</span><span class=s1>&#39;fileName&#39;</span><span class=p>]),</span> <span class=n>arg</span><span class=p>)</span>
 </code></pre></div><p>可以看到，“进程池”中的代码都是在主线程上执行的，这一点和<code>multiprocessing.Pool()</code>完全一致：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/01/16/iCFSawkEMjN2PzO.png>
-<img src=/https:/i.loli.net/2021/01/16/iCFSawkEMjN2PzO.png loading=lazy alt=使用ProcessPoolExecutor下载>
+<a href=https://i.loli.net/2021/01/16/iCFSawkEMjN2PzO.png>
+<img src=https://i.loli.net/2021/01/16/iCFSawkEMjN2PzO.png loading=lazy alt=使用ProcessPoolExecutor下载>
 </a>
 <figcaption>使用ProcessPoolExecutor下载</figcaption>
 </figure></p>

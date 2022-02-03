@@ -140,8 +140,8 @@ on-phone--column extended">
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span>$ docker run hello-world docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?. See <span class=s1>&#39;docker run --help&#39;</span>.
 </code></pre></div><p>此时，你可能会尝试通过执行 systemctl start docker 命令来启动 Docker 服务，因为错误信息告诉我们，Docker 的守护进程没有启动，可你会发现这样依然报错。可是为什么呢？明明 Docker 都在 WSL 里安装成功了啊，事实上除了 docker -v 不需要依赖守护进程，其余的命令都需要依赖守护进程，而 WSL 恰恰是不支持 docker-engine 的，所以，一种曲线救国的思路就是，让 WSL 去连接宿主机上的 docker engine。果然，还是要安装 Docker for Windows 啊！那么，剩下的事情变得就非常简单啦，确保系统开启 Hyper-V，然后安装 Docker for Windows，并打开对宿主机 Docker 的监听，这些相信玩过 Docker 的人都会啦！</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g2oho3u2jcj20m80f8757.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g2oho3u2jcj20m80f8757.jpg loading=lazy alt=暴露宿主机器Docker端口>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g2oho3u2jcj20m80f8757.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g2oho3u2jcj20m80f8757.jpg loading=lazy alt=暴露宿主机器Docker端口>
 </a>
 <figcaption>暴露宿主机器Docker端口</figcaption>
 </figure></p>
@@ -149,15 +149,15 @@ on-phone--column extended">
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span><span class=nb>export</span> <span class=nv>DOCKER_HOST</span><span class=o>=</span>tcp://localhost:2375
 </code></pre></div><p>此时，我们执行 docker run hello-world 命令，如果不出意外的话，我们会看到下面的画面，这说明我们的 Docker 环境已经正常工作啦：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g2ohrctulqj20m80bomy1.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g2ohrctulqj20m80bomy1.jpg loading=lazy alt=WSL中完美运行的Docker>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g2ohrctulqj20m80bomy1.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g2ohrctulqj20m80bomy1.jpg loading=lazy alt=WSL中完美运行的Docker>
 </a>
 <figcaption>WSL中完美运行的Docker</figcaption>
 </figure></p>
 <p>博主按捺不住内心的激动，果断安装 ELK 全家桶，体验了下 Kibana 的可视化界面，开始思考：如何把存储在 Mongodb 中的日志数据放到 ElasticSearch 中。当然，这都是后话啦，因为博主马上发现了 WSL 中 Docker 的第二个坑，那就是终端关闭以后，针对宿主机的 Docker 连接就结束了。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g2oht8m7jnj20m80badgj.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g2oht8m7jnj20m80badgj.jpg loading=lazy alt=ELK全家桶>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1g2oht8m7jnj20m80badgj.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1g2oht8m7jnj20m80badgj.jpg loading=lazy alt=ELK全家桶>
 </a>
 <figcaption>ELK全家桶</figcaption>
 </figure></p>

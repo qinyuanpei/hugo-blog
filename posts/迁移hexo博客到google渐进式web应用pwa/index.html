@@ -67,8 +67,8 @@ extended">
 }
 </code></pre><p>  我们这里看到一个基本的注册ServiceWorker的代码片段，并且它采用了业界流行的Promise的写法。那么首先第一个问题，ServiceWorker到底是什么？ServiceWorker本质上是一个Web应用程序和浏览器间的代理服务器，它可以在离线环境下拦截网络请求，并基于网络是否可用以及资源是否可用，来采取相对应的处理动作，所以ServiceWorker最基本用法是作为离线缓存来使用，而高阶用法则是消息推送和后台同步。通常来讲，ServiceWorker会经历如下的生命周期：</p>
 <p><figure>
-<a href=/http:/jbcdn2.b0.upaiyun.com/2016/01/55b0169cdfe92b08203757ebc4e5ece2.png>
-<img src=/http:/jbcdn2.b0.upaiyun.com/2016/01/55b0169cdfe92b08203757ebc4e5ece2.png loading=lazy alt=ServiceWorker生命周期>
+<a href=http://jbcdn2.b0.upaiyun.com/2016/01/55b0169cdfe92b08203757ebc4e5ece2.png>
+<img src=http://jbcdn2.b0.upaiyun.com/2016/01/55b0169cdfe92b08203757ebc4e5ece2.png loading=lazy alt=ServiceWorker生命周期>
 </a>
 <figcaption>ServiceWorker生命周期</figcaption>
 </figure>
@@ -203,15 +203,15 @@ self.addEventListener('notificationclose', event =&gt; {
 }
 </code></pre><p>  好了，现在我们来考虑如何去实现一个ServiceWorker，Google官方提供了一个ServiceWorker的<a class=link href=https://github.com/GoogleChrome/samples/tree/gh-pages/service-worker/basic target=_blank rel=noopener>示例项目</a>，以及网友提供的<a class=link href=https://github.com/minimal-xyz/minimal-pwa target=_blank rel=noopener>Minimal-PWA</a>，这两个项目都可以帮助我们去了解，如何去实现一个ServiceWorker，甚至于我们有<a class=link href="http://link.zhihu.com/?target=https%3A//github.com/GoogleChrome/sw-precache" target=_blank rel=noopener>sw-toolbox</a>和<a class=link href="http://link.zhihu.com/?target=https%3A//github.com/GoogleChrome/sw-precache" target=_blank rel=noopener>sw-precache</a>这样的工具，配合gulp和webpack我们定制缓存策略并生成ServiceWorker。可是你要知道，懒惰对程序员而言是一种美德，在这里我选择了Hexo的插件<a class=link href=https://github.com/JLHwung/hexo-offline target=_blank rel=noopener>hexo-offline</a>，该插件可以帮助我们生成ServiceWoker，关于它的使用及配置，大家可以自行去了解，我重点想说说支持ServiceWorker以后，我的博客所呈现出来的变化以及PWA实际运行的效果。</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixbuc4amj211x0d3q4j.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzixbuc4amj211x0d3q4j.jpg loading=lazy alt="ServiceWorker和Cache Storage">
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixbuc4amj211x0d3q4j.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixbuc4amj211x0d3q4j.jpg loading=lazy alt="ServiceWorker和Cache Storage">
 </a>
 <figcaption>ServiceWorker和Cache Storage</figcaption>
 </figure></p>
 <p>  通过这张图，我们可以清楚地看到，ServiceWorker确实在后台工作着，而Cache Storage确实对博客内的静态资源做了缓存处理。事实上对Hexo这样的静态博客而言，整个博客都是静态资源，所以在实际运行中它会对所有内容进行缓存，我们可以在终端中验证这个想法：</p>
 <p><figure>
-<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix9dj42pj20gh099wf9.jpg>
-<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fzix9dj42pj20gh099wf9.jpg loading=lazy alt=在Hexo中监听到的缓存请求>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzix9dj42pj20gh099wf9.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix9dj42pj20gh099wf9.jpg loading=lazy alt=在Hexo中监听到的缓存请求>
 </a>
 <figcaption>在Hexo中监听到的缓存请求</figcaption>
 </figure></p>

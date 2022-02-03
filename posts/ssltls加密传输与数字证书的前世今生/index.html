@@ -48,8 +48,8 @@ extended">
 <h1 id=证书与加密>证书与加密</h1>
 <p>对于数字证书的第一印象，通常来自于 HTTPS 协议。因为地球人都知道，HTTP 协议是不需要数字证书的。对于 HTTPS 协议的理解，可以简单粗暴的认为它约等于 HTTP + SSL，所以，从这个协议诞生的那一刻起，加密算法与数字证书就密不可分，因为从本质上来讲，HTTPS 协议就是为了解决如何在不安全的网络上、安全地传输数据的问题。事实上，HTTPS 协议的实现，背后依托 SSL/TLS、数字签名、对称/非对称加密等一系列的知识。也许，在读到这篇文章以前，你就像博主一样，对于 HTTPS 的理解，永远止步于 HTTP + SSL。那么，我希望下面的解释可以帮助到你，通常，HTTPS 认证可以分为 单向认证 和 双向认证 两种，这里我们以为以单向认证为例，来说明数字证书与加密算法两者间的联系：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/07/nkJFiPNdVc4ShAw.png>
-<img src=/https:/i.loli.net/2021/09/07/nkJFiPNdVc4ShAw.png loading=lazy alt="HTTPS 数字证书与加密传输间的关系">
+<a href=https://i.loli.net/2021/09/07/nkJFiPNdVc4ShAw.png>
+<img src=https://i.loli.net/2021/09/07/nkJFiPNdVc4ShAw.png loading=lazy alt="HTTPS 数字证书与加密传输间的关系">
 </a>
 <figcaption>HTTPS 数字证书与加密传输间的关系</figcaption>
 </figure></p>
@@ -65,15 +65,15 @@ extended">
 </ul>
 <p>由此，我们可以看出，整个 HTTPS 单向认证流程，实际上是结合了 对称加密 和 非对称加密 两种加密方式。其中，非对称加密主要用于客户端、服务器双方的“试探”环节，即证书验证部分；对称加密主要用于客户端、服务器双方的“正式会话”阶段，即数据传输部分。关于 对称加密 和 非对称加密 两者的区别，我们可以从下面的图中找到答案：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/08/lBNLu4t9VxkOewn.png>
-<img src=/https:/i.loli.net/2021/09/08/lBNLu4t9VxkOewn.png loading=lazy alt="对称加密 与 非对称加密">
+<a href=https://i.loli.net/2021/09/08/lBNLu4t9VxkOewn.png>
+<img src=https://i.loli.net/2021/09/08/lBNLu4t9VxkOewn.png loading=lazy alt="对称加密 与 非对称加密">
 </a>
 <figcaption>对称加密 与 非对称加密</figcaption>
 </figure></p>
 <p>因为客户端持有服务器端返回的公钥，所以，两者可以使用 非对称加密 对随机密钥 Key 进行加/解密。同理，因为客户/服务器端使用相同的随机密钥，所以，两者可以使用 对称加密 对数据进行加/解密。有朋友可能会问，那照你这样说，任何一个客户端都可以向服务器端发起请求嘛，你这样感觉一点都不安全呢？我承认，大家的担心是有道理的。所以，在此基础上，我们还可以使用双向认证，就是不单单客户端要验证服务器端返回的证书，同样，服务器端要对客户端的证书进行验证。那么，客户端是如何验证服务器端返回的证书的呢？服务器返回的证书里都含有哪些信息呢？带着这些问题，我们来看看知乎这个网站：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/07/5vcDPmT14WyCOqE.png>
-<img src=/https:/i.loli.net/2021/09/07/5vcDPmT14WyCOqE.png loading=lazy alt=知乎的证书信息>
+<a href=https://i.loli.net/2021/09/07/5vcDPmT14WyCOqE.png>
+<img src=https://i.loli.net/2021/09/07/5vcDPmT14WyCOqE.png loading=lazy alt=知乎的证书信息>
 </a>
 <figcaption>知乎的证书信息</figcaption>
 </figure></p>
@@ -86,22 +86,22 @@ extended">
 </ul>
 <p>这里引入了一个新的概念，即 CA（Certification Authority）。那么，什么是 CA 呢？ 通俗来讲，CA 就是一个负责签发、认证和管理证书的机构。可能有朋友会想，客户端和服务器端通过非对称加密相互校验证书就好了啊，为什么还需要这样一个第三方的机构呢？事实上，这相当于一种担保/信用体系，因为服务器端的公钥对任何人来说都是可见的，我们来考虑这样一种情形。假设客户端从服务器端获得了某个公钥，并且它认为这个公钥是可信的，此时，有一个不怀好意的中间人截获了这个公钥，它如法炮制伪造了一个相同的公钥并返回，那么，此时客户端会如何看待这个公钥呢？虽然这个中间人不可能伪造出与服务端相同的私钥，可这无疑会让客户端感到困惑，因为它没有办法判断这个证书的真假。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/07/renZkROKljmYuoE.png>
-<img src=/https:/i.loli.net/2021/09/07/renZkROKljmYuoE.png loading=lazy alt=证书的签发与认证>
+<a href=https://i.loli.net/2021/09/07/renZkROKljmYuoE.png>
+<img src=https://i.loli.net/2021/09/07/renZkROKljmYuoE.png loading=lazy alt=证书的签发与认证>
 </a>
 <figcaption>证书的签发与认证</figcaption>
 </figure></p>
 <p>其实，写到这里的时候，博主隐隐约约意识到，当下流行的比特币/数字人民币均与数字签名息息相关，因为 CA 使用私钥对证书进行了签名，这样就杜绝了证书被篡改的可能，从而可以为证书的真实性背书，这种基于信任制、拥有权威性的体系，就像现实生活中银行为货币的真实性、价值背书一样。因此，我们会注意到，在现实生活中，想要获得一份权威机构的数字证书，就需要向 CA 进行申请，例如，知乎的证书是从 DigiCert Inc 这个机构中购买的，不同的机构对于证书申请者的审核要求不同，这样就形成了不同价格甚至免费的数字证书。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/07/szYK63b2y4XhNr7.png>
-<img src=/https:/i.loli.net/2021/09/07/szYK63b2y4XhNr7.png loading=lazy alt="CA 组织树形结构">
+<a href=https://i.loli.net/2021/09/07/szYK63b2y4XhNr7.png>
+<img src=https://i.loli.net/2021/09/07/szYK63b2y4XhNr7.png loading=lazy alt="CA 组织树形结构">
 </a>
 <figcaption>CA 组织树形结构</figcaption>
 </figure></p>
 <p>当然，这个世界上有超过 1 亿个网站，如果每个网站都去向 CA 申请数字证书，那么，CA 一定会忙到崩溃。所以，实际的运行过程是，一个根 CA 会分成多个中间 CA，然后中间 CA 可以继续拆分为更小的中间 CA，这样做的好处是效率更高，同时保证了根 CA 中私钥的安全性。此时，我们会发现一个新的问题，就是当整个数字证书体系中突然多出来这么多“中介”以后，我们如何保证证书的权威性和真实性呢？类似地，数字证书世界里里有证书链的概念。所谓证书链，就是指证书可以追本溯源、在整个链路上都是可信任的，听起来是不是有区块链的味道了？事实上区块链正是利用了数字签名的不可伪造、不可抵赖、不可复制等一系列特性。说回到证书链，由根 CA 签发的证书称为根证书、由中间 CA 签发的证书称为中间证书，其关系如下图所示，假设 A 完全信任 B，B 完全信任 C，则 A 可以完全信任 C:</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/07/WilIrjBSwTft2hL.png>
-<img src=/https:/i.loli.net/2021/09/07/WilIrjBSwTft2hL.png loading=lazy alt=证书链示意图>
+<a href=https://i.loli.net/2021/09/07/WilIrjBSwTft2hL.png>
+<img src=https://i.loli.net/2021/09/07/WilIrjBSwTft2hL.png loading=lazy alt=证书链示意图>
 </a>
 <figcaption>证书链示意图</figcaption>
 </figure></p>
@@ -126,8 +126,8 @@ extended">
 <span class=ln>10</span>openssl ca -in server.csr -out server.crt -cert ca.crt -keyfile ca.key
 </code></pre></div><p>同样的，我们需要再输入一次下列信息：国家、省份、城市、组织 以及 全域名(FQDN)，然后利用自建的 CA 进行签名。在 OpenSSL 中，它定义了证书申请方需要满足的“门槛”，这决定了你能不能向某个 CA 申请证书，其定义位于<code>openssl.conf</code>文件中：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/08/ldIigFrJ8LvYZfP.png>
-<img src=/https:/i.loli.net/2021/09/08/ldIigFrJ8LvYZfP.png loading=lazy alt=" OpenSSL 策略配置">
+<a href=https://i.loli.net/2021/09/08/ldIigFrJ8LvYZfP.png>
+<img src=https://i.loli.net/2021/09/08/ldIigFrJ8LvYZfP.png loading=lazy alt=" OpenSSL 策略配置">
 </a>
 <figcaption>OpenSSL 策略配置</figcaption>
 </figure></p>
@@ -165,8 +165,8 @@ extended">
 <span class=ln>4</span>acme.sh --issue --dns dns_gd -d &lt;Your-Domain&gt;
 </code></pre></div><p>可以注意到，下面即为博主从 Let&rsquo;s Encrypt 申请到的证书文件：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/08/FZLKdQ1cBRtjS4y.png>
-<img src=/https:/i.loli.net/2021/09/08/FZLKdQ1cBRtjS4y.png loading=lazy alt="从 Let‘s Encrypt 申请证书">
+<a href=https://i.loli.net/2021/09/08/FZLKdQ1cBRtjS4y.png>
+<img src=https://i.loli.net/2021/09/08/FZLKdQ1cBRtjS4y.png loading=lazy alt="从 Let‘s Encrypt 申请证书">
 </a>
 <figcaption>从 Let‘s Encrypt 申请证书</figcaption>
 </figure></p>
@@ -197,8 +197,8 @@ extended">
 <span class=ln>8</span>  &lt;镜像Id&gt;
 </code></pre></div><p>不得不说，这里的双下划线，总是让我不由地想起 Python 里的魔法方法：<code>__init__</code>。可能大家会疑惑，为什么博主这里要强调证书的扩展名，因为这实际上是数字证书里最让人迷惑的地方：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/09/08/tadr5bEHxR1Cs2y.png>
-<img src=/https:/i.loli.net/2021/09/08/tadr5bEHxR1Cs2y.png loading=lazy alt=数字证书编码格式与扩展名>
+<a href=https://i.loli.net/2021/09/08/tadr5bEHxR1Cs2y.png>
+<img src=https://i.loli.net/2021/09/08/tadr5bEHxR1Cs2y.png loading=lazy alt=数字证书编码格式与扩展名>
 </a>
 <figcaption>数字证书编码格式与扩展名</figcaption>
 </figure></p>

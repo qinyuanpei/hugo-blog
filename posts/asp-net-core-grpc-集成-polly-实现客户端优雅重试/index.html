@@ -46,8 +46,8 @@ extended">
 <section class=article-content>
 <p>在上一篇 <a class=link href=https://blog.yuanpei.me/posts/1657075397/ target=_blank rel=noopener>博客</a> 中，我们一起探索和实现了<code>gRPC</code>的健康检查。从服务治理的角度来看，健康检查保证的是被调用的服务“健康”或者“可用”。可即使如此，我们依然会遇到，因为网络不稳定等原因而造成的服务调用失败的情形，就如同我们赖以生存的这个真实世界，本身就充满了各种不确定的因素一样，“<strong>世间唯一不变的只有变化本身</strong>”。不管是面对不稳定的服务，还是面对不确定的人生，任何时候我们都需要有一个 B 计划，甚至我们人生中的一切努力，本质上都是为了多一份自由，一份选择的自由。在微服务的世界里，我们将这种选择称之为“<strong>降级(Fallback)</strong>”，如果大家有接触过 <a class=link href=https://github.com/Netflix/Hystrix target=_blank rel=noopener>Hystrix</a> 或者 <a class=link href=https://github.com/App-vNext/Polly target=_blank rel=noopener>Polly</a> 这类框架，就会明白我这里的所说的“<strong>降级</strong>”具体是什么。在众多的“<strong>降级</strong>”策略中，<strong>重试</strong>是一种非常朴素的策略，尤其是当你调用一个不稳定的服务的时候。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/09/GIBVj3sKb5zMeE1.jpg>
-<img src=/https:/i.loli.net/2021/06/09/GIBVj3sKb5zMeE1.jpg loading=lazy alt=重试>
+<a href=https://i.loli.net/2021/06/09/GIBVj3sKb5zMeE1.jpg>
+<img src=https://i.loli.net/2021/06/09/GIBVj3sKb5zMeE1.jpg loading=lazy alt=重试>
 </a>
 <figcaption>重试</figcaption>
 </figure></p>
@@ -71,8 +71,8 @@ extended">
 <span class=ln>14</span><span class=p>});</span>
 </code></pre></div><p>在上面的代码中，<code>MethodConfig</code>可以为指定的方法配置一个重试策略，当传入的方法名为<code>MethodName.Default</code>时，它将应用于该通道下的所有 gRPC 方法。如你所见，在重试策略中我们可以指定重试次数、重试间隔等参数。<strong>这个方案本身没有太多心智上的负担，唯一的缺点是，它没有预留出可扩展的接口</strong>，以至于我们想要验证它到底有没有重试的时候，居然要通过<code>Fiddler</code>抓包这种方式，换句话讲，我们没有办法自定义整个重试行为，譬如你想在重试过程中记录日志，这种方案就会鸡肋起来，<strong>对使用者来说，这完全就是一个黑盒子</strong>。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/09/QzjaH4VqWMnEFcb.png>
-<img src=/https:/i.loli.net/2021/06/09/QzjaH4VqWMnEFcb.png loading=lazy alt="官方自带的 “黑盒子” 重试机制">
+<a href=https://i.loli.net/2021/06/09/QzjaH4VqWMnEFcb.png>
+<img src=https://i.loli.net/2021/06/09/QzjaH4VqWMnEFcb.png loading=lazy alt="官方自带的 “黑盒子” 重试机制">
 </a>
 <figcaption>官方自带的 “黑盒子” 重试机制</figcaption>
 </figure></p>
@@ -117,8 +117,8 @@ extended">
 <span class=ln>24</span><span class=k>await</span> <span class=n>serviceProvider</span><span class=p>.</span><span class=n>GetService</span><span class=p>&lt;</span><span class=n>Greeter</span><span class=p>.</span><span class=n>GreeterClient</span><span class=p>&gt;().</span><span class=n>SayHelloAsync</span><span class=p>(</span><span class=k>new</span> <span class=n>HelloRequest</span><span class=p>()</span> <span class=p>{</span> <span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;长安书小妆&#34;</span> <span class=p>});</span>
 </code></pre></div><p>在这里，为了模拟网络不畅的这种场景，我们故意指定了一个错误的终结点信息。此时，我们会得到下面的结果：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/09/5yamSqIzbH3heXF.png>
-<img src=/https:/i.loli.net/2021/06/09/5yamSqIzbH3heXF.png loading=lazy alt="基于 HttpClientFactory 的重试方案">
+<a href=https://i.loli.net/2021/06/09/5yamSqIzbH3heXF.png>
+<img src=https://i.loli.net/2021/06/09/5yamSqIzbH3heXF.png loading=lazy alt="基于 HttpClientFactory 的重试方案">
 </a>
 <figcaption>基于 HttpClientFactory 的重试方案</figcaption>
 </figure></p>
@@ -161,8 +161,8 @@ extended">
 <h1 id=基于-callinvoker>基于 CallInvoker</h1>
 <p>如果说，前面的 3 种方案都属于“<strong>见招拆招</strong>”的外家功夫。那么，接下来我要分享的思路，绝对可以称得上是“<strong>打通任督二脉</strong>”的玄门内功。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/09/IOwrYtdLXGxMeHf.png>
-<img src=/https:/i.loli.net/2021/06/09/IOwrYtdLXGxMeHf.png loading=lazy alt=gRPC客户端底层原理说明>
+<a href=https://i.loli.net/2021/06/09/IOwrYtdLXGxMeHf.png>
+<img src=https://i.loli.net/2021/06/09/IOwrYtdLXGxMeHf.png loading=lazy alt=gRPC客户端底层原理说明>
 </a>
 <figcaption>gRPC客户端底层原理说明</figcaption>
 </figure></p>
@@ -324,8 +324,8 @@ extended">
 <span class=ln>17</span><span class=n>client</span><span class=p>.</span><span class=n>SayHello</span><span class=p>(</span><span class=k>new</span> <span class=n>HelloRequest</span><span class=p>()</span> <span class=p>{</span> <span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;长安书小妆&#34;</span> <span class=p>});</span>
 </code></pre></div><p>此时，如果我们故意写一个错误的终结点地址，我们将会得到下面的结果：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/06/09/m67kG1hDfgyPJKs.png>
-<img src=/https:/i.loli.net/2021/06/09/m67kG1hDfgyPJKs.png loading=lazy alt="基于 CallInvoker 的重试方案">
+<a href=https://i.loli.net/2021/06/09/m67kG1hDfgyPJKs.png>
+<img src=https://i.loli.net/2021/06/09/m67kG1hDfgyPJKs.png loading=lazy alt="基于 CallInvoker 的重试方案">
 </a>
 <figcaption>基于 CallInvoker 的重试方案</figcaption>
 </figure></p>

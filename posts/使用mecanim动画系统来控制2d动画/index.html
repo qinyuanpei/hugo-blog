@@ -98,36 +98,36 @@ extended">
 <p>为了解决传统的 2D 动画实现方式中存在的动画维护困难、状态维护困难这两个问题，我们需要一种更好的方案来实现 2D 动画的控制，这种方案需要提供较为方便的动画维护功能，即各个动画是独立的，当改变了某一个动画时，其余的动画不会发生改变。其次，这种方案需要提供较为方便的状态维护功能，即各个动画状态切换是方便的，我们可以更好地从这一种状态切换到另一种状态。关于动画状态切换，大家可以去了解下有限状态机(FSM)的概念，这里我们不做深入的探究，这里我们选择 Unity3D 的 Mecanim 动画系统，因为 Mecanim 动画系统正好解决了这两个问题。好了，下面我们来一起学习一个 2D 动画的实例：</p>
 <p>首先我们在场景中创建一个名为 PlayerController 的空物体，然后在该物体的下面增加一个精灵组件(Sprite),并将其命名为 PlayerSprite，这样做的好处是 Unity3D 将为我们自动创建较为规范的命名。好了，现在我们选择 PlayerController 这个物体，然后通过 Window -> Animation 菜单打开 Animation 窗口：</p>
 <p><figure>
-<a href=/http:/img.blog.csdn.net/20150301180418811>
-<img src=/http:/img.blog.csdn.net/20150301180418811 loading=lazy alt=创建第一个动画>
+<a href=http://img.blog.csdn.net/20150301180418811>
+<img src=http://img.blog.csdn.net/20150301180418811 loading=lazy alt=创建第一个动画>
 </a>
 <figcaption>创建第一个动画</figcaption>
 </figure></p>
 <p>首先我们点击 AddCurve 按钮，此时将弹出一个对话框让我们保存动画文件，这里我们存储为 <a class=link href=mailto:Player@Idle.anim>Player@Idle.anim</a>,并将其保存在项目目录下的 Animations\Player 目录下，这样可以方便我们维护和查找特定的动画文件。在保存完动画文件后，此时会弹出如下的界面，我们选择 PlayerSprite 节点下的 SpriteRenderer，然后选择 Sprite，因为这里我们的 2D 动画主要是通过改变 SpriteRenderer 的 Sprite 属性来实现的，最后我们点击 Sprite 节点后面的加号来完成对象的选取。此时会在动画窗口中显示时间轴和刻度线，我们将在这里完成动画的编辑。大家可以注意到默认情况下，动画面板添加了两帧，即第 1 帧和最后一帧，其总时间是 1 秒，同时我们注意到这里有一个采样率(Sample),其实这就是当前动画的 FPS 了。好了，现在我们开始制作第一个动画：</p>
 <p><figure>
-<a href=/http:/img.blog.csdn.net/20150301180502756>
-<img src=/http:/img.blog.csdn.net/20150301180502756 loading=lazy alt=动画序列>
+<a href=http://img.blog.csdn.net/20150301180502756>
+<img src=http://img.blog.csdn.net/20150301180502756 loading=lazy alt=动画序列>
 </a>
 <figcaption>动画序列</figcaption>
 </figure></p>
 <p>在资源文件夹中，我们可以找到当前动画的图片素材，注意到这个图片中总共有 12 帧画面，因此我们可以按照 0.05s 的间隔来分配整个时间轴，所以我们可以这样添加帧：</p>
 <p><figure>
-<a href=/http:/img.blog.csdn.net/20150301180533660>
-<img src=/http:/img.blog.csdn.net/20150301180533660 loading=lazy alt="为 Idle 动画添加帧">
+<a href=http://img.blog.csdn.net/20150301180533660>
+<img src=http://img.blog.csdn.net/20150301180533660 loading=lazy alt="为 Idle 动画添加帧">
 </a>
 <figcaption>为 Idle 动画添加帧</figcaption>
 </figure></p>
 <p>好了，现在我们就完成了一个 Idle 动画的制作，现在打开角色的动画控制器 PlayerController，这是 Unity3D 为我们自动创建的一个动画控制器，因为我们现在只有一个 Idle 动画，所以在 Animaotr 窗口中我们可以看到只有一个 Idle 状态，现在我们将这个状态设为默认状态。好了，现在我们可以直接运行游戏，发现在场景中角色开始循环播放 Idle 动画了。好了，现在让我们重复刚才的步骤，来完成角色的其余动画。</p>
 <p><figure>
-<a href=/http:/img.blog.csdn.net/20150301180634110>
-<img src=/http:/img.blog.csdn.net/20150301180634110 loading=lazy alt="Idle 动画效果演示">
+<a href=http://img.blog.csdn.net/20150301180634110>
+<img src=http://img.blog.csdn.net/20150301180634110 loading=lazy alt="Idle 动画效果演示">
 </a>
 <figcaption>Idle 动画效果演示</figcaption>
 </figure></p>
 <p>经过一番努力，我们现在已经完成了角色所有动画的制作，现在我们来设计角色的动画状态机：</p>
 <p><figure>
-<a href=/http:/img.blog.csdn.net/20150301180705294>
-<img src=/http:/img.blog.csdn.net/20150301180705294 loading=lazy alt=玩家角色控制器设计>
+<a href=http://img.blog.csdn.net/20150301180705294>
+<img src=http://img.blog.csdn.net/20150301180705294 loading=lazy alt=玩家角色控制器设计>
 </a>
 <figcaption>玩家角色控制器设计</figcaption>
 </figure></p>
@@ -278,8 +278,8 @@ extended">
 <span class=ln>144</span>
 </code></pre></div><p>好了，现在我们可以来看看最终的效果，博主这里是想利用这些素材来制作一个横板过关的游戏，可是因为文章篇幅有限，所以这部分内容只能留到以后再和大家分享了。</p>
 <p><figure>
-<a href=/http:/img.blog.csdn.net/20150301180829879>
-<img src=/http:/img.blog.csdn.net/20150301180829879 loading=lazy alt=最终效果演示>
+<a href=http://img.blog.csdn.net/20150301180829879>
+<img src=http://img.blog.csdn.net/20150301180829879 loading=lazy alt=最终效果演示>
 </a>
 <figcaption>最终效果演示</figcaption>
 </figure></p>

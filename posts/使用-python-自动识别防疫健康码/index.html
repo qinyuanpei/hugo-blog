@@ -57,8 +57,8 @@ extended">
 <h1 id=图块检测>图块检测</h1>
 <p>下面是一张从手机上截取的防疫二维码图片，从这张图片中我们看出，整个防疫二维码，可以分为三个部分，即：上方的定位信息图块，中间的二维码信息图块，以及下方的核酸检验信息图块。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/19/eqzajLoMHEidy5t.jpg>
-<img src=/https:/i.loli.net/2021/08/19/eqzajLoMHEidy5t.jpg loading=lazy alt="“西安一码通” 防疫二维码">
+<a href=https://i.loli.net/2021/08/19/eqzajLoMHEidy5t.jpg>
+<img src=https://i.loli.net/2021/08/19/eqzajLoMHEidy5t.jpg loading=lazy alt="“西安一码通” 防疫二维码">
 </a>
 <figcaption>“西安一码通” 防疫二维码</figcaption>
 </figure></p>
@@ -72,8 +72,8 @@ extended">
 <span class=ln>7</span>    <span class=n>block_rect</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>boundingRect</span><span class=p>(</span><span class=n>contours</span><span class=p>[</span><span class=n>i</span><span class=p>])</span> 
 </code></pre></div><p>这里有一个感触颇深的地方，在检测图块的过程中，博主发现中间和底部这两个图块，其检测要更为简单一点，因为它有明显的边界、属于规则的矩形，而上方的图块，因为带有装饰性的纹理，以及灰色的过渡区，二值化并不能检测到其边缘，如下图所示，地铁上使用的二维码，相比商场里使用的二维码，轮廓线要更为清晰一点。所以，这里选择一个什么样的阈值来做二值化，个人感觉是需要反复去尝试的。考虑到要兼容这种轮廓不规则的图块，实际上我使用了一点小技巧，即：在得到下面两个图块以后，利用高度的换算关系，人为地生成上方图块的矩形范围。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/19/6gdQlwoDncJAvLV.jpg>
-<img src=/https:/i.loli.net/2021/08/19/6gdQlwoDncJAvLV.jpg loading=lazy alt="“西安一码通” 灰度化 & 二值化">
+<a href=https://i.loli.net/2021/08/19/6gdQlwoDncJAvLV.jpg>
+<img src=https://i.loli.net/2021/08/19/6gdQlwoDncJAvLV.jpg loading=lazy alt="“西安一码通” 灰度化 & 二值化">
 </a>
 <figcaption>“西安一码通” 灰度化 & 二值化</figcaption>
 </figure></p>
@@ -103,8 +103,8 @@ extended">
 <li>H，即 Hue，表示色相，它通过角度来度量，因此，它的取值范围是0 到 360 度，如下图所示，红色对应 0 度，绿色对应 120 度，蓝色对应 240 度：</li>
 </ul>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/19/jGVkTzscKUabeDf.jpg>
-<img src=/https:/i.loli.net/2021/08/19/jGVkTzscKUabeDf.jpg loading=lazy alt="HSV 颜色模型：色相">
+<a href=https://i.loli.net/2021/08/19/jGVkTzscKUabeDf.jpg>
+<img src=https://i.loli.net/2021/08/19/jGVkTzscKUabeDf.jpg loading=lazy alt="HSV 颜色模型：色相">
 </a>
 <figcaption>HSV 颜色模型：色相</figcaption>
 </figure></p>
@@ -112,8 +112,8 @@ extended">
 <li>S，即 Saturation，表示饱和度，用 0 到 100% 之间的数值表示，如果用下面的倒圆锥体来表示，则 S 表示的是色彩点到所在圆形切面圆心的距离与该圆半径的比值：</li>
 </ul>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/19/UoSRreKhx2Af39d.jpg>
-<img src=/https:/i.loli.net/2021/08/19/UoSRreKhx2Af39d.jpg loading=lazy alt="HSV 颜色模型：倒圆锥体">
+<a href=https://i.loli.net/2021/08/19/UoSRreKhx2Af39d.jpg>
+<img src=https://i.loli.net/2021/08/19/UoSRreKhx2Af39d.jpg loading=lazy alt="HSV 颜色模型：倒圆锥体">
 </a>
 <figcaption>HSV 颜色模型：倒圆锥体</figcaption>
 </figure></p>
@@ -122,15 +122,15 @@ extended">
 </ul>
 <p>此时此刻，你有没有回想起小时候调电视机画面时的经历呢？</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/20/vHSp6CmZQWnjBVk.jpg>
-<img src=/https:/i.loli.net/2021/08/20/vHSp6CmZQWnjBVk.jpg loading=lazy alt=找不到合适的图，简单怀旧一下？>
+<a href=https://i.loli.net/2021/08/20/vHSp6CmZQWnjBVk.jpg>
+<img src=https://i.loli.net/2021/08/20/vHSp6CmZQWnjBVk.jpg loading=lazy alt=找不到合适的图，简单怀旧一下？>
 </a>
 <figcaption>找不到合适的图，简单怀旧一下？</figcaption>
 </figure></p>
 <p>对于<code>HSV</code>颜色模型，我们可以参考下面的取值范围：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/19/FfocQAgdOzrhpjm.png>
-<img src=/https:/i.loli.net/2021/08/19/FfocQAgdOzrhpjm.png loading=lazy alt="HSV 颜色模型：参考范围">
+<a href=https://i.loli.net/2021/08/19/FfocQAgdOzrhpjm.png>
+<img src=https://i.loli.net/2021/08/19/FfocQAgdOzrhpjm.png loading=lazy alt="HSV 颜色模型：参考范围">
 </a>
 <figcaption>HSV 颜色模型：参考范围</figcaption>
 </figure></p>
@@ -173,8 +173,8 @@ def draw_color_area(image, contours):
 
 </code></pre><p>以中间部分的二维码图块为例，此时，我们可以得到下面的结果，这是做了两次颜色检测得到的，第一次检测绿色，第二次检测金色：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/19/wt6y4gEocnhkM5K.png>
-<img src=/https:/i.loli.net/2021/08/19/wt6y4gEocnhkM5K.png loading=lazy alt="“西安一码通” 防疫二维码：颜色检测">
+<a href=https://i.loli.net/2021/08/19/wt6y4gEocnhkM5K.png>
+<img src=https://i.loli.net/2021/08/19/wt6y4gEocnhkM5K.png loading=lazy alt="“西安一码通” 防疫二维码：颜色检测">
 </a>
 <figcaption>“西安一码通” 防疫二维码：颜色检测</figcaption>
 </figure></p>
@@ -184,8 +184,8 @@ def draw_color_area(image, contours):
 <span class=ln>2</span>python -m pip install paddleocr
 </code></pre></div><p>在安装的过程中，可能会得到这样的错误信息：<code>Microsoft Visual C++ 14.0 is required</code>。如果你安装了 Visual Studio 依然提示错误，解决方案就是找到 Visual Studio 安装包，然后勾选那些和 Microsoft Visual C++ 14.0 相关的可选的安装项，再安装了这些必要组件以后，重新使用<code>pip</code>安装即可。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/20/Iqms8YS6G7l4zrC.png>
-<img src=/https:/i.loli.net/2021/08/20/Iqms8YS6G7l4zrC.png loading=lazy alt="“Microsoft Visual C++ 14.0 is required” 错误信息">
+<a href=https://i.loli.net/2021/08/20/Iqms8YS6G7l4zrC.png>
+<img src=https://i.loli.net/2021/08/20/Iqms8YS6G7l4zrC.png loading=lazy alt="“Microsoft Visual C++ 14.0 is required” 错误信息">
 </a>
 <figcaption>“Microsoft Visual C++ 14.0 is required” 错误信息</figcaption>
 </figure></p>
@@ -211,14 +211,14 @@ def draw_color_area(image, contours):
 <span class=ln>16</span>        <span class=k>yield</span> <span class=n>texts</span>
 </code></pre></div><p>以底部图块的检测结果为例，其文字位置标记及文字识别结果如下图所示：</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/20/XSTfimvkc2yPOAR.png>
-<img src=/https:/i.loli.net/2021/08/20/XSTfimvkc2yPOAR.png loading=lazy alt="通过 OCR 识别出来的文字位置">
+<a href=https://i.loli.net/2021/08/20/XSTfimvkc2yPOAR.png>
+<img src=https://i.loli.net/2021/08/20/XSTfimvkc2yPOAR.png loading=lazy alt="通过 OCR 识别出来的文字位置">
 </a>
 <figcaption>通过 OCR 识别出来的文字位置</figcaption>
 </figure></p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/20/VP2YouclhKLX58j.png>
-<img src=/https:/i.loli.net/2021/08/20/VP2YouclhKLX58j.png loading=lazy alt="通过 OCR 识别出来的文字信息">
+<a href=https://i.loli.net/2021/08/20/VP2YouclhKLX58j.png>
+<img src=https://i.loli.net/2021/08/20/VP2YouclhKLX58j.png loading=lazy alt="通过 OCR 识别出来的文字信息">
 </a>
 <figcaption>通过 OCR 识别出来的文字信息</figcaption>
 </figure></p>
@@ -249,8 +249,8 @@ def draw_color_area(image, contours):
 <span class=ln>23</span>    <span class=n>cv2</span><span class=o>.</span><span class=n>destroyAllWindows</span><span class=p>()</span>
 </code></pre></div><p>此时，我们就可以看到下面的结果。可以注意到，在实际应用中，通过视频采集的图像会受到环境光照、拍摄角度等因素的影响，受此影响，我们的图块检测在这个环节表现不佳，它甚至把整张图片当成了一个图块，这直接导致最重要的二维码没有检测出来。百度的 <a class=link href=https://github.com/PaddlePaddle/PaddleOCR target=_blank rel=noopener>PaddleOCR</a> 表现倒是可圈可点，识别速度和准确性还是非常出色的。对于视频这种级别的输入，特别是在人流量较大的商场、车站等场所，对于识别准确性、可靠性都有着非比寻常的要求，如果要考虑这个思路的落地，应该在图像采集的预处理、图像检测的算法上去下功夫，特别是在拆分图块这个环节，识别的准确性还会受到二维码样式的影响，而这些显然是这篇博客背后的故事啦！正所谓，”路漫漫其修远兮，吾将上下而求索”，如果大家对这个项目感兴趣的话，可以到 <a class=link href=https://github.com/Regularly-Archive/2021/tree/master/src/GreenQRCode target=_blank rel=noopener>Github</a> 上做进一步的了解。</p>
 <p><figure>
-<a href=/https:/i.loli.net/2021/08/20/dxtOhKCr8YFLmoW.jpg>
-<img src=/https:/i.loli.net/2021/08/20/dxtOhKCr8YFLmoW.jpg loading=lazy alt=通过摄像头检测防疫二维码>
+<a href=https://i.loli.net/2021/08/20/dxtOhKCr8YFLmoW.jpg>
+<img src=https://i.loli.net/2021/08/20/dxtOhKCr8YFLmoW.jpg loading=lazy alt=通过摄像头检测防疫二维码>
 </a>
 <figcaption>通过摄像头检测防疫二维码</figcaption>
 </figure></p>

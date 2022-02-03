@@ -208,6 +208,13 @@ menu:
           params:
               newTab: false
               icon: archives
+        - identifier: works
+          name: 作品
+          url: /works
+          weight: -85
+          params:
+              newTab: false
+              icon: lab             
         - identifier: search
           name: 搜索
           url: /search

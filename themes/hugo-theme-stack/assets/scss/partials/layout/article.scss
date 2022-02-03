@@ -316,12 +316,23 @@
         margin: 1.5em 0;
     }
 
+    h1
+    {
+        font-size: 1.85rem;
+    }
+
+    h2
+    {
+        font-size: 1.75rem;
+    }
+    
     h1,
     h2,
     h3,
     h4,
     h5,
     h6 {
+
         margin-left: calc((var(--card-padding)) * -1);
         padding-left: calc(var(--card-padding) - var(--heading-border-size));
         border-left: var(--heading-border-size) solid var(--accent-color);

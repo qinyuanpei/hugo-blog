@@ -1,5 +1,8 @@
 {{- $image := .Page.Resources.GetMatch (printf "%s" (.Destination | safeURL)) -}}
 {{- $Permalink := .Destination | relURL | safeURL -}}
+{{- $Permalink := replace $Permalink "/http:/" "http://" 1 -}}
+{{- $Permalink := replace $Permalink "/https:/" "https://" 1 -}}
+
 {{- $alt := .PlainText | safeHTML -}}
 {{- $Width := 0 -}}
 {{- $Height := 0 -}}

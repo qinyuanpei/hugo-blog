@@ -46,7 +46,7 @@ params:
             src: img/avatar.png
 
     article:
-        math: false
+        math: true
         toc: true
         readingTime: true
         license:
@@ -136,13 +136,14 @@ params:
             - search
             - archives
             - tag-cloud
-
         archives:
             limit: 5
             showIcon: false
 
         tagCloud:
             limit: 25
+            showIcon: false
+        toc:
             showIcon: false
 
     opengraph:
@@ -270,7 +271,7 @@ markup:
     tableOfContents:
         endLevel: 4
         ordered: true
-        startLevel: 2
+        startLevel: 1
     highlight:
         noClasses: false
         lineNos: true

@@ -1,0 +1,24 @@
+<div class="works-item">
+    <div class="title">
+        <h3>{{ .title }}</h3>
+        <span class="title-date text-muted">
+            {{  .date }}
+        </span>
+    </div>
+    <div class="works-item-img">
+        <img src="{{ .cover }}">
+    </div>
+    <div class="works-content">
+        <div class="use text-warning">
+            {{ range .tags }}
+            <span>{{ . }}</span>
+            {{ end }}
+        </div>
+        <p class="subtitle">{{ .subTitle }}</p>
+
+        <p class="text-muted">{{ .description }}</p>
+    </div>
+    <div class="works-area footer clearfix">
+        <a class=" btn btn-default" href="{{ .link }}" target="_blank">Preview</a>
+    </div>
+</div>

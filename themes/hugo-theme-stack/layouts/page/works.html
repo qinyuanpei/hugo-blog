@@ -1,0 +1,21 @@
+{{ define "main" }}
+
+<header>
+    <div class="container">
+        <h1>{{ .Title }}</h1>
+        <p class="subtitle">{{ .Params.subtitle }}</p>
+    </div>
+</header>
+
+<section>
+    {{ $works := .Site.Data.portfolio.items }}
+    {{ partial "works/works.html" $works }}
+</section>
+
+{{ partialCached "footer/footer" . }}
+
+{{ end }}
+
+{{ define "right-sidebar" }}
+    {{ partialCached "sidebar/right.html" . }}
+{{ end }}

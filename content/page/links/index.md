@@ -1,5 +1,5 @@
 ---
-title: 友情链接
+title: links
 sulg: links
 links:
   - title: 阮一峰的网络日志

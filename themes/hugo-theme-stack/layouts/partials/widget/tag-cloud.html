@@ -1,0 +1,20 @@
+﻿<section class="widget tagCloud">
+    {{ if .Site.Params.widgets.tagCloud.showIcon }}
+        <div class="widget-icon">
+            {{ partial "helper/icon" "tag" }}
+        </div>
+    {{ end}}
+    <h2 class="widget-title section-title">{{ T "widget.tagCloud.title" }}</h2>
+
+    <div class="tagCloud-tags">
+        {{ range first .Site.Params.widgets.tagCloud.limit (shuffle .Site.Taxonomies.tags.ByCount) }}
+            <a href="{{ .Page.RelPermalink }}" class="font_size_{{ .Count }}">
+                {{ .Page.Title }}
+            </a>
+        {{ end }}
+
+        <a href="/tags" class="font_size_9999">
+            {{ T "widget.tagCloud.more" }}
+        </a>
+    </div>
+</section>

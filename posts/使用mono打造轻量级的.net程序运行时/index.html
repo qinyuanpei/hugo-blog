@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="我们将编译好的程序命名为 Launcher.exe，放置我们前面定义的 Mono 运行时目录结构的根目录下，这个文件将作为启动文件暴露给用户，当用户点击这个程序后就可以打开主文件 Main.exe;因为 Mono 和.NET 都可以执行 IL 代码，所以我用 Mono 来作为.NET 程序的运行时是一个顺理成章的想法;本文通过 Mono 实现了一个轻量级的.NET 程序运行环境，从某种程度上来说，它间接地实现了.NET 程序脱离.NET Framework 运行"><title>使用 Mono 打造轻量级的.NET 程序运行时</title>
 <link rel=canonical href=/posts/%E4%BD%BF%E7%94%A8mono%E6%89%93%E9%80%A0%E8%BD%BB%E9%87%8F%E7%BA%A7%E7%9A%84.net%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E6%97%B6/>
-<link rel=stylesheet href=/scss/style.min.6687a61b1e238f92786f42470861148a3b041862018e00b73f68762d8d7985d8.css><meta property="og:title" content="使用 Mono 打造轻量级的.NET 程序运行时">
+<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="使用 Mono 打造轻量级的.NET 程序运行时">
 <meta property="og:description" content="我们将编译好的程序命名为 Launcher.exe，放置我们前面定义的 Mono 运行时目录结构的根目录下，这个文件将作为启动文件暴露给用户，当用户点击这个程序后就可以打开主文件 Main.exe;因为 Mono 和.NET 都可以执行 IL 代码，所以我用 Mono 来作为.NET 程序的运行时是一个顺理成章的想法;本文通过 Mono 实现了一个轻量级的.NET 程序运行环境，从某种程度上来说，它间接地实现了.NET 程序脱离.NET Framework 运行">
 <meta property="og:url" content="/posts/%E4%BD%BF%E7%94%A8mono%E6%89%93%E9%80%A0%E8%BD%BB%E9%87%8F%E7%BA%A7%E7%9A%84.net%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E6%97%B6/">
 <meta property="og:site_name" content="素履独行">

@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="OK，现在我们来一起看看最终的效果，如你所见，在视频播放过程中，我们可以通过视频下方的输入框发送弹幕，弹幕会首先经由 Redis 缓存起来，当到达一定的时间间隔以后，我们就会将消息推送到客户端，这样所有的客户端都会看到这条弹幕，而对于客户端来说，它在和服务端建立 WebSocket 连接以后，唯一要做的事情就是在 onmessage 回调中取得弹幕数据，并将其追加到弹幕数组中，关于弹幕绘制的细节，我们在本文的第三节已经做了相关说明，在此不再赘述;当客户端接收到服务端推送的消息后，我们通过 Canvas API 完成对弹幕的绘制，这样就可以实现一个基本的弹幕系统啦;当 WebSocket 完成握手以后，我们定时从消息队列中取出弹幕，并推送到所有客户端"><title>基于 WebSocket 和 Redis 实现 Bilibili 弹幕效果</title>
 <link rel=canonical href=/posts/%E5%9F%BA%E4%BA%8Ewebsocket%E5%92%8Credis%E5%AE%9E%E7%8E%B0bilibili%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/>
-<link rel=stylesheet href=/scss/style.min.6687a61b1e238f92786f42470861148a3b041862018e00b73f68762d8d7985d8.css><meta property="og:title" content="基于 WebSocket 和 Redis 实现 Bilibili 弹幕效果">
+<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="基于 WebSocket 和 Redis 实现 Bilibili 弹幕效果">
 <meta property="og:description" content="OK，现在我们来一起看看最终的效果，如你所见，在视频播放过程中，我们可以通过视频下方的输入框发送弹幕，弹幕会首先经由 Redis 缓存起来，当到达一定的时间间隔以后，我们就会将消息推送到客户端，这样所有的客户端都会看到这条弹幕，而对于客户端来说，它在和服务端建立 WebSocket 连接以后，唯一要做的事情就是在 onmessage 回调中取得弹幕数据，并将其追加到弹幕数组中，关于弹幕绘制的细节，我们在本文的第三节已经做了相关说明，在此不再赘述;当客户端接收到服务端推送的消息后，我们通过 Canvas API 完成对弹幕的绘制，这样就可以实现一个基本的弹幕系统啦;当 WebSocket 完成握手以后，我们定时从消息队列中取出弹幕，并推送到所有客户端">
 <meta property="og:url" content="/posts/%E5%9F%BA%E4%BA%8Ewebsocket%E5%92%8Credis%E5%AE%9E%E7%8E%B0bilibili%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/">
 <meta property="og:site_name" content="素履独行">

@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="再比如，我们的业务中要求：用户在访问相关资源或者是执行相关操作时，需要确保用户的状态是登录着的，因此，我们不可避免地在代码中，使用 if 语句去判断用户是否登录，试想如果所有的业务代码都这样写，两个模块间就存在了直接耦合，当然我们可以说这是最简单的做法，因为它照顾了大部分人的思维和情绪，可你看 Angular/Redux/TypeScript 等项目中无一不遍布着修饰器的身影，当一种框架逐渐流行并成为一种趋势的时候，好像大家立刻就忘记了一件事情：原本我们都是非常排斥这些奇技淫巧的，可因为框架的流行你就默认接受了这种设定;在这个例子中，我们通过修饰器函数 readonly()对 getName()方法进行修饰，使其变成一个 readonly 的方法;此种差别，大家可以非常明显地看出来，我们在使用修饰器函数 setProp()的时候，现在允许传入一个参数 20，此时的结果是非常地显而易见的，这段代码将如你所愿地输出 20"><title>邂逅 AOP：说说 JavaScript 中的修饰器</title>
 <link rel=canonical href=/posts/%E9%82%82%E9%80%85aop%E8%AF%B4%E8%AF%B4javascript%E4%B8%AD%E7%9A%84%E4%BF%AE%E9%A5%B0%E5%99%A8/>
-<link rel=stylesheet href=/scss/style.min.6687a61b1e238f92786f42470861148a3b041862018e00b73f68762d8d7985d8.css><meta property="og:title" content="邂逅 AOP：说说 JavaScript 中的修饰器">
+<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="邂逅 AOP：说说 JavaScript 中的修饰器">
 <meta property="og:description" content="再比如，我们的业务中要求：用户在访问相关资源或者是执行相关操作时，需要确保用户的状态是登录着的，因此，我们不可避免地在代码中，使用 if 语句去判断用户是否登录，试想如果所有的业务代码都这样写，两个模块间就存在了直接耦合，当然我们可以说这是最简单的做法，因为它照顾了大部分人的思维和情绪，可你看 Angular/Redux/TypeScript 等项目中无一不遍布着修饰器的身影，当一种框架逐渐流行并成为一种趋势的时候，好像大家立刻就忘记了一件事情：原本我们都是非常排斥这些奇技淫巧的，可因为框架的流行你就默认接受了这种设定;在这个例子中，我们通过修饰器函数 readonly()对 getName()方法进行修饰，使其变成一个 readonly 的方法;此种差别，大家可以非常明显地看出来，我们在使用修饰器函数 setProp()的时候，现在允许传入一个参数 20，此时的结果是非常地显而易见的，这段代码将如你所愿地输出 20">
 <meta property="og:url" content="/posts/%E9%82%82%E9%80%85aop%E8%AF%B4%E8%AF%B4javascript%E4%B8%AD%E7%9A%84%E4%BF%AE%E9%A5%B0%E5%99%A8/">
 <meta property="og:site_name" content="素履独行">

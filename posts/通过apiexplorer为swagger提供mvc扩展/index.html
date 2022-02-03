@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="这个接口位于`System.Web.Http.Description`命名空间下，而显然这是 WebApi 相关的命名空间，所以，对于一般的 WebApi 项目，因为微软已经帮我们实现了默认的 ApiExplorer，所以，Swagger 可以识别出项目中的 Controller 及其 Action，并通过 XML 注释文档进一步填充接口相关的描述信息;我们的想法是通过反射取出所有的 MVC 控制器及其 Action，然后组织出这些接口的描述信息，再将它们添加到默认的 IApiExplorer 实现中去，这样 MVC 和 WebApi 都可以被 Swagger 识别，为此，我们继承默认的 ApiExplorer，并实现我们自定义的`MvcApiExplorer`：;一旦想到这一层，我们就会明白，为什么 Swagger 不支持 MVC 项目，因为 MVC 里压根就没有实现 IApiExplorer 接口啊"><title>通过 ApiExplorer 为 Swagger 提供 MVC 扩展</title>
 <link rel=canonical href=/posts/%E9%80%9A%E8%BF%87apiexplorer%E4%B8%BAswagger%E6%8F%90%E4%BE%9Bmvc%E6%89%A9%E5%B1%95/>
-<link rel=stylesheet href=/scss/style.min.6687a61b1e238f92786f42470861148a3b041862018e00b73f68762d8d7985d8.css><meta property="og:title" content="通过 ApiExplorer 为 Swagger 提供 MVC 扩展">
+<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="通过 ApiExplorer 为 Swagger 提供 MVC 扩展">
 <meta property="og:description" content="这个接口位于`System.Web.Http.Description`命名空间下，而显然这是 WebApi 相关的命名空间，所以，对于一般的 WebApi 项目，因为微软已经帮我们实现了默认的 ApiExplorer，所以，Swagger 可以识别出项目中的 Controller 及其 Action，并通过 XML 注释文档进一步填充接口相关的描述信息;我们的想法是通过反射取出所有的 MVC 控制器及其 Action，然后组织出这些接口的描述信息，再将它们添加到默认的 IApiExplorer 实现中去，这样 MVC 和 WebApi 都可以被 Swagger 识别，为此，我们继承默认的 ApiExplorer，并实现我们自定义的`MvcApiExplorer`：;一旦想到这一层，我们就会明白，为什么 Swagger 不支持 MVC 项目，因为 MVC 里压根就没有实现 IApiExplorer 接口啊">
 <meta property="og:url" content="/posts/%E9%80%9A%E8%BF%87apiexplorer%E4%B8%BAswagger%E6%8F%90%E4%BE%9Bmvc%E6%89%A9%E5%B1%95/">
 <meta property="og:site_name" content="素履独行">

@@ -1,0 +1,294 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe begin /k:&#34;Sonar-HttpServer&#34; /d:sonar.organization=&#34;qinyuanpei-github&#34; /d:sonar.host.url=&#34;https://sonarcloud.io&#34; /d:sonar.login=&#34;db795a28468dc7c12805b330afed53d362fdd2d9&#34;;对于单元测试，微软提供的 MSTest 功能相对薄弱，关键是严重依赖 Visual Studio，一旦我们想要移植到 Linux 平台下，就会发现阻力重重，所以在平时开发中，我更建议大家去使用 NUnit 或者 XUnit，它们比 MSTest 功能强大，可以直接通过 Nuget 安装，同时自带 TestRunner，这是一个控制台程序，我们直接通过 Mono 调用它，并把单元测试项目生成的动态链接库作为参数传递给它即可;RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe end /d:sonar.login=&#34;db795a28468dc7c12805b330afed53d362fdd2d9&#34;"><title>基于 Docker 构建 .NET 持续集成环境</title>
+<link rel=canonical href=/posts/%E5%9F%BA%E4%BA%8E-docker-%E6%9E%84%E5%BB%BA-.net-%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%E7%8E%AF%E5%A2%83/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="基于 Docker 构建 .NET 持续集成环境">
+<meta property="og:description" content="RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe begin /k:&#34;Sonar-HttpServer&#34; /d:sonar.organization=&#34;qinyuanpei-github&#34; /d:sonar.host.url=&#34;https://sonarcloud.io&#34; /d:sonar.login=&#34;db795a28468dc7c12805b330afed53d362fdd2d9&#34;;对于单元测试，微软提供的 MSTest 功能相对薄弱，关键是严重依赖 Visual Studio，一旦我们想要移植到 Linux 平台下，就会发现阻力重重，所以在平时开发中，我更建议大家去使用 NUnit 或者 XUnit，它们比 MSTest 功能强大，可以直接通过 Nuget 安装，同时自带 TestRunner，这是一个控制台程序，我们直接通过 Mono 调用它，并把单元测试项目生成的动态链接库作为参数传递给它即可;RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe end /d:sonar.login=&#34;db795a28468dc7c12805b330afed53d362fdd2d9&#34;">
+<meta property="og:url" content="/posts/%E5%9F%BA%E4%BA%8E-docker-%E6%9E%84%E5%BB%BA-.net-%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%E7%8E%AF%E5%A2%83/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content=".NET"><meta property="article:tag" content="Docker"><meta property="article:tag" content="MSBuild"><meta property="article:published_time" content="2018-06-12T17:53:59+00:00"><meta property="article:modified_time" content="2018-06-12T17:53:59+00:00">
+<meta name=twitter:title content="基于 Docker 构建 .NET 持续集成环境">
+<meta name=twitter:description content="RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe begin /k:&#34;Sonar-HttpServer&#34; /d:sonar.organization=&#34;qinyuanpei-github&#34; /d:sonar.host.url=&#34;https://sonarcloud.io&#34; /d:sonar.login=&#34;db795a28468dc7c12805b330afed53d362fdd2d9&#34;;对于单元测试，微软提供的 MSTest 功能相对薄弱，关键是严重依赖 Visual Studio，一旦我们想要移植到 Linux 平台下，就会发现阻力重重，所以在平时开发中，我更建议大家去使用 NUnit 或者 XUnit，它们比 MSTest 功能强大，可以直接通过 Nuget 安装，同时自带 TestRunner，这是一个控制台程序，我们直接通过 Mono 调用它，并把单元测试项目生成的动态链接库作为参数传递给它即可;RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe end /d:sonar.login=&#34;db795a28468dc7c12805b330afed53d362fdd2d9&#34;">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/>
+开发工具
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E5%9F%BA%E4%BA%8E-docker-%E6%9E%84%E5%BB%BA-.net-%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%E7%8E%AF%E5%A2%83/>基于 Docker 构建 .NET 持续集成环境</a>
+</h2>
+<h3 class=article-subtitle>
+RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe begin /k:"Sonar-HttpServer" /d:sonar.organization="qinyuanpei-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="db795a28468dc7c12805b330afed53d362fdd2d9";对于单元测试，微软提供的 MSTest 功能相对薄弱，关键是严重依赖 Visual Studio，一旦我们想要移植到 Linux 平台下，就会发现阻力重重，所以在平时开发中，我更建议大家去使用 NUnit 或者 XUnit，它们比 MSTest 功能强大，可以直接通过 Nuget 安装，同时自带 TestRunner，这是一个控制台程序，我们直接通过 Mono 调用它，并把单元测试项目生成的动态链接库作为参数传递给它即可;RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe end /d:sonar.login="db795a28468dc7c12805b330afed53d362fdd2d9"
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jun 12, 2018</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 3 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>最近在考虑将整个项目组的产品，努力向着持续集成(CI)/持续部署(CD)的方向靠拢，因为目前我们仅仅实现了基于 Docker 的自动化部署，而部署包的构建依然依赖于人工打包，而每个版本的测试和部署，基本上都要给所有相关人员发一遍邮件，而写邮件无非是填写版本号和变更历史。身处在这样一个社会化分工逐渐加剧的『摩登时代』，我们唯一的希望就追求技能的多元化，你越是担心有一天会被 AI 所替代，就越是应该去追求灵动与美。这个世界何尝不是一个运行中的大型机器，可恰恰就是这种掺杂了情感的冰冷法则，让我们意识到需要更多的理解和宽容。管理者常常迷信敏捷开发的人月神话，希望人可以像零件一样按部就班，在这场噩梦到来以前，为何不去做一点更有用的事情，让云计算帮我们解放双手。</p>
+<h1 id=背景说明>背景说明</h1>
+<p>我们的产品，从结构上来讲，分为后端、前端和客户端三个部分，其中，后端提供了从认证到上传、查询和下载等主要的 AP 接口；前端提供了基于后端 API 接口的页面，主要功能是监控和管理；客户端承担了主要的业务交互能力，主要功能是整合常用的硬件资源。从技术上来讲，后端是基于 Spring Cloud 的微服务架构，前端是基于 node.js 的典型前端工具链，而客户端是基于 .NET / Win32 的技术体系。所以，即使我们的客户端是运行在 Window 平台上，我们依然有大量的服务是运行在 Linux 环境下。负责部署的同事不愿意单独再构建一套持续集成(CI)环境，所以我们决定借助 Docker 完成整个持续集成(CI)环境的构建。</p>
+<h1 id=构建过程>构建过程</h1>
+<p>完成整个项目的构建，需要覆盖到代码编译、单元测试、静态检查、版本发布这四个基本环节，我们整体上使用 Jenkins 作为内部持续集成的平台，这意味着我们只需要在提交代码或者合并代码的时候，触发一个构建指令即可。这里我们考虑通过 Docker 来完成这些工作，一个整体上的设计思路如下图所示：</p>
+<p><figure>
+<a href=/http:/7wy477.com1.z0.glb.clouddn.com/Docker%20Flow.png>
+<img src=/http:/7wy477.com1.z0.glb.clouddn.com/Docker%20Flow.png loading=lazy alt=构建思路>
+</a>
+<figcaption>构建思路</figcaption>
+</figure></p>
+<h2 id=msbuild>MSBuild</h2>
+<p>首先是 MSBuild，它是我们整个构建流程中最重要的环节，我们平时通过 Visual. Studio 编译一个项目，背后其实就是由 MSBuild 这个构建工具来驱动，而通过 MSBuild 我们定义更多的构建流程，例如执行单元测试、实现 Zip 打包等等的流程。在 Window 平台下我们安装 Visual Studio 后就可以使用 MSBuild ，那么在 Linux 平台下呢？目前， MSBuild 已经被微软开源并托管在 Github 上，大家可以通过这个地址：<a class=link href=https://github.com/Microsoft/msbuild target=_blank rel=noopener>https://github.com/Microsoft/msbuild</a>来访问。通过阅读 MSBuild 的文档，我们了解到，目前 MSBuild 实际上有三个流向，分别是目前官方主推的 <a class=link href=https://github.com/Microsoft/msbuild/wiki/Building-Testing-and-Debugging-on-.Net-Core-MSBuild target=_blank rel=noopener>.Net Core</a> 、传统的 <a class=link href=https://github.com/Microsoft/msbuild/wiki/Building-Testing-and-Debugging-on-Full-Framework-MSBuild target=_blank rel=noopener>.Net Framework</a>以及由 <a class=link href=https://github.com/Microsoft/msbuild/wiki/Building-Testing-and-Debugging-on-Mono-MSBuild target=_blank rel=noopener>Mono</a> 托管的部分。</p>
+<p>.Net Core 中 MSBuild 实际上被集成在 <a class=link href="https://docs.microsoft.com/zh-cn/dotnet/core/tools/?tabs=netcore2x" target=_blank rel=noopener>.Net CLI</a> 中，熟悉 .NET Core 的朋友一定都知道， .NET Core 类型的项目，是可以直接通过 dotnet 命令来创建项目、还原 Nuget 包、运行项目、构建项目和发布项目的，可以想象的到这些功能是依赖 MSBuild 和 Nuget 的，可惜这种目前对我们来说不太适合。接下来，我们有两个选择，一个是 Full Framework，一个是 Mono，因为我们的服务器是一台 Linux 服务器，所以 Full Framework 对我们来说不适合，我们在无奈的情况下选择了 Mono，按照官方文档，从源代码安装过程如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>git clone -b xplat-master https://github.com/mono/msbuild/
+<span class=ln>2</span><span class=nb>cd</span> msbuild
+<span class=ln>3</span>make
+</code></pre></div><p>果不其然，这个无论是在 Linux 主机还是 D ocker 中都失败了，官方的源代码我们编译不过去，那就只能考虑非源代码安装啦！按照官方的说法，我们需要 Mono，所以兴奋地跑到 Mono 官方去安装，根据以前使用 Mono 的 经验，飞快地在终端里输入下面两行代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>sudo apt-get install mono-runtime
+<span class=ln>2</span>sudo apt-get install mono-xbuild
+</code></pre></div><p>装完以后，发现可以使用 Mono 和 XBuild，可无奈是 XBuild 版本实在太低，换句话说我们从 Ubuntu 官方源里安装完的 Mono 相当于 .NET Framework 2.0 的版本，这怎么可以呢？果断从 Mono 官方下载最新版本的 Mono，这是一个经过反复试验的安装方法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln> 1</span>sudo apt-get update
+<span class=ln> 2</span>sudo apt-get upgrade -y
+<span class=ln> 3</span>sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+<span class=ln> 4</span>sudo apt install apt-transport-https -y
+<span class=ln> 5</span>sudo apt-get install wget -y
+<span class=ln> 6</span><span class=nb>echo</span> <span class=s2>&#34;deb https://download.mono-project.com/repo/ubuntu stable-trusty main&#34;</span> <span class=p>|</span> sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+<span class=ln> 7</span>sudo apt-get update
+<span class=ln> 8</span>sudo apt-get install aptitude -y
+<span class=ln> 9</span>sudo apt-get install -f
+<span class=ln>10</span>sudo apt-get install -y git
+<span class=ln>11</span>sudo aptitude install -y mono-complete
+</code></pre></div><p>这里顺带安装了 git 和 wget，因为下面我们会用到这两个软件。 aptitude 实在是修复 Linux 依赖问题的神器，我准备找时间用它修复下我的 Linux 环境。 apt-transport-https 这个是为了支持 https 协议，这个不用说太多，我们选择了最全的一个 Mono 版本 mono-complete，它包含了我们在 Linux 下可以使用的所有程序集，换句话说，这些程序集以外的程序集，或者是和 Windows 联系紧密的 COM 组件、 OCX 等等，想都不要想啦，只有一件事情是对的，对平台的依赖越少，跨平台的可能性越高。</p>
+<h2 id=nuget>Nuget</h2>
+<p><a class=link href=https://www.nuget.org/ target=_blank rel=noopener>Nuget</a>是 .NET 下使用最多的包管理器，虽然目前 .NET Core 里的依赖管理越来越像 Maven，可我觉得作为整个构建工具里的一环，还是应该考虑进来，虽然我们的项目中的第三方库基本都靠拷。Nuget 只有单独的命令行版本和 Visual Studo 扩展两个版本，这里我们使用 wget 下载命令行版本，然后再通过 Mono 来调用 nuget.exe :</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>sudo wget https://dist.nuget.org/win-x86-commandline/v4.6.2/nuget.exe /usr/local/bin/nuget.exe
+<span class=ln>2</span><span class=nb>alias</span> <span class=nv>nuget</span><span class=o>=</span><span class=s2>&#34;mono /usr/local/bin/nuget.exe&#34;</span>
+</code></pre></div><h2 id=sonar>Sonar</h2>
+<p>对于 Sonar 的话，这里我推荐用 SonarCloud，因为我们只需要通过 wget 下载 SonarScanner，然后通过 Mono 调用并提供 SonarCloud 提供的 token 即可。曾经博主写过一篇关于使用 SonarCloud 为.NET/.NET Core 项目提供静态检查的文章，在这篇文章中我们提到，SonarCloud 支持 .NET Framework 4.6+ 以上的版本以及 .NET Core 版本，所以，这里我们沿用当时的脚本即可，想了解 SonarCloud 的朋友，可以找到这篇文章进行深入了解。下面给出脚本：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>sudo wget https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/4.3.0.1333/sonar-scanner-msbuild-4.3.0.1333-net46.zip sonar-scanner.zip
+<span class=ln>2</span>sudo unzip sonar-scanner.zip
+<span class=ln>3</span>sudo <span class=nb>alias</span> sonar-scanner<span class=o>=</span><span class=s2>&#34;mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe&#34;</span>
+<span class=ln>4</span>sonar-scanner begin /k:<span class=s2>&#34;Sonar-HttpServer&#34;</span> /d:sonar.organization<span class=o>=</span>&lt;Your-Org&gt; /d:sonar.host.url<span class=o>=</span><span class=s2>&#34;https://sonarcloud.io&#34;</span> /d:sonar.login<span class=o>=</span>&lt;Your-Token&gt;
+<span class=ln>5</span>msbuild /t:Rebuild
+<span class=ln>6</span>sonar-scanner end /d:sonar.login<span class=o>=</span>&lt;Your-Token&gt;
+</code></pre></div><h2 id=nunit>NUnit</h2>
+<p>既然我们有了 Nuget，那么自然要用 Nuget 来做点事情。对于单元测试，微软提供的 MSTest 功能相对薄弱，关键是严重依赖 Visual Studio，一旦我们想要移植到 Linux 平台下，就会发现阻力重重，所以在平时开发中，我更建议大家去使用 NUnit 或者 XUnit，它们比 MSTest 功能强大，可以直接通过 Nuget 安装，同时自带 TestRunner，这是一个控制台程序，我们直接通过 Mono 调用它，并把单元测试项目生成的动态链接库作为参数传递给它即可。
+下面给出基本的脚本：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>nuget install NUnit.Runners -Version 3.8.0 -OutputDirectory ./TestRunner
+<span class=ln>2</span><span class=nb>alias</span> <span class=nv>nunit</span><span class=o>=</span><span class=s2>&#34;mono ./TestRunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe&#34;</span>
+<span class=ln>3</span>nunit &lt;Your-UnitTest-Project&gt;
+</code></pre></div><h1 id=牛刀小试>牛刀小试</h1>
+<p>下面我们来试试在 Docker 里完成镜像的构建，其实这里更推荐在 Linux 下安装 Docker，博主在 Window 平台下安装了 Docker for Windows，需要系统支持虚拟化技术。因为博主在构建镜像的时候，一直提示磁盘空间不足，所以，这里我们把 Dockerfile 放到 DaoCloud 上去跑，关于 Docker 的安装以后有机会在同大家分享。这里， DaoCloud 你可以理解为一个帮我们装好了 Docker 的云主机，事实上用 DaoCloud 以后，感觉测试 Dockerfile 可以更省时间啦，效率上相差十倍啊！ Dockerfile 其实就是本文中这些脚本的集合，这里我们给出完整的 Dockerfile，这个文件可以从<a class=link href=https://github.com/qinyuanpei/HttpServer/blob/master/Dockerfile target=_blank rel=noopener>这里</a>获取：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln> 1</span>FROM ubuntu:14.04
+<span class=ln> 2</span>LABEL <span class=nv>vendor</span><span class=o>=</span><span class=s2>&#34;qinyuanpei@163.com&#34;</span>
+<span class=ln> 3</span>
+<span class=ln> 4</span><span class=c1># Install Mono &amp;&amp; XBuild</span>
+<span class=ln> 5</span>RUN sudo apt-get update
+<span class=ln> 6</span>RUN sudo apt-get upgrade -y
+<span class=ln> 7</span>RUN sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+<span class=ln> 8</span>RUN sudo apt install apt-transport-https -y
+<span class=ln> 9</span>RUN sudo apt-get install wget -y
+<span class=ln>10</span>RUN <span class=nb>echo</span> <span class=s2>&#34;deb https://download.mono-project.com/repo/ubuntu stable-trusty main&#34;</span> <span class=p>|</span> sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+<span class=ln>11</span>RUN sudo apt-get update
+<span class=ln>12</span>RUN sudo apt-get install aptitude -y
+<span class=ln>13</span>RUN sudo apt-get install -f
+<span class=ln>14</span>RUN sudo apt-get install -y git
+<span class=ln>15</span>RUN sudo apt-get install -y zip
+<span class=ln>16</span>RUN sudo apt-get install -y unzip
+<span class=ln>17</span>RUN sudo aptitude install -y mono-complete
+<span class=ln>18</span>
+<span class=ln>19</span><span class=c1># Intall Nuget</span>
+<span class=ln>20</span>RUN sudo wget -O nuget.exe https://dist.nuget.org/win-x86-commandline/v4.6.2/nuget.exe 
+<span class=ln>21</span><span class=c1>#RUN alias nuget=&#34;mono nuget.exe&#34;</span>
+<span class=ln>22</span>
+<span class=ln>23</span><span class=c1># Install Sonar-Scanner</span>
+<span class=ln>24</span>RUN sudo wget -O sonar-scanner.zip https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/4.3.0.1333/sonar-scanner-msbuild-4.3.0.1333-net46.zip
+<span class=ln>25</span>RUN sudo unzip sonar-scanner.zip -d ./sonar-scanner
+<span class=ln>26</span><span class=c1>#RUN alias sonar-scanner=&#34;mono .SonarQube.Scanner.MSBuild.exe&#34;</span>
+<span class=ln>27</span>
+<span class=ln>28</span><span class=c1># Install NUnit</span>
+<span class=ln>29</span>RUN mono nuget.exe install NUnit.Runners -Version 3.8.0 -OutputDirectory ./TestRunner
+<span class=ln>30</span><span class=c1>#RUN alias nunit=&#34;mono ./TestRunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe&#34;</span>
+<span class=ln>31</span>
+<span class=ln>32</span><span class=c1># Build Project &amp;&amp; Sonar Analyse &amp;&amp; UnitTest</span>
+<span class=ln>33</span>RUN git clone https://github.com/qinyuanpei/HttpServer.git
+<span class=ln>34</span>RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe begin /k:<span class=s2>&#34;Sonar-HttpServer&#34;</span> /d:sonar.organization<span class=o>=</span><span class=s2>&#34;qinyuanpei-github&#34;</span> /d:sonar.host.url<span class=o>=</span><span class=s2>&#34;https://sonarcloud.io&#34;</span> /d:sonar.login<span class=o>=</span><span class=s2>&#34;db795a28468dc7c12805b330afed53d362fdd2d9&#34;</span>
+<span class=ln>35</span>RUN msbuild /p:Configuration<span class=o>=</span>Release ./HttpServer/HTTPServer/HTTPServer.sln
+<span class=ln>36</span>RUN sudo mono ./sonar-scanner/SonarQube.Scanner.MSBuild.exe end /d:sonar.login<span class=o>=</span><span class=s2>&#34;db795a28468dc7c12805b330afed53d362fdd2d9&#34;</span>
+<span class=ln>37</span><span class=c1># RUN mono ./TestRunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./HttpServer/HTTPServer/HTTPServerLib.UnitTest/bin/Release/HttpServerLib.UnitTest.dll</span>
+<span class=ln>38</span>EXPOSE <span class=m>2048</span>
+<span class=ln>39</span> 
+</code></pre></div><p>好了，下面我们通过 Dockerfile 来构建镜像，这里不需要考虑部署，我们就是在 Docker 这个环境里跑跑结果(PS：不知道为什么 alias 在 Docker 里不起作用)：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>docker build -t httpserver:v1 . 
+</code></pre></div><p>可以看到，我们整个过程除了单元测试没有通过以外，其它的环节都非常顺利，这其中一个重要的原因是，博主这个项目对 Window 依赖较少，它是一个 C# 开发的简易 Web 服务器，主要是类库和控制台程序，可以完美地运行在 Linux 平台下，所以，跨平台最终考验的还是开发人员。
+<figure>
+<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fz0200fqctj212i0op77q.jpg>
+<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fz0200fqctj212i0op77q.jpg loading=lazy alt=Docker中构建的结果>
+</a>
+<figcaption>Docker中构建的结果</figcaption>
+</figure></p>
+<h1 id=one-more-thing>One More Thing</h1>
+<p>这里我们主要针对的是 .NET Framework，那么针对传统的 ASP.NET 以及最新的 .NET Core 又该如何做持续集成呢？这里简单说一下思路，具体的 Dockerfile 大家可以去 DockerHub 去找(抄)，这里我就不帮大家写了。对于传统的 ASP.NET，在本文的基础上增加 Jexus 就可以做 Linux 下的部署，当然，前提是要避免和 Window 太过紧密的耦合，否则即便是大罗神仙亲临，这持续集成永远都是个梦。对于 .NET Core ，只要安装了它的 SDK，编译、依赖管理、发布、部署都不再是问题，只要完善下单元测试和静态检查就可以，因为它是可以自部署的，并且天生就是为了跨平台而生，如果有可能，还是考虑用 .NET Core 吧，Windows 最适合的还是吃鸡打游戏(逃……</p>
+<h1 id=本文小结>本文小结</h1>
+<p>读过我之前<a class=link href=ttps://blog.yuanpei.me/posts/4891372/>博客</a>的朋友，一定会发现，我今天这篇博客里所做的事情，同我曾经在 .NET 项目上使用 TravisCI 是完全一样的，所不同的是， TravisCI 里的构建环境是别人提供好的，而这里的构建环境是我们自己搭建的。这并不是在做无用功，如果你需要搭建私有的 Linux 下的构建环境，我相信这篇文章会带给你一点启示。项目组最后还是放弃了这个方案，因为产品里集成了太多和 Window 关联的东西。而负责部署的同事最终如释重托，因为他们不必去踩这些无聊的坑，可对我来说，这像一道屈辱的烙印刻在我的心上，我甚至试过在 Docker 环境里搭建 Window 的环境，哪怕最终我发现我不能把 Docker 当一个虚拟机来用，我越来越害怕自己对那些变化一无所知，还庆幸自己可以在时光的影子里偷懒。</p>
+<p>有时候，人们假装配合持续集成的流程，因为它听上去非常美好，可对环境的依赖不愿意削弱，对单元测试不是那么重视，对代码质量不是那么在意，这一切又永远都只是听上去美好而已。我听到有面试官在面试的时候，批评面试者所做的运维工作不是那么的高大上，毕竟我们只是写了点脚本而已，离面试官心中的 DevOps 相去甚远。可 MSBuild是 XML 写成的脚本， make 不过是个纯文本的脚本，到底哪一种更高大上？我在这篇文章里使用了 Docker，能否让我的工作显得高大上？我们的工作到底有多少能适应 DevOps？我觉得想清楚这个再谈高大上，不是不可以啊？对吧？好了，这就是这篇文章的全部内容啦，谢谢大家！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/.net/>.NET</a>
+<a href=/tags/docker/>Docker</a>
+<a href=/tags/msbuild/>MSBuild</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-jexus-%E5%AE%9E%E7%8E%B0-asp.net-%E5%9C%A8-linux-%E5%B9%B3%E5%8F%B0%E4%B8%8B%E7%9A%84%E9%83%A8%E7%BD%B2/>
+<div class=article-details>
+<h2 class=article-title>使用 Jexus 实现 ASP.NET 在 Linux 平台下的部署</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E8%AE%B0%E4%B8%80%E6%AC%A1%E4%BB%8E%E5%B7%B2%E6%8D%9F%E5%9D%8F%E7%9A%84-git-%E4%BB%93%E5%BA%93%E4%B8%AD%E6%89%BE%E5%9B%9E%E4%BB%A3%E7%A0%81%E7%9A%84%E7%BB%8F%E5%8E%86/>
+<div class=article-details>
+<h2 class=article-title>记一次从已损坏的 Git 仓库中找回代码的经历</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9C%A8-wsl-%E4%B8%AD%E4%BD%BF%E7%94%A8-linux-%E6%A1%8C%E9%9D%A2%E7%8E%AF%E5%A2%83%E7%9A%84%E5%B0%9D%E8%AF%95%E4%B8%8E%E6%80%BB%E7%BB%93/>
+<div class=article-details>
+<h2 class=article-title>在 WSL 中使用 Linux 桌面环境的尝试与总结</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-vscode-%E4%BD%9C%E4%B8%BA-sourcetree-%E7%9A%84-diff-%E5%92%8C-merge-%E5%B7%A5%E5%85%B7/>
+<div class=article-details>
+<h2 class=article-title>使用 VSCode 作为 SourceTree 的 Diff 和 Merge 工具</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-sonarcloud-%E4%B8%BA.net/.net-core-%E9%A1%B9%E7%9B%AE%E9%9B%86%E6%88%90%E9%9D%99%E6%80%81%E6%A3%80%E6%9F%A5/>
+<div class=article-details>
+<h2 class=article-title>使用 SonarCloud 为.NET/.NET Core 项目集成静态检查</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#背景说明>背景说明</a></li>
+<li><a href=#构建过程>构建过程</a>
+<ol>
+<li><a href=#msbuild>MSBuild</a></li>
+<li><a href=#nuget>Nuget</a></li>
+<li><a href=#sonar>Sonar</a></li>
+<li><a href=#nunit>NUnit</a></li>
+</ol>
+</li>
+<li><a href=#牛刀小试>牛刀小试</a></li>
+<li><a href=#one-more-thing>One More Thing</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

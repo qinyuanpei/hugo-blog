@@ -1,0 +1,474 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="回想起来，博主第一次接触到Envoy，其实是在微软的示例项目 eShopOnContainers，在这个示例项目中，微软通过它来为Ordering API、Catalog API、Basket API 等多个服务提供网关的功能。当时，博主并没有对它做深入的探索。此刻再度回想起来，大概是因为那个时候更迷恋领域驱动设计(DDD)的理念。直到最近这段时间，博主需要在一个项目中用到Envoy，终于决定花点时间来学习一下相关内容。所以，接下来这几篇博客，大体上会以记录我学习Envoy的历程为主。考虑到Envoy的配置项特别多，在写作过程中难免会出现纰漏，希望大家谅解。如对具体的配置项存在疑问，请以官方最新的 文档 为准，本文所用的示例代码已经上传至 Github，大家作为参考即可。对于今天这篇博客，我们来聊聊 ASP.NET Core 搭载 Envoy 实现微服务的反向代理 这个话题，或许你曾经接触过 Nginx 或者 Ocelot，这次我们不妨来尝试一点新的东西，譬如，通过Docker-Compose来实现服务编排，如果对我说的这些东西感兴趣的话，请跟随我的脚步，一起来探索这广阔无垠的技术世界吧！
+走近 Envoy Envoy 官网对Envoy的定义是：
+ Envoy 是一个开源边缘和服务代理，专为原生云应用设计。
+ 而更进一步的定义是：
+ Envoy 是专为大型现代服务导向架构设计的 L7 代理和通讯总线。
+ 这两个定义依然让你感到云里雾里？没关系，请看下面这张图：
+ Envoy架构图 
+注：图片来源
+相信从这张图中，大家多少能看到反向代理的身影，即下游客户端发起请求，Envoy对请求进行侦听(Listeners)，并按照路由转发请求到指定的集群(Clusters)。接下来，每一个集群可以配置多个终结点，Envoy按照指定的负载均衡算法来筛选终结点，而这些终结点则指向了具体的上游服务。例如，我们熟悉的 Nginx ，使用listen关键字来指定侦听的端口，使用location关键字来指定路由，使用proxy_pass关键字来指定上游服务的地址。同样地，Ocelot 使用了类似的上下游(Upstream/Downstream)的概念，唯一的不同是，它的上下游的概念与这里是完全相反的。
+你可能会说，这个Envoy看起来“平平无奇”嘛，简直就像是“平平无奇”的古天乐一般。事实上，Envoy强大的地方在于：
+ 非侵入式的架构： 独立进程、对应用透明的Sidecar模式   Envoy 的 Sidecar 模式 
+ L3/L4/L7 架构：Envoy同时支持 OSI 七层模型中的第三层(网络层, IP 协议)、第四层(传输层，TCP / UDP 协议)、第七层(应用层，HTTP 协议) 顶级 HTTP/2 支持： 视 HTTP/2 为一等公民，且可以在 HTTP/2 和 HTTP/1."><title>ASP.NET Core 搭载 Envoy 实现微服务的反向代理</title>
+<link rel=canonical href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="ASP.NET Core 搭载 Envoy 实现微服务的反向代理">
+<meta property="og:description" content="回想起来，博主第一次接触到Envoy，其实是在微软的示例项目 eShopOnContainers，在这个示例项目中，微软通过它来为Ordering API、Catalog API、Basket API 等多个服务提供网关的功能。当时，博主并没有对它做深入的探索。此刻再度回想起来，大概是因为那个时候更迷恋领域驱动设计(DDD)的理念。直到最近这段时间，博主需要在一个项目中用到Envoy，终于决定花点时间来学习一下相关内容。所以，接下来这几篇博客，大体上会以记录我学习Envoy的历程为主。考虑到Envoy的配置项特别多，在写作过程中难免会出现纰漏，希望大家谅解。如对具体的配置项存在疑问，请以官方最新的 文档 为准，本文所用的示例代码已经上传至 Github，大家作为参考即可。对于今天这篇博客，我们来聊聊 ASP.NET Core 搭载 Envoy 实现微服务的反向代理 这个话题，或许你曾经接触过 Nginx 或者 Ocelot，这次我们不妨来尝试一点新的东西，譬如，通过Docker-Compose来实现服务编排，如果对我说的这些东西感兴趣的话，请跟随我的脚步，一起来探索这广阔无垠的技术世界吧！
+走近 Envoy Envoy 官网对Envoy的定义是：
+ Envoy 是一个开源边缘和服务代理，专为原生云应用设计。
+ 而更进一步的定义是：
+ Envoy 是专为大型现代服务导向架构设计的 L7 代理和通讯总线。
+ 这两个定义依然让你感到云里雾里？没关系，请看下面这张图：
+ Envoy架构图 
+注：图片来源
+相信从这张图中，大家多少能看到反向代理的身影，即下游客户端发起请求，Envoy对请求进行侦听(Listeners)，并按照路由转发请求到指定的集群(Clusters)。接下来，每一个集群可以配置多个终结点，Envoy按照指定的负载均衡算法来筛选终结点，而这些终结点则指向了具体的上游服务。例如，我们熟悉的 Nginx ，使用listen关键字来指定侦听的端口，使用location关键字来指定路由，使用proxy_pass关键字来指定上游服务的地址。同样地，Ocelot 使用了类似的上下游(Upstream/Downstream)的概念，唯一的不同是，它的上下游的概念与这里是完全相反的。
+你可能会说，这个Envoy看起来“平平无奇”嘛，简直就像是“平平无奇”的古天乐一般。事实上，Envoy强大的地方在于：
+ 非侵入式的架构： 独立进程、对应用透明的Sidecar模式   Envoy 的 Sidecar 模式 
+ L3/L4/L7 架构：Envoy同时支持 OSI 七层模型中的第三层(网络层, IP 协议)、第四层(传输层，TCP / UDP 协议)、第七层(应用层，HTTP 协议) 顶级 HTTP/2 支持： 视 HTTP/2 为一等公民，且可以在 HTTP/2 和 HTTP/1.">
+<meta property="og:url" content="/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Envoy"><meta property="article:tag" content="微服务"><meta property="article:tag" content="网关"><meta property="article:tag" content="反向代理"><meta property="article:published_time" content="2021-07-01T22:49:47+00:00"><meta property="article:modified_time" content="2021-07-01T22:49:47+00:00">
+<meta name=twitter:title content="ASP.NET Core 搭载 Envoy 实现微服务的反向代理">
+<meta name=twitter:description content="回想起来，博主第一次接触到Envoy，其实是在微软的示例项目 eShopOnContainers，在这个示例项目中，微软通过它来为Ordering API、Catalog API、Basket API 等多个服务提供网关的功能。当时，博主并没有对它做深入的探索。此刻再度回想起来，大概是因为那个时候更迷恋领域驱动设计(DDD)的理念。直到最近这段时间，博主需要在一个项目中用到Envoy，终于决定花点时间来学习一下相关内容。所以，接下来这几篇博客，大体上会以记录我学习Envoy的历程为主。考虑到Envoy的配置项特别多，在写作过程中难免会出现纰漏，希望大家谅解。如对具体的配置项存在疑问，请以官方最新的 文档 为准，本文所用的示例代码已经上传至 Github，大家作为参考即可。对于今天这篇博客，我们来聊聊 ASP.NET Core 搭载 Envoy 实现微服务的反向代理 这个话题，或许你曾经接触过 Nginx 或者 Ocelot，这次我们不妨来尝试一点新的东西，譬如，通过Docker-Compose来实现服务编排，如果对我说的这些东西感兴趣的话，请跟随我的脚步，一起来探索这广阔无垠的技术世界吧！
+走近 Envoy Envoy 官网对Envoy的定义是：
+ Envoy 是一个开源边缘和服务代理，专为原生云应用设计。
+ 而更进一步的定义是：
+ Envoy 是专为大型现代服务导向架构设计的 L7 代理和通讯总线。
+ 这两个定义依然让你感到云里雾里？没关系，请看下面这张图：
+ Envoy架构图 
+注：图片来源
+相信从这张图中，大家多少能看到反向代理的身影，即下游客户端发起请求，Envoy对请求进行侦听(Listeners)，并按照路由转发请求到指定的集群(Clusters)。接下来，每一个集群可以配置多个终结点，Envoy按照指定的负载均衡算法来筛选终结点，而这些终结点则指向了具体的上游服务。例如，我们熟悉的 Nginx ，使用listen关键字来指定侦听的端口，使用location关键字来指定路由，使用proxy_pass关键字来指定上游服务的地址。同样地，Ocelot 使用了类似的上下游(Upstream/Downstream)的概念，唯一的不同是，它的上下游的概念与这里是完全相反的。
+你可能会说，这个Envoy看起来“平平无奇”嘛，简直就像是“平平无奇”的古天乐一般。事实上，Envoy强大的地方在于：
+ 非侵入式的架构： 独立进程、对应用透明的Sidecar模式   Envoy 的 Sidecar 模式 
+ L3/L4/L7 架构：Envoy同时支持 OSI 七层模型中的第三层(网络层, IP 协议)、第四层(传输层，TCP / UDP 协议)、第七层(应用层，HTTP 协议) 顶级 HTTP/2 支持： 视 HTTP/2 为一等公民，且可以在 HTTP/2 和 HTTP/1.">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/>ASP.NET Core 搭载 Envoy 实现微服务的反向代理</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jul 01, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>回想起来，博主第一次接触到<code>Envoy</code>，其实是在微软的示例项目 <a class=link href=https://github.com/dotnet-architecture/eShopOnContainers target=_blank rel=noopener>eShopOnContainers</a>，在这个示例项目中，微软通过它来为<code>Ordering API</code>、<code>Catalog API</code>、<code>Basket API</code> 等多个服务提供网关的功能。当时，博主并没有对它做深入的探索。此刻再度回想起来，大概是因为那个时候更迷恋领域驱动设计(DDD)的理念。直到最近这段时间，博主需要在一个项目中用到<code>Envoy</code>，终于决定花点时间来学习一下相关内容。所以，接下来这几篇博客，大体上会以记录我学习<code>Envoy</code>的历程为主。考虑到<code>Envoy</code>的配置项特别多，在写作过程中难免会出现纰漏，希望大家谅解。如对具体的配置项存在疑问，请以官方最新的 <a class=link href=https://www.envoyproxy.io/docs/envoy/latest/ target=_blank rel=noopener>文档</a> 为准，本文所用的示例代码已经上传至 <a class=link href=https://hub.fastgit.org/Regularly-Archive/2021/tree/master/src/EnvoyGateway target=_blank rel=noopener>Github</a>，大家作为参考即可。对于今天这篇博客，我们来聊聊 ASP.NET Core 搭载 Envoy 实现微服务的反向代理 这个话题，或许你曾经接触过 <a class=link href=https://www.nginx.com/ target=_blank rel=noopener>Nginx</a> 或者 <a class=link href=https://github.com/ThreeMammals/Ocelot target=_blank rel=noopener>Ocelot</a>，这次我们不妨来尝试一点新的东西，譬如，通过<code>Docker-Compose</code>来实现服务编排，如果对我说的这些东西感兴趣的话，请跟随我的脚步，一起来探索这广阔无垠的技术世界吧！</p>
+<h1 id=走近-envoy>走近 Envoy</h1>
+<p><a class=link href=https://www.envoyproxy.io/ target=_blank rel=noopener>Envoy</a> 官网对<code>Envoy</code>的定义是：</p>
+<blockquote>
+<p>Envoy 是一个开源边缘和服务代理，专为原生云应用设计。</p>
+</blockquote>
+<p>而更进一步的定义是：</p>
+<blockquote>
+<p>Envoy 是专为大型现代服务导向架构设计的 L7 代理和通讯总线。</p>
+</blockquote>
+<p>这两个定义依然让你感到云里雾里？没关系，请看下面这张图：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/07/02/k2DhXMudnibrzgt.png>
+<img src=/https:/i.loli.net/2021/07/02/k2DhXMudnibrzgt.png loading=lazy alt=Envoy架构图>
+</a>
+<figcaption>Envoy架构图</figcaption>
+</figure></p>
+<p>注：<a class=link href=https://fuckcloudnative.io/envoy-handbook/docs/gettingstarted/architecture/ target=_blank rel=noopener>图片来源</a></p>
+<p>相信从这张图中，大家多少能看到反向代理的身影，即下游客户端发起请求，<code>Envoy</code>对请求进行侦听(<strong>Listeners</strong>)，并按照路由转发请求到指定的集群(<strong>Clusters</strong>)。接下来，每一个集群可以配置多个终结点，<code>Envoy</code>按照指定的负载均衡算法来筛选终结点，而这些终结点则指向了具体的上游服务。例如，我们熟悉的 <a class=link href=https://www.nginx.com/ target=_blank rel=noopener>Nginx</a> ，使用<code>listen</code>关键字来指定侦听的端口，使用<code>location</code>关键字来指定路由，使用<code>proxy_pass</code>关键字来指定上游服务的地址。同样地，<a class=link href=https://github.com/ThreeMammals/Ocelot target=_blank rel=noopener>Ocelot</a> 使用了类似的上下游(<strong>Upstream</strong>/<strong>Downstream</strong>)的概念，唯一的不同是，它的上下游的概念与这里是完全相反的。</p>
+<p>你可能会说，这个<code>Envoy</code>看起来“平平无奇”嘛，简直就像是“平平无奇”的古天乐一般。事实上，<code>Envoy</code>强大的地方在于：</p>
+<ul>
+<li>非侵入式的架构： 独立进程、对应用透明的<code>Sidecar</code>模式</li>
+</ul>
+<p><figure>
+<a href=/https:/i.loli.net/2021/07/02/lMnPhZzBd38tpVF.png>
+<img src=/https:/i.loli.net/2021/07/02/lMnPhZzBd38tpVF.png loading=lazy alt="Envoy 的 Sidecar 模式">
+</a>
+<figcaption>Envoy 的 Sidecar 模式</figcaption>
+</figure></p>
+<ul>
+<li>L3/L4/L7 架构：<code>Envoy</code>同时支持 OSI 七层模型中的第三层(网络层, IP 协议)、第四层(传输层，TCP / UDP 协议)、第七层(应用层，HTTP 协议)</li>
+<li>顶级 HTTP/2 支持： 视 <code>HTTP/2</code> 为一等公民，且可以在 <code>HTTP/2</code> 和 <code>HTTP/1.1</code>间相互转换</li>
+<li>gRPC 支持：<code>Envoy</code> 支持 <code>HTTP/2</code>，自然支持使用 <code>HTTP/2</code> 作为底层多路复用协议的 <code>gRPC</code></li>
+<li>服务发现和动态配置：与 <code>Nginx</code> 等代理的热加载不同，<code>Envoy</code> 可以通过 <code>API</code> 接口动态更新配置，无需重启代理。</li>
+<li>特殊协议支持：Envoy 支持对特殊协议在 L7 进行嗅探和统计，包括：<a class=link href=https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/network_filters/mongo_proxy_filter# target=_blank rel=noopener>MongoDB</a>、<a class=link href=https://www.servicemesher.com/envoy/intro/arch_overview/dynamo.html#arch-overview-dynamo target=_blank rel=noopener>DynamoDB</a> 等。</li>
+<li>可观测性：<code>Envoy</code> 内置 <code>stats</code> 模块，可以集成诸如 <code>prometheus/statsd</code> 等监控方案。还可以集成分布式追踪系统，对请求进行追踪。</li>
+</ul>
+<h1 id=envoy配置文件>Envoy配置文件</h1>
+<p><code>Envoy</code>通过配置文件来实现各种各样的功能，其完整的配置结构如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=ln> 1</span><span class=p>{</span>
+<span class=ln> 2</span>  <span class=nt>&#34;node&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln> 3</span>  <span class=nt>&#34;static_resources&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln> 4</span>  <span class=nt>&#34;dynamic_resources&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln> 5</span>  <span class=nt>&#34;cluster_manager&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln> 6</span>  <span class=nt>&#34;hds_config&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln> 7</span>  <span class=nt>&#34;flags_path&#34;</span><span class=p>:</span> <span class=s2>&#34;...&#34;</span><span class=p>,</span>
+<span class=ln> 8</span>  <span class=nt>&#34;stats_sinks&#34;</span><span class=p>:</span> <span class=p>[],</span>
+<span class=ln> 9</span>  <span class=nt>&#34;stats_config&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln>10</span>  <span class=nt>&#34;stats_flush_interval&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln>11</span>  <span class=nt>&#34;watchdog&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln>12</span>  <span class=nt>&#34;tracing&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln>13</span>  <span class=nt>&#34;runtime&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln>14</span>  <span class=nt>&#34;layered_runtime&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln>15</span>  <span class=nt>&#34;admin&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln>16</span>  <span class=nt>&#34;overload_manager&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln>17</span>  <span class=nt>&#34;enable_dispatcher_stats&#34;</span><span class=p>:</span> <span class=s2>&#34;...&#34;</span><span class=p>,</span>
+<span class=ln>18</span>  <span class=nt>&#34;header_prefix&#34;</span><span class=p>:</span> <span class=s2>&#34;...&#34;</span><span class=p>,</span>
+<span class=ln>19</span>  <span class=nt>&#34;stats_server_version_override&#34;</span><span class=p>:</span> <span class=s2>&#34;{...}&#34;</span><span class=p>,</span>
+<span class=ln>20</span>  <span class=nt>&#34;use_tcp_for_dns_lookups&#34;</span><span class=p>:</span> <span class=s2>&#34;...&#34;</span>
+<span class=ln>21</span><span class=p>}</span>
+</code></pre></div><p>这里我们主要对侦听器(<strong>Listeners</strong>)、集群(<strong>Clusters</strong>) 和 管理(<strong>Admin</strong>)这三个常用的部分来进行说明。其中，(<strong>Listeners</strong>)、集群(<strong>Clusters</strong>) 均位于 <code>static_resources</code> 节点下，而 管理(<strong>Admin</strong>) 则有一个单独的<code>admin</code>节点。</p>
+<h2 id=侦听器listeners>侦听器(Listeners)</h2>
+<p>侦听器，顾名思义就是侦听一个或者多个端口：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=ln>1</span><span class=nt>static_resources</span><span class=p>:</span><span class=w>
+</span><span class=ln>2</span><span class=w>  </span><span class=nt>listeners</span><span class=p>:</span><span class=w>
+</span><span class=ln>3</span><span class=w>  </span>- <span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=ln>4</span><span class=w>      </span><span class=nt>socket_address</span><span class=p>:</span><span class=w>
+</span><span class=ln>5</span><span class=w>        </span><span class=nt>address</span><span class=p>:</span><span class=w> </span><span class=m>0.0.0.0</span><span class=w>
+</span><span class=ln>6</span><span class=w>        </span><span class=nt>port_value</span><span class=p>:</span><span class=w> </span><span class=m>9090</span><span class=w>
+</span></code></pre></div><p>在这里，它表示的是侦听<code>9090</code>这个端口，这里的<code>listeners</code>是一个数组，所以，你可以同时侦听多个端口。</p>
+<h3 id=过滤器filters>过滤器(Filters)</h3>
+<p>我们知道，单单侦听一个或者多个端口，是无法完成一个<code>HTTP</code>请求的，因为它还不具备处理<code>HTTP</code>请求的能力。</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/07/02/CQftjTErndyNh7q.png>
+<img src=/https:/i.loli.net/2021/07/02/CQftjTErndyNh7q.png loading=lazy alt="Envoy Filters 架构图">
+</a>
+<figcaption>Envoy Filters 架构图</figcaption>
+</figure></p>
+<p>在 <code>Envoy</code> 中，这一工作由一个或者多个过滤器组成的过滤器链(<strong>Filter Chains</strong>) 来完成：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=ln> 1</span><span class=nt>static_resources</span><span class=p>:</span><span class=w>
+</span><span class=ln> 2</span><span class=w>  </span><span class=nt>listeners</span><span class=p>:</span><span class=w>
+</span><span class=ln> 3</span><span class=w>  </span>- <span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=ln> 4</span><span class=w>      </span><span class=nt>socket_address</span><span class=p>:</span><span class=w>
+</span><span class=ln> 5</span><span class=w>        </span><span class=nt>address</span><span class=p>:</span><span class=w> </span><span class=m>0.0.0.0</span><span class=w>
+</span><span class=ln> 6</span><span class=w>        </span><span class=nt>port_value</span><span class=p>:</span><span class=w> </span><span class=m>9090</span><span class=w>
+</span><span class=ln> 7</span><span class=w>    </span><span class=nt>filter_chains</span><span class=p>:</span><span class=w>
+</span><span class=ln> 8</span><span class=w>    </span>- <span class=nt>filters</span><span class=p>:</span><span class=w>
+</span><span class=ln> 9</span><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>envoy.filters.network.http_connection_manager</span><span class=w>
+</span><span class=ln>10</span><span class=w>        </span><span class=nt>typed_config</span><span class=p>:</span><span class=w>
+</span><span class=ln>11</span><span class=w>          </span><span class=nt>&#34;@type&#34;: </span><span class=l>type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager</span><span class=w>
+</span><span class=ln>12</span><span class=w>          </span><span class=nt>codec_type</span><span class=p>:</span><span class=w> </span><span class=l>AUTO</span><span class=w>
+</span><span class=ln>13</span><span class=w>          </span><span class=nt>stat_prefix</span><span class=p>:</span><span class=w> </span><span class=l>ingress_http</span><span class=w>
+</span><span class=ln>14</span><span class=w>          </span><span class=nt>route_config</span><span class=p>:</span><span class=w>
+</span><span class=ln>15</span><span class=w>            </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>local_route</span><span class=w>
+</span><span class=ln>16</span><span class=w>            </span><span class=nt>virtual_hosts</span><span class=p>:</span><span class=w>
+</span><span class=ln>17</span><span class=w>            </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>backend</span><span class=w>
+</span><span class=ln>18</span><span class=w>              </span><span class=nt>domains</span><span class=p>:</span><span class=w>
+</span><span class=ln>19</span><span class=w>              </span>- <span class=s2>&#34;*&#34;</span><span class=w>
+</span><span class=ln>20</span><span class=w>              </span><span class=nt>routes</span><span class=p>:</span><span class=w>
+</span><span class=ln>21</span><span class=w>              </span>- <span class=nt>match</span><span class=p>:</span><span class=w>
+</span><span class=ln>22</span><span class=w>                  </span><span class=nt>prefix</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;/api/w&#34;</span><span class=w>
+</span><span class=ln>23</span><span class=w>                </span><span class=nt>route</span><span class=p>:</span><span class=w>
+</span><span class=ln>24</span><span class=w>                  </span><span class=nt>auto_host_rewrite</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=ln>25</span><span class=w>                  </span><span class=nt>prefix_rewrite</span><span class=p>:</span><span class=w> </span><span class=l>/Weather</span><span class=w>
+</span><span class=ln>26</span><span class=w>                  </span><span class=nt>cluster</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice</span><span class=w>
+</span><span class=ln>27</span><span class=w>              </span>- <span class=nt>match</span><span class=p>:</span><span class=w>
+</span><span class=ln>28</span><span class=w>                  </span><span class=nt>prefix</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;/api/c&#34;</span><span class=w>
+</span><span class=ln>29</span><span class=w>                </span><span class=nt>route</span><span class=p>:</span><span class=w>
+</span><span class=ln>30</span><span class=w>                  </span><span class=nt>auto_host_rewrite</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=ln>31</span><span class=w>                  </span><span class=nt>prefix_rewrite</span><span class=p>:</span><span class=w> </span><span class=l>/City</span><span class=w>
+</span><span class=ln>32</span><span class=w>                  </span><span class=nt>cluster</span><span class=p>:</span><span class=w> </span><span class=l>cityservice</span><span class=w>
+</span><span class=ln>33</span><span class=w>          </span><span class=nt>http_filters</span><span class=p>:</span><span class=w>
+</span><span class=ln>34</span><span class=w>          </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>envoy.filters.http.router</span><span class=w>
+</span></code></pre></div><p>在这段配置中，<code>Http Connection Manager</code>表示的是位于 L3(<strong>网络层</strong>)/L4(<strong>传输层</strong>) 的过滤器，这个过滤器连接的下一个过滤器是<code>envoy.filters.http.router</code>，表示的是 L7(<strong>应用层</strong>) 的关于路由的过滤器。个人感觉，这和我们通常所说的中间件相当接近。注意到，我们在 L3/L4 这个层级上做了什么事情呢？其实应该是 TCP/IP 层面上请求转发，这里定义的路由规则如下：</p>
+<ul>
+<li>当外部调用者访问<code>/api/w</code>时，请求会被转发到<code>WeatherService</code>。</li>
+<li>当外部调用者访问<code>/api/c</code>时，请求会被转发到<code>CityService</code>。</li>
+</ul>
+<h2 id=集群clusters>集群(Clusters)</h2>
+<p>在过滤器部分，我们定义了路由，那么，请求的最终去向是哪里呢？这里 <code>Envoy</code> 将其称之为 集群：:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=ln>1</span><span class=nt>static_resources</span><span class=p>:</span><span class=w>
+</span><span class=ln>2</span><span class=w>  </span><span class=nt>clusters</span><span class=p>:</span><span class=w>
+</span><span class=ln>3</span><span class=w>  </span><span class=c># City Service</span><span class=w>
+</span><span class=ln>4</span><span class=w>  </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>cityservice</span><span class=w>
+</span><span class=ln>5</span><span class=w>    </span><span class=nt>connect_timeout</span><span class=p>:</span><span class=w> </span><span class=m>0.</span><span class=l>25s</span><span class=w>
+</span><span class=ln>6</span><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>STRICT_DNS</span><span class=w>
+</span><span class=ln>7</span><span class=w>    </span><span class=nt>lb_policy</span><span class=p>:</span><span class=w> </span><span class=l>ROUND_ROBIN</span><span class=w>
+</span></code></pre></div><p>集群本身，其实只是一个名字，并没有实际的意义，真正工作的其实是指向上游服务的终结点，我们可以为每一个集群指定一个负载均衡策略，让它决定选择哪一个终结点来提供服务。</p>
+<h3 id=负载均衡load-assignment>负载均衡(Load Assignment)</h3>
+<p>目前，<code>Envoy</code>支持以下负载均衡算法：</p>
+<ul>
+<li>ROUND_ROBIN：轮询</li>
+<li>LEAST_REQUEST：最少请求</li>
+<li>RING_HASH：哈希环</li>
+<li>RANDOM：随机</li>
+<li>MAGLEV：磁悬浮</li>
+<li>CLUSTER_PROVIDED</li>
+</ul>
+<p>下面的示例展示了如何为某个集群配置负载均衡：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=ln> 1</span><span class=nt>static_resources</span><span class=p>:</span><span class=w>
+</span><span class=ln> 2</span><span class=w>  </span><span class=nt>clusters</span><span class=p>:</span><span class=w>
+</span><span class=ln> 3</span><span class=w>  </span><span class=c># Weather Service</span><span class=w>
+</span><span class=ln> 4</span><span class=w>  </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice</span><span class=w>
+</span><span class=ln> 5</span><span class=w>    </span><span class=nt>connect_timeout</span><span class=p>:</span><span class=w> </span><span class=m>0.</span><span class=l>25s</span><span class=w>
+</span><span class=ln> 6</span><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>STRICT_DNS</span><span class=w>
+</span><span class=ln> 7</span><span class=w>    </span><span class=nt>lb_policy</span><span class=p>:</span><span class=w> </span><span class=l>LEAST_REQUEST</span><span class=w>
+</span><span class=ln> 8</span><span class=w>    </span><span class=nt>load_assignment</span><span class=p>:</span><span class=w>
+</span><span class=ln> 9</span><span class=w>      </span><span class=nt>cluster_name</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice</span><span class=w>
+</span><span class=ln>10</span><span class=w>      </span><span class=nt>endpoints</span><span class=p>:</span><span class=w>
+</span><span class=ln>11</span><span class=w>      </span>- <span class=nt>lb_endpoints</span><span class=p>:</span><span class=w>
+</span><span class=ln>12</span><span class=w>        </span>- <span class=nt>endpoint</span><span class=p>:</span><span class=w>
+</span><span class=ln>13</span><span class=w>            </span><span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=ln>14</span><span class=w>              </span><span class=nt>socket_address</span><span class=p>:</span><span class=w>
+</span><span class=ln>15</span><span class=w>                </span><span class=nt>address</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice1</span><span class=w>
+</span><span class=ln>16</span><span class=w>                </span><span class=nt>port_value</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span><span class=ln>17</span><span class=w>        </span>- <span class=nt>endpoint</span><span class=p>:</span><span class=w>
+</span><span class=ln>18</span><span class=w>            </span><span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=ln>19</span><span class=w>              </span><span class=nt>socket_address</span><span class=p>:</span><span class=w>
+</span><span class=ln>20</span><span class=w>                </span><span class=nt>address</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice2</span><span class=w>
+</span><span class=ln>21</span><span class=w>                </span><span class=nt>port_value</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></code></pre></div><p>其中，<code>weatherservice1</code>和<code>weatherservice2</code>是同一个服务的两个容器实例，当我们使用<code>Docker-Compose</code>进行构建的时候，不需要显式地去指定每一个服务的IP地址，只要对应<code>docker-compose.yaml</code>文件中的服务名称即可。</p>
+<h2 id=管理admin>管理(Admin)</h2>
+<p>管理(<strong>Admin</strong>)这块儿相对简单一点，主要用来指定<code>Envoy</code>的的管理接口的端口号、访问日志存储路径等等：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=ln>1</span><span class=nt>admin</span><span class=p>:</span><span class=w>
+</span><span class=ln>2</span><span class=w>  </span><span class=nt>access_log_path</span><span class=p>:</span><span class=w> </span><span class=l>/tmp/admin_access.log</span><span class=w>
+</span><span class=ln>3</span><span class=w>  </span><span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=ln>4</span><span class=w>    </span><span class=nt>socket_address</span><span class=p>:</span><span class=w> </span>{<span class=w> </span><span class=nt>address: 0.0.0.0, port_value</span><span class=p>:</span><span class=w> </span><span class=m>9091</span><span class=w> </span>}<span class=w>
+</span></code></pre></div><h1 id=服务编排>服务编排</h1>
+<p>好了，在正确配置<code>Envoy</code>以后，我们来考虑如何对这些服务进行编排，在本文的 <a class=link href=https://hub.fastgit.org/Regularly-Archive/2021/tree/master/src/EnvoyGateway target=_blank rel=noopener>例子</a> 中，我们有两个后端服务，<code>WeatherService</code> 和 <code>CityService</code>，它们本质上是两个<code>ASP.NET Core</code>应用，我们希望通过<code>Envoy</code>来实现反向代理功能。这样做的好处是，后端服务的架构不会直接暴露给外部使用者。所以，你会注意到，在微服务架构的设计中，网关经常扮演着重要的角色。那么，如何对服务进行编排呢？这里我们使用<code>Docker-Compose</code>来完成这个工作：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=ln> 1</span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3&#39;</span><span class=w>
+</span><span class=ln> 2</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=ln> 3</span><span class=w>  </span><span class=nt>envoygateway</span><span class=p>:</span><span class=w>
+</span><span class=ln> 4</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w> </span><span class=l>Envoy/</span><span class=w>
+</span><span class=ln> 5</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=ln> 6</span><span class=w>      </span>- <span class=s2>&#34;9090:9090&#34;</span><span class=w>
+</span><span class=ln> 7</span><span class=w>      </span>- <span class=s2>&#34;9091:9091&#34;</span><span class=w>
+</span><span class=ln> 8</span><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span><span class=ln> 9</span><span class=w>      </span>- <span class=l>./Envoy/envoy.yaml:/etc/envoy/envoy.yaml</span><span class=w>
+</span><span class=ln>10</span><span class=w>  </span><span class=nt>cityservice</span><span class=p>:</span><span class=w>
+</span><span class=ln>11</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w> </span><span class=l>CityService/</span><span class=w>
+</span><span class=ln>12</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=ln>13</span><span class=w>      </span>- <span class=s2>&#34;8081:80&#34;</span><span class=w>
+</span><span class=ln>14</span><span class=w>    </span><span class=nt>environment</span><span class=p>:</span><span class=w>
+</span><span class=ln>15</span><span class=w>      </span><span class=nt>ASPNETCORE_URLS</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;http://+&#34;</span><span class=w>
+</span><span class=ln>16</span><span class=w>      </span><span class=nt>ASPNETCORE_ENVIRONMENT</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;Development&#34;</span><span class=w>
+</span><span class=ln>17</span><span class=w>  </span><span class=nt>weatherservice</span><span class=p>:</span><span class=w>
+</span><span class=ln>18</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w> </span><span class=l>WeatherService/</span><span class=w>
+</span><span class=ln>19</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=ln>20</span><span class=w>      </span>- <span class=s2>&#34;8082:80&#34;</span><span class=w>
+</span><span class=ln>21</span><span class=w>    </span><span class=nt>environment</span><span class=p>:</span><span class=w>
+</span><span class=ln>22</span><span class=w>      </span><span class=nt>ASPNETCORE_URLS</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;http://+&#34;</span><span class=w>
+</span><span class=ln>23</span><span class=w>      </span><span class=nt>ASPNETCORE_ENVIRONMENT</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;Development&#34;</span><span class=w>
+</span></code></pre></div><p>可以注意到，这里需要部署3个服务，其中，<code>Envoy</code>负责监听<code>9090</code>端口，即对外的网关。而两个后端服务，<code>WeatherService</code> 和 <code>CityService</code>则被分别部署在<code>8082</code>和<code>8081</code>端口。这里最重要的是<code>envoy.yaml</code>这个配置文件，我们在上一节编写的配置文件会挂在到容器目录：<code>/etc/envoy/envoy.yaml</code>。<code>Envoy</code>将如何使用这个配置文件呢？事实上，这个<code>Dockerfile</code>是这样编写的：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-dockerfile data-lang=dockerfile><span class=ln>1</span><span class=k>FROM</span><span class=s> envoyproxy/envoy-alpine:v1.16-latest</span><span class=err>
+</span><span class=ln>2</span><span class=err></span><span class=k>COPY</span> ./envoy.yaml /etc/envoy.yaml<span class=err>
+</span><span class=ln>3</span><span class=err></span><span class=k>RUN</span> chmod go+r /etc/envoy.yaml<span class=err>
+</span><span class=ln>4</span><span class=err></span><span class=k>CMD</span> <span class=p>[</span><span class=s2>&#34;/usr/local/bin/envoy&#34;</span><span class=p>,</span> <span class=s2>&#34;-c&#34;</span><span class=p>,</span> <span class=s2>&#34;/etc/envoy.yaml&#34;</span><span class=p>,</span> <span class=s2>&#34;--service-cluster&#34;</span><span class=p>,</span> <span class=s2>&#34;reverse-proxy&#34;</span><span class=p>]</span><span class=err>
+</span></code></pre></div><p>除此之外，Envoy通过<code>9091</code>端口提供管理功能，我们可以通过这个端口来获得集群、请求、统计等信息，这一特性我们将会在接下来的文章里用到：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/07/02/1OlNJ7um6BnLFeb.png>
+<img src=/https:/i.loli.net/2021/07/02/1OlNJ7um6BnLFeb.png loading=lazy alt="Envoy 管理界面功能一览">
+</a>
+<figcaption>Envoy 管理界面功能一览</figcaption>
+</figure></p>
+<p>这里，想分享一个关于<code>Envoy</code>的小技巧，当我们在指定集群的地址时，可以使用<code>docker-compose.yaml</code>中定义的服务的名称，这会比填入一个固定的<code>IP</code>地址要更优雅一点，理由非常简单，我们不希望每次都来维护这个地址。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=ln> 1</span><span class=w> </span><span class=c># Weather Service</span><span class=w>
+</span><span class=ln> 2</span><span class=w>  </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice</span><span class=w>
+</span><span class=ln> 3</span><span class=w>    </span><span class=nt>connect_timeout</span><span class=p>:</span><span class=w> </span><span class=m>0.</span><span class=l>25s</span><span class=w>
+</span><span class=ln> 4</span><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>STRICT_DNS</span><span class=w>
+</span><span class=ln> 5</span><span class=w>    </span><span class=nt>lb_policy</span><span class=p>:</span><span class=w> </span><span class=l>ROUND_ROBIN</span><span class=w>
+</span><span class=ln> 6</span><span class=w>    </span><span class=nt>load_assignment</span><span class=p>:</span><span class=w>
+</span><span class=ln> 7</span><span class=w>      </span><span class=nt>cluster_name</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice</span><span class=w>
+</span><span class=ln> 8</span><span class=w>      </span><span class=nt>endpoints</span><span class=p>:</span><span class=w>
+</span><span class=ln> 9</span><span class=w>      </span>- <span class=nt>lb_endpoints</span><span class=p>:</span><span class=w>
+</span><span class=ln>10</span><span class=w>        </span>- <span class=nt>endpoint</span><span class=p>:</span><span class=w>
+</span><span class=ln>11</span><span class=w>            </span><span class=nt>address</span><span class=p>:</span><span class=w>
+</span><span class=ln>12</span><span class=w>              </span><span class=nt>socket_address</span><span class=p>:</span><span class=w>
+</span><span class=ln>13</span><span class=w>                </span><span class=c># 建议使用 docker-compose.yaml 文件中对应的服务名称来代替IP地址</span><span class=w>
+</span><span class=ln>14</span><span class=w>                </span><span class=nt>address</span><span class=p>:</span><span class=w> </span><span class=l>weatherservice</span><span class=w>
+</span><span class=ln>15</span><span class=w>                </span><span class=nt>port_value</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></code></pre></div><p>接下来，如果每一个服务的<code>Dockerfile</code>都编写正确的话，我们就可以通过<code>docker compose up</code>命令启动这一组服务，通过命令行下打印出来的信息，我们可以确认，基于<code>Envoy</code>的网关服务、两个基于<code>ASP.NET Core</code>的后端服务都已经成功运行起来：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/07/02/KMo4dn17m9p8NSg.png>
+<img src=/https:/i.loli.net/2021/07/02/KMo4dn17m9p8NSg.png loading=lazy alt="在 Docker-Compose 中成功启动服务">
+</a>
+<figcaption>在 Docker-Compose 中成功启动服务</figcaption>
+</figure></p>
+<p>还记得我们的路由规则是是如何定义的吗？</p>
+<ul>
+<li>当外部调用者访问<code>/api/w</code>时，请求会被转发到<code>WeatherService</code>。</li>
+<li>当外部调用者访问<code>/api/c</code>时，请求会被转发到<code>CityService</code>。</li>
+</ul>
+<p>实际的情况如何呢？我们不妨来验证一下：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/07/02/YX4VywtkOCJ2rSI.png>
+<img src=/https:/i.loli.net/2021/07/02/YX4VywtkOCJ2rSI.png loading=lazy alt="通过 Envoy 调用 WeatcherService ">
+</a>
+<figcaption>通过 Envoy 调用 WeatcherService</figcaption>
+</figure></p>
+<p>可以注意到，不管是浏览器返回的结果，还是容器内部输出的日志，都表明请求确实被转发到对应的服务上面去了，这说明我们设计的网关已经生效。至此，我们实现了基于<code>Envoy</code>的反向代理功能，有没有觉得比<code>Nginx</code>要简单一点？重要的是，基于<code>Docker-Compose</code>的服务编排使用起来真的舒适度爆棚，这意味着你会有更多的属于程序员的贤者时间。前段时间热映的电视剧《觉醒时代》，鲁迅先生写完《狂人日记》后那一滴眼泪令人动容。也许，这种如匠人一般反复雕琢、臻于完美的心境是互通的，即使人类的悲欢并不相通，对美和极致的追求竟然出奇的相似。</p>
+<h1 id=本文小结>本文小结</h1>
+<p>本文主要介绍了 ASP.NET Core 搭载 <a class=link href=https://www.envoyproxy.io/ target=_blank rel=noopener>Envoy</a> 实现反向代理这一过程。对于 <code>Envoy</code>，有两个重要的定义：<strong>第一、Envoy 是一个开源边缘和服务代理，专为原生云应用设计。第二、Envoy 是专为大型现代服务导向架构设计的 L7 代理和通讯总线</strong>。相比 <a class=link href=https://www.nginx.com/ target=_blank rel=noopener>Nginx</a> 和 <a class=link href=https://github.com/ThreeMammals/Ocelot target=_blank rel=noopener>Ocelot</a> ，Envoy 提供了 <code>L7</code> 级别的代理服务，支持 <code>HTTP/2</code> 和 <code>gRPC</code>，无侵入式的<code>Sidecar</code>模式可以提供与应用进程完全隔离的代理服务。接下来，博主对 <code>Envoy</code> 配置文件的结构及主要的配置项进行了说明，对于常见的 API 网关，我们应该重点关注侦听器(<strong>Listeners</strong>) 和 集群(<strong>Clusters</strong>)。最终，我们结合<code>Docker-Compose</code>对服务进行了编排，并由此构建出了一个基本的反向代理的方案。本文的源代码已托管至 <a class=link href=https://hub.fastgit.org/Regularly-Archive/2021/tree/master/src/EnvoyGateway target=_blank rel=noopener>Github</a> ，大家可以在此基础上做进一步的探索。好了，以上就是这篇博客的的全部内容啦，欢迎大家就本文中提出的方案、代码等进行讨论，如果大家有任何意见或者建议，欢迎在评论区进行留言，谢谢大家！</p>
+<h1 id=参考文档>参考文档</h1>
+<ul>
+<li><a class=link href=https://fuckcloudnative.io/envoy-handbook/ target=_blank rel=noopener>Envoy中文指南</a></li>
+<li><a class=link href=https://www.envoyproxy.io/docs/envoy/latest/ target=_blank rel=noopener>Envoy官方文档</a></li>
+<li><a class=link href=https://www.cnblogs.com/sheng-jie/p/use-envoy-proxy-as-apigateways-in-eshoponcontainers.html target=_blank rel=noopener>eShopOnContainers 知多少[12]：Envoy Gateways</a></li>
+</ul>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/envoy/>Envoy</a>
+<a href=/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/>微服务</a>
+<a href=/tags/%E7%BD%91%E5%85%B3/>网关</a>
+<a href=/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/>反向代理</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0-grpc-%E6%9C%8D%E5%8A%A1%E4%BB%A3%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现 gRPC 服务代理</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81jwt/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现微服务身份认证(JWT)</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%9B%91%E6%8E%A7%E9%A2%84%E8%AD%A6/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现微服务的监控预警</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现微服务的负载均衡</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/envoy-%E9%9B%86%E6%88%90-jaeger-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%B7%9F%E8%B8%AA/>
+<div class=article-details>
+<h2 class=article-title>Envoy 集成 Jaeger 实现分布式链路跟踪</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#走近-envoy>走近 Envoy</a></li>
+<li><a href=#envoy配置文件>Envoy配置文件</a>
+<ol>
+<li><a href=#侦听器listeners>侦听器(Listeners)</a>
+<ol>
+<li><a href=#过滤器filters>过滤器(Filters)</a></li>
+</ol>
+</li>
+<li><a href=#集群clusters>集群(Clusters)</a>
+<ol>
+<li><a href=#负载均衡load-assignment>负载均衡(Load Assignment)</a></li>
+</ol>
+</li>
+<li><a href=#管理admin>管理(Admin)</a></li>
+</ol>
+</li>
+<li><a href=#服务编排>服务编排</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+<li><a href=#参考文档>参考文档</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

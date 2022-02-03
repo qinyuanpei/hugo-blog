@@ -1,0 +1,488 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="据我所知，软件行业，向来是充满着鄙视链的，人们时常会因为语言、框架、范式、架构等等问题而争执不休。不必说 PHP 到底是不是世界上最好的语言，不必说原生与 Web 到底哪一个真正代表着未来，更不必说前端与后端到底哪一个更有技术含量，单单一个 C++ 的版本，1998 与 2011 之间仿佛隔了一个世纪。我真傻，我单知道人们会因为 GCC 和 VC++ 而分庭抗礼多年，却不知道人们还会因为大括号换行、Tab 还是空格、CRLF 还是 CR……诸如此类的问题而永不休战。也许，正如 王垠 前辈所说，编程这个领域总是充满着某种 宗教原旨 的意味。回想起刚毕业那会儿，因为没有 Web 开发的经验而被人轻视，当年流行的 SSH 全家桶，对我鼓捣 Windows 桌面开发这件事情，投来无限鄙夷的目光，仿佛 Windows 是一种原罪。可时间久了以后，我渐渐意识到，对工程派而言，一切都是工具；而对于学术派而言，一切都是包容。这个世界并不是只有 Web，对吧？所以，这篇博客我想聊聊非典型 Web 应用场景下的身份认证。
+楔子 在讨论非典型 Web 应用场景前，我们不妨来回想一下，一个典型的 Web 应用是什么样子？打开浏览器、输入一个 URL、按下回车、输入用户名和密码、点击登录……，在这个过程中，Cookie/Session用来维持整个会话的状态。直到后来，前后端分离的大潮流下，无状态的服务开始流行，人们开始使用一个令牌(Token)来标识身份信息，无论是催生了 Web 2.0 的 OAuth 2.0 协议，还是在微服务里更为流行的 JWT(JSON Web Token)，其实，都在隐隐约约说明一件事情，那就是在后 Web 时代，特别是微信兴起以后，人们在线与离线的边界越来越模糊，疫情期间居家办公的这段时间，我最怕听到 Teams 会议邀请的声音，因为无论你是否在线，它都会不停地催促你，彻底模糊生活与工作的边界。那么，屏幕前聪明的你，你告诉我，什么是典型的 Web 应用？也许，我同样无法回答这个问题，可或许，下面这几种方式，即 gRPC、SignalR 和 Kafka，可以称之为：非典型的 Web 应用。
+gRPC 相信经常阅读我博客的朋友，都知道这样一件事情，那就是，过去这半年多的时间，我一直在探索，如何去构建一个以 gRPC 为核心的微服务架构。想了解这方面内容的朋友，不妨抽空看看我前面写过的博客。从整体上来说，我们对于 gRPC 的使用上，基本可以分为对内和对外两个方面。对内，不同的服务间通过 gRPC 客户端互相通信，我们称之为：直连；对外，不同的服务通过 Envoy 代理为 JSON API 供前端/客户端消费，我们称之为：代理。一个简单的微服务示意图，如下图所示："><title>浅议非典型 Web 应用场景下的身份认证</title>
+<link rel=canonical href=/posts/%E6%B5%85%E8%AE%AE%E9%9D%9E%E5%85%B8%E5%9E%8B-web-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="浅议非典型 Web 应用场景下的身份认证">
+<meta property="og:description" content="据我所知，软件行业，向来是充满着鄙视链的，人们时常会因为语言、框架、范式、架构等等问题而争执不休。不必说 PHP 到底是不是世界上最好的语言，不必说原生与 Web 到底哪一个真正代表着未来，更不必说前端与后端到底哪一个更有技术含量，单单一个 C++ 的版本，1998 与 2011 之间仿佛隔了一个世纪。我真傻，我单知道人们会因为 GCC 和 VC++ 而分庭抗礼多年，却不知道人们还会因为大括号换行、Tab 还是空格、CRLF 还是 CR……诸如此类的问题而永不休战。也许，正如 王垠 前辈所说，编程这个领域总是充满着某种 宗教原旨 的意味。回想起刚毕业那会儿，因为没有 Web 开发的经验而被人轻视，当年流行的 SSH 全家桶，对我鼓捣 Windows 桌面开发这件事情，投来无限鄙夷的目光，仿佛 Windows 是一种原罪。可时间久了以后，我渐渐意识到，对工程派而言，一切都是工具；而对于学术派而言，一切都是包容。这个世界并不是只有 Web，对吧？所以，这篇博客我想聊聊非典型 Web 应用场景下的身份认证。
+楔子 在讨论非典型 Web 应用场景前，我们不妨来回想一下，一个典型的 Web 应用是什么样子？打开浏览器、输入一个 URL、按下回车、输入用户名和密码、点击登录……，在这个过程中，Cookie/Session用来维持整个会话的状态。直到后来，前后端分离的大潮流下，无状态的服务开始流行，人们开始使用一个令牌(Token)来标识身份信息，无论是催生了 Web 2.0 的 OAuth 2.0 协议，还是在微服务里更为流行的 JWT(JSON Web Token)，其实，都在隐隐约约说明一件事情，那就是在后 Web 时代，特别是微信兴起以后，人们在线与离线的边界越来越模糊，疫情期间居家办公的这段时间，我最怕听到 Teams 会议邀请的声音，因为无论你是否在线，它都会不停地催促你，彻底模糊生活与工作的边界。那么，屏幕前聪明的你，你告诉我，什么是典型的 Web 应用？也许，我同样无法回答这个问题，可或许，下面这几种方式，即 gRPC、SignalR 和 Kafka，可以称之为：非典型的 Web 应用。
+gRPC 相信经常阅读我博客的朋友，都知道这样一件事情，那就是，过去这半年多的时间，我一直在探索，如何去构建一个以 gRPC 为核心的微服务架构。想了解这方面内容的朋友，不妨抽空看看我前面写过的博客。从整体上来说，我们对于 gRPC 的使用上，基本可以分为对内和对外两个方面。对内，不同的服务间通过 gRPC 客户端互相通信，我们称之为：直连；对外，不同的服务通过 Envoy 代理为 JSON API 供前端/客户端消费，我们称之为：代理。一个简单的微服务示意图，如下图所示：">
+<meta property="og:url" content="/posts/%E6%B5%85%E8%AE%AE%E9%9D%9E%E5%85%B8%E5%9E%8B-web-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="gRPC"><meta property="article:tag" content="SignalR"><meta property="article:tag" content="Kafka"><meta property="article:published_time" content="2021-12-28T11:53:29+00:00"><meta property="article:modified_time" content="2021-12-28T11:53:29+00:00">
+<meta name=twitter:title content="浅议非典型 Web 应用场景下的身份认证">
+<meta name=twitter:description content="据我所知，软件行业，向来是充满着鄙视链的，人们时常会因为语言、框架、范式、架构等等问题而争执不休。不必说 PHP 到底是不是世界上最好的语言，不必说原生与 Web 到底哪一个真正代表着未来，更不必说前端与后端到底哪一个更有技术含量，单单一个 C++ 的版本，1998 与 2011 之间仿佛隔了一个世纪。我真傻，我单知道人们会因为 GCC 和 VC++ 而分庭抗礼多年，却不知道人们还会因为大括号换行、Tab 还是空格、CRLF 还是 CR……诸如此类的问题而永不休战。也许，正如 王垠 前辈所说，编程这个领域总是充满着某种 宗教原旨 的意味。回想起刚毕业那会儿，因为没有 Web 开发的经验而被人轻视，当年流行的 SSH 全家桶，对我鼓捣 Windows 桌面开发这件事情，投来无限鄙夷的目光，仿佛 Windows 是一种原罪。可时间久了以后，我渐渐意识到，对工程派而言，一切都是工具；而对于学术派而言，一切都是包容。这个世界并不是只有 Web，对吧？所以，这篇博客我想聊聊非典型 Web 应用场景下的身份认证。
+楔子 在讨论非典型 Web 应用场景前，我们不妨来回想一下，一个典型的 Web 应用是什么样子？打开浏览器、输入一个 URL、按下回车、输入用户名和密码、点击登录……，在这个过程中，Cookie/Session用来维持整个会话的状态。直到后来，前后端分离的大潮流下，无状态的服务开始流行，人们开始使用一个令牌(Token)来标识身份信息，无论是催生了 Web 2.0 的 OAuth 2.0 协议，还是在微服务里更为流行的 JWT(JSON Web Token)，其实，都在隐隐约约说明一件事情，那就是在后 Web 时代，特别是微信兴起以后，人们在线与离线的边界越来越模糊，疫情期间居家办公的这段时间，我最怕听到 Teams 会议邀请的声音，因为无论你是否在线，它都会不停地催促你，彻底模糊生活与工作的边界。那么，屏幕前聪明的你，你告诉我，什么是典型的 Web 应用？也许，我同样无法回答这个问题，可或许，下面这几种方式，即 gRPC、SignalR 和 Kafka，可以称之为：非典型的 Web 应用。
+gRPC 相信经常阅读我博客的朋友，都知道这样一件事情，那就是，过去这半年多的时间，我一直在探索，如何去构建一个以 gRPC 为核心的微服务架构。想了解这方面内容的朋友，不妨抽空看看我前面写过的博客。从整体上来说，我们对于 gRPC 的使用上，基本可以分为对内和对外两个方面。对内，不同的服务间通过 gRPC 客户端互相通信，我们称之为：直连；对外，不同的服务通过 Envoy 代理为 JSON API 供前端/客户端消费，我们称之为：代理。一个简单的微服务示意图，如下图所示：">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E6%B5%85%E8%AE%AE%E9%9D%9E%E5%85%B8%E5%9E%8B-web-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/>浅议非典型 Web 应用场景下的身份认证</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Dec 28, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 6 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>据我所知，软件行业，向来是充满着鄙视链的，人们时常会因为语言、框架、范式、架构等等问题而争执不休。不必说 PHP 到底是不是世界上最好的语言，不必说原生与 Web 到底哪一个真正代表着未来，更不必说前端与后端到底哪一个更有技术含量，单单一个 C++ 的版本，1998 与 2011 之间仿佛隔了一个世纪。我真傻，我单知道人们会因为 GCC 和 VC++ 而分庭抗礼多年，却不知道人们还会因为大括号换行、Tab 还是空格、CRLF 还是 CR……诸如此类的问题而永不休战。也许，正如 <a class=link href=http://www.yinwang.org/ target=_blank rel=noopener>王垠</a> 前辈所说，编程这个领域总是充满着某种 <a class=link href=http://www.yinwang.org/blog-cn/2015/04/03/paradigms target=_blank rel=noopener>宗教原旨</a> 的意味。回想起刚毕业那会儿，因为没有 Web 开发的经验而被人轻视，当年流行的 SSH 全家桶，对我鼓捣 Windows 桌面开发这件事情，投来无限鄙夷的目光，仿佛 Windows 是一种原罪。可时间久了以后，我渐渐意识到，对工程派而言，一切都是工具；而对于学术派而言，一切都是包容。这个世界并不是只有 Web，对吧？所以，这篇博客我想聊聊非典型 Web 应用场景下的身份认证。</p>
+<h1 id=楔子>楔子</h1>
+<p>在讨论非典型 Web 应用场景前，我们不妨来回想一下，一个典型的 Web 应用是什么样子？打开浏览器、输入一个 URL、按下回车、输入用户名和密码、点击登录……，在这个过程中，Cookie/Session用来维持整个会话的状态。直到后来，前后端分离的大潮流下，无状态的服务开始流行，人们开始使用一个令牌(Token)来标识身份信息，无论是催生了 Web 2.0 的 <code>OAuth 2.0</code> 协议，还是在微服务里更为流行的 <code>JWT(JSON Web Token)</code>，其实，都在隐隐约约说明一件事情，那就是在后 Web 时代，特别是微信兴起以后，人们在线与离线的边界越来越模糊，疫情期间居家办公的这段时间，我最怕听到 Teams 会议邀请的声音，因为无论你是否在线，它都会不停地催促你，彻底模糊生活与工作的边界。那么，屏幕前聪明的你，你告诉我，什么是典型的 Web 应用？也许，我同样无法回答这个问题，可或许，下面这几种方式，即 gRPC、SignalR 和 Kafka，可以称之为：非典型的 Web 应用。</p>
+<h1 id=grpc>gRPC</h1>
+<p>相信经常阅读我博客的朋友，都知道这样一件事情，那就是，过去这半年多的时间，我一直在探索，如何去构建一个以 gRPC 为核心的微服务架构。想了解这方面内容的朋友，不妨抽空看看我前面写过的博客。从整体上来说，我们对于 gRPC 的使用上，基本可以分为对内和对外两个方面。对内，不同的服务间通过 gRPC 客户端互相通信，我们称之为：直连；对外，不同的服务通过 Envoy 代理为 JSON API 供前端/客户端消费，我们称之为：代理。一个简单的微服务示意图，如下图所示：</p>
+<p><figure>
+<a href=/gRPC-MicroService.drawio.png>
+<img src=/gRPC-MicroService.drawio.png loading=lazy alt="gRPC 微服务中的内与外">
+</a>
+<figcaption>gRPC 微服务中的内与外</figcaption>
+</figure></p>
+<p>目前，这个方案最大的问题，不同的服务间通过 gRPC 客户端直连的时候，无法提供身份认证信息，因为如果是单纯的读，即从某一个服务查询数据，其实是可以接受这种“裸奔”的状态，可一旦涉及到了写，这种方案就显得不大严谨。譬如现在的做法，如果从 <code>HttpContext</code> 里提取不到用户信息，就默认当前用户是 Sys，表示这是一个系统级别的操作。那么，如何解决这个问题呢？我们一起来看一下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=kt>var</span> <span class=n>channel</span> <span class=p>=</span> <span class=n>GrpcChannel</span><span class=p>.</span><span class=n>ForAddress</span><span class=p>(</span><span class=s>&#34;https://localhost:5001&#34;</span><span class=p>);</span>
+<span class=ln>2</span><span class=kt>var</span> <span class=n>client</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Greeter</span><span class=p>.</span><span class=n>GreeterClient</span><span class=p>(</span><span class=n>channel</span><span class=p>);</span>
+<span class=ln>3</span>
+<span class=ln>4</span><span class=kt>var</span> <span class=n>metadata</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Metadata</span><span class=p>();</span>
+<span class=ln>5</span><span class=n>metadata</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=s>&#34;Authorization&#34;</span><span class=p>,</span> <span class=s>$&#34;Bearer {token}&#34;</span><span class=p>);</span>
+<span class=ln>6</span>
+<span class=ln>7</span><span class=kt>var</span> <span class=n>reply</span> <span class=p>=</span> <span class=n>client</span><span class=p>.</span><span class=n>SayHello</span><span class=p>(</span><span class=k>new</span> <span class=n>HelloRequest</span><span class=p>(),</span> <span class=n>metadata</span><span class=p>);</span>
+</code></pre></div><p>可以注意到，这里的关键是构造一个<code>Metadata</code>，并在其中传入<code>Authorization</code>头部。当然，这一切的前提是你遵循并且沿用了 <a class=link href="https://docs.microsoft.com/zh-cn/aspnet/core/security/authentication/identity?view=aspnetcore-3.0&tabs=visual-studio" target=_blank rel=noopener> ASP.NET Core 身份验证</a>，这里以最常见的 JWT 认证为例：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=n>services</span><span class=p>.</span><span class=n>AddAuthentication</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>   <span class=n>x</span><span class=p>.</span><span class=n>DefaultAuthenticateScheme</span> <span class=p>=</span> <span class=n>JwtBearerDefaults</span><span class=p>.</span><span class=n>AuthenticationScheme</span><span class=p>;</span>
+<span class=ln> 4</span>   <span class=n>x</span><span class=p>.</span><span class=n>DefaultChallengeScheme</span> <span class=p>=</span> <span class=n>JwtBearerDefaults</span><span class=p>.</span><span class=n>AuthenticationScheme</span><span class=p>;</span>
+<span class=ln> 5</span><span class=p>}</span> <span class=p>).</span><span class=n>AddJwtBearer</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span>
+<span class=ln> 6</span><span class=p>{</span>
+<span class=ln> 7</span>   <span class=n>x</span><span class=p>.</span><span class=n>RequireHttpsMetadata</span> <span class=p>=</span> <span class=k>false</span><span class=p>;</span>
+<span class=ln> 8</span>   <span class=n>x</span><span class=p>.</span><span class=n>SaveToken</span> <span class=p>=</span> <span class=k>true</span><span class=p>;</span>
+<span class=ln> 9</span>   <span class=n>x</span><span class=p>.</span><span class=n>TokenValidationParameters</span> <span class=p>=</span> <span class=k>new</span> <span class=n>TokenValidationParameters</span>
+<span class=ln>10</span>  <span class=p>{</span>
+<span class=ln>11</span>     <span class=n>ValidateIssuerSigningKey</span> <span class=p>=</span> <span class=k>true</span><span class=p>,</span>
+<span class=ln>12</span>     <span class=n>IssuerSigningKey</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SymmetricSecurityKey</span><span class=p>(</span><span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>jwtOptions</span><span class=p>.</span><span class=n>Secret</span><span class=p>)),</span>
+<span class=ln>13</span>     <span class=n>ValidIssuer</span> <span class=p>=</span> <span class=n>jwtOptions</span><span class=p>.</span><span class=n>Issuer</span><span class=p>,</span>
+<span class=ln>14</span>     <span class=n>ValidAudience</span> <span class=p>=</span> <span class=n>jwtOptions</span><span class=p>.</span><span class=n>Audience</span><span class=p>,</span>
+<span class=ln>15</span>     <span class=n>ValidateIssuer</span> <span class=p>=</span> <span class=k>true</span><span class=p>,</span>
+<span class=ln>16</span>     <span class=n>ValidateAudience</span> <span class=p>=</span> <span class=k>true</span><span class=p>,</span>
+<span class=ln>17</span>   <span class=p>};</span>
+<span class=ln>18</span><span class=p>});</span>
+</code></pre></div><p>通常情况下，这里的<code>IssuerSigningKey</code>由一个证书文件来提供，例如最常用的是<code>X509SecurityKey</code>类。为了方便演示，这里采用一组字符串进行签名。不管采用哪一种方式，我们都应该保证它与生成令牌时的参数一致。例如，下面是一个典型的生成 <code>JWT</code> 令牌的代码片段：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=kt>var</span> <span class=n>claims</span> <span class=p>=</span> <span class=k>new</span><span class=p>[]</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>   <span class=k>new</span> <span class=n>Claim</span><span class=p>(</span><span class=n>ClaimTypes</span><span class=p>.</span><span class=n>Name</span><span class=p>,</span> <span class=n>userInfo</span><span class=p>.</span><span class=n>UserName</span><span class=p>),</span>
+<span class=ln> 4</span>   <span class=k>new</span> <span class=n>Claim</span><span class=p>(</span><span class=n>ClaimTypes</span><span class=p>.</span><span class=n>Role</span><span class=p>,</span> <span class=n>userInfo</span><span class=p>.</span><span class=n>UserRole</span><span class=p>)</span>
+<span class=ln> 5</span><span class=p>};</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span><span class=kt>var</span> <span class=n>signKey</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SymmetricSecurityKey</span><span class=p>(</span><span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=m>_</span><span class=n>jwtOptions</span><span class=p>.</span><span class=n>Value</span><span class=p>.</span><span class=n>Secret</span><span class=p>));</span>
+<span class=ln> 8</span><span class=kt>var</span> <span class=n>credentials</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SigningCredentials</span><span class=p>(</span><span class=n>signKey</span><span class=p>,</span> <span class=n>SecurityAlgorithms</span><span class=p>.</span><span class=n>HmacSha256</span><span class=p>);</span>
+<span class=ln> 9</span><span class=kt>var</span> <span class=n>jwtToken</span> <span class=p>=</span> <span class=k>new</span> <span class=n>JwtSecurityToken</span><span class=p>(</span>
+<span class=ln>10</span>   <span class=m>_</span><span class=n>jwtOptions</span><span class=p>.</span><span class=n>Value</span><span class=p>.</span><span class=n>Issuer</span><span class=p>,</span>
+<span class=ln>11</span>   <span class=m>_</span><span class=n>jwtOptions</span><span class=p>.</span><span class=n>Value</span><span class=p>.</span><span class=n>Audience</span><span class=p>,</span> 
+<span class=ln>12</span>   <span class=n>claims</span><span class=p>,</span> 
+<span class=ln>13</span>   <span class=n>expires</span><span class=p>:</span> <span class=n>DateTime</span><span class=p>.</span><span class=n>Now</span><span class=p>.</span><span class=n>AddMinutes</span><span class=p>(</span><span class=m>_</span><span class=n>jwtOptions</span><span class=p>.</span><span class=n>Value</span><span class=p>.</span><span class=n>AccessExpiration</span><span class=p>),</span> 
+<span class=ln>14</span>   <span class=n>signingCredentials</span><span class=p>:</span> <span class=n>credentials</span>
+<span class=ln>15</span><span class=p>);</span>
+<span class=ln>16</span>
+<span class=ln>17</span><span class=n>token</span> <span class=p>=</span> <span class=k>new</span> <span class=n>JwtSecurityTokenHandler</span><span class=p>().</span><span class=n>WriteToken</span><span class=p>(</span><span class=n>jwtToken</span><span class=p>);</span>
+</code></pre></div><p>除了以上两点，请确保你的正确地配置了认证和授权两个中间件，注意它们的顺序和位置：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>void</span> <span class=n>Configure</span><span class=p>(</span><span class=n>IApplicationBuilder</span> <span class=n>app</span><span class=p>,</span> <span class=n>IWebHostEnvironment</span> <span class=n>env</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=c1>// ...
+</span><span class=ln> 4</span><span class=c1></span>    <span class=n>app</span><span class=p>.</span><span class=n>UseRouting</span><span class=p>();</span>
+<span class=ln> 5</span>    <span class=c1>// 注意顺序
+</span><span class=ln> 6</span><span class=c1></span>    <span class=n>app</span><span class=p>.</span><span class=n>UseAuthentication</span><span class=p>();</span>
+<span class=ln> 7</span>    <span class=n>app</span><span class=p>.</span><span class=n>UseAuthorization</span><span class=p>();</span>
+<span class=ln> 8</span>    <span class=n>app</span><span class=p>.</span><span class=n>UseEndpoints</span><span class=p>(</span><span class=n>endpoints</span> <span class=p>=&gt;</span>
+<span class=ln> 9</span>   <span class=p>{</span>
+<span class=ln>10</span>       <span class=n>endpoints</span><span class=p>.</span><span class=n>MapGrpcService</span><span class=p>&lt;</span><span class=n>GreeterService</span><span class=p>&gt;();</span>
+<span class=ln>11</span>   <span class=p>});</span>
+<span class=ln>12</span><span class=p>}</span>
+</code></pre></div><p>此时，我们就可以在 gRPC 中通过<code>IHttpContextAccessor</code>获取当前用户信息：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=k>public</span> <span class=k>override</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>HelloReply</span><span class=p>&gt;</span> <span class=n>SayHello</span><span class=p>(</span><span class=n>HelloRequest</span> <span class=n>request</span><span class=p>,</span> <span class=n>ServerCallContext</span> <span class=n>context</span><span class=p>)</span>
+<span class=ln>2</span><span class=p>{</span>
+<span class=ln>3</span>    <span class=kt>var</span> <span class=n>userName</span> <span class=p>=</span> <span class=m>_</span><span class=n>httpContextAccessor</span><span class=p>.</span><span class=n>HttpContext</span><span class=p>.</span><span class=n>User</span><span class=p>?.</span><span class=n>Identity</span><span class=p>.</span><span class=n>Name</span><span class=p>;</span>
+<span class=ln>4</span>    <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>FromResult</span><span class=p>(</span><span class=k>new</span> <span class=n>HelloReply</span> <span class=p>{</span> <span class=n>Message</span> <span class=p>=</span> <span class=s>$&#34;Hello {userName}&#34;</span><span class=p>});</span>
+<span class=ln>5</span><span class=p>}</span>
+</code></pre></div><p>当然，考虑到我们使用 gRPC 客户端工厂的场景更多一点，我们更希望这个令牌可以在一开始就准备好，而不是每调用一个方法都需要传一次令牌。此时，我们可以使用下面的做法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=n>services</span><span class=p>.</span><span class=n>AddGrpcClient</span><span class=p>&lt;</span><span class=n>Greeter</span><span class=p>.</span><span class=n>GreeterClient</span><span class=p>&gt;(</span><span class=n>o</span> <span class=p>=&gt;</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=n>o</span><span class=p>.</span><span class=n>Address</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Uri</span><span class=p>(</span><span class=s>&#34;https://localhost:5001&#34;</span><span class=p>);</span>
+<span class=ln> 4</span><span class=p>}).</span><span class=n>ConfigureChannel</span><span class=p>(</span><span class=n>o</span> <span class=p>=&gt;</span>
+<span class=ln> 5</span><span class=p>{</span>
+<span class=ln> 6</span>    <span class=kt>var</span> <span class=n>credentials</span> <span class=p>=</span> <span class=n>CallCredentials</span><span class=p>.</span><span class=n>FromInterceptor</span><span class=p>((</span><span class=n>context</span><span class=p>,</span> <span class=n>metadata</span><span class=p>)</span> <span class=p>=&gt;</span>
+<span class=ln> 7</span>    <span class=p>{</span>
+<span class=ln> 8</span>      <span class=k>if</span> <span class=p>(!</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span><span class=p>(</span><span class=m>_</span><span class=n>token</span><span class=p>)</span>
+<span class=ln> 9</span>        <span class=n>metadata</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=s>&#34;Authorization&#34;</span><span class=p>,</span> <span class=s>$&#34;Bearer {_token}&#34;</span><span class=p>);</span>
+<span class=ln>10</span>      <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>CompletedTask</span><span class=p>;</span>
+<span class=ln>11</span>    <span class=p>});</span>
+<span class=ln>12</span>
+<span class=ln>13</span>    <span class=n>o</span><span class=p>.</span><span class=n>Credentials</span> <span class=p>=</span> <span class=n>ChannelCredentials</span><span class=p>.</span><span class=n>Create</span><span class=p>(</span><span class=k>new</span> <span class=n>SslCredentials</span><span class=p>(),</span> <span class=n>credentials</span><span class=p>);</span>
+<span class=ln>14</span><span class=p>});</span>
+</code></pre></div><p>至此，关于 gRPC 的身份认证问题终于得到了解决，无论是对内的直连还是对外的代理，我们都可以获得用户的身份信息。需要说明的是，默认情况下，gRPC 允许调用方在不携带令牌的情况下调用接口，所以，我们这里的认证方案更像是一种君子协定。如果希望做更严格的限制，可以考虑在具体的服务上添加 <code>[Authorize]</code>特性，就像我们在控制器上使用该特性一样。</p>
+<h1 id=signalr>SignalR</h1>
+<p><a class=link href="https://docs.microsoft.com/zh-cn/aspnet/core/signalr/introduction?view=aspnetcore-6.0" target=_blank rel=noopener>SignalR</a> 是由微软提供的一面向实时 Web 应用的、开源的库，你可以认为，它是集 <a class=link href="https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/websockets?view=aspnetcore-6.0" target=_blank rel=noopener>WebSockets</a>、Server-Sent 事件 和 长轮询于一身的综合性的库。当你需要从服务端实时地推送消息到特定的客户端(组)的时候，SignalR 将会是一个不错的选择。譬如可视化的仪表盘或者监视系统，需要接收数据的变更通知以实时地刷新视图；即时通讯(IM)、社交网络、邮件、游戏、协作等方面地应用都需要及时地发出通知。ASP.NET Core 版本的 SIgnalR 在自动处理连接管理方面做出来不小的改善，可很多时候，SIgnalR 里面的 ConnectionId 对我们而言是没有意义的，我们更想知道连接到 Hub 的用户是谁，这样就催生出来 SignalR 身份认证的需求场景，下面，我们就来看看对应的 <a class=link href="https://docs.microsoft.com/zh-cn/aspnet/core/signalr/authn-and-authz?view=aspnetcore-6.0" target=_blank rel=noopener>解决方案</a>。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=c1>// 方式一、AccessTokenProvider 
+</span><span class=ln> 2</span><span class=c1></span><span class=kt>var</span> <span class=n>hubConnection</span> <span class=p>=</span> <span class=k>new</span> <span class=n>HubConnectionBuilder</span><span class=p>()</span>
+<span class=ln> 3</span>  <span class=p>.</span><span class=n>WithUrl</span><span class=p>(</span><span class=s>&#34;http://localhost:5000/echohub&#34;</span><span class=p>,</span><span class=n>options</span> <span class=p>=&gt;</span>
+<span class=ln> 4</span>  <span class=p>{</span>
+<span class=ln> 5</span>    <span class=n>options</span><span class=p>.</span><span class=n>AccessTokenProvider</span> <span class=p>=</span> <span class=p>()</span> <span class=p>=&gt;</span> <span class=n>Task</span><span class=p>.</span><span class=n>FromResult</span><span class=p>(</span><span class=s>&#34;&lt;Your Token&gt;&#34;</span><span class=p>);</span>
+<span class=ln> 6</span>  <span class=p>})</span>
+<span class=ln> 7</span>  <span class=p>.</span><span class=n>WithAutomaticReconnect</span><span class=p>()</span>
+<span class=ln> 8</span>  <span class=p>.</span><span class=n>Build</span><span class=p>();</span>
+<span class=ln> 9</span>
+<span class=ln>10</span>
+<span class=ln>11</span><span class=c1>// 方式二、直接追加查询参数
+</span><span class=ln>12</span><span class=c1></span><span class=kt>var</span> <span class=n>hubConnection</span> <span class=p>=</span> <span class=k>new</span> <span class=n>HubConnectionBuilder</span><span class=p>()</span>
+<span class=ln>13</span>  <span class=p>.</span><span class=n>WithUrl</span><span class=p>(</span><span class=s>&#34;http://localhost:5000/echohub?access_token=&lt;Your Token&gt;&#34;</span><span class=p>)</span>
+<span class=ln>14</span>  <span class=p>.</span><span class=n>WithAutomaticReconnect</span><span class=p>()</span>
+<span class=ln>15</span>  <span class=p>.</span><span class=n>Build</span><span class=p>();</span>
+</code></pre></div><p>首先，SignalR 的身份认证，整体上依然遵循 ASP.NET Core 里的这套认证/授权流程，所以，我们可以继续沿用 gRPC 这部分的代码。考虑到 SignalR 首次发起的是一个 GET 请求，通常的做法是在查询参数中追加令牌参数。当然，现在官方提供了<code>AccessTokenProvider</code>这个属性，允许你构造一个委托来提供令牌。接下来，为了让这个令牌更符合一般的场景，譬如，按照约定它应该出现在 HTTP 请求头的 <code>Authorization</code> 字段上，我们有下面两种方式来对它进行处理：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=c1>// 方式一、设置 JwtBearer 的 Events 属性
+</span><span class=ln> 2</span><span class=c1></span><span class=n>services</span><span class=p>.</span><span class=n>AddAuthentication</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>  <span class=c1>//...
+</span><span class=ln> 5</span><span class=c1></span><span class=p>})</span>
+<span class=ln> 6</span><span class=p>.</span><span class=n>AddJwtBearer</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span>
+<span class=ln> 7</span><span class=p>{</span>
+<span class=ln> 8</span>  <span class=c1>//...
+</span><span class=ln> 9</span><span class=c1></span>  <span class=n>x</span><span class=p>.</span><span class=n>Events</span> <span class=p>=</span> <span class=k>new</span> <span class=n>JwtBearerEvents</span><span class=p>()</span>
+<span class=ln>10</span>  <span class=p>{</span>
+<span class=ln>11</span>    <span class=n>OnMessageReceived</span> <span class=p>=</span> <span class=n>context</span> <span class=p>=&gt;</span>
+<span class=ln>12</span>    <span class=p>{</span>
+<span class=ln>13</span>      <span class=kt>var</span> <span class=n>accessToken</span> <span class=p>=</span> <span class=n>context</span><span class=p>.</span><span class=n>Request</span><span class=p>.</span><span class=n>Query</span><span class=p>[</span><span class=s>&#34;access_token&#34;</span><span class=p>];</span>
+<span class=ln>14</span>      <span class=kt>var</span> <span class=n>path</span> <span class=p>=</span> <span class=n>context</span><span class=p>.</span><span class=n>HttpContext</span><span class=p>.</span><span class=n>Request</span><span class=p>.</span><span class=n>Path</span><span class=p>;</span>
+<span class=ln>15</span>      <span class=k>if</span> <span class=p>(!</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span><span class=p>(</span><span class=n>accessToken</span><span class=p>)</span> <span class=p>&amp;&amp;</span> <span class=p>(</span><span class=n>path</span><span class=p>.</span><span class=n>StartsWithSegments</span><span class=p>(</span><span class=s>&#34;/echohub&#34;</span><span class=p>)))</span>
+<span class=ln>16</span>        <span class=n>context</span><span class=p>.</span><span class=n>Token</span> <span class=p>=</span> <span class=n>accessToken</span><span class=p>;</span>
+<span class=ln>17</span>      <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>CompletedTask</span><span class=p>;</span>
+<span class=ln>18</span>    <span class=p>}</span>
+<span class=ln>19</span>  <span class=p>};</span>
+<span class=ln>20</span><span class=p>});</span>
+<span class=ln>21</span>
+<span class=ln>22</span><span class=c1>// 方式二，编写中间件，注意顺序
+</span><span class=ln>23</span><span class=c1></span><span class=n>app</span><span class=p>.</span><span class=n>Use</span><span class=p>((</span><span class=n>context</span><span class=p>,</span> <span class=n>next</span><span class=p>)</span> <span class=p>=&gt;</span>
+<span class=ln>24</span><span class=p>{</span>
+<span class=ln>25</span>  <span class=kt>var</span> <span class=n>accessToken</span> <span class=p>=</span> <span class=n>context</span><span class=p>.</span><span class=n>Request</span><span class=p>.</span><span class=n>Query</span><span class=p>[</span><span class=s>&#34;access_token&#34;</span><span class=p>].</span><span class=n>ToString</span><span class=p>();</span>
+<span class=ln>26</span>  <span class=kt>var</span> <span class=n>path</span> <span class=p>=</span> <span class=n>context</span><span class=p>.</span><span class=n>Request</span><span class=p>.</span><span class=n>Path</span><span class=p>;</span>
+<span class=ln>27</span>  <span class=k>if</span> <span class=p>(!</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span><span class=p>(</span><span class=n>accessToken</span><span class=p>)</span> <span class=p>&amp;&amp;</span> <span class=p>(</span><span class=n>path</span><span class=p>.</span><span class=n>StartsWithSegments</span><span class=p>(</span><span class=s>&#34;/echohub&#34;</span><span class=p>)))</span>
+<span class=ln>28</span>    <span class=n>context</span><span class=p>.</span><span class=n>Request</span><span class=p>.</span><span class=n>Headers</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=s>&#34;Authorization&#34;</span><span class=p>,</span> <span class=k>new</span> <span class=n>StringValues</span><span class=p>(</span><span class=s>$&#34;Bearer {accessToken}&#34;</span><span class=p>));</span>
+<span class=ln>29</span>
+<span class=ln>30</span>    <span class=k>return</span> <span class=n>next</span><span class=p>.</span><span class=n>Invoke</span><span class=p>();</span>
+<span class=ln>31</span><span class=p>});</span>
+<span class=ln>32</span>
+<span class=ln>33</span><span class=n>app</span><span class=p>.</span><span class=n>UseAuthentication</span><span class=p>();</span>
+<span class=ln>34</span><span class=n>app</span><span class=p>.</span><span class=n>UseAuthorization</span><span class=p>();</span>
+</code></pre></div><p>可以注意到，不管是哪一种方式，核心目的都是为了让令牌能在 ASP.NET Core 的请求管道中出现在它期望出现的地方，这是什么地方呢？我想，应该是为执行认证/授权中间件以前，所以，为什么我说这两个中间件的顺序非常重要，原因正在于此，一旦我们做了这一点，剩下的事情就交给微软，我们只需要通过 <code>HttpContext</code> 的 <code>User</code> 属性获取用户信息即可。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=k>public</span> <span class=n>Task</span> <span class=n>Echo</span><span class=p>(</span><span class=kt>string</span> <span class=n>message</span><span class=p>)</span>
+<span class=ln>2</span><span class=p>{</span>
+<span class=ln>3</span>  <span class=kt>var</span> <span class=n>userName</span> <span class=p>=</span> <span class=n>Context</span><span class=p>.</span><span class=n>User</span><span class=p>?.</span><span class=n>Identity</span><span class=p>?.</span><span class=n>Name</span><span class=p>;</span>
+<span class=ln>4</span>  <span class=n>Clients</span><span class=p>.</span><span class=n>Client</span><span class=p>(</span><span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>).</span><span class=n>SendAsync</span><span class=p>(</span><span class=s>&#34;OnEcho&#34;</span><span class=p>,</span> <span class=s>$&#34;{userName}:{message}&#34;</span><span class=p>);</span>
+<span class=ln>5</span>  <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>CompletedTask</span><span class=p>;</span>
+<span class=ln>6</span><span class=p>}</span>
+</code></pre></div><p>对于 SignalR 而言，同一个用户会对应多个 ConnectionId，当然，我并不需要过度地去关注这个东西，除非我们真的要分清每一个 ConnectionId 具体代表什么。类似地，SignalR 一样可以用 <code>[Authorized]</code> 特性来限制 Hub 是否可以在未认证的情况下使用，甚至它可以配合不同的 Policy 来做更细致的划分：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>class</span> <span class=nc>UserRoleRequirement</span> <span class=p>:</span> 
+<span class=ln> 2</span>  <span class=n>AuthorizationHandler</span><span class=p>&lt;</span><span class=n>UserRoleRequirement</span><span class=p>,</span> <span class=n>HubInvocationContext</span><span class=p>&gt;,</span> <span class=n>IAuthorizationRequirement</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>  <span class=k>protected</span> <span class=k>override</span> <span class=n>Task</span> <span class=n>HandleRequirementAsync</span><span class=p>(</span>
+<span class=ln> 5</span>    <span class=n>AuthorizationHandlerContext</span> <span class=n>context</span><span class=p>,</span> <span class=n>UserRoleRequirement</span> <span class=n>requirement</span><span class=p>,</span> <span class=n>HubInvocationContext</span> <span class=n>resource</span><span class=p>)</span>
+<span class=ln> 6</span>  <span class=p>{</span>
+<span class=ln> 7</span>    <span class=kt>var</span> <span class=n>userRole</span> <span class=p>=</span> <span class=n>context</span><span class=p>.</span><span class=n>User</span><span class=p>.</span><span class=n>Claims</span><span class=p>.</span><span class=n>FirstOrDefault</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Type</span> <span class=p>==</span> <span class=n>ClaimTypes</span><span class=p>.</span><span class=n>Role</span><span class=p>)?.</span><span class=n>Value</span><span class=p>;</span>
+<span class=ln> 8</span>    <span class=k>if</span> <span class=p>(</span><span class=n>userRole</span> <span class=p>==</span> <span class=s>&#34;Admin&#34;</span> <span class=p>&amp;&amp;</span> <span class=n>resource</span><span class=p>.</span><span class=n>HubMethodName</span> <span class=p>==</span> <span class=s>&#34;Echo&#34;</span><span class=p>)</span>
+<span class=ln> 9</span>      <span class=n>context</span><span class=p>.</span><span class=n>Succeed</span><span class=p>(</span><span class=n>requirement</span><span class=p>);</span>
+<span class=ln>10</span>
+<span class=ln>11</span>    <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>CompletedTask</span><span class=p>;</span>
+<span class=ln>12</span>  <span class=p>}</span>
+<span class=ln>13</span><span class=p>}</span>
+</code></pre></div><p>这里，我们定义了一个<code>UserRoleRequirement</code>类，其作用是仅仅允许<code>Admin</code>角色访问<code>Echo()</code>方法。此时，为了让这个策略生效，我们还需要将其注册到容器中，如下面的代码片段所示：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=n>services</span>
+<span class=ln>2</span>  <span class=p>.</span><span class=n>AddAuthorization</span><span class=p>(</span><span class=n>options</span> <span class=p>=&gt;</span>
+<span class=ln>3</span>  <span class=p>{</span>
+<span class=ln>4</span>    <span class=n>options</span><span class=p>.</span><span class=n>AddPolicy</span><span class=p>(</span><span class=s>&#34;UserRoleRestricted&#34;</span><span class=p>,</span> <span class=n>policy</span> <span class=p>=&gt;</span>
+<span class=ln>5</span>    <span class=p>{</span>
+<span class=ln>6</span>      <span class=n>policy</span><span class=p>.</span><span class=n>Requirements</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>UserRoleRequirement</span><span class=p>());</span>
+<span class=ln>7</span>    <span class=p>});</span>
+<span class=ln>8</span>  <span class=p>});</span>
+</code></pre></div><p>现在，我们可以在集线器(Hub)上控制 <code>Echo()</code> 方法访问权限，考虑到 <code>gRPC</code> 和 <code>SignalR</code> 都可以使用这套身份认证方案，所以，这个做法同样适用于 <code>gRPC</code>，如果你希望实现方法级的权限控制：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=na>[Authorize]</span>
+<span class=ln> 2</span><span class=k>public</span> <span class=k>class</span> <span class=nc>EchoHub</span> <span class=p>:</span> <span class=n>Hub</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span><span class=na>  [Authorize(&#34;UserRoleRestricted&#34;)]</span>
+<span class=ln> 5</span>  <span class=k>public</span> <span class=n>Task</span> <span class=n>Echo</span><span class=p>(</span><span class=kt>string</span> <span class=n>message</span><span class=p>)</span>
+<span class=ln> 6</span>  <span class=p>{</span>
+<span class=ln> 7</span>    <span class=kt>var</span> <span class=n>userName</span> <span class=p>=</span> <span class=n>Context</span><span class=p>.</span><span class=n>User</span><span class=p>?.</span><span class=n>Identity</span><span class=p>?.</span><span class=n>Name</span><span class=p>;</span>
+<span class=ln> 8</span>    <span class=n>Clients</span><span class=p>.</span><span class=n>Client</span><span class=p>(</span><span class=n>Context</span><span class=p>.</span><span class=n>ConnectionId</span><span class=p>).</span><span class=n>SendAsync</span><span class=p>(</span><span class=s>&#34;OnEcho&#34;</span><span class=p>,</span> <span class=s>$&#34;{userName}:{message}&#34;</span><span class=p>);</span>
+<span class=ln> 9</span>    <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>CompletedTask</span><span class=p>;</span>
+<span class=ln>10</span>  <span class=p>}</span>
+<span class=ln>11</span><span class=p>}</span>
+</code></pre></div><h1 id=kafka>Kafka</h1>
+<p>无独有偶，除了 SignalR ，我们还用到了消息中间件 Kafka，事实上，SignalR 会从 Kafka 拉取消息，并将其发布到订阅了该 Topic 的客户端上，所以，Kafka 在整个系统中，其实扮演着非常重要的角色。如果你只是需要让 Kafka 充当一个消息中介者，那么，你完全不需要考虑 Kafka 的身份认证问题。可一旦你考虑用 Kafka 来做具体的业务，这个问题就会立刻凸显出来。譬如，当我们用 Kafka 来实现一个分布式事务的时候，我们采用了 SAGA 模式，即让主事务负责事务的协调，每个子事务在收到主事务的消息后，执行相应的操作并回复主事务一条消息，再由主事务来决定整个事务应该提交还是回滚。如图所示，下面是一个针对 SAGA 模式的简单示意图：</p>
+<p><figure>
+<a href=/Kafka-Distributed-Transaction.drawio.png>
+<img src=/Kafka-Distributed-Transaction.drawio.png loading=lazy alt="分布式事务 SAGA 模式示意图">
+</a>
+<figcaption>分布式事务 SAGA 模式示意图</figcaption>
+</figure></p>
+<p>关于这个模式的细节，感兴趣的朋友可以从 <a class=link href=https://docs.microsoft.com/zh-cn/azure/architecture/reference-architectures/saga/saga target=_blank rel=noopener>这里</a> 获取。这里我想说的是，当我们尝试用 Kafka 来做具体的业务的时候，我们其实是无法获得对应的用户信息的，因为此时此刻，基于 ASP.NET Core 的管道式的洋葱模型，对我们而言是暂时失效的，所以，我一直在说的非典型 Web 应用，其实可以指脱离了洋葱模型、脱离了授权/认证流程的这类场景。和 gRPC 类似，当我们需要用户信息，而又无法获得用户信息的时候，该怎么办呢？答案是在 Kafka 的消息中传递一个令牌(Token)，下面是一个简单的实现思路：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=kt>var</span> <span class=n>producerConfig</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ProducerConfig</span> <span class=p>{</span> <span class=n>BootstrapServers</span> <span class=p>=</span> <span class=s>&#34;192.168.50.162:9092&#34;</span> <span class=p>};</span>
+<span class=ln> 2</span><span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>p</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ProducerBuilder</span><span class=p>&lt;</span><span class=n>Null</span><span class=p>,</span> <span class=kt>string</span><span class=p>&gt;(</span><span class=n>producerConfig</span><span class=p>).</span><span class=n>Build</span><span class=p>())</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=kt>var</span> <span class=n>token</span> <span class=p>=</span> <span class=s>&#34;&lt;Your Token&gt;&#34;</span><span class=p>;</span>
+<span class=ln> 5</span>    <span class=kt>var</span> <span class=n>topic</span> <span class=p>=</span> <span class=err>“</span><span class=p>&lt;</span><span class=n>Your</span> <span class=n>Topic</span><span class=p>&gt;</span><span class=s>&#34;;
+</span><span class=ln> 6</span><span class=s></span>    <span class=kt>var</span> <span class=n>document</span> <span class=p>=</span> <span class=k>new</span> <span class=p>{</span> <span class=n>Id</span> <span class=p>=</span> <span class=s>&#34;001&#34;</span><span class=p>,</span> <span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;张三&#34;</span><span class=p>,</span> <span class=n>Address</span> <span class=p>=</span> <span class=s>&#34;北京市朝阳区&#34;</span><span class=p>,</span> <span class=n>Event</span> <span class=p>=</span> <span class=s>&#34;喝水未遂&#34;</span> <span class=p>};</span>
+<span class=ln> 7</span>    <span class=kt>var</span> <span class=n>message</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Message</span><span class=p>&lt;</span><span class=n>Null</span><span class=p>,</span> <span class=kt>string</span><span class=p>&gt;</span> <span class=p>{</span> <span class=n>Value</span> <span class=p>=</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>SerializeObject</span><span class=p>(</span><span class=n>document</span><span class=p>)</span> <span class=p>};</span>
+<span class=ln> 8</span>    <span class=c1>// 在 Kafka 消息头里增加 Authorization 字段
+</span><span class=ln> 9</span><span class=c1></span>    <span class=n>message</span><span class=p>.</span><span class=n>Headers</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Headers</span><span class=p>();</span>
+<span class=ln>10</span>    <span class=n>message</span><span class=p>.</span><span class=n>Headers</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=s>&#34;Authorization&#34;</span><span class=p>,</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=s>$&#34;Bearer {token}&#34;</span><span class=p>));</span>
+<span class=ln>11</span>    <span class=kt>var</span> <span class=n>result</span> <span class=p>=</span> <span class=k>await</span> <span class=n>p</span><span class=p>.</span><span class=n>ProduceAsync</span><span class=p>(</span><span class=n>topic</span><span class=p>,</span> <span class=n>message</span><span class=p>);</span>
+<span class=ln>12</span><span class=p>}</span>
+</code></pre></div><p>显然，这是非常朴素的一个想法，发送 Kafka 消息的时候，在 Kafka 的消息头里增加 <code>Authorization</code>字段，完美借鉴<code>HTTP</code>协议里的做法。那么，相对应地，消费 Kafka 消息的时候需要做一点调整，因为 Kafka 完全独立于 ASP.NET Core 的请求管道，所以，校验令牌的工作此时需要我们来独立完成。不过，请放心，这一切不会特别难，因为<code>JwtSecurityTokenHandler</code>这个类我们已经在前面用过一次：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=kt>var</span> <span class=n>consumerConfig</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ConsumerConfig</span> <span class=p>{</span> <span class=n>BootstrapServers</span> <span class=p>=</span> <span class=s>&#34;127.0.0.1:9092&#34;</span> <span class=p>};</span>
+<span class=ln> 2</span><span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>c</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ConsumerBuilder</span><span class=p>&lt;</span><span class=n>Null</span><span class=p>,</span> <span class=kt>string</span><span class=p>&gt;(</span><span class=n>consumerConfig</span><span class=p>).</span><span class=n>Build</span><span class=p>())</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=n>c</span><span class=p>.</span><span class=n>Subscribe</span><span class=p>(</span><span class=s>&#34;&lt;Your Topic&#34;</span><span class=p>);</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span>    <span class=kt>var</span> <span class=n>cts</span> <span class=p>=</span> <span class=k>new</span> <span class=n>CancellationTokenSource</span><span class=p>();</span>
+<span class=ln> 7</span>    <span class=kt>var</span> <span class=n>jwtHandler</span> <span class=p>=</span> <span class=k>new</span> <span class=n>JwtSecurityTokenHandler</span><span class=p>();</span>
+<span class=ln> 8</span>    <span class=kt>var</span> <span class=n>tokenParameters</span> <span class=p>=</span> <span class=k>new</span> <span class=n>TokenValidationParameters</span><span class=p>()</span>
+<span class=ln> 9</span>    <span class=p>{</span>
+<span class=ln>10</span>      <span class=n>ValidateIssuerSigningKey</span> <span class=p>=</span> <span class=k>true</span><span class=p>,</span>
+<span class=ln>11</span>      <span class=n>IssuerSigningKey</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SymmetricSecurityKey</span><span class=p>(</span><span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=s>&#34;&lt;Your Secret&gt;&#34;</span><span class=p>)),</span>
+<span class=ln>12</span>      <span class=n>ValidIssuer</span> <span class=p>=</span> <span class=s>&#34;&lt;Your Issuer&gt;&#34;</span><span class=p>,</span>
+<span class=ln>13</span>      <span class=n>ValidAudience</span> <span class=p>=</span> <span class=s>&#34;&lt;Your Audience&gt;&#34;</span><span class=p>,</span>
+<span class=ln>14</span>      <span class=n>ValidateIssuer</span> <span class=p>=</span> <span class=k>true</span><span class=p>,</span>
+<span class=ln>15</span>      <span class=n>ValidateAudience</span> <span class=p>=</span> <span class=k>true</span><span class=p>,</span>
+<span class=ln>16</span>    <span class=p>};</span>
+<span class=ln>17</span>
+<span class=ln>18</span>    <span class=k>while</span> <span class=p>(</span><span class=k>true</span><span class=p>)</span>
+<span class=ln>19</span>    <span class=p>{</span>
+<span class=ln>20</span>        <span class=kt>var</span> <span class=n>userName</span> <span class=p>=</span> <span class=kt>string</span><span class=p>.</span><span class=n>Empty</span><span class=p>;</span>
+<span class=ln>21</span>        <span class=kt>var</span> <span class=n>consumeResult</span> <span class=p>=</span> <span class=n>c</span><span class=p>.</span><span class=n>Consume</span><span class=p>(</span><span class=n>cts</span><span class=p>.</span><span class=n>Token</span><span class=p>);</span>
+<span class=ln>22</span>        <span class=kt>var</span> <span class=n>headers</span> <span class=p>=</span> <span class=n>consumeResult</span><span class=p>.</span><span class=n>Message</span><span class=p>.</span><span class=n>Headers</span><span class=p>;</span>
+<span class=ln>23</span>        <span class=k>if</span> <span class=p>(</span><span class=n>headers</span> <span class=p>!=</span> <span class=k>null</span> <span class=p>&amp;&amp;</span> <span class=n>headers</span><span class=p>.</span><span class=n>TryGetLastBytes</span><span class=p>(</span><span class=s>&#34;Authorization&#34;</span><span class=p>,</span> <span class=k>out</span> <span class=kt>byte</span><span class=p>[]</span> <span class=n>values</span><span class=p>))</span>
+<span class=ln>24</span>        <span class=p>{</span>
+<span class=ln>25</span>            <span class=c1>// 校验令牌
+</span><span class=ln>26</span><span class=c1></span>            <span class=kt>var</span> <span class=n>jwtToken</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>values</span><span class=p>).</span><span class=n>Replace</span><span class=p>(</span><span class=s>&#34;Bearer&#34;</span><span class=p>,</span> <span class=s>&#34;&#34;</span><span class=p>).</span><span class=n>Trim</span><span class=p>();</span>
+<span class=ln>27</span>            <span class=kt>var</span> <span class=n>claimsPrincipal</span> <span class=p>=</span> <span class=n>jwtHandler</span><span class=p>.</span><span class=n>ValidateToken</span><span class=p>(</span><span class=n>jwtToken</span><span class=p>,</span> <span class=n>tokenParameters</span><span class=p>,</span> <span class=k>out</span> <span class=n>SecurityToken</span> <span class=n>securityToken</span><span class=p>);</span>
+<span class=ln>28</span>            <span class=n>userName</span> <span class=p>=</span> <span class=n>claimsPrincipal</span><span class=p>.</span><span class=n>Identity</span><span class=p>.</span><span class=n>Name</span><span class=p>;</span>
+<span class=ln>29</span>            
+<span class=ln>30</span>            <span class=c1>// 处理消息
+</span><span class=ln>31</span><span class=c1></span>            <span class=c1>// ......
+</span><span class=ln>32</span><span class=c1></span>        <span class=p>}</span>
+<span class=ln>33</span>    <span class=p>}</span>
+<span class=ln>34</span><span class=p>}</span>
+</code></pre></div><p>不过，我个人感觉，这样会增加消息消费方的工作，更好的做法是采用 <code>CallContext</code> 或者 <code>AsyncLocal</code> 来做统一的处理，这样，消息订阅方只需要关心消息怎么处理即可，考虑到 Kafka 属于 Pull 模式的消息队列，这种思路不见得在性能上有多少提升，更多的是一种简化啦，算是少写一点重复代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>static</span> <span class=k>void</span> <span class=n>Subscribe</span><span class=p>&lt;</span><span class=n>TKey</span><span class=p>,</span> <span class=n>TValue</span><span class=p>&gt;(</span>
+<span class=ln> 2</span>  <span class=k>this</span> <span class=n>IConsumer</span><span class=p>&lt;</span><span class=n>TKey</span><span class=p>,</span> <span class=n>TValue</span><span class=p>&gt;</span> <span class=n>consumer</span><span class=p>,</span> <span class=kt>string</span> <span class=n>topic</span><span class=p>,</span> 
+<span class=ln> 3</span>  <span class=n>CancellationToken</span> <span class=n>cancellationToken</span><span class=p>,</span> <span class=n>Action</span><span class=p>&lt;</span><span class=n>TValue</span><span class=p>&gt;</span> <span class=n>callback</span><span class=p>)</span>
+<span class=ln> 4</span><span class=p>{</span>
+<span class=ln> 5</span>  <span class=n>consumer</span><span class=p>.</span><span class=n>Subscribe</span><span class=p>(</span><span class=n>topic</span><span class=p>);</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span>  <span class=k>while</span> <span class=p>(</span><span class=k>true</span><span class=p>)</span>
+<span class=ln> 8</span>  <span class=p>{</span>
+<span class=ln> 9</span>    <span class=k>try</span>
+<span class=ln>10</span>    <span class=p>{</span>
+<span class=ln>11</span>      <span class=kt>var</span> <span class=n>consumeResult</span> <span class=p>=</span> <span class=n>consumer</span><span class=p>.</span><span class=n>Consume</span><span class=p>(</span><span class=n>cancellationToken</span><span class=p>);</span>
+<span class=ln>12</span>      <span class=k>if</span> <span class=p>(</span><span class=n>consumeResult</span> <span class=p>!=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln>13</span>      <span class=p>{</span>
+<span class=ln>14</span>        <span class=kt>var</span> <span class=n>headers</span> <span class=p>=</span> <span class=n>consumeResult</span><span class=p>.</span><span class=n>Message</span><span class=p>.</span><span class=n>Headers</span><span class=p>;</span>
+<span class=ln>15</span>        <span class=k>if</span> <span class=p>(</span><span class=n>headers</span> <span class=p>!=</span> <span class=k>null</span> <span class=p>&amp;&amp;</span> <span class=n>headers</span><span class=p>.</span><span class=n>TryGetLastBytes</span><span class=p>(</span><span class=s>&#34;Authorization&#34;</span><span class=p>,</span> <span class=k>out</span> <span class=kt>byte</span><span class=p>[]</span> <span class=n>values</span><span class=p>))</span>
+<span class=ln>16</span>        <span class=p>{</span>
+<span class=ln>17</span>          <span class=kt>var</span> <span class=n>jwtToken</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>values</span><span class=p>).</span><span class=n>Replace</span><span class=p>(</span><span class=s>&#34;Bearer&#34;</span><span class=p>,</span> <span class=s>&#34;&#34;</span><span class=p>).</span><span class=n>Trim</span><span class=p>();</span>
+<span class=ln>18</span>          <span class=kt>var</span> <span class=n>userInfo</span> <span class=p>=</span> <span class=k>new</span> <span class=n>JwtTokenResloverService</span><span class=p>().</span><span class=n>ValidateToken</span><span class=p>(</span><span class=n>jwtToken</span><span class=p>);</span>
+<span class=ln>19</span>          <span class=n>UserContext</span><span class=p>.</span><span class=n>SetUserInfo</span><span class=p>(</span><span class=n>userInfo</span><span class=p>);</span>
+<span class=ln>20</span>        <span class=p>}</span>
+<span class=ln>21</span>
+<span class=ln>22</span>        <span class=k>if</span> <span class=p>(</span><span class=n>callback</span> <span class=p>!=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln>23</span>            <span class=n>callback</span><span class=p>(</span><span class=n>consumeResult</span><span class=p>.</span><span class=n>Message</span><span class=p>.</span><span class=n>Value</span><span class=p>);</span>
+<span class=ln>24</span>      <span class=p>}</span>
+<span class=ln>25</span>    <span class=p>}</span>
+<span class=ln>26</span>    <span class=k>catch</span> <span class=p>(</span><span class=n>ConsumeException</span> <span class=n>e</span><span class=p>)</span>
+<span class=ln>27</span>    <span class=p>{</span>
+<span class=ln>28</span>      <span class=c1>// ...
+</span><span class=ln>29</span><span class=c1></span>    <span class=p>}</span>
+<span class=ln>30</span>  <span class=p>}</span>
+<span class=ln>31</span><span class=p>}</span>
+</code></pre></div><p>其中，<code>UserContext</code>内部利用<code>AsyncLocal</code>在不同线程间共享用户信息，这可以让我们在任意位置访问用户信息，因为该扩展方法中会调用一次<code>SetUserInfo()</code>方法，所以，只要在 Kafka 的消息头上维护了<code>Authorization</code>字段，就可以从中解析出常用的用户信息，譬如用户名、用户角色等等。当然，按照 <a class=link href=https://jwt.io/ target=_blank rel=noopener>JWT</a> 的 <a class=link href=https://datatracker.ietf.org/doc/html/rfc7519 target=_blank rel=noopener>规范</a>，我们最好还是不要在载荷(Payload)中存放敏感信息，如果需要更详细的信息，比如部门、权限等等，建议通过调接口或者查数据的库方式来实现。下面是<code>UserContext</code>的实现细节：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=k>static</span> <span class=k>class</span> <span class=nc>UserContext</span>
+<span class=ln>2</span><span class=p>{</span>
+<span class=ln>3</span>  <span class=k>private</span> <span class=k>static</span> <span class=n>AsyncLocal</span><span class=p>&lt;</span><span class=n>UserInfo</span><span class=p>&gt;</span> <span class=m>_l</span><span class=n>ocalUserInfo</span> <span class=p>=</span> <span class=k>new</span> <span class=n>AsyncLocal</span><span class=p>&lt;</span><span class=n>UserInfo</span><span class=p>&gt;();</span>
+<span class=ln>4</span>  <span class=k>public</span> <span class=k>static</span> <span class=k>void</span> <span class=n>SetUserInfo</span><span class=p>(</span><span class=n>UserInfo</span> <span class=n>userInfo</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=m>_l</span><span class=n>ocalUserInfo</span><span class=p>.</span><span class=n>Value</span> <span class=p>=</span> <span class=n>userInfo</span><span class=p>;</span>
+<span class=ln>5</span>  <span class=k>public</span> <span class=k>static</span> <span class=n>UserInfo</span> <span class=n>GetUserInfo</span><span class=p>()</span> <span class=p>=&gt;</span> <span class=m>_l</span><span class=n>ocalUserInfo</span><span class=p>.</span><span class=n>Value</span><span class=p>;</span>
+<span class=ln>6</span><span class=p>}</span>
+</code></pre></div><p>非常的简单，对不对? 作为 <code>CallContext</code> 的继任者，<code>AsyncLocal</code>就是这样的优秀！也许，大家会好奇<code>JwtTokenResloverService</code>是什么？其实，它还是<code>JwtSecurityTokenHandler</code>那一堆东西，下面的代码片段展示了如何从<code>ClaimsPrincipal</code>中提取用户名和角色名称，再次说明，不要在这里放敏感信息：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=kt>var</span> <span class=n>claimsPrincipal</span> <span class=p>=</span> <span class=m>_</span><span class=n>jwtHandler</span><span class=p>.</span><span class=n>ValidateToken</span><span class=p>(</span><span class=n>token</span><span class=p>,</span> <span class=n>tokenParameters</span><span class=p>,</span> <span class=k>out</span> <span class=n>SecurityToken</span> <span class=n>securityToken</span><span class=p>);</span>
+<span class=ln>2</span><span class=k>if</span> <span class=p>(</span><span class=n>claimsPrincipal</span> <span class=p>!=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln>3</span><span class=p>{</span>
+<span class=ln>4</span>  <span class=kt>var</span> <span class=n>userInfo</span> <span class=p>=</span> <span class=k>new</span> <span class=n>UserInfo</span><span class=p>();</span>
+<span class=ln>5</span>  <span class=n>userInfo</span><span class=p>.</span><span class=n>UserName</span> <span class=p>=</span> <span class=n>claimsPrincipal</span><span class=p>.</span><span class=n>Identity</span><span class=p>.</span><span class=n>Name</span><span class=p>;</span>
+<span class=ln>6</span>  <span class=n>userInfo</span><span class=p>.</span><span class=n>UserRole</span> <span class=p>=</span> <span class=n>claimsPrincipal</span><span class=p>.</span><span class=n>Claims</span><span class=p>.</span><span class=n>FirstOrDefault</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Type</span> <span class=p>==</span> <span class=n>ClaimTypes</span><span class=p>.</span><span class=n>Role</span><span class=p>)?.</span><span class=n>Value</span><span class=p>;</span>
+<span class=ln>7</span>  <span class=k>return</span> <span class=n>userInfo</span><span class=p>;</span>
+<span class=ln>8</span><span class=p>}</span>
+</code></pre></div><p>现在，我们一开始的例子，可以简化成下面这样：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=kt>var</span> <span class=n>consumerConfig</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ConsumerConfig</span> <span class=p>{</span> <span class=n>BootstrapServers</span> <span class=p>=</span> <span class=s>&#34;127.0.0.1:9092&#34;</span> <span class=p>};</span>
+<span class=ln> 2</span><span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>c</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ConsumerBuilder</span><span class=p>&lt;</span><span class=n>Null</span><span class=p>,</span> <span class=kt>string</span><span class=p>&gt;(</span><span class=n>consumerConfig</span><span class=p>).</span><span class=n>Build</span><span class=p>())</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>  <span class=kt>var</span> <span class=n>cts</span> <span class=p>=</span> <span class=k>new</span> <span class=n>CancellationTokenSource</span><span class=p>();</span>
+<span class=ln> 5</span>  <span class=n>c</span><span class=p>.</span><span class=n>Subscribe</span><span class=p>(</span><span class=s>&#34;&lt;Your Topic&gt;&#34;</span><span class=p>,</span> <span class=n>cts</span><span class=p>.</span><span class=n>Token</span><span class=p>,</span> <span class=n>message</span> <span class=p>=&gt;</span>
+<span class=ln> 6</span> <span class=p>{</span>
+<span class=ln> 7</span>    <span class=c1>// 获取当前用户信息
+</span><span class=ln> 8</span><span class=c1></span>    <span class=kt>var</span> <span class=n>userInfo</span> <span class=p>=</span> <span class=n>UserContext</span><span class=p>.</span><span class=n>GetUserInfo</span><span class=p>();</span>
+<span class=ln> 9</span>    <span class=c1>// 处理消息
+</span><span class=ln>10</span><span class=c1></span>  <span class=p>});</span>
+<span class=ln>11</span><span class=p>}</span>
+</code></pre></div><p>Kafka 的故事，讲述到这里本该结尾，可世界上哪里会有完美的方案呢？如果考虑到 Kafka 发生消息堆积的可能性，一旦消息没有被及时处理，那么，这个放在消息头上的令牌可能会出现过期的情况。这种事情就和你使用缓存一样，如果不考虑缓存的击穿、穿透、雪崩三大灾难，那你对缓存的认知简直是肤浅。同样的道理，你要考虑令牌的过期、刷新、撤销，整个认知网络才算是真正建立起来，这些就交给我聪明的读者啦，或者以后有机会单独写一写这些话题。</p>
+<h1 id=本文小结>本文小结</h1>
+<p>2021年的最后一天，西安疫情可谓是涛声依旧，居家隔离、远程办公、买不到菜，注定要为这段时光写下注脚。也许，我们都习惯了饭来张口的外卖生活，可在这一刻，当一切线下互动被迫中止的时候，我们终于发现这些“典型”的生活场景变得不再“典型”；当人们开始在微信群里用接龙的方式来寻求生活物资的时候，微信这个社交工具的缺点就被不断地放大；当人们逐渐回归到一种“以物易物”的状态时，我不得不感慨这种从骨子里与生俱来的生存本能；当人们习以为常的“典型”被打破，其本身是否就是一种舒适圈？无论技术还是生活，你是否有做好随时面对“非典型”场景的准备？我想，在与新冠病毒长期对峙的后疫情时代，这是每一个人都应该去思考的问题，这篇博客断断续续地写了好几天，大概 2021 终究还是要这般潦草的过去罢。因为，我是一个长期悲观主义者，我确信这个世界依旧遵循熵增定律。如果你打算反驳，我会说：你说得对。</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/grpc/>gRPC</a>
+<a href=/tags/signalr/>SignalR</a>
+<a href=/tags/kafka/>Kafka</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/grpc-%E5%80%9F%E5%8A%A9-any-%E7%B1%BB%E5%9E%8B%E5%AE%9E%E7%8E%B0%E6%8E%A5%E5%8F%A3%E7%9A%84%E6%B3%9B%E5%8C%96%E8%B0%83%E7%94%A8/>
+<div class=article-details>
+<h2 class=article-title>gRPC 借助 Any 类型实现接口的泛化调用</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/grpc-%E6%90%AD%E9%85%8D-swagger-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%96%87%E6%A1%A3%E5%8C%96/>
+<div class=article-details>
+<h2 class=article-title>gRPC 搭配 Swagger 实现微服务文档化</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0-grpc-%E6%9C%8D%E5%8A%A1%E4%BB%A3%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现 gRPC 服务代理</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-grpc-%E6%89%93%E9%80%9A%E5%89%8D%E7%AB%AF%E4%B8%96%E7%95%8C%E7%9A%84%E5%B0%9D%E8%AF%95/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 打通前端世界的尝试</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-grpc-%E9%9B%86%E6%88%90-polly-%E5%AE%9E%E7%8E%B0%E4%BC%98%E9%9B%85%E9%87%8D%E8%AF%95/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 集成 Polly 实现优雅重试</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#楔子>楔子</a></li>
+<li><a href=#grpc>gRPC</a></li>
+<li><a href=#signalr>SignalR</a></li>
+<li><a href=#kafka>Kafka</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

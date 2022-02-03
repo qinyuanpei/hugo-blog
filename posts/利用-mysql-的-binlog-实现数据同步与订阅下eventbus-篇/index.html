@@ -1,0 +1,342 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="终于到这个系列的最后一篇，在前两篇博客中，我们分别了介绍了Binlog的概念和事件总线(EventBus)的实现，在完成前面这将近好几千字的铺垫以后，我们终于可以进入正题，即通过 EventBus 发布 Binlog，再通过编写对应的 EventHandler 来订阅这些 Binlog，这样就实现了我们“最初的梦想”。坦白说，这个过程实在有一点漫长，庆幸的是，它终于还是来了。
+Binlog 读取与解析 首先，我们通过 Python-Mysql-Replication 这个项目来读取 Binlog，直接通过pip install mysql-replication安装即可。接下来，我们编写一个简单的脚本文件，这再次印证那句名言——人生苦短，我用 Python：
+1def readBinLog(): 2 stream = BinLogStreamReader( 3 # 填写IP、账号、密码即可 4 connection_settings = { 5 &amp;#39;host&amp;#39;: &amp;#39;&amp;#39;, 6 &amp;#39;port&amp;#39;: 3306, 7 &amp;#39;user&amp;#39;: &amp;#39;&amp;#39;, 8 &amp;#39;passwd&amp;#39;: &amp;#39;&amp;#39; 9 }, 10 # 每台服务器唯一 11 server_id = 3, 12 # 主库Binlog读写完毕时是否阻塞连接 13 blocking = True, 14 # 筛选指定的表 15 only_tables = [&amp;#39;order_info&amp;#39;, &amp;#39;log_info&amp;#39;], 16 # 筛选指定的事件 17 only_events = [DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent]) 18 19 for binlogevent in stream: 20 for row in binlogevent."><title>利用 MySQL 的 Binlog 实现数据同步与订阅(下)：EventBus 篇</title>
+<link rel=canonical href=/posts/%E5%88%A9%E7%94%A8-mysql-%E7%9A%84-binlog-%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E4%B8%8E%E8%AE%A2%E9%98%85%E4%B8%8Beventbus-%E7%AF%87/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="利用 MySQL 的 Binlog 实现数据同步与订阅(下)：EventBus 篇">
+<meta property="og:description" content="终于到这个系列的最后一篇，在前两篇博客中，我们分别了介绍了Binlog的概念和事件总线(EventBus)的实现，在完成前面这将近好几千字的铺垫以后，我们终于可以进入正题，即通过 EventBus 发布 Binlog，再通过编写对应的 EventHandler 来订阅这些 Binlog，这样就实现了我们“最初的梦想”。坦白说，这个过程实在有一点漫长，庆幸的是，它终于还是来了。
+Binlog 读取与解析 首先，我们通过 Python-Mysql-Replication 这个项目来读取 Binlog，直接通过pip install mysql-replication安装即可。接下来，我们编写一个简单的脚本文件，这再次印证那句名言——人生苦短，我用 Python：
+1def readBinLog(): 2 stream = BinLogStreamReader( 3 # 填写IP、账号、密码即可 4 connection_settings = { 5 &amp;#39;host&amp;#39;: &amp;#39;&amp;#39;, 6 &amp;#39;port&amp;#39;: 3306, 7 &amp;#39;user&amp;#39;: &amp;#39;&amp;#39;, 8 &amp;#39;passwd&amp;#39;: &amp;#39;&amp;#39; 9 }, 10 # 每台服务器唯一 11 server_id = 3, 12 # 主库Binlog读写完毕时是否阻塞连接 13 blocking = True, 14 # 筛选指定的表 15 only_tables = [&amp;#39;order_info&amp;#39;, &amp;#39;log_info&amp;#39;], 16 # 筛选指定的事件 17 only_events = [DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent]) 18 19 for binlogevent in stream: 20 for row in binlogevent.">
+<meta property="og:url" content="/posts/%E5%88%A9%E7%94%A8-mysql-%E7%9A%84-binlog-%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E4%B8%8E%E8%AE%A2%E9%98%85%E4%B8%8Beventbus-%E7%AF%87/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Binlog"><meta property="article:tag" content="RabbitMQ"><meta property="article:tag" content="MySQL"><meta property="article:published_time" content="2020-07-31T12:01:14+00:00"><meta property="article:modified_time" content="2020-07-31T12:01:14+00:00">
+<meta name=twitter:title content="利用 MySQL 的 Binlog 实现数据同步与订阅(下)：EventBus 篇">
+<meta name=twitter:description content="终于到这个系列的最后一篇，在前两篇博客中，我们分别了介绍了Binlog的概念和事件总线(EventBus)的实现，在完成前面这将近好几千字的铺垫以后，我们终于可以进入正题，即通过 EventBus 发布 Binlog，再通过编写对应的 EventHandler 来订阅这些 Binlog，这样就实现了我们“最初的梦想”。坦白说，这个过程实在有一点漫长，庆幸的是，它终于还是来了。
+Binlog 读取与解析 首先，我们通过 Python-Mysql-Replication 这个项目来读取 Binlog，直接通过pip install mysql-replication安装即可。接下来，我们编写一个简单的脚本文件，这再次印证那句名言——人生苦短，我用 Python：
+1def readBinLog(): 2 stream = BinLogStreamReader( 3 # 填写IP、账号、密码即可 4 connection_settings = { 5 &amp;#39;host&amp;#39;: &amp;#39;&amp;#39;, 6 &amp;#39;port&amp;#39;: 3306, 7 &amp;#39;user&amp;#39;: &amp;#39;&amp;#39;, 8 &amp;#39;passwd&amp;#39;: &amp;#39;&amp;#39; 9 }, 10 # 每台服务器唯一 11 server_id = 3, 12 # 主库Binlog读写完毕时是否阻塞连接 13 blocking = True, 14 # 筛选指定的表 15 only_tables = [&amp;#39;order_info&amp;#39;, &amp;#39;log_info&amp;#39;], 16 # 筛选指定的事件 17 only_events = [DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent]) 18 19 for binlogevent in stream: 20 for row in binlogevent.">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+数据存储
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E5%88%A9%E7%94%A8-mysql-%E7%9A%84-binlog-%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E4%B8%8E%E8%AE%A2%E9%98%85%E4%B8%8Beventbus-%E7%AF%87/>利用 MySQL 的 Binlog 实现数据同步与订阅(下)：EventBus 篇</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jul 31, 2020</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 3 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>终于到这个系列的最后一篇，在前两篇博客中，我们分别了介绍了<strong>Binlog</strong>的概念和事件总线(<strong>EventBus</strong>)的实现，在完成前面这将近好几千字的铺垫以后，我们终于可以进入正题，即通过 EventBus 发布 Binlog，再通过编写对应的 EventHandler 来订阅这些 Binlog，这样就实现了我们“最初的梦想”。坦白说，这个过程实在有一点漫长，庆幸的是，它终于还是来了。</p>
+<h1 id=binlog-读取与解析>Binlog 读取与解析</h1>
+<p>首先，我们通过 <a class=link href=https://github.com/noplay/python-mysql-replication target=_blank rel=noopener>Python-Mysql-Replication</a> 这个项目来读取 Binlog，直接通过<code>pip install mysql-replication</code>安装即可。接下来，我们编写一个简单的脚本文件，这再次印证那句名言——人生苦短，我用 Python：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>def</span> <span class=nf>readBinLog</span><span class=p>():</span>
+<span class=ln> 2</span>    <span class=n>stream</span> <span class=o>=</span> <span class=n>BinLogStreamReader</span><span class=p>(</span>
+<span class=ln> 3</span>        <span class=c1># 填写IP、账号、密码即可</span>
+<span class=ln> 4</span>        <span class=n>connection_settings</span> <span class=o>=</span> <span class=p>{</span>
+<span class=ln> 5</span>            <span class=s1>&#39;host&#39;</span><span class=p>:</span> <span class=s1>&#39;&#39;</span><span class=p>,</span>
+<span class=ln> 6</span>            <span class=s1>&#39;port&#39;</span><span class=p>:</span> <span class=mi>3306</span><span class=p>,</span> 
+<span class=ln> 7</span>            <span class=s1>&#39;user&#39;</span><span class=p>:</span> <span class=s1>&#39;&#39;</span><span class=p>,</span> 
+<span class=ln> 8</span>            <span class=s1>&#39;passwd&#39;</span><span class=p>:</span> <span class=s1>&#39;&#39;</span>
+<span class=ln> 9</span>        <span class=p>},</span>
+<span class=ln>10</span>        <span class=c1># 每台服务器唯一</span>
+<span class=ln>11</span>        <span class=n>server_id</span> <span class=o>=</span> <span class=mi>3</span><span class=p>,</span> 
+<span class=ln>12</span>        <span class=c1># 主库Binlog读写完毕时是否阻塞连接</span>
+<span class=ln>13</span>        <span class=n>blocking</span> <span class=o>=</span> <span class=kc>True</span><span class=p>,</span> 
+<span class=ln>14</span>        <span class=c1># 筛选指定的表</span>
+<span class=ln>15</span>        <span class=n>only_tables</span> <span class=o>=</span> <span class=p>[</span><span class=s1>&#39;order_info&#39;</span><span class=p>,</span> <span class=s1>&#39;log_info&#39;</span><span class=p>],</span> 
+<span class=ln>16</span>        <span class=c1># 筛选指定的事件</span>
+<span class=ln>17</span>        <span class=n>only_events</span> <span class=o>=</span> <span class=p>[</span><span class=n>DeleteRowsEvent</span><span class=p>,</span> <span class=n>WriteRowsEvent</span><span class=p>,</span> <span class=n>UpdateRowsEvent</span><span class=p>])</span> 
+<span class=ln>18</span>
+<span class=ln>19</span>    <span class=k>for</span> <span class=n>binlogevent</span> <span class=ow>in</span> <span class=n>stream</span><span class=p>:</span>
+<span class=ln>20</span>        <span class=k>for</span> <span class=n>row</span> <span class=ow>in</span> <span class=n>binlogevent</span><span class=o>.</span><span class=n>rows</span><span class=p>:</span>
+<span class=ln>21</span>            <span class=n>event</span> <span class=o>=</span> <span class=p>{</span>
+<span class=ln>22</span>                <span class=s2>&#34;schema&#34;</span><span class=p>:</span> <span class=n>binlogevent</span><span class=o>.</span><span class=n>schema</span><span class=p>,</span>
+<span class=ln>23</span>                <span class=s2>&#34;table&#34;</span><span class=p>:</span> <span class=n>binlogevent</span><span class=o>.</span><span class=n>table</span><span class=p>,</span>
+<span class=ln>24</span>                <span class=s2>&#34;log_pos&#34;</span><span class=p>:</span> <span class=n>binlogevent</span><span class=o>.</span><span class=n>packet</span><span class=o>.</span><span class=n>log_pos</span>
+<span class=ln>25</span>            <span class=p>}</span>
+<span class=ln>26</span>            <span class=k>if</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>binlogevent</span><span class=p>,</span> <span class=n>DeleteRowsEvent</span><span class=p>):</span>
+<span class=ln>27</span>                <span class=n>event</span><span class=p>[</span><span class=s2>&#34;action&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=s2>&#34;delete&#34;</span>
+<span class=ln>28</span>                <span class=n>event</span><span class=p>[</span><span class=s2>&#34;origin&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>row</span><span class=p>[</span><span class=s2>&#34;values&#34;</span><span class=p>]</span><span class=o>.</span><span class=n>items</span><span class=p>())</span>
+<span class=ln>29</span>                <span class=n>event</span><span class=p>[</span><span class=s2>&#34;current&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=kc>None</span>
+<span class=ln>30</span>                <span class=n>event</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>event</span><span class=o>.</span><span class=n>items</span><span class=p>())</span>
+<span class=ln>31</span>            <span class=k>elif</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>binlogevent</span><span class=p>,</span> <span class=n>UpdateRowsEvent</span><span class=p>):</span>
+<span class=ln>32</span>                <span class=n>event</span><span class=p>[</span><span class=s2>&#34;action&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=s2>&#34;update&#34;</span>
+<span class=ln>33</span>                <span class=n>event</span><span class=p>[</span><span class=s2>&#34;origin&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>row</span><span class=p>[</span><span class=s2>&#34;before_values&#34;</span><span class=p>]</span><span class=o>.</span><span class=n>items</span><span class=p>())</span>
+<span class=ln>34</span>                <span class=n>event</span><span class=p>[</span><span class=s2>&#34;current&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>row</span><span class=p>[</span><span class=s2>&#34;after_values&#34;</span><span class=p>]</span><span class=o>.</span><span class=n>items</span><span class=p>())</span>
+<span class=ln>35</span>                <span class=n>event</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>event</span><span class=o>.</span><span class=n>items</span><span class=p>())</span>
+<span class=ln>36</span>            <span class=k>elif</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>binlogevent</span><span class=p>,</span> <span class=n>WriteRowsEvent</span><span class=p>):</span>
+<span class=ln>37</span>                <span class=n>event</span><span class=p>[</span><span class=s2>&#34;action&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=s2>&#34;insert&#34;</span>
+<span class=ln>38</span>                <span class=n>event</span><span class=p>[</span><span class=s2>&#34;origin&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=kc>None</span>
+<span class=ln>39</span>                <span class=n>event</span><span class=p>[</span><span class=s2>&#34;current&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>row</span><span class=p>[</span><span class=s2>&#34;values&#34;</span><span class=p>]</span><span class=o>.</span><span class=n>items</span><span class=p>())</span>
+<span class=ln>40</span>                <span class=n>event</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>(</span><span class=n>event</span><span class=o>.</span><span class=n>items</span><span class=p>())</span>
+<span class=ln>41</span>    <span class=n>stream</span><span class=o>.</span><span class=n>close</span><span class=p>()</span>
+</code></pre></div><h1 id=发布-binlog>发布 Binlog</h1>
+<p>在读取到 Binlog 以后，我们需要将其发布到 EventBus 里，为此，在.NET Core 这边提供一个 Web API 接口，只需要注入<code>IEventBus</code>然后调用<code>Publish()</code>即可：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=c1>// Post: /&lt;controller&gt;/Publish
+</span><span class=ln> 2</span><span class=c1></span><span class=na>[HttpPost]</span>
+<span class=ln> 3</span><span class=na>[Route (&#34;PublishBinLog&#34;)]</span>
+<span class=ln> 4</span><span class=k>public</span> <span class=n>Task</span> <span class=n>PublishBinLog</span> <span class=p>(</span><span class=n>BinLogEventModel</span><span class=p>&lt;</span><span class=kt>dynamic</span><span class=p>&gt;</span> <span class=n>eventModel</span><span class=p>)</span> 
+<span class=ln> 5</span><span class=p>{</span>
+<span class=ln> 6</span>    <span class=k>if</span> <span class=p>(</span><span class=n>eventModel</span><span class=p>.</span><span class=n>action</span> <span class=p>==</span> <span class=s>&#34;insert&#34;</span> <span class=p>&amp;&amp;</span> <span class=n>eventModel</span><span class=p>.</span><span class=n>table</span><span class=p>.</span><span class=n>StartsWith</span> <span class=p>(</span><span class=s>&#34;log_&#34;</span><span class=p>))</span>
+<span class=ln> 7</span>        <span class=m>_</span><span class=n>eventBus</span><span class=p>.</span><span class=n>Publish</span> <span class=p>(</span><span class=n>eventModel</span><span class=p>.</span><span class=n>MapTo</span><span class=p>&lt;</span><span class=n>WriteLogEvent</span><span class=p>&gt;</span> <span class=p>());</span>
+<span class=ln> 8</span>    <span class=k>if</span> <span class=p>(</span><span class=n>eventModel</span><span class=p>.</span><span class=n>action</span> <span class=p>==</span> <span class=s>&#34;insert&#34;</span> <span class=p>&amp;&amp;</span> <span class=n>eventModel</span><span class=p>.</span><span class=n>table</span> <span class=p>==</span> <span class=s>&#34;order_info&#34;</span><span class=p>)</span>
+<span class=ln> 9</span>        <span class=m>_</span><span class=n>eventBus</span><span class=p>.</span><span class=n>Publish</span> <span class=p>(</span><span class=n>eventModel</span><span class=p>.</span><span class=n>MapTo</span><span class=p>&lt;</span><span class=n>OrderInfoCreateEvent</span><span class=p>&gt;</span> <span class=p>());</span>
+<span class=ln>10</span>    <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>CompletedTask</span><span class=p>;</span>
+<span class=ln>11</span><span class=p>}</span>
+</code></pre></div><p>相应地，我们需要在脚本中添加调用 Web API 的逻辑代码，使用我们最熟悉的<code>requests</code>库即可：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>def</span> <span class=nf>sendBinLog</span><span class=p>(</span><span class=n>event</span><span class=p>):</span>
+<span class=ln> 2</span>    <span class=n>url</span> <span class=o>=</span> <span class=s2>&#34;https://localhost:44348/EventBus/PublishBinLog&#34;</span>
+<span class=ln> 3</span>    <span class=n>headers</span> <span class=o>=</span> <span class=p>{</span>
+<span class=ln> 4</span>        <span class=s1>&#39;Content-Type&#39;</span><span class=p>:</span> <span class=s2>&#34;application/json&#34;</span><span class=p>,</span>
+<span class=ln> 5</span>    <span class=p>}</span>
+<span class=ln> 6</span>    <span class=k>try</span><span class=p>:</span>
+<span class=ln> 7</span>        <span class=n>payload</span> <span class=o>=</span> <span class=n>json</span><span class=o>.</span><span class=n>dumps</span><span class=p>(</span><span class=n>event</span><span class=p>,</span><span class=bp>cls</span><span class=o>=</span><span class=n>ComplexEncoder</span><span class=p>)</span>
+<span class=ln> 8</span>        <span class=n>response</span> <span class=o>=</span> <span class=n>session</span><span class=o>.</span><span class=n>request</span><span class=p>(</span><span class=s2>&#34;POST&#34;</span><span class=p>,</span> <span class=n>url</span><span class=p>,</span> <span class=n>data</span><span class=o>=</span><span class=n>payload</span><span class=p>,</span> <span class=n>headers</span><span class=o>=</span><span class=n>headers</span><span class=p>,</span> <span class=n>verify</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+<span class=ln> 9</span>    <span class=k>except</span> <span class=ne>Exception</span><span class=p>:</span>
+<span class=ln>10</span>        <span class=k>pass</span>
+</code></pre></div><p>在这里，在处理 Binlog 的序列化的问题时，我们可能会遇到默认的 JSON 序列化器无法对 event 进行序列化的问题，此时，我们可以编写一个自定义的序列化器，下面是博主目前在使用的序列化器：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>class</span> <span class=nc>ComplexEncoder</span><span class=p>(</span><span class=n>json</span><span class=o>.</span><span class=n>JSONEncoder</span><span class=p>):</span>
+<span class=ln> 2</span>    <span class=k>def</span> <span class=nf>default</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>obj</span><span class=p>):</span>
+<span class=ln> 3</span>        <span class=k>if</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span> <span class=n>datetime</span><span class=p>):</span>
+<span class=ln> 4</span>            <span class=k>return</span> <span class=n>obj</span><span class=o>.</span><span class=n>strftime</span><span class=p>(</span><span class=s1>&#39;%Y-%m-</span><span class=si>%d</span><span class=s1> %H:%M:%S&#39;</span><span class=p>)</span>
+<span class=ln> 5</span>        <span class=k>elif</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span> <span class=n>date</span><span class=p>):</span>
+<span class=ln> 6</span>            <span class=k>return</span> <span class=n>obj</span><span class=o>.</span><span class=n>strftime</span><span class=p>(</span><span class=s1>&#39;%Y-%m-</span><span class=si>%d</span><span class=s1>&#39;</span><span class=p>)</span>
+<span class=ln> 7</span>        <span class=k>elif</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span> <span class=n>decimal</span><span class=o>.</span><span class=n>Decimal</span><span class=p>):</span>
+<span class=ln> 8</span>            <span class=k>return</span> <span class=nb>str</span><span class=p>(</span><span class=n>obj</span><span class=p>)</span>
+<span class=ln> 9</span>        <span class=k>elif</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span> <span class=nb>bytes</span><span class=p>):</span>
+<span class=ln>10</span>            <span class=k>return</span> <span class=n>obj</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span>  
+<span class=ln>11</span>        <span class=k>else</span><span class=p>:</span>
+<span class=ln>12</span>            <span class=k>return</span> <span class=n>json</span><span class=o>.</span><span class=n>JSONEncoder</span><span class=o>.</span><span class=n>default</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>obj</span><span class=p>)</span>
+</code></pre></div><h1 id=订阅-binlog>订阅 Binlog</h1>
+<p>现在，为了订阅这些 Binlog，我们来编写对应的 EventHandler，这里我们定义两个 EventHandler，一个用于打印日志编号、日志内容、日志级别等信息，一个用于统计不同级别的日志的数目。代码实现如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=c1>//打印日志的EventHandler
+</span><span class=ln> 2</span><span class=c1></span><span class=k>public</span> <span class=k>class</span> <span class=nc>WriteLogEventHandler</span> <span class=p>:</span> <span class=n>IEventHandler</span><span class=p>&lt;</span><span class=n>WriteLogEvent</span><span class=p>&gt;</span> <span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>private</span> <span class=n>ILogger</span><span class=p>&lt;</span><span class=n>WriteLogEventHandler</span><span class=p>&gt;</span> <span class=m>_l</span><span class=n>ogger</span><span class=p>;</span>
+<span class=ln> 4</span>    <span class=k>public</span> <span class=n>WriteLogEventHandler</span> <span class=p>(</span><span class=n>ILogger</span><span class=p>&lt;</span><span class=n>WriteLogEventHandler</span><span class=p>&gt;</span> <span class=n>logger</span><span class=p>)</span> <span class=p>{</span>
+<span class=ln> 5</span>        <span class=m>_l</span><span class=n>ogger</span> <span class=p>=</span> <span class=n>logger</span><span class=p>;</span>
+<span class=ln> 6</span>    <span class=p>}</span>
+<span class=ln> 7</span>    <span class=k>public</span> <span class=n>Task</span> <span class=n>Handle</span> <span class=p>(</span><span class=n>WriteLogEvent</span> <span class=n>@event</span><span class=p>)</span> <span class=p>{</span>
+<span class=ln> 8</span>        <span class=m>_l</span><span class=n>ogger</span><span class=p>.</span><span class=n>LogInformation</span> <span class=p>(</span><span class=s>$&#34;日志编号：{@event.TRANSACTION_ID}，日志级别：{@event.LOG_LEVEL}，主机：{@event.HOST_NAME}，IP：{@event.HOST_IP}，内容：{@event.CONTENT}&#34;</span><span class=p>);</span>
+<span class=ln> 9</span>        <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>CompletedTask</span><span class=p>;</span>
+<span class=ln>10</span>    <span class=p>}</span>
+<span class=ln>11</span><span class=p>}</span>
+<span class=ln>12</span>
+<span class=ln>13</span><span class=c1>//分析日志的EventHandler
+</span><span class=ln>14</span><span class=c1></span><span class=k>public</span> <span class=k>class</span> <span class=nc>AnalyseLogEventHandler</span> <span class=p>:</span> <span class=n>IEventHandler</span><span class=p>&lt;</span><span class=n>WriteLogEvent</span><span class=p>&gt;</span> <span class=p>{</span>
+<span class=ln>15</span>    <span class=k>private</span> <span class=k>readonly</span> <span class=n>ILogger</span><span class=p>&lt;</span><span class=n>AnalyseLogEventHandler</span><span class=p>&gt;</span> <span class=m>_l</span><span class=n>ogger</span><span class=p>;</span>
+<span class=ln>16</span>    <span class=k>private</span> <span class=k>readonly</span> <span class=n>IDistributedCache</span> <span class=m>_</span><span class=n>cache</span><span class=p>;</span>
+<span class=ln>17</span>    <span class=k>public</span> <span class=n>AnalyseLogEventHandler</span> <span class=p>(</span><span class=n>ILogger</span><span class=p>&lt;</span><span class=n>AnalyseLogEventHandler</span><span class=p>&gt;</span> <span class=n>logger</span><span class=p>,</span> <span class=n>IDistributedCache</span> <span class=n>cache</span><span class=p>)</span> <span class=p>{</span>
+<span class=ln>18</span>        <span class=m>_l</span><span class=n>ogger</span> <span class=p>=</span> <span class=n>logger</span><span class=p>;</span>
+<span class=ln>19</span>        <span class=m>_</span><span class=n>cache</span> <span class=p>=</span> <span class=n>cache</span><span class=p>;</span>
+<span class=ln>20</span>    <span class=p>}</span>
+<span class=ln>21</span>    <span class=k>public</span> <span class=n>Task</span> <span class=n>Handle</span> <span class=p>(</span><span class=n>WriteLogEvent</span> <span class=n>@event</span><span class=p>)</span> <span class=p>{</span>
+<span class=ln>22</span>        <span class=kt>var</span> <span class=n>cacheCount</span> <span class=p>=</span> <span class=m>_</span><span class=n>cache</span><span class=p>.</span><span class=n>GetString</span> <span class=p>(</span><span class=n>@event</span><span class=p>.</span><span class=n>LOG_LEVEL</span><span class=p>);</span>
+<span class=ln>23</span>        <span class=k>if</span> <span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span> <span class=p>(</span><span class=n>cacheCount</span><span class=p>))</span>
+<span class=ln>24</span>            <span class=n>cacheCount</span> <span class=p>=</span> <span class=s>&#34;1&#34;</span><span class=p>;</span>
+<span class=ln>25</span>        <span class=k>else</span>
+<span class=ln>26</span>            <span class=n>cacheCount</span> <span class=p>=</span> <span class=p>(</span><span class=kt>int</span><span class=p>.</span><span class=n>Parse</span> <span class=p>(</span><span class=n>cacheCount</span><span class=p>)</span> <span class=p>+</span> <span class=m>1</span><span class=p>).</span><span class=n>ToString</span> <span class=p>();</span>
+<span class=ln>27</span>        <span class=m>_</span><span class=n>cache</span><span class=p>.</span><span class=n>SetString</span> <span class=p>(</span><span class=n>@event</span><span class=p>.</span><span class=n>LOG_LEVEL</span><span class=p>,</span> <span class=n>cacheCount</span><span class=p>);;</span>
+<span class=ln>28</span>        <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>CompletedTask</span><span class=p>;</span>
+<span class=ln>29</span>    <span class=p>}</span>
+<span class=ln>30</span><span class=p>}</span>
+</code></pre></div><p>注意，这里需要在<code>Startup</code>中注入<code>EventHandler</code>、<code>EventBus</code>以及各种必要的依赖项，你可以手动注册，或者参考下面的代码，实现扫描注册：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=n>services</span><span class=p>.</span><span class=n>AddSingleton</span><span class=p>&lt;</span><span class=n>IRabbitMQPersistentConnection</span><span class=p>,</span> <span class=n>DefaultRabbitMQPersistentConnection</span><span class=p>&gt;</span> <span class=p>();</span>
+<span class=ln> 2</span><span class=n>services</span><span class=p>.</span><span class=n>AddSingleton</span><span class=p>&lt;</span><span class=n>IEventBusSubscriptionManager</span><span class=p>,</span> <span class=n>EventBusSubscriptionManager</span><span class=p>&gt;</span> <span class=p>(</span><span class=n>sp</span> <span class=p>=&gt;</span> <span class=k>new</span> <span class=n>EventBusSubscriptionManager</span> <span class=p>());</span>
+<span class=ln> 3</span><span class=n>services</span><span class=p>.</span><span class=n>AddSingleton</span><span class=p>&lt;</span><span class=n>IConnectionFactory</span><span class=p>,</span> <span class=n>ConnectionFactory</span><span class=p>&gt;</span> <span class=p>(</span><span class=n>sp</span> <span class=p>=&gt;</span> <span class=k>new</span> <span class=n>ConnectionFactory</span> <span class=p>()</span> <span class=p>{</span> <span class=n>HostName</span> <span class=p>=</span> <span class=s>&#34;localhost&#34;</span><span class=p>,</span> <span class=n>UserName</span> <span class=p>=</span> <span class=s>&#34;guest&#34;</span><span class=p>,</span> <span class=n>Password</span> <span class=p>=</span> <span class=s>&#34;guest&#34;</span> <span class=p>});</span>
+<span class=ln> 4</span><span class=n>services</span><span class=p>.</span><span class=n>AddSingleton</span><span class=p>&lt;</span><span class=n>ObjectPoolProvider</span><span class=p>,</span> <span class=n>DefaultObjectPoolProvider</span><span class=p>&gt;</span> <span class=p>();</span>
+<span class=ln> 5</span><span class=n>services</span><span class=p>.</span><span class=n>AddControllers</span> <span class=p>().</span><span class=n>AddNewtonsoftJson</span> <span class=p>();</span>
+<span class=ln> 6</span><span class=n>services</span><span class=p>.</span><span class=n>AddDistributedMemoryCache</span> <span class=p>(</span><span class=n>options</span> <span class=p>=&gt;</span> <span class=p>{</span>
+<span class=ln> 7</span>    <span class=n>options</span><span class=p>.</span><span class=n>ExpirationScanFrequency</span> <span class=p>=</span> <span class=n>TimeSpan</span><span class=p>.</span><span class=n>FromMinutes</span> <span class=p>(</span><span class=m>5</span><span class=p>);</span>
+<span class=ln> 8</span>    <span class=n>options</span><span class=p>.</span><span class=n>SizeLimit</span> <span class=p>=</span> <span class=m>10</span><span class=p>;</span>
+<span class=ln> 9</span><span class=p>});</span>
+<span class=ln>10</span>
+<span class=ln>11</span><span class=c1>//自动注册
+</span><span class=ln>12</span><span class=c1></span><span class=n>services</span><span class=p>.</span><span class=n>AddEventBus</span><span class=p>();</span>
+<span class=ln>13</span>
+<span class=ln>14</span><span class=c1>//手动注册
+</span><span class=ln>15</span><span class=c1></span><span class=n>services</span><span class=p>.</span><span class=n>AddSingleton</span><span class=p>&lt;</span><span class=n>IEventBus</span><span class=p>,</span> <span class=n>RabbitMQEventBus</span><span class=p>&gt;</span> <span class=p>(</span><span class=n>sp</span> <span class=p>=&gt;</span> <span class=p>{</span>
+<span class=ln>16</span>    <span class=kt>var</span> <span class=n>eventBus</span> <span class=p>=</span> <span class=k>new</span> <span class=n>RabbitMQEventBus</span> <span class=p>(</span><span class=n>sp</span><span class=p>.</span><span class=n>GetRequiredService</span><span class=p>&lt;</span><span class=n>IRabbitMQPersistentConnection</span><span class=p>&gt;</span> <span class=p>(),</span> <span class=n>sp</span><span class=p>.</span><span class=n>GetRequiredService</span><span class=p>&lt;</span><span class=n>IEventBusSubscriptionManager</span><span class=p>&gt;</span> <span class=p>(),</span> <span class=n>sp</span><span class=p>.</span><span class=n>GetRequiredService</span><span class=p>&lt;</span><span class=n>ILogger</span><span class=p>&lt;</span><span class=n>RabbitMQEventBus</span><span class=p>&gt;&gt;</span> <span class=p>(),</span> <span class=n>sp</span><span class=p>,</span> <span class=s>&#34;eventbus-exchange&#34;</span><span class=p>,</span> <span class=s>&#34;eventbus-queue&#34;</span><span class=p>);</span>
+<span class=ln>17</span>    <span class=n>eventBus</span><span class=p>.</span><span class=n>Subscribe</span><span class=p>&lt;</span><span class=n>WriteLogEvent</span><span class=p>,</span> <span class=n>WriteLogEventHandler</span><span class=p>&gt;():</span>
+<span class=ln>18</span>    <span class=n>eventBus</span><span class=p>.</span><span class=n>Subscribe</span><span class=p>&lt;</span><span class=n>WriteLogEvent</span><span class=p>,</span> <span class=n>AnalyseLogEventHandler</span><span class=p>&gt;();</span>
+<span class=ln>19</span>    <span class=k>return</span> <span class=n>eventBus</span><span class=p>;</span>
+<span class=ln>20</span><span class=p>});</span>
+<span class=ln>21</span>
+<span class=ln>22</span><span class=n>services</span><span class=p>.</span><span class=n>AddTransient</span><span class=p>&lt;</span><span class=n>WriteLogEventHandler</span><span class=p>&gt;();</span>
+<span class=ln>23</span><span class=n>services</span><span class=p>.</span><span class=n>AddTransient</span><span class=p>&lt;</span><span class=n>AnalyseLogEventHandler</span><span class=p>&gt;();</span>
+<span class=ln>24</span>
+</code></pre></div><p>一起来看看效果，简直太完美了，我就是不想写中间表啊，这样多好！！！
+<figure>
+<a href=/https:/i.loli.net/2020/07/31/PRjfiYpWNqHxI7Z.gif>
+<img src=/https:/i.loli.net/2020/07/31/PRjfiYpWNqHxI7Z.gif loading=lazy alt="Python 读取 Binlog 演示">
+</a>
+<figcaption>Python 读取 Binlog 演示</figcaption>
+</figure>
+<figure>
+<a href=/https:/i.loli.net/2020/07/31/yVZgIn9NifpxTXa.gif>
+<img src=/https:/i.loli.net/2020/07/31/yVZgIn9NifpxTXa.gif loading=lazy alt=".NET Core 消费 Binlog演示">
+</a>
+<figcaption>.NET Core 消费 Binlog演示</figcaption>
+</figure>
+<figure>
+<a href=/https:/i.loli.net/2020/07/31/iMX5PFCoak7VDv9.png>
+<img src=/https:/i.loli.net/2020/07/31/iMX5PFCoak7VDv9.png loading=lazy alt="RabbitMQ Dashboard 演示">
+</a>
+<figcaption>RabbitMQ Dashboard 演示</figcaption>
+</figure></p>
+<h1 id=本文小结>本文小结</h1>
+<p>通过三篇博客的篇幅，我们实现了“利用 MySQL 的 Binlog 实现数据同步与订阅”的想法。在这个过程中，我们了解了 Binlog 的相关概念，参考微软的 <a class=link href=https://github.com/dotnet-architecture/eShopOnContainers target=_blank rel=noopener>eShopOnContainers</a> 项目实现了一个基于 RabbitMQ 的 EventBus，而这一切都在这篇博客中完成了最终的“拼合”，通过 <a class=link href=https://github.com/noplay/python-mysql-replication target=_blank rel=noopener>Python-Mysql-Replication</a> 实现了 Binlog 解析，而 EventBus 则作为整个事件系统的“上帝”对所有事件处理器(<strong>EventHandler</strong>)进行统一调度，最终我们不需要关心这些事件是如何被发布到 EventBus 中的，只需要知道它对应哪一个 Event 并为它编写对应的 EventHandler 即可，除了这篇博客中提到的 Binlog 以外，实际上它还可以作为系统内的“领域事件”来实现业务上的事件驱动，譬如<code>OrderInfoCreateEvent</code>这个事件可以表示一个订单被创建，而关心订单状态的人则可以通过 EventHandler 来实现订阅，实现类似发短信、发邮件、发微信等等的功能，或者可以让第三方的 Web API 来消费事件中携带的信息。同理，第三方的数据在流入系统时，可以先发布到消息队列中，再通过对应的 EventHandler 来进行异步处理，极大地改善系统接口的吞吐性能，而如果在这中间抽象出来一个数据交换层出来，那么就能收获更多不一样的东西，就在写这篇博客的时候，我在 Github 上的代码被收入了微软的"北极冰川火种计划"，虽然数字世界远比现实世界宽广得多，可能为这个世界减少一点“无用”的数据或者代码，应该一样可以算作是环保行为吧！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/binlog/>Binlog</a>
+<a href=/tags/rabbitmq/>RabbitMQ</a>
+<a href=/tags/mysql/>MySQL</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E5%88%A9%E7%94%A8-mysql-%E7%9A%84-binlog-%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E4%B8%8E%E8%AE%A2%E9%98%85%E4%B8%8A%E5%9F%BA%E7%A1%80%E7%AF%87/>
+<div class=article-details>
+<h2 class=article-title>利用 MySQL 的 Binlog 实现数据同步与订阅(上)：基础篇</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%88%A9%E7%94%A8-mysql-%E7%9A%84-binlog-%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E4%B8%8E%E8%AE%A2%E9%98%85%E4%B8%ADrabbitmq-%E7%AF%87/>
+<div class=article-details>
+<h2 class=article-title>利用 MySQL 的 Binlog 实现数据同步与订阅(中)：RabbitMQ 篇</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/efcore-%E5%AE%9E%E4%BD%93%E5%91%BD%E5%90%8D%E7%BA%A6%E5%AE%9A%E5%BA%93efcore.namingconventions/>
+<div class=article-details>
+<h2 class=article-title>EFCore 实体命名约定库：EFCore.NamingConventions</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%B5%85%E8%AE%AE-ef-core-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E5%A4%9A%E7%A7%9F%E6%88%B7%E6%9E%B6%E6%9E%84%E7%9A%84%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>浅议 EF Core 分库分表及多租户架构的实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8E%E9%80%89%E9%A1%B9%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0.net-core-%E7%9A%84%E9%85%8D%E7%BD%AE%E7%83%AD%E6%9B%B4%E6%96%B0/>
+<div class=article-details>
+<h2 class=article-title>基于选项模式实现.NET Core 的配置热更新</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#binlog-读取与解析>Binlog 读取与解析</a></li>
+<li><a href=#发布-binlog>发布 Binlog</a></li>
+<li><a href=#订阅-binlog>订阅 Binlog</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

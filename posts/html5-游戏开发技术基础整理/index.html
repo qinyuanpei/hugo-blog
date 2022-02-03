@@ -1,0 +1,445 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="## JavaScript 中的面向对象编程;如果直接使用 JavaScript 代码;### 在 JavaScript 中函数(function)就是就是一个类(class)"><title>HTML5 游戏开发技术基础整理</title>
+<link rel=canonical href=/posts/html5-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E6%95%B4%E7%90%86/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="HTML5 游戏开发技术基础整理">
+<meta property="og:description" content="## JavaScript 中的面向对象编程;如果直接使用 JavaScript 代码;### 在 JavaScript 中函数(function)就是就是一个类(class)">
+<meta property="og:url" content="/posts/html5-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E6%95%B4%E7%90%86/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="游戏"><meta property="article:tag" content="HTML5"><meta property="article:tag" content="技术"><meta property="article:tag" content="笔记"><meta property="article:published_time" content="2015-03-08T19:14:44+00:00"><meta property="article:modified_time" content="2015-03-08T19:14:44+00:00">
+<meta name=twitter:title content="HTML5 游戏开发技术基础整理">
+<meta name=twitter:description content="## JavaScript 中的面向对象编程;如果直接使用 JavaScript 代码;### 在 JavaScript 中函数(function)就是就是一个类(class)">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+读书笔记
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/html5-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E6%95%B4%E7%90%86/>HTML5 游戏开发技术基础整理</a>
+</h2>
+<h3 class=article-subtitle>
+## JavaScript 中的面向对象编程;如果直接使用 JavaScript 代码;### 在 JavaScript 中函数(function)就是就是一个类(class)
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Mar 08, 2015</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 3 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>随着 HTML5 标准最终敲定，HTML5 将有望成为游戏开发领域的的热门平台。HTML5 游戏能够运行于包括 iPhone 系列和 iPad 系列在内的计算机、智能手机以及平板电脑上，是目前跨平台应用开发的最佳实施方案。本文系根据 《HML5 Canvas 游戏开发实战》 一书中的内容整理而成，是了解和学习 HTML5 游戏开发的基础内容，希望能够帮助到那些和博主一样致力于游戏开发的朋友们！</p>
+<h2 id=javascript-中的面向对象编程>JavaScript 中的面向对象编程</h2>
+<p>对于游戏开发来说，面向对象编程(OOP)是一种重要而且必要的方法，所以在了解 HTML5 游戏开发前，首先应该了解 JavaScript 中的面向对象编程。JavaScript 是一种基于对象的语言，可它并不是一种真正的面向对象的编程语言，因为在 JavaScript 的语法中不存在类(Class)的概念。下面我们将分析和解决在 JavaScript 中实现封装、继承等面向对象的问题。</p>
+<h3 id=在-javascript-中函数function就是就是一个类class>在 JavaScript 中函数(function)就是就是一个类(class)</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=c1>//声明一个函数
+</span><span class=ln>2</span><span class=c1></span><span class=kd>function</span> <span class=nx>MyClass</span><span class=p>(){}</span>
+<span class=ln>3</span><span class=c1>//实例化一个对象
+</span><span class=ln>4</span><span class=c1></span><span class=kd>var</span> <span class=nx>cls1</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>MyClass</span><span class=p>();</span>
+</code></pre></div><h3 id=使用-this-关键字就可以为类增加属性>使用 this 关键字就可以为类增加属性</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln> 1</span><span class=c1>//声明一个类并定义其构造函数
+</span><span class=ln> 2</span><span class=c1></span><span class=kd>function</span> <span class=nx>MyClass</span><span class=p>(</span><span class=nx>name</span><span class=p>,</span><span class=nx>age</span><span class=p>)</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=k>this</span><span class=p>.</span><span class=nx>name</span> <span class=o>=</span> <span class=nx>name</span><span class=p>;</span>
+<span class=ln> 5</span>    <span class=k>this</span><span class=p>.</span><span class=nx>age</span>  <span class=o>=</span> <span class=nx>age</span><span class=p>;</span>
+<span class=ln> 6</span><span class=p>};</span>
+<span class=ln> 7</span><span class=c1>//实例化一个对象
+</span><span class=ln> 8</span><span class=c1></span><span class=kd>var</span> <span class=nx>cls1</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>MyClass</span><span class=p>(</span><span class=s2>&#34;张三&#34;</span><span class=p>,</span><span class=mi>20</span><span class=p>)</span>
+<span class=ln> 9</span><span class=c1>//输出cls1的两个属性值
+</span><span class=ln>10</span><span class=c1></span><span class=nx>alert</span><span class=p>(</span><span class=s2>&#34;name=&#34;</span> <span class=o>+</span> <span class=nx>cls1</span><span class=p>.</span><span class=nx>name</span> <span class=o>+</span> <span class=s2>&#34;&amp;&#34;</span> <span class=o>+</span> <span class=nx>cls1</span><span class=p>.</span><span class=nx>age</span><span class=p>)</span>
+</code></pre></div><h3 id=使用-prototype-属性可以为类添加方法>使用 prototype 属性可以为类添加方法</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln> 1</span><span class=c1>//声明一个类并定义其构造函数
+</span><span class=ln> 2</span><span class=c1></span><span class=kd>function</span> <span class=nx>MyClass</span><span class=p>(</span><span class=nx>name</span><span class=p>,</span><span class=nx>age</span><span class=p>)</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=k>this</span><span class=p>.</span><span class=nx>name</span> <span class=o>=</span> <span class=nx>name</span><span class=p>;</span>
+<span class=ln> 5</span>    <span class=k>this</span><span class=p>.</span><span class=nx>age</span>  <span class=o>=</span> <span class=nx>age</span><span class=p>;</span>
+<span class=ln> 6</span><span class=p>};</span>
+<span class=ln> 7</span><span class=c1>//为MyClass增加方法
+</span><span class=ln> 8</span><span class=c1></span><span class=nx>MyClass</span><span class=p>.</span><span class=nx>prototype</span><span class=o>=</span>
+<span class=ln> 9</span><span class=p>{</span>
+<span class=ln>10</span>    <span class=nx>toString</span><span class=o>:</span><span class=kd>function</span><span class=p>()</span>
+<span class=ln>11</span>    <span class=p>{</span>
+<span class=ln>12</span>        <span class=nx>alert</span><span class=p>(</span><span class=s2>&#34;name=&#34;</span> <span class=o>+</span> <span class=k>this</span><span class=p>.</span><span class=nx>name</span> <span class=o>+</span> <span class=s2>&#34;&amp;&#34;</span> <span class=o>+</span> <span class=k>this</span><span class=p>.</span><span class=nx>age</span><span class=p>)</span>
+<span class=ln>13</span>    <span class=p>},</span>
+<span class=ln>14</span>    <span class=nx>getName</span><span class=o>:</span><span class=kd>function</span><span class=p>()</span>
+<span class=ln>15</span>    <span class=p>{</span>
+<span class=ln>16</span>        <span class=nx>alert</span><span class=p>(</span><span class=s2>&#34;name=&#34;</span> <span class=o>+</span> <span class=k>this</span><span class=p>.</span><span class=nx>name</span><span class=p>)</span>
+<span class=ln>17</span>    <span class=p>},</span>
+<span class=ln>18</span>    <span class=nx>getAge</span><span class=o>:</span><span class=kd>function</span><span class=p>()</span>
+<span class=ln>19</span>    <span class=p>{</span>
+<span class=ln>20</span>        <span class=nx>alert</span><span class=p>(</span><span class=s2>&#34;age=&#34;</span> <span class=o>+</span> <span class=k>this</span><span class=p>.</span><span class=nx>age</span><span class=p>)</span>
+<span class=ln>21</span>    <span class=p>}</span>
+<span class=ln>22</span><span class=p>};</span>
+</code></pre></div><h3 id=使用-apply-方法实现属性和方法的继承>使用 apply 方法实现属性和方法的继承</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln> 1</span><span class=c1>//定义一个父类People
+</span><span class=ln> 2</span><span class=c1></span><span class=kd>function</span> <span class=nx>People</span><span class=p>()</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=k>this</span><span class=p>.</span><span class=nx>type</span><span class=o>=</span><span class=s2>&#34;人&#34;</span>
+<span class=ln> 5</span><span class=p>};</span>
+<span class=ln> 6</span><span class=c1>//为父类定义一个方法
+</span><span class=ln> 7</span><span class=c1></span><span class=nx>People</span><span class=p>.</span><span class=nx>prototype</span><span class=o>=</span>
+<span class=ln> 8</span><span class=p>{</span>
+<span class=ln> 9</span>    <span class=nx>getType</span><span class=o>:</span><span class=kd>function</span><span class=p>()</span>
+<span class=ln>10</span>    <span class=p>{</span>
+<span class=ln>11</span>        <span class=nx>alert</span><span class=p>(</span><span class=s2>&#34;type=&#34;</span> <span class=o>+</span> <span class=k>this</span><span class=p>.</span><span class=nx>type</span><span class=p>)</span>
+<span class=ln>12</span>    <span class=p>}</span>
+<span class=ln>13</span><span class=p>};</span>
+<span class=ln>14</span>
+<span class=ln>15</span><span class=c1>//定义一个子类Student
+</span><span class=ln>16</span><span class=c1></span><span class=kd>function</span> <span class=nx>Student</span><span class=p>(</span><span class=nx>name</span><span class=p>,</span><span class=nx>age</span><span class=p>,</span><span class=nx>sex</span><span class=p>)</span>
+<span class=ln>17</span><span class=p>{</span>
+<span class=ln>18</span>   <span class=c1>//继承父类的属性type
+</span><span class=ln>19</span><span class=c1></span>   <span class=nx>People</span><span class=p>.</span><span class=nx>apply</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=nx>arguments</span><span class=p>);</span>
+<span class=ln>20</span>   <span class=k>this</span><span class=p>.</span><span class=nx>name</span> <span class=o>=</span> <span class=nx>name</span><span class=p>;</span>
+<span class=ln>21</span>   <span class=k>this</span><span class=p>.</span><span class=nx>age</span> <span class=o>=</span> <span class=nx>age</span><span class=p>;</span>
+<span class=ln>22</span>   <span class=k>this</span><span class=p>.</span><span class=nx>sex</span> <span class=o>=</span> <span class=nx>sex</span><span class=p>;</span>
+<span class=ln>23</span><span class=p>};</span>
+<span class=ln>24</span>
+<span class=ln>25</span><span class=c1>//声明一个Student实例
+</span><span class=ln>26</span><span class=c1></span><span class=kd>var</span> <span class=nx>stu</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Student</span><span class=p>(</span><span class=s2>&#34;张三&#34;</span><span class=p>,</span><span class=mi>20</span><span class=p>,</span><span class=s2>&#34;男&#34;</span><span class=p>)</span><span class=err>；</span>
+<span class=ln>27</span><span class=c1>//输出type
+</span><span class=ln>28</span><span class=c1></span><span class=nx>alert</span><span class=p>(</span><span class=nx>stu</span><span class=p>.</span><span class=nx>type</span><span class=p>)</span>
+<span class=ln>29</span>
+<span class=ln>30</span><span class=c1>//下面我们来了解下如何继承父类的方法，继承父类方法主要通过循环使用父对象的prototype进行复制来实现，如
+</span><span class=ln>31</span><span class=c1>//重新定义子类Student
+</span><span class=ln>32</span><span class=c1></span><span class=kd>function</span> <span class=nx>Student</span><span class=p>(</span><span class=nx>name</span><span class=p>,</span><span class=nx>age</span><span class=p>,</span><span class=nx>sex</span><span class=p>)</span>
+<span class=ln>33</span><span class=p>{</span>
+<span class=ln>34</span>    <span class=c1>//继承父类的属性type
+</span><span class=ln>35</span><span class=c1></span>   <span class=nx>People</span><span class=p>.</span><span class=nx>apply</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=nx>arguments</span><span class=p>);</span>
+<span class=ln>36</span>   <span class=c1>//继承父类的方法，略显抽象
+</span><span class=ln>37</span><span class=c1></span>   <span class=kd>var</span> <span class=nx>prop</span><span class=p>;</span>
+<span class=ln>38</span>   <span class=k>for</span><span class=p>(</span><span class=nx>prop</span> <span class=k>in</span> <span class=nx>People</span><span class=p>.</span><span class=nx>prototype</span><span class=p>)</span>
+<span class=ln>39</span>   <span class=p>{</span>
+<span class=ln>40</span>        <span class=kd>var</span> <span class=nx>proto</span> <span class=o>=</span> <span class=k>this</span><span class=p>.</span><span class=nx>constructor</span><span class=p>.</span><span class=nx>prototype</span><span class=p>;</span>
+<span class=ln>41</span>        <span class=k>if</span><span class=p>(</span><span class=o>!</span><span class=nx>proto</span><span class=p>[</span><span class=nx>prop</span><span class=p>])</span>
+<span class=ln>42</span>        <span class=p>{</span>
+<span class=ln>43</span>            <span class=nx>proto</span><span class=p>[</span><span class=nx>prop</span><span class=p>]</span> <span class=o>=</span> <span class=nx>People</span><span class=p>.</span><span class=nx>prototype</span><span class=p>[</span><span class=nx>prop</span><span class=p>];</span>
+<span class=ln>44</span>        <span class=p>}</span>
+<span class=ln>45</span>        <span class=nx>proto</span><span class=p>[</span><span class=nx>prop</span><span class=p>][</span><span class=s2>&#34;super&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=nx>People</span><span class=p>.</span><span class=nx>prototype</span><span class=p>;</span>
+<span class=ln>46</span>   <span class=p>}</span>
+<span class=ln>47</span>   <span class=c1>//属性定义
+</span><span class=ln>48</span><span class=c1></span>   <span class=k>this</span><span class=p>.</span><span class=nx>name</span> <span class=o>=</span> <span class=nx>name</span><span class=p>;</span>
+<span class=ln>49</span>   <span class=k>this</span><span class=p>.</span><span class=nx>age</span> <span class=o>=</span> <span class=nx>age</span><span class=p>;</span>
+<span class=ln>50</span>   <span class=k>this</span><span class=p>.</span><span class=nx>sex</span> <span class=o>=</span> <span class=nx>sex</span><span class=p>;</span>
+<span class=ln>51</span><span class=p>};</span>
+<span class=ln>52</span>
+<span class=ln>53</span><span class=c1>//实例化Student对象
+</span><span class=ln>54</span><span class=c1></span><span class=kd>var</span> <span class=nx>stu</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Student</span><span class=p>(</span><span class=s2>&#34;张三&#34;</span><span class=p>,</span><span class=mi>20</span><span class=p>,</span><span class=s2>&#34;男&#34;</span><span class=p>);</span>
+<span class=ln>55</span><span class=nx>stu</span><span class=p>.</span><span class=nx>getType</span><span class=p>();</span>
+</code></pre></div><h3 id=静态类的实现>静态类的实现</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=ln> 1</span>function staticClass()
+<span class=ln> 2</span>{
+<span class=ln> 3</span>    staticClass.name = &#34;张三&#34;;
+<span class=ln> 4</span>    staticClass.toString=function
+<span class=ln> 5</span>    {
+<span class=ln> 6</span>        alert(&#34;name=&#34; + staticClass.name )
+<span class=ln> 7</span>    };
+<span class=ln> 8</span>};
+<span class=ln> 9</span>
+<span class=ln>10</span>alert(staticClass.name);
+<span class=ln>11</span>staticClass.toString();
+</code></pre></div><h2 id=canvas-绘图基础>Canvas 绘图基础</h2>
+<p>HTML5 提供了图像、视频、音频、表单、位置、本地数据库、离线存储、websocket 等各种全新的特性，对于 HTML 游戏开发而言，我们主要关注图像、音频、本地数据库以及 websocket 等，首先我们来了解下 Canavs 绘图的基础内容。</p>
+<p>Canvas 是 HTML5 为我们提供的一张画布，可以让我们在 HTML 上直接绘制图形，因此 Canvas 可以作为 HTML5 游戏开发的基本元素，即 HTML5 游戏引擎的底层都是以 Canvas 元素来驱动的。Canvas 本身没有绘图的能力，需要借助于 JavaScript 来实现绘图的功能。使用 Canvas 元素只需要在网页中添加 canvas 标记即可，如</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-HTML data-lang=HTML><span class=ln>1</span><span class=p>&lt;</span><span class=nt>canvas</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;myCanavs&#34;</span> <span class=na>width</span><span class=o>=</span><span class=s>&#34;800&#34;</span> <span class=na>height</span><span class=o>=</span><span class=s>&#34;480&#34;</span><span class=p>&gt;&lt;/</span><span class=nt>canvas</span><span class=p>&gt;</span>
+</code></pre></div><p>接下来我们通过 JavaScript 来获取这个 Canvas 并通过相关 API 实现绘图环境的初始化</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=c1>//获取Canvas元素
+</span><span class=ln>2</span><span class=c1></span><span class=kd>var</span> <span class=nx>canvas</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s1>&#39;myCanvas&#39;</span><span class=p>);</span>
+<span class=ln>3</span><span class=c1>//检查canvas合法性
+</span><span class=ln>4</span><span class=c1></span><span class=k>if</span><span class=p>(</span><span class=nx>canvas</span> <span class=o>&amp;&amp;</span> <span class=nx>canvas</span><span class=p>.</span><span class=nx>getContext</span><span class=p>)</span>
+<span class=ln>5</span><span class=p>{</span>
+<span class=ln>6</span>    <span class=c1>//获取当前上下文
+</span><span class=ln>7</span><span class=c1></span>    <span class=kd>var</span> <span class=nx>ctx</span> <span class=o>=</span> <span class=nx>canvas</span><span class=p>.</span><span class=nx>getContext</span><span class=p>(</span><span class=s1>&#39;2d&#39;</span><span class=p>)</span>    
+<span class=ln>8</span><span class=p>}</span>
+</code></pre></div><p>因为目前 Canvas 只支持 2D 绘图，因此，这里的参数暂时只能为 2d。因为 Cnavas 绘图的 API 都封装在 ctx 这个实例中，因此下面的所有操作都是基于 ctx 来实现的：</p>
+<h3 id=使用-canvas-绘制线>使用 Canvas 绘制线</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln> 1</span><span class=c1>//设置线宽
+</span><span class=ln> 2</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>lineWidth</span> <span class=o>=</span> <span class=mi>10</span><span class=p>;</span>
+<span class=ln> 3</span><span class=c1>//设置画笔颜色
+</span><span class=ln> 4</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>strokeStyle</span> <span class=o>=</span> <span class=s2>&#34;red&#34;</span><span class=p>;</span>
+<span class=ln> 5</span><span class=c1>//创建一个路径
+</span><span class=ln> 6</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>beginPath</span><span class=p>();</span>
+<span class=ln> 7</span><span class=c1>//路径起点
+</span><span class=ln> 8</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>moveTo</span><span class=p>(</span><span class=mi>10</span><span class=p>,</span><span class=mi>10</span><span class=p>);</span>
+<span class=ln> 9</span><span class=c1>//路径终点
+</span><span class=ln>10</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>lineTo</span><span class=p>(</span><span class=mi>150</span><span class=p>,</span><span class=mi>50</span><span class=p>);</span>
+<span class=ln>11</span><span class=c1>//绘制路径
+</span><span class=ln>12</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span>
+</code></pre></div><h3 id=使用-cnavas-绘制矩形>使用 Cnavas 绘制矩形</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=c1>//设置线宽
+</span><span class=ln>2</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>lineWidth</span><span class=o>=</span><span class=mi>5</span><span class=p>;</span>
+<span class=ln>3</span><span class=c1>//设置画笔颜色
+</span><span class=ln>4</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>strokeStyle</span><span class=o>-</span><span class=s2>&#34;red&#34;</span>
+<span class=ln>5</span><span class=c1>//创建路径
+</span><span class=ln>6</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>beginPath</span><span class=p>();</span>
+<span class=ln>7</span><span class=c1>//绘制矩形
+</span><span class=ln>8</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>strokeRect</span><span class=p>(</span><span class=mi>10</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>70</span><span class=p>,</span><span class=mi>40</span><span class=p>);</span>
+</code></pre></div><p>或者</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=c1>//定义矩形
+</span><span class=ln>2</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>rect</span><span class=p>(</span><span class=mi>10</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>70</span><span class=p>,</span><span class=mi>40</span><span class=p>);</span>
+<span class=ln>3</span><span class=c1>//绘制矩形
+</span><span class=ln>4</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span>
+</code></pre></div><p>如果需要对矩形进行填充</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=c1>//创建路径
+</span><span class=ln>2</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>beginPath</span><span class=p>()</span>
+<span class=ln>3</span><span class=c1>//绘制矩形
+</span><span class=ln>4</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fillRect</span><span class=p>(</span><span class=mi>10</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>70</span><span class=p>,</span><span class=mi>40</span><span class=p>)</span>
+</code></pre></div><h3 id=使用-canvas-绘制圆>使用 Canvas 绘制圆</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=c1>//创建路径
+</span><span class=ln>2</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>beginPath</span><span class=p>();</span>
+<span class=ln>3</span><span class=c1>//定义圆
+</span><span class=ln>4</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>arc</span><span class=p>(</span><span class=mi>100</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>50</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>360</span><span class=o>*</span><span class=nb>Math</span><span class=p>.</span><span class=nx>PI</span><span class=o>/</span><span class=mi>180</span><span class=p>,</span><span class=kc>true</span><span class=p>);</span>
+<span class=ln>5</span><span class=c1>//绘制圆
+</span><span class=ln>6</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span>
+</code></pre></div><p>同样地，可以使用 fill 进行填充绘制</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=c1>//创建路径
+</span><span class=ln>2</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>beginPath</span><span class=p>();</span>
+<span class=ln>3</span><span class=c1>//定义圆
+</span><span class=ln>4</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>arc</span><span class=p>(</span><span class=mi>100</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>50</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>360</span><span class=o>*</span><span class=nb>Math</span><span class=p>.</span><span class=nx>PI</span><span class=o>/</span><span class=mi>180</span><span class=p>,</span><span class=kc>true</span><span class=p>);</span>
+<span class=ln>5</span><span class=c1>//绘制圆
+</span><span class=ln>6</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fill</span><span class=p>();</span>
+</code></pre></div><h3 id=使用-canvas-绘制圆角矩形>使用 Canvas 绘制圆角矩形</h3>
+<p>绘制圆角矩形需要 arcTo 函数配合 lineTo 来完成</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln> 1</span><span class=c1>//创建路径
+</span><span class=ln> 2</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>beginPath</span><span class=p>();</span>
+<span class=ln> 3</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>moveTo</span><span class=p>(</span><span class=mi>40</span><span class=p>,</span><span class=mi>20</span><span class=p>);</span>
+<span class=ln> 4</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>lineTo</span><span class=p>(</span><span class=mi>100</span><span class=p>,</span><span class=mi>20</span><span class=p>);</span>
+<span class=ln> 5</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>arcTo</span><span class=p>(</span><span class=mi>100</span><span class=p>,</span><span class=mi>20</span><span class=p>,</span><span class=mi>120</span><span class=p>,</span><span class=mi>40</span><span class=p>,</span><span class=mi>20</span><span class=p>);</span>
+<span class=ln> 6</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>lineTo</span><span class=p>(</span><span class=mi>120</span><span class=p>,</span><span class=mi>70</span><span class=p>);</span>
+<span class=ln> 7</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>arcTo</span><span class=p>(</span><span class=mi>120</span><span class=p>,</span><span class=mi>90</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>90</span><span class=p>,</span><span class=mi>20</span><span class=p>);</span>
+<span class=ln> 8</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>lineTo</span><span class=p>(</span><span class=mi>40</span><span class=p>,</span><span class=mi>90</span><span class=p>);</span>
+<span class=ln> 9</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>arcTo</span><span class=p>(</span><span class=mi>20</span><span class=p>,</span><span class=mi>90</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>70</span><span class=p>,</span><span class=mi>20</span><span class=p>);</span>
+<span class=ln>10</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>lineTo</span><span class=p>(</span><span class=mi>20</span><span class=p>,</span><span class=mi>40</span><span class=p>);</span>
+<span class=ln>11</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>arcTo</span><span class=p>(</span><span class=mi>20</span><span class=p>,</span><span class=mi>20</span><span class=p>,</span><span class=mi>40</span><span class=p>,</span><span class=mi>20</span><span class=p>,</span><span class=mi>20</span><span class=p>);</span>
+<span class=ln>12</span><span class=c1>//绘制圆角矩形
+</span><span class=ln>13</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>stroke</span><span class=p>();</span>
+</code></pre></div><h3 id=使用-canvas-绘制复杂图形>使用 Canvas 绘制复杂图形</h3>
+<p>在 HTML5 中可以通过 quadraticCurveTo 函数绘制二次贝塞尔曲线，通过 bezierCurveTo 函数绘制三次贝塞尔曲线,具体代码请参考 API 文档。</p>
+<h3 id=使用-canvas-绘制文字>使用 Canvas 绘制文字</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=c1>//设置字体
+</span><span class=ln>2</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>font</span><span class=o>=</span><span class=s2>&#34;30px Arial&#34;</span><span class=p>;</span>
+<span class=ln>3</span><span class=c1>//绘制文字
+</span><span class=ln>4</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>strokeText</span><span class=p>(</span><span class=s2>&#34;Hello HTML5&#34;</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>50</span><span class=p>);</span>
+</code></pre></div><h3 id=使用-canvas-绘制图片>使用 Canvas 绘制图片</h3>
+<p>绘制图片使用 drawImage 函数，其函数原型如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=nx>drawImage</span><span class=p>(</span><span class=nx>image</span><span class=p>,</span><span class=nx>dx</span><span class=p>,</span><span class=nx>dy</span><span class=p>);</span>
+</code></pre></div><p>其中 image 可以是 HTML 中的标签或者是 JavaScript 中的 Image 对象。如</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-HTML data-lang=HTML><span class=ln>1</span>//定义一个img标签
+<span class=ln>2</span><span class=p>&lt;</span><span class=nt>img</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;img_source&#34;</span> <span class=na>src</span><span class=o>=</span><span class=s>&#34;source.jpg&#34;</span> <span class=na>width</span><span class=o>=</span><span class=s>&#34;240&#34;</span> <span class=na>height</span><span class=o>=</span><span class=s>&#34;240&#34;</span><span class=p>/&gt;</span>
+</code></pre></div><p>接下来通过 getElementById 来取得图像数据，并将其绘制出来</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=kd>var</span> <span class=nx>img</span><span class=o>=</span><span class=nb>document</span><span class=p>.</span><span class=nx>getElementById</span><span class=p>(</span><span class=s2>&#34;img_source&#34;</span><span class=p>);</span>
+<span class=ln>2</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>draw</span><span class=p>(</span><span class=nx>img</span><span class=p>,</span><span class=mi>200</span><span class=p>,</span><span class=mi>200</span><span class=p>);</span>
+</code></pre></div><p>如果直接使用 JavaScript 代码</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=kd>var</span> <span class=nx>img</span><span class=o>=</span><span class=k>new</span> <span class=nx>Image</span><span class=p>();</span>
+<span class=ln>2</span><span class=nx>img</span><span class=p>.</span><span class=nx>src</span><span class=o>=</span><span class=s2>&#34;source.jpg&#34;</span><span class=p>;</span>
+<span class=ln>3</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>draw</span><span class=p>(</span><span class=nx>img</span><span class=p>,</span><span class=mi>200</span><span class=p>,</span><span class=mi>200</span><span class=p>)</span>
+</code></pre></div><h3 id=图形的平移操作>图形的平移操作</h3>
+<p>使用 translate 函数实现在水平和垂直方向上的平移</p>
+<h3 id=图形的旋转操作>图形的旋转操作</h3>
+<p>使用 rotate 函数实现旋转，需要注意的是传入的参数是弧度</p>
+<h3 id=图形的伸缩操作>图形的伸缩操作</h3>
+<p>使用 scale 函数实现伸缩，当参数为负值时表示在该方向上翻转</p>
+<h3 id=图形高级特效>图形高级特效</h3>
+<p>这里主要介绍线性渐变、径向渐变、颜色反转、灰度。</p>
+<ul>
+<li>线性渐变</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=c1>//创建一个线性渐变容器
+</span><span class=ln>2</span><span class=c1></span><span class=kd>var</span> <span class=nx>grd</span><span class=o>=</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>createLinearGradient</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>200</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span>
+<span class=ln>3</span><span class=c1>//添加颜色
+</span><span class=ln>4</span><span class=c1></span><span class=nx>grd</span><span class=p>.</span><span class=nx>addColorStop</span><span class=p>(</span><span class=mf>0.2</span><span class=p>,</span><span class=s2>&#34;#00ff00&#34;</span><span class=p>);</span>
+<span class=ln>5</span><span class=nx>grd</span><span class=p>.</span><span class=nx>addColorStop</span><span class=p>(</span><span class=mf>0.8</span><span class=p>,</span><span class=s2>&#34;#ff0000&#34;</span><span class=p>);</span>
+<span class=ln>6</span><span class=c1>//应用渐变
+</span><span class=ln>7</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fillStyle</span><span class=o>=</span><span class=nx>grd</span><span class=p>;</span>
+</code></pre></div><ul>
+<li>径向渐变</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln>1</span><span class=c1>//创建一个径向渐变容器
+</span><span class=ln>2</span><span class=c1></span><span class=kd>var</span> <span class=nx>grd</span><span class=o>=</span><span class=nx>ctx</span><span class=p>.</span><span class=nx>createRadialGradient</span><span class=p>(</span><span class=mi>100</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>100</span><span class=p>,</span><span class=mi>50</span><span class=p>);</span>
+<span class=ln>3</span><span class=c1>//添加颜色
+</span><span class=ln>4</span><span class=c1></span><span class=nx>grd</span><span class=p>.</span><span class=nx>addColorStop</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span><span class=s2>&#34;#00ff00&#34;</span><span class=p>);</span>
+<span class=ln>5</span><span class=nx>grd</span><span class=p>.</span><span class=nx>addColorStop</span><span class=p>(,</span><span class=s2>&#34;#ff0000&#34;</span><span class=p>);</span>
+<span class=ln>6</span><span class=c1>//应用渐变
+</span><span class=ln>7</span><span class=c1></span><span class=nx>ctx</span><span class=p>.</span><span class=nx>fillStyle</span><span class=o>=</span><span class=nx>grd</span><span class=p>;</span>
+</code></pre></div><ul>
+<li>颜色反转
+遍历每个像素并对 RGB 值进行取反</li>
+<li>灰度
+灰度计算公式：gary = red * 0.3 + green * 0.59 + blue * 0.11</li>
+</ul>
+<p>基础的内容就是这些了，以后如果碰到需要 HTML5 的地方可以回过头来看看。</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E6%B8%B8%E6%88%8F/>游戏</a>
+<a href=/tags/html5/>HTML5</a>
+<a href=/tags/%E6%8A%80%E6%9C%AF/>技术</a>
+<a href=/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/web-api-%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<div class=article-details>
+<h2 class=article-title>《Web API 的设计与开发》读书笔记</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/c#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<div class=article-details>
+<h2 class=article-title>《C#多线程编程实战》读书笔记</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E7%BC%96%E7%A8%8Blua-%E8%84%9A%E6%9C%AC%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/>
+<div class=article-details>
+<h2 class=article-title>脚本语言编程：Lua 脚本编程入门</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%89%91%E6%8C%87-offer-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/>
+<div class=article-details>
+<h2 class=article-title>剑指 Offer 读书笔记(1)</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E7%88%B1%E6%83%85%E5%83%8F%E4%B8%80%E5%9C%BA%E9%9C%8D%E4%B9%B1/>
+<div class=article-details>
+<h2 class=article-title>爱情像一场霍乱</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li>
+<ol>
+<li><a href=#javascript-中的面向对象编程>JavaScript 中的面向对象编程</a>
+<ol>
+<li><a href=#在-javascript-中函数function就是就是一个类class>在 JavaScript 中函数(function)就是就是一个类(class)</a></li>
+<li><a href=#使用-this-关键字就可以为类增加属性>使用 this 关键字就可以为类增加属性</a></li>
+<li><a href=#使用-prototype-属性可以为类添加方法>使用 prototype 属性可以为类添加方法</a></li>
+<li><a href=#使用-apply-方法实现属性和方法的继承>使用 apply 方法实现属性和方法的继承</a></li>
+<li><a href=#静态类的实现>静态类的实现</a></li>
+</ol>
+</li>
+<li><a href=#canvas-绘图基础>Canvas 绘图基础</a>
+<ol>
+<li><a href=#使用-canvas-绘制线>使用 Canvas 绘制线</a></li>
+<li><a href=#使用-cnavas-绘制矩形>使用 Cnavas 绘制矩形</a></li>
+<li><a href=#使用-canvas-绘制圆>使用 Canvas 绘制圆</a></li>
+<li><a href=#使用-canvas-绘制圆角矩形>使用 Canvas 绘制圆角矩形</a></li>
+<li><a href=#使用-canvas-绘制复杂图形>使用 Canvas 绘制复杂图形</a></li>
+<li><a href=#使用-canvas-绘制文字>使用 Canvas 绘制文字</a></li>
+<li><a href=#使用-canvas-绘制图片>使用 Canvas 绘制图片</a></li>
+<li><a href=#图形的平移操作>图形的平移操作</a></li>
+<li><a href=#图形的旋转操作>图形的旋转操作</a></li>
+<li><a href=#图形的伸缩操作>图形的伸缩操作</a></li>
+<li><a href=#图形高级特效>图形高级特效</a></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

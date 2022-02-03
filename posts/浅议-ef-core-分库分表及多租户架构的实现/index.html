@@ -1,0 +1,486 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="各位朋友，大家好，我是 Payne，欢迎大家关注我的博客，我的博客地址是：https://blog.yuanpei.me。最近这段时间，我一直在学习 ABP vNext 框架，在整个学习过程中，我基本就是在“文档”和“源码”间来回横跳。我个人推荐大家，多去阅读一点优秀的代码，因为阅读 ABP vNext 的源代码简直就是一种享受，它可以暂时让你摆脱如泥沼一般的业务代码。言归正传，ABP vNext 是一个支持多租户架构的框架，在了解了其多租户的实现原理以后，从中收获一点微不足道的小技巧。正好前几天，刚刚同一位朋友讨论完分库、分表这类话题。因此，在今天这篇博客中，我想和大家一起探讨下 EF Core 关于分库、分表以及多租户架构的实现。此中曲折，可以说是初窥门径，或许我无法提供给你一个开箱即用的方案，至少它可以带给你一点启发。有读者朋友建议我，不要总是写这种“高深”、“复杂”的话题，适当地迎合读者写点不需要动脑子的东西。对此，我想说，我有我个人技术上的追求，希望大家理解！
+分库 首先，我们一起来探讨分库这个话题。从字面含义上了解，分库就是指应用程序拥有多个数据库，而这些数据库则拥有相同的表结构。你可能会问，为什么我们需要分库、分表？答案自然是性能，性能，还是TM的性能。我相信，大家都曾经或多或少地听到过垂直拆分、水平拆分这样的术语，下图展示了如何在数据库这一层级上进行拆分：
+ 数据库的垂直拆分与水平拆分 
+其实，我们可以从索引存储、B+树高度、QPS 和 连接数 这四个不同的角度来审视这个话题。相关观点认为，当单表数据量达到一定量级(阿里巴巴Java开发手册中为500W)时，由于内存无法存储其索引，此时SQL查询会产生磁盘IO；行记录的大小决定了B+树的每个叶子节点能存储多少记录，所以，行记录的大小会影响B+树的高度；单个MySQL物理机实例写QPS峰值大概为1万，一旦业务量达到某个量级，这个瓶颈会逐步凸显出来；单个MySQL实例最大连接数有限，更多的访问量意味着需要更多的连接数。
+在谈论分库、分表的时候，我们忍不住会去想譬如“自动分表”和“路由”这样的问题，这些子库、子表，到底是提前在数据库里分好呢，还是在运行时期间自动去拆分呢，以及我对库/表进行拆分以后，我应该怎么样找到某条数据对应的库/表。我承认，这些问题并不简单，但当我们对问题进行简化以后，分库本质上就是动态地切换数据库，对不对？无非是拆分后的数据库可能会是类似db_0、db_1等等这样的序列。
+ 对 Chinook 进行水平拆分 
+对于数据库的自动拆分，博主尝试过的一种方案是：首先，通过Add-Migration生成迁移。然后，通过循环修改连接字符串的方式，调用Context.Database.Migrate()方法为一个数据库迁移表结构和种子数据。当然，有些朋友不认同在生产环境使用迁移的做法，认为对数据库的操作权限还是应该交给 DBA 来管理，这当然无可厚非。我表达的一直都是一种思路，我不想一个工作六年的人，对技术的态度永远都停留在“能跑”、“能抄”这种水平。
+一旦想清楚这一层，实现起来还是非常简单的。我们在配置中准备多个数据库来模拟分库的场景，实际应用中到底是用范围、Hash 还是 配置，大家结合自己的场景来决定就好。其实，这个思路还可以用来做读写分离，无非是这个库更特殊一点，它是个从库。好了，我们一起来看下面的代码：
+1// 这里随机连接到某一个数据库 2// 实际应该按照某种方式获得数据库库名后缀 3var shardings = _options.Value.MultiTenants; 4var sharding = shardings[new Random().Next(0, shardings.Count)]; 5_chinookContext.Database.GetDbConnection().ConnectionString = sharding.ConnectionString; 6Console.WriteLine(&amp;#34;--------分库场景--------&amp;#34;); 7Console.WriteLine(_chinookContext.Database.GetDbConnection().ConnectionString); 8Console.WriteLine(_chinookContext.Album.ToQueryString()); 9Console.WriteLine(_chinookContext.Artist.ToQueryString()); 事实上，如果选择性地忽略 “路由” 和 “自动分表” 这两个特性，我们已经在 EF 层面上局部的实现了 “分库” 功能：
+ 分库场景 
+分表 好了，聊完分库，我们再来聊聊分表。分表就是指同一个数据库里拥有多张结构(Schema)相同的表。一个典型的例子是，Excel里的多张Sheet，只要它们拥有相同的结构(Schema)，就可以视为同一类型的数据，虽然它们拥有不同的表名。和分库类似，分表的着眼点是避免产生“大表”，从而达到提高查询性能的目的。而对应到 EF(EntityFramework) 的场景中，分表本质上就是在解决 EF 动态适配表名的问题。同样的，下面两张图展示了如何在表这个层级进行拆分："><title>浅议 EF Core 分库分表及多租户架构的实现</title>
+<link rel=canonical href=/posts/%E6%B5%85%E8%AE%AE-ef-core-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E5%A4%9A%E7%A7%9F%E6%88%B7%E6%9E%B6%E6%9E%84%E7%9A%84%E5%AE%9E%E7%8E%B0/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="浅议 EF Core 分库分表及多租户架构的实现">
+<meta property="og:description" content="各位朋友，大家好，我是 Payne，欢迎大家关注我的博客，我的博客地址是：https://blog.yuanpei.me。最近这段时间，我一直在学习 ABP vNext 框架，在整个学习过程中，我基本就是在“文档”和“源码”间来回横跳。我个人推荐大家，多去阅读一点优秀的代码，因为阅读 ABP vNext 的源代码简直就是一种享受，它可以暂时让你摆脱如泥沼一般的业务代码。言归正传，ABP vNext 是一个支持多租户架构的框架，在了解了其多租户的实现原理以后，从中收获一点微不足道的小技巧。正好前几天，刚刚同一位朋友讨论完分库、分表这类话题。因此，在今天这篇博客中，我想和大家一起探讨下 EF Core 关于分库、分表以及多租户架构的实现。此中曲折，可以说是初窥门径，或许我无法提供给你一个开箱即用的方案，至少它可以带给你一点启发。有读者朋友建议我，不要总是写这种“高深”、“复杂”的话题，适当地迎合读者写点不需要动脑子的东西。对此，我想说，我有我个人技术上的追求，希望大家理解！
+分库 首先，我们一起来探讨分库这个话题。从字面含义上了解，分库就是指应用程序拥有多个数据库，而这些数据库则拥有相同的表结构。你可能会问，为什么我们需要分库、分表？答案自然是性能，性能，还是TM的性能。我相信，大家都曾经或多或少地听到过垂直拆分、水平拆分这样的术语，下图展示了如何在数据库这一层级上进行拆分：
+ 数据库的垂直拆分与水平拆分 
+其实，我们可以从索引存储、B+树高度、QPS 和 连接数 这四个不同的角度来审视这个话题。相关观点认为，当单表数据量达到一定量级(阿里巴巴Java开发手册中为500W)时，由于内存无法存储其索引，此时SQL查询会产生磁盘IO；行记录的大小决定了B+树的每个叶子节点能存储多少记录，所以，行记录的大小会影响B+树的高度；单个MySQL物理机实例写QPS峰值大概为1万，一旦业务量达到某个量级，这个瓶颈会逐步凸显出来；单个MySQL实例最大连接数有限，更多的访问量意味着需要更多的连接数。
+在谈论分库、分表的时候，我们忍不住会去想譬如“自动分表”和“路由”这样的问题，这些子库、子表，到底是提前在数据库里分好呢，还是在运行时期间自动去拆分呢，以及我对库/表进行拆分以后，我应该怎么样找到某条数据对应的库/表。我承认，这些问题并不简单，但当我们对问题进行简化以后，分库本质上就是动态地切换数据库，对不对？无非是拆分后的数据库可能会是类似db_0、db_1等等这样的序列。
+ 对 Chinook 进行水平拆分 
+对于数据库的自动拆分，博主尝试过的一种方案是：首先，通过Add-Migration生成迁移。然后，通过循环修改连接字符串的方式，调用Context.Database.Migrate()方法为一个数据库迁移表结构和种子数据。当然，有些朋友不认同在生产环境使用迁移的做法，认为对数据库的操作权限还是应该交给 DBA 来管理，这当然无可厚非。我表达的一直都是一种思路，我不想一个工作六年的人，对技术的态度永远都停留在“能跑”、“能抄”这种水平。
+一旦想清楚这一层，实现起来还是非常简单的。我们在配置中准备多个数据库来模拟分库的场景，实际应用中到底是用范围、Hash 还是 配置，大家结合自己的场景来决定就好。其实，这个思路还可以用来做读写分离，无非是这个库更特殊一点，它是个从库。好了，我们一起来看下面的代码：
+1// 这里随机连接到某一个数据库 2// 实际应该按照某种方式获得数据库库名后缀 3var shardings = _options.Value.MultiTenants; 4var sharding = shardings[new Random().Next(0, shardings.Count)]; 5_chinookContext.Database.GetDbConnection().ConnectionString = sharding.ConnectionString; 6Console.WriteLine(&amp;#34;--------分库场景--------&amp;#34;); 7Console.WriteLine(_chinookContext.Database.GetDbConnection().ConnectionString); 8Console.WriteLine(_chinookContext.Album.ToQueryString()); 9Console.WriteLine(_chinookContext.Artist.ToQueryString()); 事实上，如果选择性地忽略 “路由” 和 “自动分表” 这两个特性，我们已经在 EF 层面上局部的实现了 “分库” 功能：
+ 分库场景 
+分表 好了，聊完分库，我们再来聊聊分表。分表就是指同一个数据库里拥有多张结构(Schema)相同的表。一个典型的例子是，Excel里的多张Sheet，只要它们拥有相同的结构(Schema)，就可以视为同一类型的数据，虽然它们拥有不同的表名。和分库类似，分表的着眼点是避免产生“大表”，从而达到提高查询性能的目的。而对应到 EF(EntityFramework) 的场景中，分表本质上就是在解决 EF 动态适配表名的问题。同样的，下面两张图展示了如何在表这个层级进行拆分：">
+<meta property="og:url" content="/posts/%E6%B5%85%E8%AE%AE-ef-core-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E5%A4%9A%E7%A7%9F%E6%88%B7%E6%9E%B6%E6%9E%84%E7%9A%84%E5%AE%9E%E7%8E%B0/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="数据库"><meta property="article:tag" content="多租户"><meta property="article:tag" content="EF"><meta property="article:tag" content="架构"><meta property="article:published_time" content="2021-03-27T17:47:47+00:00"><meta property="article:modified_time" content="2021-03-27T17:47:47+00:00">
+<meta name=twitter:title content="浅议 EF Core 分库分表及多租户架构的实现">
+<meta name=twitter:description content="各位朋友，大家好，我是 Payne，欢迎大家关注我的博客，我的博客地址是：https://blog.yuanpei.me。最近这段时间，我一直在学习 ABP vNext 框架，在整个学习过程中，我基本就是在“文档”和“源码”间来回横跳。我个人推荐大家，多去阅读一点优秀的代码，因为阅读 ABP vNext 的源代码简直就是一种享受，它可以暂时让你摆脱如泥沼一般的业务代码。言归正传，ABP vNext 是一个支持多租户架构的框架，在了解了其多租户的实现原理以后，从中收获一点微不足道的小技巧。正好前几天，刚刚同一位朋友讨论完分库、分表这类话题。因此，在今天这篇博客中，我想和大家一起探讨下 EF Core 关于分库、分表以及多租户架构的实现。此中曲折，可以说是初窥门径，或许我无法提供给你一个开箱即用的方案，至少它可以带给你一点启发。有读者朋友建议我，不要总是写这种“高深”、“复杂”的话题，适当地迎合读者写点不需要动脑子的东西。对此，我想说，我有我个人技术上的追求，希望大家理解！
+分库 首先，我们一起来探讨分库这个话题。从字面含义上了解，分库就是指应用程序拥有多个数据库，而这些数据库则拥有相同的表结构。你可能会问，为什么我们需要分库、分表？答案自然是性能，性能，还是TM的性能。我相信，大家都曾经或多或少地听到过垂直拆分、水平拆分这样的术语，下图展示了如何在数据库这一层级上进行拆分：
+ 数据库的垂直拆分与水平拆分 
+其实，我们可以从索引存储、B+树高度、QPS 和 连接数 这四个不同的角度来审视这个话题。相关观点认为，当单表数据量达到一定量级(阿里巴巴Java开发手册中为500W)时，由于内存无法存储其索引，此时SQL查询会产生磁盘IO；行记录的大小决定了B+树的每个叶子节点能存储多少记录，所以，行记录的大小会影响B+树的高度；单个MySQL物理机实例写QPS峰值大概为1万，一旦业务量达到某个量级，这个瓶颈会逐步凸显出来；单个MySQL实例最大连接数有限，更多的访问量意味着需要更多的连接数。
+在谈论分库、分表的时候，我们忍不住会去想譬如“自动分表”和“路由”这样的问题，这些子库、子表，到底是提前在数据库里分好呢，还是在运行时期间自动去拆分呢，以及我对库/表进行拆分以后，我应该怎么样找到某条数据对应的库/表。我承认，这些问题并不简单，但当我们对问题进行简化以后，分库本质上就是动态地切换数据库，对不对？无非是拆分后的数据库可能会是类似db_0、db_1等等这样的序列。
+ 对 Chinook 进行水平拆分 
+对于数据库的自动拆分，博主尝试过的一种方案是：首先，通过Add-Migration生成迁移。然后，通过循环修改连接字符串的方式，调用Context.Database.Migrate()方法为一个数据库迁移表结构和种子数据。当然，有些朋友不认同在生产环境使用迁移的做法，认为对数据库的操作权限还是应该交给 DBA 来管理，这当然无可厚非。我表达的一直都是一种思路，我不想一个工作六年的人，对技术的态度永远都停留在“能跑”、“能抄”这种水平。
+一旦想清楚这一层，实现起来还是非常简单的。我们在配置中准备多个数据库来模拟分库的场景，实际应用中到底是用范围、Hash 还是 配置，大家结合自己的场景来决定就好。其实，这个思路还可以用来做读写分离，无非是这个库更特殊一点，它是个从库。好了，我们一起来看下面的代码：
+1// 这里随机连接到某一个数据库 2// 实际应该按照某种方式获得数据库库名后缀 3var shardings = _options.Value.MultiTenants; 4var sharding = shardings[new Random().Next(0, shardings.Count)]; 5_chinookContext.Database.GetDbConnection().ConnectionString = sharding.ConnectionString; 6Console.WriteLine(&amp;#34;--------分库场景--------&amp;#34;); 7Console.WriteLine(_chinookContext.Database.GetDbConnection().ConnectionString); 8Console.WriteLine(_chinookContext.Album.ToQueryString()); 9Console.WriteLine(_chinookContext.Artist.ToQueryString()); 事实上，如果选择性地忽略 “路由” 和 “自动分表” 这两个特性，我们已经在 EF 层面上局部的实现了 “分库” 功能：
+ 分库场景 
+分表 好了，聊完分库，我们再来聊聊分表。分表就是指同一个数据库里拥有多张结构(Schema)相同的表。一个典型的例子是，Excel里的多张Sheet，只要它们拥有相同的结构(Schema)，就可以视为同一类型的数据，虽然它们拥有不同的表名。和分库类似，分表的着眼点是避免产生“大表”，从而达到提高查询性能的目的。而对应到 EF(EntityFramework) 的场景中，分表本质上就是在解决 EF 动态适配表名的问题。同样的，下面两张图展示了如何在表这个层级进行拆分：">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+数据存储
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E6%B5%85%E8%AE%AE-ef-core-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E5%A4%9A%E7%A7%9F%E6%88%B7%E6%9E%B6%E6%9E%84%E7%9A%84%E5%AE%9E%E7%8E%B0/>浅议 EF Core 分库分表及多租户架构的实现</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Mar 27, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 4 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>各位朋友，大家好，我是 Payne，欢迎大家关注我的博客，我的博客地址是：<a class=link href=https://blog.yuanpei.me target=_blank rel=noopener>https://blog.yuanpei.me</a>。最近这段时间，我一直在学习 <a class=link href=https://github.com/abpframework/abp target=_blank rel=noopener>ABP vNext</a> 框架，在整个学习过程中，我基本就是在“<strong>文档</strong>”和“<strong>源码</strong>”间来回横跳。我个人推荐大家，多去阅读一点优秀的代码，因为阅读 <a class=link href=https://github.com/abpframework/abp target=_blank rel=noopener>ABP vNext</a> 的源代码简直就是一种享受，它可以暂时让你摆脱如泥沼一般的业务代码。言归正传，<a class=link href=https://github.com/abpframework/abp target=_blank rel=noopener>ABP vNext</a> 是一个支持多租户架构的框架，在了解了其多租户的实现原理以后，从中收获一点微不足道的小技巧。正好前几天，刚刚同一位朋友讨论完分库、分表这类话题。因此，在今天这篇博客中，我想和大家一起探讨下 <a class=link href="https://docs.microsoft.com/zh-cn/ef/core/get-started/overview/first-app?tabs=netcore-cli" target=_blank rel=noopener>EF Core</a> 关于分库、分表以及多租户架构的实现。此中曲折，可以说是初窥门径，或许我无法提供给你一个开箱即用的方案，至少它可以带给你一点启发。有读者朋友建议我，不要总是写这种“<strong>高深</strong>”、“<strong>复杂</strong>”的话题，适当地迎合读者写点不需要动脑子的东西。对此，我想说，我有我个人技术上的追求，希望大家理解！</p>
+<h1 id=分库>分库</h1>
+<p>首先，我们一起来探讨分库这个话题。从字面含义上了解，分库就是指<strong>应用程序拥有多个数据库，而这些数据库则拥有相同的表结构</strong>。你可能会问，为什么我们需要分库、分表？答案自然是<strong>性能</strong>，<strong>性能</strong>，还是TM的<strong>性能</strong>。我相信，大家都曾经或多或少地听到过<strong>垂直拆分</strong>、<strong>水平拆分</strong>这样的术语，下图展示了如何在<strong>数据库</strong>这一层级上进行拆分：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/03/29/nX8NBbhP9ToQa2M.png>
+<img src=/https:/i.loli.net/2021/03/29/nX8NBbhP9ToQa2M.png loading=lazy alt=数据库的垂直拆分与水平拆分>
+</a>
+<figcaption>数据库的垂直拆分与水平拆分</figcaption>
+</figure></p>
+<p>其实，我们可以从<strong>索引存储</strong>、<strong>B+树高度</strong>、<strong>QPS</strong> 和 <strong>连接数</strong> 这四个不同的角度来审视这个话题。相关观点认为，当单表数据量达到一定量级(阿里巴巴Java开发手册中为500W)时，由于内存无法存储其索引，此时SQL查询会产生磁盘IO；行记录的大小决定了B+树的每个叶子节点能存储多少记录，所以，行记录的大小会影响B+树的高度；单个MySQL物理机实例写QPS峰值大概为1万，一旦业务量达到某个量级，这个瓶颈会逐步凸显出来；单个MySQL实例最大连接数有限，更多的访问量意味着需要更多的连接数。</p>
+<p>在谈论分库、分表的时候，我们忍不住会去想譬如“<strong>自动分表</strong>”和“<strong>路由</strong>”这样的问题，这些子库、子表，到底是提前在数据库里分好呢，还是在运行时期间自动去拆分呢，以及我对库/表进行拆分以后，我应该怎么样找到某条数据对应的库/表。我承认，这些问题并不简单，但当我们对问题进行简化以后，分库本质上就是动态地切换数据库，对不对？无非是拆分后的数据库可能会是类似db_0、db_1等等这样的序列。</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/03/29/pmhOTFkZYjAsLXq.png>
+<img src=/https:/i.loli.net/2021/03/29/pmhOTFkZYjAsLXq.png loading=lazy alt="对 Chinook 进行水平拆分">
+</a>
+<figcaption>对 Chinook 进行水平拆分</figcaption>
+</figure></p>
+<p>对于数据库的自动拆分，博主尝试过的一种方案是：首先，通过<code>Add-Migration</code>生成迁移。然后，通过循环修改连接字符串的方式，调用<code>Context.Database.Migrate()</code>方法为一个数据库迁移表结构和种子数据。当然，有些朋友不认同在生产环境使用迁移的做法，认为对数据库的操作权限还是应该交给 DBA 来管理，这当然无可厚非。我表达的一直都是一种思路，我不想一个工作六年的人，对技术的态度永远都停留在“能跑”、“能抄”这种水平。</p>
+<p>一旦想清楚这一层，实现起来还是非常简单的。我们在配置中准备多个数据库来模拟分库的场景，实际应用中到底是用<strong>范围</strong>、<strong>Hash</strong> 还是 <strong>配置</strong>，大家结合自己的场景来决定就好。其实，这个思路还可以用来做读写分离，无非是这个库更特殊一点，它是个从库。好了，我们一起来看下面的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=c1>// 这里随机连接到某一个数据库
+</span><span class=ln>2</span><span class=c1>// 实际应该按照某种方式获得数据库库名后缀
+</span><span class=ln>3</span><span class=c1></span><span class=kt>var</span> <span class=n>shardings</span> <span class=p>=</span> <span class=m>_</span><span class=n>options</span><span class=p>.</span><span class=n>Value</span><span class=p>.</span><span class=n>MultiTenants</span><span class=p>;</span>
+<span class=ln>4</span><span class=kt>var</span> <span class=n>sharding</span> <span class=p>=</span> <span class=n>shardings</span><span class=p>[</span><span class=k>new</span> <span class=n>Random</span><span class=p>().</span><span class=n>Next</span><span class=p>(</span><span class=m>0</span><span class=p>,</span> <span class=n>shardings</span><span class=p>.</span><span class=n>Count</span><span class=p>)];</span>
+<span class=ln>5</span><span class=m>_</span><span class=n>chinookContext</span><span class=p>.</span><span class=n>Database</span><span class=p>.</span><span class=n>GetDbConnection</span><span class=p>().</span><span class=n>ConnectionString</span> <span class=p>=</span> <span class=n>sharding</span><span class=p>.</span><span class=n>ConnectionString</span><span class=p>;</span>
+<span class=ln>6</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;--------分库场景--------&#34;</span><span class=p>);</span>
+<span class=ln>7</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>chinookContext</span><span class=p>.</span><span class=n>Database</span><span class=p>.</span><span class=n>GetDbConnection</span><span class=p>().</span><span class=n>ConnectionString</span><span class=p>);</span>
+<span class=ln>8</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>chinookContext</span><span class=p>.</span><span class=n>Album</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
+<span class=ln>9</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>chinookContext</span><span class=p>.</span><span class=n>Artist</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
+</code></pre></div><p>事实上，如果选择性地忽略 “<strong>路由</strong>” 和 “<strong>自动分表</strong>” 这两个特性，我们已经在 EF 层面上局部的实现了 “<strong>分库</strong>” 功能：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/03/29/jLxlK3fro8qXSas.png>
+<img src=/https:/i.loli.net/2021/03/29/jLxlK3fro8qXSas.png loading=lazy alt=分库场景>
+</a>
+<figcaption>分库场景</figcaption>
+</figure></p>
+<h1 id=分表>分表</h1>
+<p>好了，聊完分库，我们再来聊聊分表。分表就是指同一个数据库里拥有多张结构(<strong>Schema</strong>)相同的表。一个典型的例子是，Excel里的多张Sheet，只要它们拥有相同的结构(<strong>Schema</strong>)，就可以视为同一类型的数据，虽然它们拥有不同的表名。和分库类似，分表的着眼点是避免产生“大表”，从而达到提高查询性能的目的。而对应到 EF(<strong>EntityFramework</strong>) 的场景中，<strong>分表本质上就是在解决 EF 动态适配表名的问题</strong>。同样的，下面两张图展示了如何在<strong>表</strong>这个层级进行拆分：</p>
+<p><figure>
+<a href=/https:/img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153851001-806440217.jpg>
+<img src=/https:/img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153851001-806440217.jpg loading=lazy alt=表的垂直拆分>
+</a>
+<figcaption>表的垂直拆分</figcaption>
+</figure></p>
+<p><figure>
+<a href=/https:/img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153912863-301123895.jpg>
+<img src=/https:/img2018.cnblogs.com/blog/1090617/201909/1090617-20190929153912863-301123895.jpg loading=lazy alt=表的水平拆分>
+</a>
+<figcaption>表的水平拆分</figcaption>
+</figure></p>
+<blockquote>
+<p>图片援引自：<a class=link href=https://www.cnblogs.com/qdhxhz/p/11608222.html target=_blank rel=noopener>雨点的名字 - 分库分表(1) &mdash; 理论</a></p>
+</blockquote>
+<p>譬如，我们以年为单位，产生了<code>Album_2020</code>和<code>Album_2021</code>两张表。那么，在已经定义好了实体<code>Album</code>的情况下，有没有办法可以让实体<code>Album</code>动态地去适配这两张表呢？或许，熟悉 EF 的你，此刻正在心里暗笑道，这有何难，只要在对应实体的<code>OnModelCreating()</code>方法中，修改<code>ToTable()</code>方法的参数就好了啊。可如果你亲自试一试，就会知道这是你的一厢情愿啦！</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/03/29/cIFp74gUAX2Q8xq.png>
+<img src=/https:/i.loli.net/2021/03/29/cIFp74gUAX2Q8xq.png loading=lazy alt="针对 Album 和 Artist 按年份进行拆分">
+</a>
+<figcaption>针对 Album 和 Artist 按年份进行拆分</figcaption>
+</figure></p>
+<p>事实上，EF 针对实体和表的映射关系做了缓存，这意味着，一旦在<code>OnModelCreating()</code>方法中确定映射关系，这组映射关系将被缓存下来。在 EF 中，这组映射关系的缓存行为，由<code>IModelCacheKeyFactory</code>接口来决定，它提供了一个<code>Create()</code>方法，如果该方法的返回值与上一次相同，则不会调用<code>OnModelCreating()</code>方法。所以，我们的思路就是，让这个<code>Create()</code>方法返回不同的对象。为此，我们考虑实现<code>IModelCacheKeyFactory</code>接口，并用这个自定义实现来替换微软的默认实现。我们一起来看下面的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=k>public</span> <span class=k>class</span> <span class=nc>DynamicModelCacheKeyFactory</span> <span class=p>:</span> <span class=n>IModelCacheKeyFactory</span>
+<span class=ln>2</span><span class=p>{</span>
+<span class=ln>3</span>    <span class=k>public</span> <span class=kt>object</span> <span class=n>Create</span><span class=p>(</span><span class=n>DbContext</span> <span class=n>context</span><span class=p>)</span>
+<span class=ln>4</span>    <span class=p>{</span>
+<span class=ln>5</span>        <span class=k>return</span> <span class=n>context</span> <span class=k>is</span> <span class=n>ShardingContext</span> <span class=n>shardingContext</span>
+<span class=ln>6</span>            <span class=p>?</span> <span class=p>(</span><span class=n>context</span><span class=p>.</span><span class=n>GetType</span><span class=p>(),</span> <span class=n>shardingContext</span><span class=p>.</span><span class=n>ShardingSuffix</span><span class=p>)</span>
+<span class=ln>7</span>            <span class=p>:</span> <span class=p>(</span><span class=kt>object</span><span class=p>)</span><span class=n>context</span><span class=p>.</span><span class=n>GetType</span><span class=p>();</span>
+<span class=ln>8</span>    <span class=p>}</span>
+<span class=ln>9</span><span class=p>}</span>
+</code></pre></div><p>为了配合<code>DynamicModelCacheKeyFactory</code>的使用，我们还需要定义用于分表的<code>ShardingContext</code>，它继承自<code>DbContext</code>，我们为其扩展了<code>ShardingSuffix</code>属性，并通过注入的<code>IShardingPolicyProvider</code>接口来获取一个分表后缀。比如，我们有<code>Order</code>表，经过拆分后获得<code>Order_01</code>、<code>Order_02</code>这样的子表，所以，这个分表后缀其实就是01、02。没错，我们还是要去修改<code>ToTable()</code>方法中的表名，不同的是，这里的表名是动态的。注意到，<code>Create()</code>方法返回的是一个元组，所以，不同的<code>ShardingSuffix</code>会产生不同的映射关系。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>class</span> <span class=nc>ShardingContext</span> <span class=p>:</span> <span class=n>DbContext</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>public</span> <span class=n>DbSet</span><span class=p>&lt;</span><span class=n>Artist</span><span class=p>&gt;</span> <span class=n>Artist</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln> 4</span>    <span class=k>public</span> <span class=n>DbSet</span><span class=p>&lt;</span><span class=n>Album</span><span class=p>&gt;</span> <span class=n>Album</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span>    <span class=k>private</span> <span class=k>readonly</span> <span class=n>IShardingPolicyProvider</span> <span class=m>_</span><span class=n>shardingPolicyProvider</span><span class=p>;</span>
+<span class=ln> 7</span>    <span class=k>public</span> <span class=kt>string</span> <span class=n>ShardingSuffix</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>private</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span>    <span class=k>public</span> <span class=n>ShardingContext</span><span class=p>(</span>
+<span class=ln>10</span>      <span class=n>DbContextOptions</span><span class=p>&lt;</span><span class=n>ShardingContext</span><span class=p>&gt;</span> <span class=n>options</span><span class=p>,</span> 
+<span class=ln>11</span>      <span class=n>IShardingPolicyProvider</span> <span class=n>shardingPolicyProvider</span>
+<span class=ln>12</span>    <span class=p>)</span> <span class=p>:</span> <span class=k>base</span><span class=p>(</span><span class=n>options</span><span class=p>)</span>
+<span class=ln>13</span>    <span class=p>{</span>
+<span class=ln>14</span>        <span class=m>_</span><span class=n>shardingPolicyProvider</span> <span class=p>=</span> <span class=n>shardingPolicyProvider</span><span class=p>;</span>
+<span class=ln>15</span>        <span class=n>ShardingSuffix</span> <span class=p>=</span> <span class=m>_</span><span class=n>shardingPolicyProvider</span><span class=p>.</span><span class=n>GetShardingSuffix</span><span class=p>();</span>
+<span class=ln>16</span>    <span class=p>}</span>
+<span class=ln>17</span>
+<span class=ln>18</span>    <span class=k>protected</span> <span class=k>override</span> <span class=k>void</span> <span class=n>OnModelCreating</span><span class=p>(</span><span class=n>ModelBuilder</span> <span class=n>modelBuilder</span><span class=p>)</span>
+<span class=ln>19</span>    <span class=p>{</span>
+<span class=ln>20</span>        <span class=k>base</span><span class=p>.</span><span class=n>OnModelCreating</span><span class=p>(</span><span class=n>modelBuilder</span><span class=p>);</span>
+<span class=ln>21</span>
+<span class=ln>22</span>        <span class=c1>// Album
+</span><span class=ln>23</span><span class=c1></span>        <span class=c1>// 动态映射表名，譬如：Album_2021
+</span><span class=ln>24</span><span class=c1></span>        <span class=n>modelBuilder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>Album</span><span class=p>&gt;().</span><span class=n>ToTable</span><span class=p>(</span><span class=s>$&#34;Album_{ShardingSuffix}&#34;</span><span class=p>);</span>
+<span class=ln>25</span>        <span class=n>modelBuilder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>Album</span><span class=p>&gt;().</span><span class=n>HasKey</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>AlbumId</span><span class=p>);</span>
+<span class=ln>26</span>        <span class=n>modelBuilder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>Album</span><span class=p>&gt;()</span>
+<span class=ln>27</span>          <span class=p>.</span><span class=n>Property</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>AlbumId</span><span class=p>).</span><span class=n>HasColumnName</span><span class=p>(</span><span class=s>&#34;AlbumId&#34;</span><span class=p>);</span>
+<span class=ln>28</span>        <span class=n>modelBuilder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>Album</span><span class=p>&gt;()</span>
+<span class=ln>29</span>          <span class=p>.</span><span class=n>Property</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Title</span><span class=p>).</span><span class=n>HasColumnName</span><span class=p>(</span><span class=s>&#34;Title&#34;</span><span class=p>);</span>
+<span class=ln>30</span>        <span class=n>modelBuilder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>Album</span><span class=p>&gt;()</span>
+<span class=ln>31</span>          <span class=p>.</span><span class=n>Property</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>ArtistId</span><span class=p>).</span><span class=n>HasColumnName</span><span class=p>(</span><span class=s>&#34;ArtistId&#34;</span><span class=p>);</span>
+<span class=ln>32</span>
+<span class=ln>33</span>        <span class=c1>// Artist
+</span><span class=ln>34</span><span class=c1></span>        <span class=c1>// 动态映射表名，譬如：Artist_2021
+</span><span class=ln>35</span><span class=c1></span>        <span class=n>modelBuilder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>Artist</span><span class=p>&gt;().</span><span class=n>ToTable</span><span class=p>(</span><span class=s>$&#34;Artist_{ShardingSuffix}&#34;</span><span class=p>);</span>
+<span class=ln>36</span>        <span class=n>modelBuilder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>Artist</span><span class=p>&gt;().</span><span class=n>HasKey</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>ArtistId</span><span class=p>);</span>
+<span class=ln>37</span>        <span class=n>modelBuilder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>Artist</span><span class=p>&gt;()</span>
+<span class=ln>38</span>          <span class=p>.</span><span class=n>Property</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>ArtistId</span><span class=p>).</span><span class=n>HasColumnName</span><span class=p>(</span><span class=s>&#34;ArtistId&#34;</span><span class=p>);</span>
+<span class=ln>39</span>        <span class=n>modelBuilder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>Artist</span><span class=p>&gt;()</span>
+<span class=ln>40</span>          <span class=p>.</span><span class=n>Property</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Name</span><span class=p>).</span><span class=n>HasColumnName</span><span class=p>(</span><span class=s>&#34;Name&#34;</span><span class=p>);</span>
+<span class=ln>41</span>    <span class=p>}</span>
+<span class=ln>42</span><span class=p>}</span>
+</code></pre></div><p>关于分库、分表以后，怎么去匹配对应的库或者表，这类问题我们称之为路由问题。常见的策略主要有，<strong>范围</strong>、<strong>Hash</strong> 和 <strong>配置</strong>：</p>
+<ul>
+<li>范围最直观的就是按照时间来拆分，比如按年、按月、按天等等，主要的问题是分布不均匀；其次，可以按照Id的范围来划分，比如0到10万、10万到20万依次划分到不同的表里，主要的问题是热点数据带来的性能问题。</li>
+<li>Hash主要指哈希取模。例如，可以针对用户Id做如下处理：<code>HASH(userId) % N</code>，其中，<code>N</code>表示当前拆分表的数目。可以预见的问题是，当<code>N</code>变化的时候，会产生数据迁移的需求，所以，这种方式并不利于扩容，</li>
+<li>配置，顾名思义，就是用一张表来存储数据和子表间的映射关系，每次先按照数据的主键找到子表，然后再从子表中查询所需要的数据。好处是扩容灵活，而缺点同样明显，查询配置表，带来了额外的性能损耗。</li>
+</ul>
+<p>在这里，我们是使用年份来作为分表后缀的。为了方便演示，在实现<code>ShardingByYearPolicy</code>类时，我们直接使用了当前时间，这意味着我们会将<code>Album</code>实体映射到<code>Album_2021</code>这张表，以此类推。在实际使用中，更推荐大家使用 <a class=link href=https://halo.sherlocky.com/archives/xue-hua-suan-fa-snowflake/ target=_blank rel=noopener>雪花算法</a> 生成Id，因为这样，我们就可以通过Id反推出具体的时间范围，进而决定要映射到哪一个库、哪一张表。关于子表的生成，博主这里是通过迁移来实现的，考虑到EF自动创建数据库/表，都需要先创建迁移，所以，这并不是一个开箱即用的方案。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=k>class</span> <span class=nc>ShardingByYearPolicy</span> <span class=p>:</span> <span class=n>IShardingPolicyProvider</span>
+<span class=ln>2</span><span class=p>{</span>
+<span class=ln>3</span>    <span class=k>public</span> <span class=kt>string</span> <span class=n>GetShardingSuffix</span><span class=p>()</span>
+<span class=ln>4</span>    <span class=p>{</span>
+<span class=ln>5</span>        <span class=k>return</span> <span class=s>$&#34;{DateTime.Now.ToString(&#34;</span><span class=n>yyyy</span><span class=s>&#34;)}&#34;</span><span class=p>;</span>
+<span class=ln>6</span>    <span class=p>}</span>
+<span class=ln>7</span><span class=p>}</span>
+</code></pre></div><p>好了，现在我们可以编写简单的代码，来验证我们的这些想法是都正确，即使是最简单的控制台程序，我还是喜欢用依赖注入：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=c1>// 注入ShardingContext
+</span><span class=ln>2</span><span class=c1></span><span class=n>services</span><span class=p>.</span><span class=n>AddDbContext</span><span class=p>&lt;</span><span class=n>ShardingContext</span><span class=p>&gt;(</span><span class=n>options</span> <span class=p>=&gt;</span> <span class=p>{</span>
+<span class=ln>3</span>    <span class=n>options</span><span class=p>.</span><span class=n>UseSqlite</span><span class=p>(</span><span class=n>config</span><span class=p>.</span><span class=n>GetValue</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>&gt;(</span><span class=s>&#34;Database:Default&#34;</span><span class=p>));</span> 
+<span class=ln>4</span>    <span class=c1>//替换默认实现
+</span><span class=ln>5</span><span class=c1></span>    <span class=n>options</span><span class=p>.</span><span class=n>ReplaceService</span><span class=p>&lt;</span><span class=n>IModelCacheKeyFactory</span><span class=p>,</span> <span class=n>DynamicModelCacheKeyFactory</span><span class=p>&gt;();</span> 
+<span class=ln>6</span><span class=p>});</span>
+<span class=ln>7</span>
+<span class=ln>8</span><span class=c1>// 注入IShardingPolicyProvider
+</span><span class=ln>9</span><span class=c1></span><span class=n>services</span><span class=p>.</span><span class=n>AddTransient</span><span class=p>&lt;</span><span class=n>IShardingPolicyProvider</span><span class=p>,</span> <span class=n>ShardingByYearPolicy</span><span class=p>&gt;();</span>
+</code></pre></div><p>接下来，我们可以通过<code>ShardingContext</code>来匹配<code>Album_2021</code>表：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=c1>// 这里应该连接到Album_2021表
+</span><span class=ln>2</span><span class=c1>// 实际应该按照某种方式获得表名后缀
+</span><span class=ln>3</span><span class=c1></span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;--------分表场景--------&#34;</span><span class=p>);</span>
+<span class=ln>4</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>shardingContext</span><span class=p>.</span><span class=n>Database</span><span class=p>.</span><span class=n>GetDbConnection</span><span class=p>().</span><span class=n>ConnectionString</span><span class=p>);</span>
+<span class=ln>5</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>shardingContext</span><span class=p>.</span><span class=n>Album</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
+<span class=ln>6</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>shardingContext</span><span class=p>.</span><span class=n>Artist</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
+</code></pre></div><p>此时，我们会得到下面的结果：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/03/29/Evj8wXCIsV1Ddme.png>
+<img src=/https:/i.loli.net/2021/03/29/Evj8wXCIsV1Ddme.png loading=lazy alt="EF Core 分表效果演示">
+</a>
+<figcaption>EF Core 分表效果演示</figcaption>
+</figure></p>
+<p>至此，如果选择性地忽略 “<strong>路由</strong>” 和 “<strong>自动分表</strong>” 这两个特性，我们已经在 EF 层面上局部的实现了 “<strong>分表</strong>” 功能。怎么样，是不是还行？</p>
+<h1 id=多租户架构>多租户架构</h1>
+<p>最后，我们来聊聊多租户架构这个话题。可能有朋友觉得多租户架构和分库、分表没什么关系，不好意思啊，这是个非常合理的联想，因为还真就有关系，甚至我们还能继续发散到读写分离。你想想看，多租户架构中，如果一个租户一个数据库，这是不是就是分库的场景。而在分库的场景中，如果一个是主库，一个是从库，这是不是就是读写分离的场景。在学习数学的过程中，学会转化问题是一种重要的思维，即让一个不熟悉的问题变成一个熟悉的问题，在今天这篇博客中，从分库发散到多租户、读写分离，正是这一思路的体现，通常情况下，多租户架构有多数据库和单数据库两种实现方式。</p>
+<h2 id=多数据库>多数据库</h2>
+<p>多数据库，指每一个租户一个数据库。这种实现方式的好处是，租户间的数据天然隔离，数据库的访问压力天然隔离。可由于所有租户都共享一套应用程序，随着数据库越来越多，维护的成本亦越来越高。参考分库的实现，我们可以非常容易地实现租户数据库的切换。这里，我们的思路是，调用方在 HTTP 请求中加入自定义的首部字段<code>X-TenantId</code>，<code>DbContext</code>通过该字段来匹配对应的链接字符串，这样就可以实现多数据库的多租户架构：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>class</span> <span class=nc>TenantInfoProvider</span> <span class=p>:</span> <span class=n>ITenantInfoProvider</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>private</span> <span class=k>const</span> <span class=kt>string</span> <span class=n>X_TENANT_ID</span> <span class=p>=</span> <span class=s>&#34;X-TenantId&#34;</span><span class=p>;</span>
+<span class=ln> 4</span>    <span class=k>private</span> <span class=k>readonly</span> <span class=n>IHttpContextAccessor</span> <span class=m>_</span><span class=n>httpContextAccessor</span><span class=p>;</span>
+<span class=ln> 5</span>    <span class=k>public</span> <span class=n>TenantInfoProvider</span><span class=p>(</span><span class=n>IHttpContextAccessor</span> <span class=n>httpContextAccessor</span><span class=p>)</span>
+<span class=ln> 6</span>    <span class=p>{</span>
+<span class=ln> 7</span>        <span class=m>_</span><span class=n>httpContextAccessor</span> <span class=p>=</span> <span class=n>httpContextAccessor</span><span class=p>;</span>
+<span class=ln> 8</span>    <span class=p>}</span>
+<span class=ln> 9</span>
+<span class=ln>10</span>    <span class=k>public</span> <span class=kt>string</span> <span class=n>GetTenantId</span><span class=p>()</span>
+<span class=ln>11</span>    <span class=p>{</span>
+<span class=ln>12</span>        <span class=kt>var</span> <span class=n>httpContext</span> <span class=p>=</span> <span class=m>_</span><span class=n>httpContextAccessor</span><span class=p>.</span><span class=n>HttpContext</span><span class=p>;</span>
+<span class=ln>13</span>        <span class=k>if</span> <span class=p>(</span><span class=n>httpContext</span> <span class=p>!=</span> <span class=k>null</span> <span class=p>&amp;&amp;</span> <span class=n>httpContext</span><span class=p>.</span><span class=n>Request</span><span class=p>.</span><span class=n>Headers</span><span class=p>.</span><span class=n>ContainsKey</span><span class=p>(</span><span class=n>X_TENANT_ID</span><span class=p>))</span>
+<span class=ln>14</span>            <span class=k>return</span> <span class=n>httpContext</span><span class=p>.</span><span class=n>Request</span><span class=p>.</span><span class=n>Headers</span><span class=p>[</span><span class=n>X_TENANT_ID</span><span class=p>].</span><span class=n>FirstOrDefault</span><span class=p>();</span>
+<span class=ln>15</span>
+<span class=ln>16</span>        <span class=k>return</span> <span class=k>null</span><span class=p>;</span>
+<span class=ln>17</span>    <span class=p>}</span>
+<span class=ln>18</span><span class=p>}</span>
+</code></pre></div><p>接下来，假设我们<code>AppSettings.json</code>文件维护各个租户的连接字符串信息。通常，在实际场景中，我们会将这些信息存储在数据库中：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=ln> 1</span><span class=p>{</span>
+<span class=ln> 2</span>  <span class=nt>&#34;Database&#34;</span><span class=p>:</span> <span class=p>{</span>
+<span class=ln> 3</span>    <span class=nt>&#34;Default&#34;</span><span class=p>:</span> <span class=s2>&#34;Data Source=Chinook.db&#34;</span><span class=p>,</span>
+<span class=ln> 4</span>    <span class=nt>&#34;MultiTenants&#34;</span><span class=p>:</span> <span class=p>[</span>
+<span class=ln> 5</span>      <span class=p>{</span>
+<span class=ln> 6</span>        <span class=nt>&#34;tenantId&#34;</span><span class=p>:</span> <span class=s2>&#34;01&#34;</span><span class=p>,</span>
+<span class=ln> 7</span>        <span class=nt>&#34;ConnectionString&#34;</span><span class=p>:</span> <span class=s2>&#34;Data Source=Chinook01.db&#34;</span>
+<span class=ln> 8</span>      <span class=p>},</span>
+<span class=ln> 9</span>      <span class=p>{</span>
+<span class=ln>10</span>        <span class=nt>&#34;tenantId&#34;</span><span class=p>:</span> <span class=s2>&#34;02&#34;</span><span class=p>,</span>
+<span class=ln>11</span>        <span class=nt>&#34;ConnectionString&#34;</span><span class=p>:</span> <span class=s2>&#34;Data Source=Chinook02.db&#34;</span>
+<span class=ln>12</span>      <span class=p>}</span>
+<span class=ln>13</span>    <span class=p>]</span>
+<span class=ln>14</span>  <span class=p>}</span>
+<span class=ln>15</span><span class=p>}</span>
+</code></pre></div><p>此时，我们可以通过下面的代码片段来实现租户切换：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=kt>var</span> <span class=n>tenantId</span> <span class=p>=</span> <span class=m>_</span><span class=n>tenantInfoProvider</span><span class=p>.</span><span class=n>GetTenantId</span><span class=p>();</span>
+<span class=ln> 2</span><span class=kt>var</span> <span class=n>database</span> <span class=p>=</span> <span class=m>_</span><span class=n>options</span><span class=p>.</span><span class=n>Value</span><span class=p>.</span><span class=n>MultiTenants</span><span class=p>.</span><span class=n>FirstOrDefault</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>TenantId</span> <span class=p>==</span> <span class=n>tenantId</span><span class=p>);</span>
+<span class=ln> 3</span><span class=k>if</span> <span class=p>(</span><span class=n>database</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln> 4</span>    <span class=k>throw</span> <span class=k>new</span> <span class=n>Exception</span><span class=p>(</span><span class=s>$&#34;Invalid tenantId \&#34;</span><span class=p>{</span><span class=n>tenantId</span><span class=p>}</span><span class=err>\</span><span class=s>&#34;&#34;</span><span class=p>);</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span><span class=m>_</span><span class=n>chinookContext</span><span class=p>.</span><span class=n>Database</span><span class=p>.</span><span class=n>GetDbConnection</span><span class=p>().</span><span class=n>ConnectionString</span> <span class=p>=</span> <span class=n>database</span><span class=p>.</span><span class=n>ConnectionString</span><span class=p>;</span>
+<span class=ln> 7</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;--------多租户 + 多数据库--------&#34;</span><span class=p>);</span>
+<span class=ln> 8</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;TenantId:{tenantId}&#34;</span><span class=p>);</span>
+<span class=ln> 9</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>chinookContext</span><span class=p>.</span><span class=n>Database</span><span class=p>.</span><span class=n>GetDbConnection</span><span class=p>().</span><span class=n>ConnectionString</span><span class=p>);</span>
+<span class=ln>10</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>chinookContext</span><span class=p>.</span><span class=n>Album</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
+<span class=ln>11</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>chinookContext</span><span class=p>.</span><span class=n>Artist</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
+</code></pre></div><p>可以注意到，一切如我们所预料的一样，程序自动切换到<code>01</code>这个租户：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/03/29/S5QeCjzdcgG9wpT.png>
+<img src=/https:/i.loli.net/2021/03/29/S5QeCjzdcgG9wpT.png loading=lazy alt="多租户 + 多数据库">
+</a>
+<figcaption>多租户 + 多数据库</figcaption>
+</figure></p>
+<h2 id=单数据库>单数据库</h2>
+<p>单数据库，指所有租户都在一个数据库里，使用相同的表结构(<strong>Schema</strong>)，并通过<code>TenantId</code>字段进行区分。<a class=link href=https://github.com/abpframework/abp target=_blank rel=noopener>ABP vNext</a> 中的多租户架构就是这种模式，而我之前的公司，则是单数据库 + 多数据库的混合模式。这种实现方式的好处是数据库非常精简，而缺点同样很明显，一旦某个租户出现问题，非常容易波及所有租户，因为所有租户都在一个数据库里，数据库的压力实际上是大家一起分担的，租户间相互影响的可能性非常大。</p>
+<p>同样地，我们依然需要用到<code>X-TenantId</code>这个请求头，由于所有租户都在一个数据库上，我们不会再试图去修改链接字符串。EF Core 中针对实体提供了<code>HasQueryFilter()</code>扩展方法，该访问允许我们传入一个 Lambda 表达式。此时，我们所有的请求都会自动带上类似<code>Album.TenantId = 'xxxx'</code>这样的条件，这样我们就实现了单数据库的多租户架构。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>class</span> <span class=nc>MulitiTenancyContext</span> <span class=p>:</span> <span class=n>DbContext</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>public</span> <span class=n>DbSet</span><span class=p>&lt;</span><span class=n>Artist</span><span class=p>&gt;</span> <span class=n>Artist</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln> 4</span>    <span class=k>public</span> <span class=n>DbSet</span><span class=p>&lt;</span><span class=n>Album</span><span class=p>&gt;</span> <span class=n>Album</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln> 5</span>    <span class=k>private</span> <span class=k>readonly</span> <span class=n>ITenantInfoProvider</span> <span class=m>_</span><span class=n>tenantInfoProvider</span><span class=p>;</span>
+<span class=ln> 6</span>    <span class=k>public</span> <span class=n>MulitiTenancyContext</span><span class=p>(</span>
+<span class=ln> 7</span>      <span class=n>DbContextOptions</span><span class=p>&lt;</span><span class=n>MulitiTenancyContext</span><span class=p>&gt;</span> <span class=n>options</span><span class=p>,</span> 
+<span class=ln> 8</span>      <span class=n>ITenantInfoProvider</span> <span class=n>tenantInfoProvider</span>
+<span class=ln> 9</span>    <span class=p>)</span> <span class=p>:</span> <span class=k>base</span><span class=p>(</span><span class=n>options</span><span class=p>)</span>
+<span class=ln>10</span>    <span class=p>{</span>
+<span class=ln>11</span>        <span class=m>_</span><span class=n>tenantInfoProvider</span> <span class=p>=</span> <span class=n>tenantInfoProvider</span><span class=p>;</span>
+<span class=ln>12</span>    <span class=p>}</span>
+<span class=ln>13</span>
+<span class=ln>14</span>    <span class=k>protected</span> <span class=k>override</span> <span class=k>void</span> <span class=n>OnModelCreating</span><span class=p>(</span><span class=n>ModelBuilder</span> <span class=n>modelBuilder</span><span class=p>)</span>
+<span class=ln>15</span>    <span class=p>{</span>
+<span class=ln>16</span>        <span class=k>base</span><span class=p>.</span><span class=n>OnModelCreating</span><span class=p>(</span><span class=n>modelBuilder</span><span class=p>);</span>
+<span class=ln>17</span>
+<span class=ln>18</span>        <span class=n>modelBuilder</span><span class=p>.</span><span class=n>ApplyConfiguration</span><span class=p>(</span><span class=k>new</span> <span class=n>ArtistMap</span><span class=p>());</span>
+<span class=ln>19</span>        <span class=n>modelBuilder</span><span class=p>.</span><span class=n>ApplyConfiguration</span><span class=p>(</span><span class=k>new</span> <span class=n>AlbumMap</span><span class=p>());</span>
+<span class=ln>20</span>        
+<span class=ln>21</span>        <span class=c1>// 利用 HasQueryFilter 进行租户间数据隔离
+</span><span class=ln>22</span><span class=c1></span>        <span class=kt>var</span> <span class=n>tenantId</span> <span class=p>=</span> <span class=m>_</span><span class=n>tenantInfoProvider</span><span class=p>.</span><span class=n>GetTenantId</span><span class=p>();</span>
+<span class=ln>23</span>        <span class=k>if</span> <span class=p>(!</span><span class=kt>string</span><span class=p>.</span><span class=n>IsNullOrEmpty</span><span class=p>(</span><span class=n>tenantId</span><span class=p>))</span>
+<span class=ln>24</span>        <span class=p>{</span>
+<span class=ln>25</span>            <span class=n>modelBuilder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>Album</span><span class=p>&gt;().</span><span class=n>HasQueryFilter</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>TenantId</span> <span class=p>==</span> <span class=n>tenantId</span><span class=p>);</span>
+<span class=ln>26</span>            <span class=n>modelBuilder</span><span class=p>.</span><span class=n>Entity</span><span class=p>&lt;</span><span class=n>Artist</span><span class=p>&gt;().</span><span class=n>HasQueryFilter</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>TenantId</span> <span class=p>==</span> <span class=n>tenantId</span><span class=p>);</span>
+<span class=ln>27</span>        <span class=p>}</span>
+<span class=ln>28</span>    <span class=p>}</span>
+<span class=ln>29</span><span class=p>}</span>
+</code></pre></div><p>为了在实体上应用这个过滤条件，参照 <a class=link href=https://github.com/abpframework/abp target=_blank rel=noopener>ABP vNext</a> 中的实现，我们定义了<code>IMulitiTenancy</code>接口，所有实体均需要实现<code>TenantId</code>字段。为了简化设计，我们直接使用字符串类型来定义租户Id，而在 <a class=link href=https://github.com/abpframework/abp target=_blank rel=noopener>ABP vNext</a> 中很多主键都被定义为 <code>Guid</code>，我们掌握核心原理即可，不用过分强求和 <a class=link href=https://github.com/abpframework/abp target=_blank rel=noopener>ABP vNext</a> 的一致。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=c1>// IMulitiTenancy
+</span><span class=ln> 2</span><span class=c1></span><span class=k>public</span> <span class=k>interface</span> <span class=n>IMulitiTenancy</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=k>public</span> <span class=kt>string</span> <span class=n>TenantId</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln> 5</span><span class=p>}</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span><span class=c1>// Album
+</span><span class=ln> 8</span><span class=c1></span><span class=k>public</span> <span class=k>class</span> <span class=nc>Album</span> <span class=p>:</span> <span class=n>IMulitiTenancy</span>
+<span class=ln> 9</span><span class=p>{</span>
+<span class=ln>10</span>    <span class=k>public</span> <span class=kt>int</span> <span class=n>AlbumId</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln>11</span>    <span class=k>public</span> <span class=kt>string</span> <span class=n>Title</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln>12</span>    <span class=k>public</span> <span class=kt>int</span> <span class=n>ArtistId</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln>13</span>    <span class=k>public</span> <span class=kt>string</span> <span class=n>TenantId</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln>14</span><span class=p>}</span>
+</code></pre></div><p>此时，我们可以编写简单的测试代码，来验证我们的想法是否正确。同样地，我还是使用了依赖注入：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=c1>// 这里应该查询01租户内的Album
+</span><span class=ln>2</span><span class=c1></span><span class=kt>var</span> <span class=n>tenantId</span> <span class=p>=</span> <span class=m>_</span><span class=n>tenantInfoProvider</span><span class=p>.</span><span class=n>GetTenantId</span><span class=p>();</span>
+<span class=ln>3</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;--------多租户 + 单数据库--------&#34;</span><span class=p>);</span>
+<span class=ln>4</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;TenantId:{tenantId}&#34;</span><span class=p>);</span>
+<span class=ln>5</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>mulitiTenancyContext</span><span class=p>.</span><span class=n>Database</span><span class=p>.</span><span class=n>GetDbConnection</span><span class=p>().</span><span class=n>ConnectionString</span><span class=p>);</span>
+<span class=ln>6</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>mulitiTenancyContext</span><span class=p>.</span><span class=n>Album</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
+<span class=ln>7</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=m>_</span><span class=n>mulitiTenancyContext</span><span class=p>.</span><span class=n>Artist</span><span class=p>.</span><span class=n>ToQueryString</span><span class=p>());</span>
+</code></pre></div><p>可以注意到，打印出的 SQL 语句中自动带出了过滤条件：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2021/03/29/7na2eIo4suLhTGY.png>
+<img src=/https:/i.loli.net/2021/03/29/7na2eIo4suLhTGY.png loading=lazy alt="多租户 + 多数据库">
+</a>
+<figcaption>多租户 + 多数据库</figcaption>
+</figure></p>
+<h1 id=本文小结>本文小结</h1>
+<p>这篇博客主要探讨了 EF 在分库、分表及多租户架构上实施的可能性。分库、分表的目的是为了提高数据库的查询性能，在这个过程中，我们可以考虑<strong>范围</strong>、<strong>Hash</strong>和<strong>配置</strong>三种路由策略，它们各自有自己的优缺点，需要使用者结合业务场景去衡量。虽然分库、分表在面对百万级别以上的数据时，不失为一种提高性能的方案，可世间万物都是双刃剑，它同样带来了一系列新的问题，譬如<strong>跨库写带来的分布式事务问题，跨库读带来的Join、Count()、排序、分页等问题，数据迁移问题</strong>等等，而如果希望通过Hash(Id)来进行拆分，还需要解决<strong>全局Id唯一的问题</strong>。所以说，这是一个没有标准答案的问题，需要使用者自己去进行取舍。多租户架构、读写分离均可以看作是特殊的分库场景，<code>EF Core</code> 中新增的<code>HasQueryFilter()</code>方法则帮助我们解决了单数据库的多租户架构问题。好了，以上就是这篇博客的全部内容啦，如果大家对文中的观点有建议或者意见，欢迎大家在评论区留言，谢谢！</p>
+<p>附本文源代码：<a class=link href=https://github.com/Regularly-Archive/2021/tree/master/EF.Sharding target=_blank rel=noopener>https://github.com/Regularly-Archive/2021/tree/master/EF.Sharding</a></p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/>数据库</a>
+<a href=/tags/%E5%A4%9A%E7%A7%9F%E6%88%B7/>多租户</a>
+<a href=/tags/ef/>EF</a>
+<a href=/tags/%E6%9E%B6%E6%9E%84/>架构</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/efcore-%E5%AE%9E%E4%BD%93%E5%91%BD%E5%90%8D%E7%BA%A6%E5%AE%9A%E5%BA%93efcore.namingconventions/>
+<div class=article-details>
+<h2 class=article-title>EFCore 实体命名约定库：EFCore.NamingConventions</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/dapper.contrib-%E5%9C%A8-oracle-%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BC%95%E5%8F%91-ora-00928-%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/>
+<div class=article-details>
+<h2 class=article-title>Dapper.Contrib 在 Oracle 环境下引发 ORA-00928 异常问题的解决</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E9%80%9A%E8%BF%87-ef/dapper-%E6%89%A9%E5%B1%95%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%A1%E8%AE%A1%E5%8A%9F%E8%83%BD/>
+<div class=article-details>
+<h2 class=article-title>通过 EF/Dapper 扩展实现数据库审计功能</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%85%B3%E4%BA%8E%E5%8D%95%E4%BD%8D%E8%BD%AC%E6%8D%A2%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98%E7%9A%84%E5%B8%B8%E8%A7%81%E6%80%9D%E8%B7%AF/>
+<div class=article-details>
+<h2 class=article-title>关于单位转换相关问题的常见思路</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8E-ef-%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>基于 EF 的数据库主从复制、读写分离实现</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#分库>分库</a></li>
+<li><a href=#分表>分表</a></li>
+<li><a href=#多租户架构>多租户架构</a>
+<ol>
+<li><a href=#多数据库>多数据库</a></li>
+<li><a href=#单数据库>单数据库</a></li>
+</ol>
+</li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="所以，说白了我们就是想利用它这个“云引擎”来调用 Server 酱的接口，幸运的是，LeanCloud 提供的 Hooks 目前是支持 Nodejs 的，所以，到这里思路就非常清晰了，我们给`Comment`这张表加一个`AfterSave`类型的 Hooks，在保存完以后调用 Server 酱接口推送评论信息即可;[Valine](https://valine.js.org/)是一个基于[LeanCloud](https://leancloud.cn)的评论系统，在很长的一段时间里，一直作为多说、[Gitalk](https://gitalk.github.io/)、[Gitment](https://github.com/imsun/gitment)等等的一个替代品，博主所使用的评论系统实际上就是 Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊;Valine 本身是利用 LeanCloud 的数据存储 SDK 来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能"><title>Valine 搭配 Server 酱实现博客评论推送</title>
+<link rel=canonical href=/posts/valine-%E6%90%AD%E9%85%8D-server-%E9%85%B1%E5%AE%9E%E7%8E%B0%E5%8D%9A%E5%AE%A2%E8%AF%84%E8%AE%BA%E6%8E%A8%E9%80%81/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="Valine 搭配 Server 酱实现博客评论推送">
+<meta property="og:description" content="所以，说白了我们就是想利用它这个“云引擎”来调用 Server 酱的接口，幸运的是，LeanCloud 提供的 Hooks 目前是支持 Nodejs 的，所以，到这里思路就非常清晰了，我们给`Comment`这张表加一个`AfterSave`类型的 Hooks，在保存完以后调用 Server 酱接口推送评论信息即可;[Valine](https://valine.js.org/)是一个基于[LeanCloud](https://leancloud.cn)的评论系统，在很长的一段时间里，一直作为多说、[Gitalk](https://gitalk.github.io/)、[Gitment](https://github.com/imsun/gitment)等等的一个替代品，博主所使用的评论系统实际上就是 Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊;Valine 本身是利用 LeanCloud 的数据存储 SDK 来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能">
+<meta property="og:url" content="/posts/valine-%E6%90%AD%E9%85%8D-server-%E9%85%B1%E5%AE%9E%E7%8E%B0%E5%8D%9A%E5%AE%A2%E8%AF%84%E8%AE%BA%E6%8E%A8%E9%80%81/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Valine"><meta property="article:tag" content="Server 酱"><meta property="article:tag" content="评论"><meta property="article:published_time" content="2019-11-06T18:15:14+00:00"><meta property="article:modified_time" content="2019-11-06T18:15:14+00:00">
+<meta name=twitter:title content="Valine 搭配 Server 酱实现博客评论推送">
+<meta name=twitter:description content="所以，说白了我们就是想利用它这个“云引擎”来调用 Server 酱的接口，幸运的是，LeanCloud 提供的 Hooks 目前是支持 Nodejs 的，所以，到这里思路就非常清晰了，我们给`Comment`这张表加一个`AfterSave`类型的 Hooks，在保存完以后调用 Server 酱接口推送评论信息即可;[Valine](https://valine.js.org/)是一个基于[LeanCloud](https://leancloud.cn)的评论系统，在很长的一段时间里，一直作为多说、[Gitalk](https://gitalk.github.io/)、[Gitment](https://github.com/imsun/gitment)等等的一个替代品，博主所使用的评论系统实际上就是 Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊;Valine 本身是利用 LeanCloud 的数据存储 SDK 来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=/https:/github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/blog.csdn.me/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2/>
+独立博客
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/valine-%E6%90%AD%E9%85%8D-server-%E9%85%B1%E5%AE%9E%E7%8E%B0%E5%8D%9A%E5%AE%A2%E8%AF%84%E8%AE%BA%E6%8E%A8%E9%80%81/>Valine 搭配 Server 酱实现博客评论推送</a>
+</h2>
+<h3 class=article-subtitle>
+所以，说白了我们就是想利用它这个“云引擎”来调用 Server 酱的接口，幸运的是，LeanCloud 提供的 Hooks 目前是支持 Nodejs 的，所以，到这里思路就非常清晰了，我们给`Comment`这张表加一个`AfterSave`类型的 Hooks，在保存完以后调用 Server 酱接口推送评论信息即可;[Valine](https://valine.js.org/)是一个基于[LeanCloud](https://leancloud.cn)的评论系统，在很长的一段时间里，一直作为多说、[Gitalk](https://gitalk.github.io/)、[Gitment](https://github.com/imsun/gitment)等等的一个替代品，博主所使用的评论系统实际上就是 Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊;Valine 本身是利用 LeanCloud 的数据存储 SDK 来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Nov 06, 2019</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 1 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p><a class=link href=https://valine.js.org/ target=_blank rel=noopener>Valine</a>是一个基于<a class=link href=https://leancloud.cn target=_blank rel=noopener>LeanCloud</a>的评论系统，在很长的一段时间里，一直作为多说、<a class=link href=https://gitalk.github.io/ target=_blank rel=noopener>Gitalk</a>、<a class=link href=https://github.com/imsun/gitment target=_blank rel=noopener>Gitment</a>等等的一个替代品，博主所使用的评论系统实际上就是 Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊。多说评论的关闭，某种意义上来说，是很多 90 后站长们关于互联网的集体记忆，因为从博主搭建第一个 WordPress 博客的时候，多说就一直作为首选的评论系统而存在。那个时候通过多说就能接入主流的社交媒体，对于一个还不大会编写 Web 应用的博主来说，此刻想来实在是有种时过境迁的感觉。所以，Valine 作为一个相当优秀的评论系统，凭借着简洁大方的界面和开箱即用的优势，在这个时间点进入人们的视野，我们就不难理解，为什么它会成为博客作者们的“新宠”。</p>
+<p>Valine 本身是利用 LeanCloud 的数据存储 SDK 来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能。可话说回来，以国内这种“敏感”的网络环境，其实没有一家云服务提供商敢打这样的包票，像阿里云、LeanCloud、七牛云存储这些服务，都曾经出现过宕机或者封杀域名的事情，所以，趁着数据还在自己手上，尽可能地做好备份工作吧！Valine 本身并没有提供评论推送的功能，我还是挺怀念过去“多说”推送评论到邮箱的功能。虽然<a class=link href=https://github.com/DesertsP/Valine-Admin target=_blank rel=noopener>Valine-Admin</a>这个项目提供了类似的功能，但我感觉使用起来并不顺手，尤其是配置邮箱的时候，国内像 QQ、163 这些都非常麻烦，遇到一两个废弃的手机号，你就会发现短信验证码，是件多么尴尬而繁琐的事情，如同扫码使用的共享电话一般魔幻。</p>
+<p>为了解决这个问题，我想到了 Valine 搭配 Server 酱实现评论推送的方案。首先，Valine 是基于 LeanCloud 而开发的，用户发表评论实际上就是向<code>Comment</code>表插入记录。因此，我们可以利用 LeanCloud 提供的<a class=link href=https://leancloud.cn/docs/leanengine_cloudfunction_guide-node.html#hash1095356413 target=_blank rel=noopener>Hooks</a>来捕获写入评论的事件。所谓“Hooks”呢，通俗地说就是数据库里触发器的概念，我们可以在数据写入前后做点“小动作”。而<a class=link href=http://sc.ftqq.com/ target=_blank rel=noopener>Server 酱</a>则是一个消息推送服务，它提供了一个基于 HTTP 的请求接口，通过这个接口，我们就能实现向微信推送消息，前提是关注“方糖”公众号。关于 Server 酱的原理大家可以进一步去看它的<a class=link href="http://sc.ftqq.com/?c=code" target=_blank rel=noopener>文档</a>，我们这里只需要考虑怎么样把它们结合起来，这就是工程师和科学家的区别所在[doge]。</p>
+<p><figure>
+<a href=/https:/i.loli.net/2019/11/07/DlxWPgGNoKMVeOw.png>
+<img src=/https:/i.loli.net/2019/11/07/DlxWPgGNoKMVeOw.png loading=lazy alt=运行在Valine云引擎中代码>
+</a>
+<figcaption>运行在Valine云引擎中代码</figcaption>
+</figure></p>
+<p>LeanCloud 提供了一个称作“云引擎”的环境，它可以提供运行比如 Nodejs、Python 等等的环境，实际上，<a class=link href=https://github.com/DesertsP/Valine-Admin target=_blank rel=noopener>Valine-Admin</a>这个项目就是用 Nodejs 编写的，你可以理解为，只要你的应用符合它的规范，就能在它的环境里运行，这就是所谓的“FAAS”(函数即软件)和“BAAS”(后端即软件)。所以，说白了我们就是想利用它这个“云引擎”来调用 Server 酱的接口，幸运的是，LeanCloud 提供的 Hooks 目前是支持 Nodejs 的，所以，到这里思路就非常清晰了，我们给<code>Comment</code>这张表加一个<code>AfterSave</code>类型的 Hooks，在保存完以后调用 Server 酱接口推送评论信息即可。创建 Hooks 是在部署->云引擎选项下，我们来看下面的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln> 1</span><span class=nx>AV</span><span class=p>.</span><span class=nx>Cloud</span><span class=p>.</span><span class=nx>afterSave</span><span class=p>(</span><span class=s1>&#39;Comment&#39;</span><span class=p>,</span> <span class=kr>async</span> <span class=kd>function</span><span class=p>(</span><span class=nx>request</span><span class=p>)</span> <span class=p>{</span>
+<span class=ln> 2</span>  <span class=kd>var</span> <span class=nx>http</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s2>&#34;request&#34;</span><span class=p>);</span>
+<span class=ln> 3</span>
+<span class=ln> 4</span>  <span class=kd>var</span> <span class=nx>obj</span> <span class=o>=</span> <span class=nx>request</span><span class=p>.</span><span class=nx>object</span><span class=p>;</span>
+<span class=ln> 5</span>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;收到一条新的评论：&#39;</span> <span class=o>+</span> <span class=nx>JSON</span><span class=p>.</span><span class=nx>stringify</span><span class=p>(</span><span class=nx>obj</span><span class=p>));</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span>  <span class=kd>var</span> <span class=nx>title</span> <span class=o>=</span> <span class=s2>&#34;收到一条新的评论&#34;</span><span class=p>;</span>
+<span class=ln> 8</span>  <span class=kd>var</span> <span class=nx>url</span> <span class=o>=</span> <span class=nx>request</span><span class=p>.</span><span class=nx>object</span><span class=p>.</span><span class=nx>get</span><span class=p>(</span><span class=s1>&#39;url&#39;</span><span class=p>);</span>
+<span class=ln> 9</span>  <span class=kd>var</span> <span class=nx>nick</span> <span class=o>=</span> <span class=nx>obj</span><span class=p>.</span><span class=nx>get</span><span class=p>(</span><span class=s1>&#39;nick&#39;</span><span class=p>);</span>
+<span class=ln>10</span>  <span class=k>if</span> <span class=p>(</span><span class=nx>nick</span> <span class=o>==</span> <span class=s1>&#39;Anonymous&#39;</span><span class=p>){</span>
+<span class=ln>11</span>      <span class=nx>nick</span> <span class=o>=</span> <span class=s1>&#39;陌生人&#39;</span><span class=p>;</span>
+<span class=ln>12</span>  <span class=p>}</span>
+<span class=ln>13</span>  <span class=kd>var</span> <span class=nx>comment</span> <span class=o>=</span> <span class=nx>obj</span><span class=p>.</span><span class=nx>get</span><span class=p>(</span><span class=s1>&#39;comment&#39;</span><span class=p>);</span>
+<span class=ln>14</span>
+<span class=ln>15</span>  <span class=kd>var</span> <span class=nx>content</span> <span class=o>=</span> <span class=nx>nick</span> <span class=o>+</span> <span class=s2>&#34;给你留言：\n\n&#34;</span> <span class=o>+</span> <span class=nx>comment</span> <span class=o>+</span> <span class=s2>&#34;\n\n详情请访问：\n\n&#34;</span> <span class=o>+</span> <span class=nx>url</span><span class=p>;</span>
+<span class=ln>16</span>  <span class=kd>var</span> <span class=nx>options</span> <span class=o>=</span> <span class=p>{</span> <span class=nx>method</span><span class=o>:</span> <span class=s1>&#39;GET&#39;</span><span class=p>,</span>
+<span class=ln>17</span>    <span class=nx>url</span><span class=o>:</span> <span class=s1>&#39;https://sc.ftqq.com/&lt;在这里输入你的token&gt;.send&#39;</span><span class=p>,</span>
+<span class=ln>18</span>    <span class=nx>qs</span><span class=o>:</span> <span class=p>{</span> 
+<span class=ln>19</span>        <span class=nx>text</span><span class=o>:</span> <span class=nx>title</span><span class=p>,</span>
+<span class=ln>20</span>        <span class=nx>desp</span><span class=o>:</span> <span class=nx>content</span>
+<span class=ln>21</span>    <span class=p>},</span>
+<span class=ln>22</span>    <span class=nx>headers</span><span class=o>:</span> <span class=p>{</span> <span class=p>}</span> 
+<span class=ln>23</span>  <span class=p>};</span>
+<span class=ln>24</span>
+<span class=ln>25</span>  <span class=nx>http</span><span class=p>(</span><span class=nx>options</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>error</span><span class=p>,</span> <span class=nx>response</span><span class=p>,</span> <span class=nx>body</span><span class=p>)</span> <span class=p>{</span>
+<span class=ln>26</span>    <span class=k>if</span> <span class=p>(</span><span class=nx>error</span><span class=p>)</span> <span class=k>throw</span> <span class=k>new</span> <span class=nb>Error</span><span class=p>(</span><span class=nx>error</span><span class=p>);</span>
+<span class=ln>27</span>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>body</span><span class=p>);</span>
+<span class=ln>28</span>  <span class=p>});</span>
+<span class=ln>29</span><span class=p>});</span>
+</code></pre></div><p>这里主要利用了 Nodejs 中的<code>requests</code>模块来发送 HTTP 请求，其中 token 是 Server 酱经过 Github 授权以后获得的，具体可以参考 Server 酱的<a class=link href="http://sc.ftqq.com/?c=code" target=_blank rel=noopener>文档</a>。这里有一点要注意，Comment 表里的记录是无法区分发出人的，因为有时候我们可能忘记填写邮箱或者昵称，所以，目前只要写入记录都会发送消息到手机。这个消息模板是 Server 酱作者提供的，我们无法对它的样式进行自定义，收到消息以后需要点击查看详情。不过，我认为这个方案可以满足我的日常使用，因为博客的评论数量并不多，而 Servet 酱的接口调用次数完全足够。免费的 LeanCloud 实例虽然会强制休眠，只要大部分时间能覆盖到就可以啦，谁让这些东西都是免费的呢，博主表示已经相当知足啦，哈哈！好了，看看消息推送到手机的效果吧！</p>
+<p><figure>
+<a href=/https:/i.loli.net/2019/11/07/BSsu4cPFe1ZvhGN.png>
+<img src=/https:/i.loli.net/2019/11/07/BSsu4cPFe1ZvhGN.png loading=lazy alt=博客评论推送到手机上的展示效果>
+</a>
+<figcaption>博客评论推送到手机上的展示效果</figcaption>
+</figure></p>
+<p>如果大家想调整消息的格式，参考文章中给出的代码即可，每次调整完可以直接部署到线上，这是我在这个过程中体验到的 Serverless 的魅力，相比我们中华田园式的 996 敏捷开发，这种方式真的能缩短部署的周期。我还是那句话，敏捷开发是大家一起敏捷，不是只有开发苦哈哈地加班加点干活，快速交付的前提是基础设施完善，具备自动化测试、自动化部署的能力，让开发安心地写代码比什么都重要，就像 LeanCloud 里提供的云函数和 Hooks，开发写完代码就能自动部署，这是真正的敏捷、真正的灵活。好了，这篇博客就先写到这里。想试试博主能不能第一时间收到你们的留言？欢迎在博客评论区留下你的足迹，谢谢大家！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/valine/>Valine</a>
+<a href=/tags/server-%E9%85%B1/>Server 酱</a>
+<a href=/tags/%E8%AF%84%E8%AE%BA/>评论</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E5%AE%9E%E7%8E%B0%E7%BD%91%E9%A1%B5%E9%95%BF%E6%88%AA%E5%9B%BE%E7%9A%84%E5%B8%B8%E8%A7%81%E6%80%9D%E8%B7%AF%E6%80%BB%E7%BB%93/>
+<div class=article-details>
+<h2 class=article-title>实现网页长截图的常见思路总结</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%8E%9F%E7%94%9F-javascript-%E5%AE%9E%E7%8E%B0-hexo-%E5%8D%9A%E5%AE%A2%E6%8E%A8%E8%8D%90%E5%8A%9F%E8%83%BD/>
+<div class=article-details>
+<h2 class=article-title>原生 JavaScript 实现 Hexo 博客推荐功能</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-jsdelivr-%E4%B8%BA-hexo-%E5%8D%9A%E5%AE%A2%E6%8F%90%E4%BE%9B%E9%AB%98%E6%95%88%E5%85%8D%E8%B4%B9%E7%9A%84cdn%E5%8A%A0%E9%80%9F/>
+<div class=article-details>
+<h2 class=article-title>使用 jsDelivr 为 Hexo 博客提供高效免费的CDN加速</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E8%BF%81%E7%A7%BB%E6%8A%98%E8%85%BE%E8%AE%B0/>
+<div class=article-details>
+<h2 class=article-title>博客图片迁移折腾记</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8E-travis-ci-%E5%AE%9E%E7%8E%B0-hexo-%E5%9C%A8-github-%E5%92%8C-coding-%E7%9A%84%E5%90%8C%E6%AD%A5%E9%83%A8%E7%BD%B2/>
+<div class=article-details>
+<h2 class=article-title>基于 Travis CI 实现 Hexo 在 Github 和 Coding 的同步部署</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

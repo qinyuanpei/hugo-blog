@@ -1,0 +1,483 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="有人说，“男人至死都是少年”，而这句听起来有一点中二的话，其实是出自一部同样有一点中二的动漫——银魂。我个人的理解是，知世故而不世故。也许，年轻时那些天马行空的想法，就像堂吉诃德大战风车一样荒诞，可依然愿意去怀着这样的梦想去生活。正如罗曼罗兰所言，“世上只有一种英雄主义，就是在认清生活真相之后依然热爱生活”。所以，继《浪客剑心》之后，我再次被一部叫做《鬼灭之刃》的动漫吸引，毕竟男人的快乐往往就是这么朴实无华且枯燥。一个快三十岁的人，如果还能被一部热血少年番吸引，大概可以说明，他身体里的中二少年连同中二少年魂还活着。最早的印象来自朋友圈里的一位二次元“少年”，他和自己儿子站一起，有种浑然天成的协调感，整个人是非常年轻的感觉。所以，大概，男人至死都是少年。
+漫画的抓取 鬼滅の刃的漫画早已更完，令我不舍昼夜去追的，实际上是动画版的鬼滅の刃。虽然 B 站上提供中配版本，可一周更新两集的节奏，还是让我追得有一点焦灼(PS：我没有大会员呢)，甚至熬着夜提前“刷”了无限列车(PS：见文章末尾小程序码)。其实，鬼滅の刃前期并没有特别吸引人的地方，直到那田蜘蛛山那一话开始渐入佳境，鬼杀队和鬼两个阵营所构成的人物群像开始一点一点的展开。它的表达方式有点接近刺客信条，即反派都是在死亡一刹那间有了自我表达的机会，而玩家/观众都可以了解反派的过去。由于鬼是由人转变而来，所以，在热血和厮杀之外，同样有了一点关乎人性的思考。作为一名“自封”的技术宅，我必须要在追番的时候做点什么，从哪里开始好呢？既然漫画版早已更新完毕，我们要不先抓取漫画下来提前过过瘾？
+OK，这里博主找了一个动漫网站，它上面有完整的鬼滅の刃漫画。我意识到从网上抓取漫画的行为是不对的，可这家网站提供的漫画明显是通过扫描获得的，因为正常的漫画都是通过购买杂志的方式获得的。所以，如果经济条件允许的情况下，还是希望大家可以支持正版，这里博主主要还是为了研究技术(逃，无意对这些资源做二次加工或者以任何方式盈利，所以，请大家不要向博主索取任何资源，我对自己的定位永远是一名软件工程师，谁让我无法成为尤小右这样的“美妆”博主呢？这一点希望大家可以理解哈！
+ 鬼滅の刃作品页面 
+ 鬼滅の刃章节页面 
+简单分析下动漫网站结构，可以发现，它主要有两种界面，即作品页面和章节页面。作品页面里面会显示所有的章节，而每个章节里会显示所有的图片。所以，我们的思路是，首先，通过作品页面获取所有章节的链接。其次，针对每一个章节，获取总页数后逐页下载图片即可。注意到这个网站有部分内容是通过 JavaScript 动态生成的，所以，requests针对这种情况会有点力不从心。幸好，我们还有Selenium这个神器可以使用，我们一起来看这部分内容如何实现：
+1import requests 2from bs4 import BeautifulSoup 3import fake_useragent 4import json 5import urllib 6from selenium import webdriver 7from selenium.webdriver.support.ui import Select 8from selenium.webdriver.common.by import By 9from selenium.webdriver.support.ui import WebDriverWait 10from selenium.webdriver.support import expected_conditions as EC 11import os, time 12import threading 13import threadpool 14 15class DemonSlayer: 16 17 def __init__(self, baseUrl): 18 self.baseUrl = baseUrl 19 self.session = requests."><title>作为技术宅的我，是这样追鬼滅の刃的</title>
+<link rel=canonical href=/posts/%E4%BD%9C%E4%B8%BA%E6%8A%80%E6%9C%AF%E5%AE%85%E7%9A%84%E6%88%91%E6%98%AF%E8%BF%99%E6%A0%B7%E8%BF%BD%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83%E7%9A%84/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="作为技术宅的我，是这样追鬼滅の刃的">
+<meta property="og:description" content="有人说，“男人至死都是少年”，而这句听起来有一点中二的话，其实是出自一部同样有一点中二的动漫——银魂。我个人的理解是，知世故而不世故。也许，年轻时那些天马行空的想法，就像堂吉诃德大战风车一样荒诞，可依然愿意去怀着这样的梦想去生活。正如罗曼罗兰所言，“世上只有一种英雄主义，就是在认清生活真相之后依然热爱生活”。所以，继《浪客剑心》之后，我再次被一部叫做《鬼灭之刃》的动漫吸引，毕竟男人的快乐往往就是这么朴实无华且枯燥。一个快三十岁的人，如果还能被一部热血少年番吸引，大概可以说明，他身体里的中二少年连同中二少年魂还活着。最早的印象来自朋友圈里的一位二次元“少年”，他和自己儿子站一起，有种浑然天成的协调感，整个人是非常年轻的感觉。所以，大概，男人至死都是少年。
+漫画的抓取 鬼滅の刃的漫画早已更完，令我不舍昼夜去追的，实际上是动画版的鬼滅の刃。虽然 B 站上提供中配版本，可一周更新两集的节奏，还是让我追得有一点焦灼(PS：我没有大会员呢)，甚至熬着夜提前“刷”了无限列车(PS：见文章末尾小程序码)。其实，鬼滅の刃前期并没有特别吸引人的地方，直到那田蜘蛛山那一话开始渐入佳境，鬼杀队和鬼两个阵营所构成的人物群像开始一点一点的展开。它的表达方式有点接近刺客信条，即反派都是在死亡一刹那间有了自我表达的机会，而玩家/观众都可以了解反派的过去。由于鬼是由人转变而来，所以，在热血和厮杀之外，同样有了一点关乎人性的思考。作为一名“自封”的技术宅，我必须要在追番的时候做点什么，从哪里开始好呢？既然漫画版早已更新完毕，我们要不先抓取漫画下来提前过过瘾？
+OK，这里博主找了一个动漫网站，它上面有完整的鬼滅の刃漫画。我意识到从网上抓取漫画的行为是不对的，可这家网站提供的漫画明显是通过扫描获得的，因为正常的漫画都是通过购买杂志的方式获得的。所以，如果经济条件允许的情况下，还是希望大家可以支持正版，这里博主主要还是为了研究技术(逃，无意对这些资源做二次加工或者以任何方式盈利，所以，请大家不要向博主索取任何资源，我对自己的定位永远是一名软件工程师，谁让我无法成为尤小右这样的“美妆”博主呢？这一点希望大家可以理解哈！
+ 鬼滅の刃作品页面 
+ 鬼滅の刃章节页面 
+简单分析下动漫网站结构，可以发现，它主要有两种界面，即作品页面和章节页面。作品页面里面会显示所有的章节，而每个章节里会显示所有的图片。所以，我们的思路是，首先，通过作品页面获取所有章节的链接。其次，针对每一个章节，获取总页数后逐页下载图片即可。注意到这个网站有部分内容是通过 JavaScript 动态生成的，所以，requests针对这种情况会有点力不从心。幸好，我们还有Selenium这个神器可以使用，我们一起来看这部分内容如何实现：
+1import requests 2from bs4 import BeautifulSoup 3import fake_useragent 4import json 5import urllib 6from selenium import webdriver 7from selenium.webdriver.support.ui import Select 8from selenium.webdriver.common.by import By 9from selenium.webdriver.support.ui import WebDriverWait 10from selenium.webdriver.support import expected_conditions as EC 11import os, time 12import threading 13import threadpool 14 15class DemonSlayer: 16 17 def __init__(self, baseUrl): 18 self.baseUrl = baseUrl 19 self.session = requests.">
+<meta property="og:url" content="/posts/%E4%BD%9C%E4%B8%BA%E6%8A%80%E6%9C%AF%E5%AE%85%E7%9A%84%E6%88%91%E6%98%AF%E8%BF%99%E6%A0%B7%E8%BF%BD%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83%E7%9A%84/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="鬼滅の刃"><meta property="article:tag" content="Kindle"><meta property="article:tag" content="动漫"><meta property="article:tag" content="OpenCV"><meta property="article:tag" content="Python"><meta property="article:published_time" content="2020-12-15T22:49:47+00:00"><meta property="article:modified_time" content="2020-12-15T22:49:47+00:00">
+<meta name=twitter:title content="作为技术宅的我，是这样追鬼滅の刃的">
+<meta name=twitter:description content="有人说，“男人至死都是少年”，而这句听起来有一点中二的话，其实是出自一部同样有一点中二的动漫——银魂。我个人的理解是，知世故而不世故。也许，年轻时那些天马行空的想法，就像堂吉诃德大战风车一样荒诞，可依然愿意去怀着这样的梦想去生活。正如罗曼罗兰所言，“世上只有一种英雄主义，就是在认清生活真相之后依然热爱生活”。所以，继《浪客剑心》之后，我再次被一部叫做《鬼灭之刃》的动漫吸引，毕竟男人的快乐往往就是这么朴实无华且枯燥。一个快三十岁的人，如果还能被一部热血少年番吸引，大概可以说明，他身体里的中二少年连同中二少年魂还活着。最早的印象来自朋友圈里的一位二次元“少年”，他和自己儿子站一起，有种浑然天成的协调感，整个人是非常年轻的感觉。所以，大概，男人至死都是少年。
+漫画的抓取 鬼滅の刃的漫画早已更完，令我不舍昼夜去追的，实际上是动画版的鬼滅の刃。虽然 B 站上提供中配版本，可一周更新两集的节奏，还是让我追得有一点焦灼(PS：我没有大会员呢)，甚至熬着夜提前“刷”了无限列车(PS：见文章末尾小程序码)。其实，鬼滅の刃前期并没有特别吸引人的地方，直到那田蜘蛛山那一话开始渐入佳境，鬼杀队和鬼两个阵营所构成的人物群像开始一点一点的展开。它的表达方式有点接近刺客信条，即反派都是在死亡一刹那间有了自我表达的机会，而玩家/观众都可以了解反派的过去。由于鬼是由人转变而来，所以，在热血和厮杀之外，同样有了一点关乎人性的思考。作为一名“自封”的技术宅，我必须要在追番的时候做点什么，从哪里开始好呢？既然漫画版早已更新完毕，我们要不先抓取漫画下来提前过过瘾？
+OK，这里博主找了一个动漫网站，它上面有完整的鬼滅の刃漫画。我意识到从网上抓取漫画的行为是不对的，可这家网站提供的漫画明显是通过扫描获得的，因为正常的漫画都是通过购买杂志的方式获得的。所以，如果经济条件允许的情况下，还是希望大家可以支持正版，这里博主主要还是为了研究技术(逃，无意对这些资源做二次加工或者以任何方式盈利，所以，请大家不要向博主索取任何资源，我对自己的定位永远是一名软件工程师，谁让我无法成为尤小右这样的“美妆”博主呢？这一点希望大家可以理解哈！
+ 鬼滅の刃作品页面 
+ 鬼滅の刃章节页面 
+简单分析下动漫网站结构，可以发现，它主要有两种界面，即作品页面和章节页面。作品页面里面会显示所有的章节，而每个章节里会显示所有的图片。所以，我们的思路是，首先，通过作品页面获取所有章节的链接。其次，针对每一个章节，获取总页数后逐页下载图片即可。注意到这个网站有部分内容是通过 JavaScript 动态生成的，所以，requests针对这种情况会有点力不从心。幸好，我们还有Selenium这个神器可以使用，我们一起来看这部分内容如何实现：
+1import requests 2from bs4 import BeautifulSoup 3import fake_useragent 4import json 5import urllib 6from selenium import webdriver 7from selenium.webdriver.support.ui import Select 8from selenium.webdriver.common.by import By 9from selenium.webdriver.support.ui import WebDriverWait 10from selenium.webdriver.support import expected_conditions as EC 11import os, time 12import threading 13import threadpool 14 15class DemonSlayer: 16 17 def __init__(self, baseUrl): 18 self.baseUrl = baseUrl 19 self.session = requests.">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E4%BD%9C%E4%B8%BA%E6%8A%80%E6%9C%AF%E5%AE%85%E7%9A%84%E6%88%91%E6%98%AF%E8%BF%99%E6%A0%B7%E8%BF%BD%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83%E7%9A%84/>作为技术宅的我，是这样追鬼滅の刃的</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Dec 15, 2020</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 4 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>有人说，“男人至死都是少年”，而这句听起来有一点中二的话，其实是出自一部同样有一点中二的动漫——银魂。我个人的理解是，知世故而不世故。也许，年轻时那些天马行空的想法，就像堂吉诃德大战风车一样荒诞，可依然愿意去怀着这样的梦想去生活。正如罗曼罗兰所言，<strong>“世上只有一种英雄主义，就是在认清生活真相之后依然热爱生活”</strong>。所以，继《浪客剑心》之后，我再次被一部叫做《鬼灭之刃》的动漫吸引，毕竟男人的快乐往往就是这么朴实无华且枯燥。一个快三十岁的人，如果还能被一部热血少年番吸引，大概可以说明，他身体里的中二少年连同中二少年魂还活着。最早的印象来自朋友圈里的一位二次元“少年”，他和自己儿子站一起，有种浑然天成的协调感，整个人是非常年轻的感觉。所以，大概，男人至死都是少年。</p>
+<h1 id=漫画的抓取>漫画的抓取</h1>
+<p>鬼滅の刃的漫画早已更完，令我不舍昼夜去追的，实际上是动画版的鬼滅の刃。虽然 B 站上提供中配版本，可一周更新两集的节奏，还是让我追得有一点焦灼(<strong>PS：我没有大会员呢</strong>)，甚至熬着夜提前“刷”了无限列车(<strong>PS：见文章末尾小程序码</strong>)。其实，鬼滅の刃前期并没有特别吸引人的地方，直到那田蜘蛛山那一话开始渐入佳境，鬼杀队和鬼两个阵营所构成的人物群像开始一点一点的展开。它的表达方式有点接近刺客信条，即反派都是在死亡一刹那间有了自我表达的机会，而玩家/观众都可以了解反派的过去。由于鬼是由人转变而来，所以，在热血和厮杀之外，同样有了一点关乎人性的思考。作为一名“自封”的技术宅，我必须要在追番的时候做点什么，从哪里开始好呢？既然漫画版早已更新完毕，我们要不先抓取漫画下来提前过过瘾？</p>
+<p>OK，这里博主找了一个<a class=link href=http://www.7edm.com target=_blank rel=noopener>动漫网站</a>，它上面有完整的鬼滅の刃漫画。我意识到从网上抓取漫画的行为是不对的，可这家网站提供的漫画明显是通过扫描获得的，因为正常的漫画都是通过购买杂志的方式获得的。所以，如果经济条件允许的情况下，还是希望大家可以支持正版，这里博主主要还是为了研究技术(逃，无意对这些资源做二次加工或者以任何方式盈利，所以，请大家不要向博主索取任何资源，我对自己的定位永远是一名软件工程师，谁让我无法成为尤小右这样的“美妆”博主呢？这一点希望大家可以理解哈！</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/15/YRBjdD34harcVQs.png>
+<img src=/https:/i.loli.net/2020/12/15/YRBjdD34harcVQs.png loading=lazy alt=鬼滅の刃作品页面>
+</a>
+<figcaption>鬼滅の刃作品页面</figcaption>
+</figure></p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/16/tU9liE4rJLj2nXa.png>
+<img src=/https:/i.loli.net/2020/12/16/tU9liE4rJLj2nXa.png loading=lazy alt=鬼滅の刃章节页面>
+</a>
+<figcaption>鬼滅の刃章节页面</figcaption>
+</figure></p>
+<p>简单分析下动漫网站结构，可以发现，它主要有两种界面，即作品页面和章节页面。作品页面里面会显示所有的章节，而每个章节里会显示所有的图片。所以，我们的思路是，首先，通过作品页面获取所有章节的链接。其次，针对每一个章节，获取总页数后逐页下载图片即可。注意到这个网站有部分内容是通过 JavaScript 动态生成的，所以，<code>requests</code>针对这种情况会有点力不从心。幸好，我们还有<code>Selenium</code>这个神器可以使用，我们一起来看这部分内容如何实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=kn>import</span> <span class=nn>requests</span>
+<span class=ln> 2</span><span class=kn>from</span> <span class=nn>bs4</span> <span class=kn>import</span> <span class=n>BeautifulSoup</span>
+<span class=ln> 3</span><span class=kn>import</span> <span class=nn>fake_useragent</span>
+<span class=ln> 4</span><span class=kn>import</span> <span class=nn>json</span>
+<span class=ln> 5</span><span class=kn>import</span> <span class=nn>urllib</span>
+<span class=ln> 6</span><span class=kn>from</span> <span class=nn>selenium</span> <span class=kn>import</span> <span class=n>webdriver</span>
+<span class=ln> 7</span><span class=kn>from</span> <span class=nn>selenium.webdriver.support.ui</span> <span class=kn>import</span> <span class=n>Select</span>
+<span class=ln> 8</span><span class=kn>from</span> <span class=nn>selenium.webdriver.common.by</span> <span class=kn>import</span> <span class=n>By</span>
+<span class=ln> 9</span><span class=kn>from</span> <span class=nn>selenium.webdriver.support.ui</span> <span class=kn>import</span> <span class=n>WebDriverWait</span>
+<span class=ln>10</span><span class=kn>from</span> <span class=nn>selenium.webdriver.support</span> <span class=kn>import</span> <span class=n>expected_conditions</span> <span class=k>as</span> <span class=n>EC</span>
+<span class=ln>11</span><span class=kn>import</span> <span class=nn>os</span><span class=o>,</span> <span class=nn>time</span>
+<span class=ln>12</span><span class=kn>import</span> <span class=nn>threading</span>
+<span class=ln>13</span><span class=kn>import</span> <span class=nn>threadpool</span> 
+<span class=ln>14</span>
+<span class=ln>15</span><span class=k>class</span> <span class=nc>DemonSlayer</span><span class=p>:</span>
+<span class=ln>16</span>
+<span class=ln>17</span>    <span class=k>def</span> <span class=fm>__init__</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>baseUrl</span><span class=p>):</span>
+<span class=ln>18</span>        <span class=bp>self</span><span class=o>.</span><span class=n>baseUrl</span> <span class=o>=</span> <span class=n>baseUrl</span>
+<span class=ln>19</span>        <span class=bp>self</span><span class=o>.</span><span class=n>session</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>session</span><span class=p>()</span>
+<span class=ln>20</span>        <span class=bp>self</span><span class=o>.</span><span class=n>headers</span> <span class=o>=</span> <span class=p>{</span>
+<span class=ln>21</span>            <span class=s1>&#39;User-Agent&#39;</span><span class=p>:</span> <span class=n>fake_useragent</span><span class=o>.</span><span class=n>UserAgent</span><span class=p>(</span><span class=n>verify_ssl</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span><span class=o>.</span><span class=n>random</span>
+<span class=ln>22</span>        <span class=p>}</span>
+<span class=ln>23</span>        <span class=c1># 使用无头浏览器</span>
+<span class=ln>24</span>        <span class=n>fireFoxOptions</span> <span class=o>=</span> <span class=n>webdriver</span><span class=o>.</span><span class=n>FirefoxOptions</span><span class=p>()</span>
+<span class=ln>25</span>        <span class=n>fireFoxOptions</span><span class=o>.</span><span class=n>set_headless</span><span class=p>()</span>
+<span class=ln>26</span>        <span class=bp>self</span><span class=o>.</span><span class=n>driver</span> <span class=o>=</span> <span class=n>webdriver</span><span class=o>.</span><span class=n>Firefox</span><span class=p>(</span><span class=n>firefox_options</span><span class=o>=</span><span class=n>fireFoxOptions</span><span class=p>)</span>
+<span class=ln>27</span>
+<span class=ln>28</span>    <span class=c1># 获取所有章节信息</span>
+<span class=ln>29</span>    <span class=k>def</span> <span class=nf>getAllChapters</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>opusUrl</span><span class=p>):</span>
+<span class=ln>30</span>        <span class=n>chapters</span> <span class=o>=</span> <span class=p>{}</span>
+<span class=ln>31</span>        <span class=n>response</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>session</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>opusUrl</span><span class=p>,</span> <span class=n>headers</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>headers</span><span class=p>)</span>
+<span class=ln>32</span>        <span class=n>response</span><span class=o>.</span><span class=n>encoding</span> <span class=o>=</span> <span class=s1>&#39;utf-8&#39;</span>
+<span class=ln>33</span>        <span class=n>response</span><span class=o>.</span><span class=n>raise_for_status</span><span class=p>()</span>
+<span class=ln>34</span>        <span class=n>soup</span> <span class=o>=</span> <span class=n>BeautifulSoup</span><span class=p>(</span><span class=n>response</span><span class=o>.</span><span class=n>content</span><span class=p>)</span>
+<span class=ln>35</span>        <span class=n>soup</span> <span class=o>=</span> <span class=n>soup</span><span class=o>.</span><span class=n>find</span><span class=p>(</span><span class=n>name</span><span class=o>=</span><span class=s1>&#39;div&#39;</span><span class=p>,</span> <span class=n>attrs</span><span class=o>=</span><span class=p>{</span><span class=s1>&#39;class&#39;</span><span class=p>,</span><span class=s1>&#39;cy_plist&#39;</span><span class=p>})</span>
+<span class=ln>36</span>        <span class=k>if</span> <span class=p>(</span><span class=n>soup</span> <span class=o>!=</span> <span class=kc>None</span><span class=p>):</span>
+<span class=ln>37</span>            <span class=k>for</span> <span class=n>li</span> <span class=ow>in</span> <span class=n>soup</span><span class=o>.</span><span class=n>ul</span><span class=o>.</span><span class=n>children</span><span class=p>:</span>
+<span class=ln>38</span>                <span class=n>chapters</span><span class=p>[</span><span class=n>li</span><span class=o>.</span><span class=n>a</span><span class=o>.</span><span class=n>text</span><span class=p>]</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>baseUrl</span> <span class=o>+</span> <span class=n>li</span><span class=o>.</span><span class=n>a</span><span class=p>[</span><span class=s1>&#39;href&#39;</span><span class=p>]</span>
+<span class=ln>39</span>        <span class=k>return</span> <span class=n>chapters</span>
+<span class=ln>40</span>    
+<span class=ln>41</span>    <span class=c1># 获取指定章节信息</span>
+<span class=ln>42</span>    <span class=k>def</span> <span class=nf>getChapter</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>url</span><span class=p>):</span>
+<span class=ln>43</span>        <span class=n>page</span> <span class=o>=</span> <span class=mi>1</span>
+<span class=ln>44</span>        <span class=n>maxPage</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>getPageOfChapter</span><span class=p>(</span><span class=n>url</span><span class=p>)</span>
+<span class=ln>45</span>        <span class=n>images</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=ln>46</span>        <span class=k>while</span> <span class=n>page</span> <span class=o>&lt;=</span> <span class=n>maxPage</span><span class=p>:</span>
+<span class=ln>47</span>            <span class=n>reqUrl</span> <span class=o>=</span> <span class=n>url</span> <span class=o>+</span> <span class=s1>&#39;?p=</span><span class=si>{page}</span><span class=s1>&#39;</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=n>page</span><span class=o>=</span><span class=n>page</span><span class=p>)</span>
+<span class=ln>48</span>            <span class=bp>self</span><span class=o>.</span><span class=n>driver</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>reqUrl</span><span class=p>)</span>
+<span class=ln>49</span>            <span class=n>wait</span> <span class=o>=</span> <span class=n>WebDriverWait</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>driver</span><span class=p>,</span> <span class=mi>10</span><span class=p>)</span>
+<span class=ln>50</span>            <span class=c1># 等待漫画图片加载完成</span>
+<span class=ln>51</span>            <span class=n>wait</span><span class=o>.</span><span class=n>until</span><span class=p>(</span><span class=n>EC</span><span class=o>.</span><span class=n>presence_of_element_located</span><span class=p>((</span><span class=n>By</span><span class=o>.</span><span class=n>ID</span><span class=p>,</span> <span class=s2>&#34;qTcms_pic&#34;</span><span class=p>)))</span>
+<span class=ln>52</span>            <span class=n>html</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>driver</span><span class=o>.</span><span class=n>page_source</span>
+<span class=ln>53</span>            <span class=n>imgSrc</span> <span class=o>=</span> <span class=n>BeautifulSoup</span><span class=p>(</span><span class=n>html</span><span class=p>)</span><span class=o>.</span><span class=n>find</span><span class=p>(</span><span class=s1>&#39;img&#39;</span><span class=p>)[</span><span class=s1>&#39;src&#39;</span><span class=p>]</span>
+<span class=ln>54</span>            <span class=c1># 从网页中提取的图片地址需要做一次解码</span>
+<span class=ln>55</span>            <span class=n>realSrc</span> <span class=o>=</span> <span class=n>urllib</span><span class=o>.</span><span class=n>parse</span><span class=o>.</span><span class=n>unquote</span><span class=p>(</span><span class=n>imgSrc</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s1>&#39;?&#39;</span><span class=p>)[</span><span class=mi>1</span><span class=p>]</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s1>&#39;&amp;&#39;</span><span class=p>)[</span><span class=mi>0</span><span class=p>]</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s1>&#39;=&#39;</span><span class=p>)[</span><span class=mi>1</span><span class=p>])</span>
+<span class=ln>56</span>            <span class=n>images</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>realSrc</span><span class=p>)</span>
+<span class=ln>57</span>            <span class=n>page</span> <span class=o>+=</span> <span class=mi>1</span>
+<span class=ln>58</span>        <span class=k>return</span> <span class=n>images</span>
+<span class=ln>59</span>    
+<span class=ln>60</span>    <span class=c1># 获取指定章节页数</span>
+<span class=ln>61</span>    <span class=k>def</span> <span class=nf>getPageOfChapter</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>url</span><span class=p>):</span>
+<span class=ln>62</span>        <span class=bp>self</span><span class=o>.</span><span class=n>driver</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=p>)</span>
+<span class=ln>63</span>        <span class=n>wait</span> <span class=o>=</span> <span class=n>WebDriverWait</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>driver</span><span class=p>,</span> <span class=mi>10</span><span class=p>)</span>
+<span class=ln>64</span>        <span class=c1># 等待页数加载完成</span>
+<span class=ln>65</span>        <span class=n>wait</span><span class=o>.</span><span class=n>until</span><span class=p>(</span><span class=n>EC</span><span class=o>.</span><span class=n>presence_of_element_located</span><span class=p>((</span><span class=n>By</span><span class=o>.</span><span class=n>ID</span><span class=p>,</span> <span class=s2>&#34;k_pageSelect&#34;</span><span class=p>)))</span>
+<span class=ln>66</span>        <span class=n>html</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>driver</span><span class=o>.</span><span class=n>page_source</span>
+<span class=ln>67</span>        <span class=n>opts</span> <span class=o>=</span> <span class=nb>list</span><span class=p>(</span><span class=n>BeautifulSoup</span><span class=p>(</span><span class=n>html</span><span class=p>)</span><span class=o>.</span><span class=n>find</span><span class=p>(</span><span class=s1>&#39;select&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>children</span><span class=p>)</span>
+<span class=ln>68</span>        <span class=k>return</span> <span class=nb>int</span><span class=p>(</span><span class=n>opts</span><span class=p>[</span><span class=o>-</span><span class=mi>1</span><span class=p>][</span><span class=s1>&#39;value&#39;</span><span class=p>])</span>
+<span class=ln>69</span>    
+<span class=ln>70</span>    <span class=c1># 下载漫画图片</span>
+<span class=ln>71</span>    <span class=k>def</span> <span class=nf>getImage</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>chapterPath</span><span class=p>,</span> <span class=n>index</span><span class=p>,</span> <span class=n>url</span><span class=p>):</span>
+<span class=ln>72</span>        <span class=n>imagePath</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>chapterPath</span><span class=p>,</span> <span class=nb>str</span><span class=p>(</span><span class=n>index</span><span class=p>)</span> <span class=o>+</span> <span class=s1>&#39;.jpg&#39;</span><span class=p>)</span>
+<span class=ln>73</span>        <span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=n>imagePath</span><span class=p>,</span> <span class=s1>&#39;wb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>fp</span><span class=p>:</span>
+<span class=ln>74</span>            <span class=n>response</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>session</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=p>)</span>
+<span class=ln>75</span>            <span class=n>response</span><span class=o>.</span><span class=n>raise_for_status</span><span class=p>()</span>
+<span class=ln>76</span>            <span class=n>fp</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>response</span><span class=o>.</span><span class=n>content</span><span class=p>)</span>
+<span class=ln>77</span>    
+<span class=ln>78</span>    <span class=c1># 公共入口</span>
+<span class=ln>79</span>    <span class=k>def</span> <span class=nf>run</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>url</span><span class=p>):</span>
+<span class=ln>80</span>        <span class=n>chapters</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>getAllChapters</span><span class=p>(</span><span class=n>url</span><span class=p>)</span>
+<span class=ln>81</span>        <span class=k>for</span> <span class=n>chapter</span><span class=p>,</span> <span class=n>url</span> <span class=ow>in</span> <span class=n>chapters</span><span class=o>.</span><span class=n>items</span><span class=p>():</span>
+<span class=ln>82</span>            <span class=n>images</span> <span class=o>=</span> <span class=n>spider</span><span class=o>.</span><span class=n>getChapter</span><span class=p>(</span><span class=n>url</span><span class=p>)</span>
+<span class=ln>83</span>            <span class=c1># 为每一个章节建立文件夹</span>
+<span class=ln>84</span>            <span class=n>chapterPath</span> <span class=o>=</span> <span class=s1>&#39;./download/</span><span class=si>{chapter}</span><span class=s1>/&#39;</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=n>chapter</span><span class=o>=</span><span class=n>chapter</span><span class=p>)</span>
+<span class=ln>85</span>            <span class=k>if</span> <span class=p>(</span><span class=ow>not</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>exists</span><span class=p>(</span><span class=n>chapterPath</span><span class=p>)):</span>
+<span class=ln>86</span>                <span class=n>os</span><span class=o>.</span><span class=n>mkdir</span><span class=p>(</span><span class=n>chapterPath</span><span class=p>)</span>
+<span class=ln>87</span>            <span class=c1># 使用多线程下载图片</span>
+<span class=ln>88</span>            <span class=n>args</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=ln>89</span>            <span class=k>for</span> <span class=n>index</span><span class=p>,</span> <span class=n>url</span> <span class=ow>in</span> <span class=nb>enumerate</span><span class=p>(</span><span class=n>images</span><span class=p>):</span>
+<span class=ln>90</span>                <span class=n>args</span><span class=o>.</span><span class=n>append</span><span class=p>((</span><span class=kc>None</span><span class=p>,{</span><span class=s1>&#39;chapterPath&#39;</span><span class=p>:</span><span class=n>chapterPath</span><span class=p>,</span> <span class=s1>&#39;url&#39;</span><span class=p>:</span><span class=n>url</span><span class=p>,</span> <span class=s1>&#39;index&#39;</span><span class=p>:</span><span class=n>index</span><span class=p>}))</span>
+<span class=ln>91</span>            <span class=n>pool</span> <span class=o>=</span> <span class=n>threadpool</span><span class=o>.</span><span class=n>ThreadPool</span><span class=p>(</span><span class=nb>max</span><span class=p>(</span><span class=mi>10</span><span class=p>,</span> <span class=nb>len</span><span class=p>(</span><span class=n>images</span><span class=p>)))</span> 
+<span class=ln>92</span>            <span class=n>requests</span> <span class=o>=</span> <span class=n>threadpool</span><span class=o>.</span><span class=n>makeRequests</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>getImage</span><span class=p>,</span> <span class=n>args</span><span class=p>)</span> 
+<span class=ln>93</span>            <span class=p>[</span><span class=n>pool</span><span class=o>.</span><span class=n>putRequest</span><span class=p>(</span><span class=n>req</span><span class=p>)</span> <span class=k>for</span> <span class=n>req</span> <span class=ow>in</span> <span class=n>requests</span><span class=p>]</span> 
+<span class=ln>94</span>            <span class=n>pool</span><span class=o>.</span><span class=n>wait</span><span class=p>()</span>
+<span class=ln>95</span>
+<span class=ln>96</span><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>
+<span class=ln>97</span>    <span class=n>spider</span> <span class=o>=</span> <span class=n>DemonSlayer</span><span class=p>(</span><span class=s1>&#39;http://www.7edm.com/&#39;</span><span class=p>)</span>
+<span class=ln>98</span>    <span class=n>spider</span><span class=o>.</span><span class=n>run</span><span class=p>(</span><span class=s1>&#39;http://www.7edm.com/rexue/guimiezhiren/&#39;</span><span class=p>)</span>
+</code></pre></div><p>在这里，需要注意的 Firefox 驱动，即<code>GeckoDriver</code>需要提前安装好。同时，确保 Firefox 主程序和驱动程序所在的目录均已配置到环境变量<code>Path</code>中。在有的资料中提到，<code>GeckoDriver</code>需要和 Firefox 主程序在同一个目录底下，不过经过博主的验证，需要放在 Python 主程序的根目录底下。这个驱动程序可以从这里下载：<a class=link href=https://github.com/mozilla/geckodriver/releases/ target=_blank rel=noopener>https://github.com/mozilla/geckodriver/releases/</a>。当然，如果你更喜欢使用 Chrome，只需要安装 Chrome 的驱动即可，完全遵从个人意愿即可。在运行这个脚本后，我们就可以获得完整的鬼滅の刃漫画：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/15/437P6UxrGWsAlNp.png>
+<img src=/https:/i.loli.net/2020/12/15/437P6UxrGWsAlNp.png loading=lazy alt=鬼灭之刃204话>
+</a>
+<figcaption>鬼灭之刃204话</figcaption>
+</figure></p>
+<h1 id=在-kindle-上追番>在 Kindle 上“追”番</h1>
+<p>好了，到现在为止，我们实现了本文的第一个小目标，即漫画的抓取。那么，在抓取到漫画以后，我们可以做什么呢？可能会有读者朋友忍不住吐槽，“废话，漫画除了看还能干什么”。话虽如此，可这样一张张图片显然不能让我们方便地看漫画啊！早就听说在 Kindle 上可以看漫画，可一直没有真正尝试过，可能是因为我还不够中二吧！所以，接下来，我们来考虑将这些图片制作成电子书。Kindle 本身支持像 mobi、docx/doc、pdf 等等这样的格式，这里我们选择一种最简单的方式，利用<code>PyMuPDF</code>这个库来生成 PDF 文件，一起来看具体的代码实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>def</span> <span class=nf>createPdf</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>chapterPath</span><span class=p>):</span>
+<span class=ln> 2</span>    <span class=n>doc</span> <span class=o>=</span> <span class=n>fitz</span><span class=o>.</span><span class=n>open</span><span class=p>()</span>
+<span class=ln> 3</span>    <span class=n>pdfPath</span> <span class=o>=</span> <span class=s1>&#39;./ebook/&#39;</span> <span class=o>+</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>basename</span><span class=p>(</span><span class=n>chapterPath</span><span class=p>)</span> <span class=o>+</span> <span class=s1>&#39;.pdf&#39;</span>
+<span class=ln> 4</span>    <span class=k>for</span> <span class=n>image</span> <span class=ow>in</span> <span class=nb>sorted</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>listdir</span><span class=p>(</span><span class=n>chapterPath</span><span class=p>)):</span>
+<span class=ln> 5</span>        <span class=n>filePath</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>chapterPath</span><span class=p>,</span> <span class=n>image</span><span class=p>)</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span>        <span class=c1># 为每一张图片创建一个单独的PDF</span>
+<span class=ln> 8</span>        <span class=n>imgdoc</span> <span class=o>=</span> <span class=n>fitz</span><span class=o>.</span><span class=n>open</span><span class=p>(</span><span class=n>filePath</span><span class=p>)</span>
+<span class=ln> 9</span>        <span class=n>pdfbytes</span> <span class=o>=</span> <span class=n>imgdoc</span><span class=o>.</span><span class=n>convertToPDF</span><span class=p>()</span>
+<span class=ln>10</span>        <span class=n>imgpdf</span> <span class=o>=</span> <span class=n>fitz</span><span class=o>.</span><span class=n>open</span><span class=p>(</span><span class=s2>&#34;pdf&#34;</span><span class=p>,</span> <span class=n>pdfbytes</span><span class=p>)</span>
+<span class=ln>11</span>            
+<span class=ln>12</span>        <span class=c1># 插入当前页</span>
+<span class=ln>13</span>        <span class=n>doc</span><span class=o>.</span><span class=n>insertPDF</span><span class=p>(</span><span class=n>imgpdf</span><span class=p>)</span>  <span class=c1># 将当前页插</span>
+<span class=ln>14</span>        
+<span class=ln>15</span>    <span class=c1># 保存PDF</span>
+<span class=ln>16</span>    <span class=n>doc</span><span class=o>.</span><span class=n>save</span><span class=p>(</span><span class=n>pdfPath</span><span class=p>)</span>
+</code></pre></div><p>经常使用 Kindle 的朋友，一定对它的邮箱传书功能非常熟悉，这意味着我们此基础上，将生成的 PDF 文件直接推送到 Kindle 上，而在 Python 中发送邮件则是非常简单的，这一点我们不再赘述，那到底能不能实现我们这个想法呢？显然可以，我们一起来看看效果：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/15/sRfWlTZSCzaLQJ9.jpg>
+<img src=/https:/i.loli.net/2020/12/15/sRfWlTZSCzaLQJ9.jpg loading=lazy alt=由PyMuPDF生成的“漫画书”>
+</a>
+<figcaption>由PyMuPDF生成的“漫画书”</figcaption>
+</figure></p>
+<p>我们知道 Kindle 对 PDF 的支持是有点差的，主要体现在它不支持重排，在我们这个例子中，我们可以发现图片是横屏显示的，或许是因为我的 Kindle 屏幕太小，或许是因为我没有一个 Pad，或许是因为图片尺寸无法适配，总之，它给人的体验是有点不舒服。博主注意到，Kindle 官方提供了一个漫画书制作软件<code>Kindle Comic Creator</code>，它可以生成 mobi 格式的电子书。作为对比，我们来看一下它在 Kindle 上的显示效果：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/15/o5EzkGvsWchniYf.jpg>
+<img src=/https:/i.loli.net/2020/12/15/o5EzkGvsWchniYf.jpg loading=lazy alt="由Kindle Comic Creator生成的“漫画书”">
+</a>
+<figcaption>由Kindle Comic Creator生成的“漫画书”</figcaption>
+</figure></p>
+<p>果然还是 Kindle 自家的格式更好一点，有同样需求的小伙伴们，不妨试一试这个软件！现在，我们终于可以在 Kindle 上“刷”漫画了，快乐肥宅水，安排！</p>
+<h1 id=让漫画动起来>让漫画“动”起来</h1>
+<p>一旦看过动画以后，再去看漫画，总觉得没那味儿，果然，<strong>“没声音再好的戏都出不来”</strong>，除了想念片头 OP 以外，更想念声优们绘声绘色的配音。有人说，博主你可以戴上耳机，放着片头 OP，刷着漫画啊！哎，你可真是小机灵鬼！可作为一名技术宅，我们当然要追求手工耿的无用之美，不就是想看有声音有画面的视频吗？安排！所以，下面我们来通过这些图片生成视频，这里主要用到<code>opencv-python</code>和<code>MoviePy</code>两个库，前者可以通过<code>OpenCV</code>合成视频，而后者则可以对视频进行剪辑，例如加入片头、片尾、背景音乐等等。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>def</span> <span class=nf>createVideo</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>chapterPath</span><span class=p>):</span>
+<span class=ln> 2</span>    <span class=c1># OpenCV创建视频</span>
+<span class=ln> 3</span>    <span class=n>videoFps</span> <span class=o>=</span> <span class=mi>40</span> 
+<span class=ln> 4</span>    <span class=n>videoSize</span> <span class=o>=</span> <span class=p>(</span><span class=mi>655</span><span class=p>,</span> <span class=mi>948</span><span class=p>)</span> 
+<span class=ln> 5</span>    <span class=n>videoPath</span> <span class=o>=</span> <span class=s1>&#39;./video/&#39;</span> <span class=o>+</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>basename</span><span class=p>(</span><span class=n>chapterPath</span><span class=p>)</span> <span class=o>+</span> <span class=s1>&#39;.avi&#39;</span>
+<span class=ln> 6</span>    <span class=n>videoWriter</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>VideoWriter</span><span class=p>(</span><span class=n>videoPath</span><span class=p>,</span> 
+<span class=ln> 7</span>        <span class=n>cv2</span><span class=o>.</span><span class=n>VideoWriter_fourcc</span><span class=p>(</span><span class=s1>&#39;I&#39;</span><span class=p>,</span> <span class=s1>&#39;4&#39;</span><span class=p>,</span> <span class=s1>&#39;2&#39;</span><span class=p>,</span> <span class=s1>&#39;0&#39;</span><span class=p>),</span> 
+<span class=ln> 8</span>        <span class=n>videoFps</span><span class=p>,</span> 
+<span class=ln> 9</span>        <span class=n>videoSize</span>
+<span class=ln>10</span>    <span class=p>)</span>
+<span class=ln>11</span>
+<span class=ln>12</span>    <span class=k>for</span> <span class=n>image</span> <span class=ow>in</span> <span class=nb>sorted</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>listdir</span><span class=p>(</span><span class=n>chapterPath</span><span class=p>)):</span> 
+<span class=ln>13</span>        <span class=c1># 读取每张图片，并重复写40帧    </span>
+<span class=ln>14</span>        <span class=n>image_path</span> <span class=o>=</span> <span class=n>chapterPath</span> <span class=o>+</span> <span class=s1>&#39;/&#39;</span> <span class=o>+</span> <span class=n>image</span>
+<span class=ln>15</span>        <span class=n>bg</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>imread</span><span class=p>(</span><span class=s1>&#39;bg.jpg&#39;</span><span class=p>)</span>
+<span class=ln>16</span>        <span class=n>max_h</span><span class=p>,</span> <span class=n>max_w</span><span class=p>,</span> <span class=n>_</span> <span class=o>=</span> <span class=n>bg</span><span class=o>.</span><span class=n>shape</span>
+<span class=ln>17</span>        <span class=n>img</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>imdecode</span><span class=p>(</span><span class=n>np</span><span class=o>.</span><span class=n>fromfile</span><span class=p>(</span><span class=n>image_path</span> <span class=p>,</span><span class=n>dtype</span><span class=o>=</span><span class=n>np</span><span class=o>.</span><span class=n>uint8</span><span class=p>),</span><span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+<span class=ln>18</span>        <span class=n>img_h</span><span class=p>,</span> <span class=n>img_w</span><span class=p>,</span> <span class=n>_</span> <span class=o>=</span> <span class=n>img</span><span class=o>.</span><span class=n>shape</span>
+<span class=ln>19</span>        <span class=n>scale</span> <span class=o>=</span> <span class=n>max_h</span> <span class=o>/</span> <span class=n>img_h</span>
+<span class=ln>20</span>        <span class=n>new_w</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>img_w</span> <span class=o>*</span> <span class=n>scale</span><span class=p>)</span>
+<span class=ln>21</span>        <span class=n>new_h</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>img_h</span> <span class=o>*</span> <span class=n>scale</span><span class=p>)</span>
+<span class=ln>22</span>        <span class=n>img</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>resize</span><span class=p>(</span><span class=n>img</span> <span class=p>,(</span><span class=n>new_w</span> <span class=p>,</span><span class=n>new_h</span><span class=p>))</span>
+<span class=ln>23</span>        <span class=n>offsetX</span> <span class=o>=</span> <span class=nb>int</span><span class=p>((</span><span class=n>max_w</span> <span class=o>-</span> <span class=n>new_w</span><span class=p>)</span> <span class=o>/</span> <span class=mi>2</span><span class=p>)</span>
+<span class=ln>24</span>        <span class=n>offsetY</span> <span class=o>=</span> <span class=nb>int</span><span class=p>((</span><span class=n>max_h</span> <span class=o>-</span> <span class=n>new_h</span><span class=p>)</span> <span class=o>/</span> <span class=mi>2</span><span class=p>)</span>
+<span class=ln>25</span>        <span class=n>bg</span><span class=p>[</span><span class=n>offsetY</span><span class=p>:</span><span class=n>offsetY</span> <span class=o>+</span> <span class=n>img</span><span class=o>.</span><span class=n>shape</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span> <span class=n>offsetX</span><span class=p>:</span><span class=n>offsetX</span> <span class=o>+</span> <span class=n>img</span><span class=o>.</span><span class=n>shape</span><span class=p>[</span><span class=mi>1</span><span class=p>]]</span> <span class=o>=</span> <span class=n>img</span>
+<span class=ln>26</span>
+<span class=ln>27</span>        <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>videoFps</span><span class=p>):</span>
+<span class=ln>28</span>            <span class=n>videoWriter</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>bg</span><span class=p>)</span>
+<span class=ln>29</span>    <span class=n>videoWriter</span><span class=o>.</span><span class=n>release</span><span class=p>()</span>
+<span class=ln>30</span>        
+<span class=ln>31</span>    <span class=c1># 为当前视频加入片头/尾</span>
+<span class=ln>32</span>    <span class=n>videoClip</span> <span class=o>=</span> <span class=n>VideoFileClip</span><span class=p>(</span><span class=n>videoPath</span><span class=p>)</span>
+<span class=ln>33</span>    <span class=n>titleClip</span> <span class=o>=</span> <span class=n>VideoFileClip</span><span class=p>(</span><span class=s1>&#39;./title.mp4&#39;</span><span class=p>)</span>
+<span class=ln>34</span>    <span class=n>finalClip</span> <span class=o>=</span> <span class=n>concatenate_videoclips</span><span class=p>([</span>
+<span class=ln>35</span>        <span class=n>titleClip</span><span class=o>.</span><span class=n>subclip</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=mi>12</span><span class=p>),</span> 
+<span class=ln>36</span>        <span class=n>videoClip</span><span class=p>,</span>
+<span class=ln>37</span>        <span class=n>titleClip</span><span class=o>.</span><span class=n>subclip</span><span class=p>(</span><span class=mi>70</span><span class=p>,</span> <span class=mi>72</span><span class=p>),</span>
+<span class=ln>38</span>        <span class=n>titleClip</span><span class=o>.</span><span class=n>subclip</span><span class=p>(</span><span class=mi>85</span><span class=p>,</span> <span class=mi>89</span><span class=p>),</span>
+<span class=ln>39</span>    <span class=p>])</span>
+<span class=ln>40</span>    
+<span class=ln>41</span>    <span class=c1># 为当前视频增加BGM</span>
+<span class=ln>42</span>    <span class=n>audioClip</span> <span class=o>=</span> <span class=n>AudioFileClip</span><span class=p>(</span><span class=s1>&#39;BGM.mp3&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>subclip</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>finalClip</span><span class=o>.</span><span class=n>duration</span><span class=p>)</span>
+<span class=ln>43</span>    <span class=n>finalClip</span><span class=o>.</span><span class=n>audio</span> <span class=o>=</span> <span class=n>audioClip</span>
+<span class=ln>44</span>    <span class=n>finalClip</span><span class=o>.</span><span class=n>write_videofile</span><span class=p>(</span><span class=s1>&#39;output.avi&#39;</span><span class=p>,</span> <span class=n>codec</span><span class=o>=</span><span class=s1>&#39;libvpx&#39;</span><span class=p>)</span>
+</code></pre></div><p>在使用 OpenCV 合成视频这一步，和大多数第一次接触 OpenCV 的人一样，博主在这里遇到了很多的问题，例如，最典型的问题有：OpenCV 合成的视频无法打开、OpenCV 无法使用中文路径、OpenCV 合成的视频长度较短等等。所以，在这里我简单做一下说明，首先，检查下视频画面的宽/高是否与图片的宽/高一致。其次，选择合适的编码器，在使用 OpenCV 保存视频的时候，需要综合考虑 FOURCC 和视频格式两个因素，前提是当前系统已经安装了对应的编码器，在 Windows 下推荐大家使用 DIVX。最后，关于中文路径，大部分的解决方案都是引入 NumPy，代码片段如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln>1</span><span class=c1># 读取</span>
+<span class=ln>2</span><span class=n>cv_img</span> <span class=o>=</span> <span class=n>cv2</span><span class=o>.</span><span class=n>imdecode</span><span class=p>(</span><span class=n>np</span><span class=o>.</span><span class=n>fromfile</span><span class=p>(</span><span class=n>file_path</span><span class=p>,</span> <span class=n>dtype</span><span class=o>=</span><span class=n>np</span><span class=o>.</span><span class=n>uint8</span><span class=p>),</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+<span class=ln>3</span><span class=c1># 写入</span>
+<span class=ln>4</span><span class=n>cv2</span><span class=o>.</span><span class=n>imencode</span><span class=p>(</span><span class=s1>&#39;.jpg&#39;</span><span class=p>,</span> <span class=n>cv_img</span><span class=p>)[</span><span class=mi>1</span><span class=p>]</span><span class=o>.</span><span class=n>tofile</span><span class=p>(</span><span class=n>file_path</span><span class=p>)</span>
+</code></pre></div><p>经过博客的验证，这个方案的确可以解决，不过同样有缺点，<code>imdecode()</code>方法读取的是 RGB，而 OpenCV 需要的则是 BGR，需要做一次转换，而转换则意味着会损失图片信息。所以，如果在意生成的视频质量的话，最好还是放在英文的路径下面。</p>
+<p>{% dplayer &ldquo;url=https://blog.yuanpei.me/assets/videos/output.mp4&rdquo; &ldquo;loop=yes&rdquo; &ldquo;theme=#FADFA3&rdquo; &ldquo;autoplay=false&rdquo; &ldquo;token=tokendemo&rdquo; %}</p>
+<p>好了，现在来看看效果，当片头 OP 响起的时候，有没有觉得，那种熟悉感觉的又回来了(<strong>PS：此处可与飞驰人生梦幻联动</strong>)，虽然没有配音，还是有一点视频的样子的。我经常在 B 站看到那种，黑色背景 + 白色文字的视频，虽然没有特别复杂的转场动画，可搭配上小爱同学或者 Siri 同学的声音后，居然感觉还不错。知乎上同样提供了文章转视频的功能，所以，我在想这是不是可以作为一个思路，作为一个努力寻找流量方向的技术博客，我好累啊(逃……</p>
+<p>这个思路，其实还可以用来制作表情包，作为一部拥有大量“名场面”的动漫作品，它为博主带来了不少的“燃点”和“笑点”，下面例举一二供大家欣赏：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/15/Kawyp8zO4MZDHQS.jpg>
+<img src=/https:/i.loli.net/2020/12/15/Kawyp8zO4MZDHQS.jpg loading=lazy alt=世界名画>
+</a>
+<figcaption>世界名画</figcaption>
+</figure></p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/15/CEf7B5UMg41Kiw6.jpg>
+<img src=/https:/i.loli.net/2020/12/15/CEf7B5UMg41Kiw6.jpg loading=lazy alt=安塞腰鼓>
+</a>
+<figcaption>安塞腰鼓</figcaption>
+</figure></p>
+<p>对于静态表情包，通常只需要用到<code>PIL</code>库就可以完成，下面是富冈义勇迫害时间(逃：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln>1</span><span class=n>image</span> <span class=o>=</span> <span class=n>Image</span><span class=o>.</span><span class=n>open</span><span class=p>(</span><span class=s1>&#39;鬼灭之刃-09.jpg&#39;</span><span class=p>)</span>
+<span class=ln>2</span><span class=n>width</span><span class=p>,</span> <span class=n>height</span> <span class=o>=</span> <span class=n>image</span><span class=o>.</span><span class=n>size</span>
+<span class=ln>3</span><span class=n>textFont</span> <span class=o>=</span> <span class=n>ImageFont</span><span class=o>.</span><span class=n>truetype</span><span class=p>(</span><span class=s1>&#39;Deng.ttf&#39;</span><span class=p>,</span> <span class=mi>18</span><span class=p>)</span>
+<span class=ln>4</span><span class=n>imageDraw</span> <span class=o>=</span> <span class=n>ImageDraw</span><span class=o>.</span><span class=n>Draw</span><span class=p>(</span><span class=n>image</span><span class=p>)</span>
+<span class=ln>5</span><span class=n>textPos</span> <span class=o>=</span> <span class=p>(</span><span class=n>width</span> <span class=o>*</span> <span class=mf>0.34</span><span class=p>,</span> <span class=n>height</span> <span class=o>*</span> <span class=mf>0.8</span><span class=p>)</span>
+<span class=ln>6</span><span class=n>text</span> <span class=o>=</span> <span class=s1>&#39;我感觉我没有被讨厌&#39;</span>
+<span class=ln>7</span><span class=n>imageDraw</span><span class=o>.</span><span class=n>text</span><span class=p>(</span><span class=n>textPos</span><span class=p>,</span> <span class=n>text</span><span class=p>,</span> <span class=n>fill</span><span class=o>=</span><span class=s1>&#39;#fff&#39;</span><span class=p>,</span> <span class=n>font</span><span class=o>=</span><span class=n>textFont</span><span class=p>,</span> <span class=n>align</span><span class=o>=</span><span class=s1>&#39;left&#39;</span><span class=p>)</span>
+<span class=ln>8</span><span class=n>image</span><span class=o>.</span><span class=n>save</span><span class=p>(</span><span class=s1>&#39;富岗义勇表情包.jpg&#39;</span><span class=p>,</span><span class=s1>&#39;jpeg&#39;</span><span class=p>)</span>
+</code></pre></div><p>如此，我们就可以得到下面的名场面：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/15/sm3EBrnQg4w9XW8.jpg>
+<img src=/https:/i.loli.net/2020/12/15/sm3EBrnQg4w9XW8.jpg loading=lazy alt=我感觉我没有被讨厌>
+</a>
+<figcaption>我感觉我没有被讨厌</figcaption>
+</figure></p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/15/vspnH9OjyiKzL5u.jpg>
+<img src=/https:/i.loli.net/2020/12/15/vspnH9OjyiKzL5u.jpg loading=lazy alt=冰柱表示不想和你说话>
+</a>
+<figcaption>冰柱表示不想和你说话</figcaption>
+</figure></p>
+<p>而对于动态表情包，我们可以考虑使用<code>imageio</code>和<code>MoviePy</code>，它们都可以从图片或者视频来生成 GIF，一起来看下面的例子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>def</span> <span class=nf>createGif</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>framesPath</span><span class=p>,</span> <span class=n>gifPath</span><span class=p>,</span> <span class=n>duration</span><span class=o>=</span><span class=mf>0.5</span><span class=p>):</span>
+<span class=ln> 2</span>    <span class=c1># 读取图片</span>
+<span class=ln> 3</span>    <span class=n>frames</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=ln> 4</span>    <span class=k>for</span> <span class=n>image_name</span> <span class=ow>in</span> <span class=nb>sorted</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>listdir</span><span class=p>(</span><span class=n>framesPath</span><span class=p>)):</span>
+<span class=ln> 5</span>        <span class=n>image_path</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>framesPath</span><span class=p>,</span> <span class=n>image_name</span><span class=p>)</span>
+<span class=ln> 6</span>        <span class=n>frames</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>imageio</span><span class=o>.</span><span class=n>imread</span><span class=p>(</span><span class=n>image_path</span><span class=p>))</span>
+<span class=ln> 7</span>
+<span class=ln> 8</span>    <span class=c1># 保存GIF</span>
+<span class=ln> 9</span>    <span class=n>imageio</span><span class=o>.</span><span class=n>mimsave</span><span class=p>(</span><span class=n>gifPath</span><span class=p>,</span> <span class=n>frames</span><span class=p>,</span> <span class=s1>&#39;GIF&#39;</span><span class=p>,</span> <span class=n>duration</span><span class=o>=</span><span class=n>duration</span><span class=p>)</span>
+<span class=ln>10</span>
+<span class=ln>11</span><span class=c1># 读取一组图片并生成GIF</span>
+<span class=ln>12</span><span class=n>handler</span> <span class=o>=</span> <span class=n>ImageHandler</span><span class=p>()</span>
+<span class=ln>13</span><span class=n>handler</span><span class=o>.</span><span class=n>createGif</span><span class=p>(</span><span class=s1>&#39;./frames&#39;</span><span class=p>,</span> <span class=s1>&#39;登峰造极.gif&#39;</span><span class=p>)</span>
+</code></pre></div><p>这里唯一需要注意的就是，<code>imageio</code>依赖于<code>Pillow</code>:</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/15/W83pPnBMF7C6G4w.gif>
+<img src=/https:/i.loli.net/2020/12/15/W83pPnBMF7C6G4w.gif loading=lazy alt=集中一点，登峰造极>
+</a>
+<figcaption>集中一点，登峰造极</figcaption>
+</figure></p>
+<p>如果使用<code>MoviePy</code>来生成 GIF，则可以通过<code>VideoFileClip</code>或者<code>ImageSequenceClip</code>来分别从视频和图片创建 GIF。同样，这里有一个简单的例子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=c1># 从一组图片并生成GIF和视频</span>
+<span class=ln> 2</span><span class=n>fps</span> <span class=o>=</span> <span class=mf>0.25</span>
+<span class=ln> 3</span><span class=n>sequence</span> <span class=o>=</span> <span class=n>ImageSequenceClip</span><span class=p>(</span><span class=s1>&#39;./frames&#39;</span><span class=p>,</span> <span class=n>fps</span><span class=p>)</span>
+<span class=ln> 4</span><span class=n>sequence</span><span class=o>.</span><span class=n>write_gif</span><span class=p>(</span><span class=s1>&#39;登峰造极.gif&#39;</span><span class=p>)</span>
+<span class=ln> 5</span><span class=n>sequence</span><span class=o>.</span><span class=n>write_videofile</span><span class=p>(</span><span class=s1>&#39;登峰造极.avi&#39;</span><span class=p>,</span> <span class=n>codec</span><span class=o>=</span><span class=s1>&#39;libvpx&#39;</span><span class=p>)</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span><span class=c1># 从视频中截取指定片段生成GIF</span>
+<span class=ln> 8</span><span class=n>videoClip</span> <span class=o>=</span> <span class=n>VideoFileClip</span><span class=p>(</span><span class=s1>&#39;input.mp4&#39;</span><span class=p>)</span>
+<span class=ln> 9</span><span class=n>videoClip</span> <span class=o>=</span> <span class=n>videoClip</span><span class=o>.</span><span class=n>subclip</span><span class=p>(</span><span class=mi>33</span><span class=p>,</span> <span class=mi>45</span><span class=p>)</span>
+<span class=ln>10</span><span class=n>videoClip</span><span class=o>.</span><span class=n>write_gif</span><span class=p>(</span><span class=s1>&#39;霹雳一闪.gif&#39;</span><span class=p>)</span>
+</code></pre></div><p>在这里，我选取的是，我个人非常喜欢的角色——我妻善逸的名场面“霹雳一闪”：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/12/15/37DlY9qZ8rkLgEG.gif>
+<img src=/https:/i.loli.net/2020/12/15/37DlY9qZ8rkLgEG.gif loading=lazy alt=霹雳一闪>
+</a>
+<figcaption>霹雳一闪</figcaption>
+</figure></p>
+<p>至此，我们“绞尽脑汁”、“千方百计”、“搜肠刮肚”地想到了各种“刷”鬼滅の刃的方法，总算为这份中二信仰充了值，大家还有什么好的点子吗？欢迎大家在评论区<strong>留言、点赞、收藏、一键三连</strong>，我仿佛嗅到了 Bilibili 的味道(逃……</p>
+<h1 id=本文小结>本文小结</h1>
+<p>坦白来讲，这篇博客的确有蹭热度的嫌疑，不过以鬼灭之刃在日本妇孺皆知的火热程度，足以令人们在这颇感失落的疫情背景下为之一振，甚至于连日本首相菅义伟在国会质询时，都引用了“全集中呼吸”这一经典台词。<strong>“纵有疾风起，人生不言弃”</strong>，热血少年漫告诉我们，在面对一个又一个的挫折的时候，不要沉溺于昨天的回忆，去勇敢地接受现实，直面惨淡的人生，这又何尝不是我们面对生活的态度呢？不管是旷日持久的疫情，还是似曾相识的失业，人生的道路上还有数不尽的“魑魅魍魉”呢！希望你活得像炭治郎一样乐观善良，像我妻善逸一样勇敢坚毅，像伊之助一样“猪”突猛进。如果这篇博客里所介绍的“追”动漫的方式，能让大家感到快乐和有趣的话，欢迎大家在评论区留言、点赞、收藏、一键三连。以上，这就是我，作为一个技术宅，在“追”动漫方面所做出的努力。少年，想加入鬼杀队吗？</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83/>鬼滅の刃</a>
+<a href=/tags/kindle/>Kindle</a>
+<a href=/tags/%E5%8A%A8%E6%BC%AB/>动漫</a>
+<a href=/tags/opencv/>OpenCV</a>
+<a href=/tags/python/>Python</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-python-%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB%E9%98%B2%E7%96%AB%E5%81%A5%E5%BA%B7%E7%A0%81/>
+<div class=article-details>
+<h2 class=article-title>使用 Python 自动识别防疫健康码</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E8%A7%86%E9%A2%91%E6%98%AF%E4%B8%8D%E8%83%BD-p-%E7%9A%84%E7%B3%BB%E5%88%97opencv-%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/>
+<div class=article-details>
+<h2 class=article-title>视频是不能 P 的系列：OpenCV 人脸检测</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-python-%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/>
+<div class=article-details>
+<h2 class=article-title>使用 Python 开发插件化应用程序</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8E-python-%E5%AE%9E%E7%8E%B0-windows-%E4%B8%8B%E5%A3%81%E7%BA%B8%E5%88%87%E6%8D%A2%E5%8A%9F%E8%83%BD/>
+<div class=article-details>
+<h2 class=article-title>基于 Python 实现 Windows 下壁纸切换功能</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%90%86%E8%A7%A3-python-%E8%A3%85%E9%A5%B0%E5%99%A8/>
+<div class=article-details>
+<h2 class=article-title>深入浅出理解 Python 装饰器</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#漫画的抓取>漫画的抓取</a></li>
+<li><a href=#在-kindle-上追番>在 Kindle 上“追”番</a></li>
+<li><a href=#让漫画动起来>让漫画“动”起来</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

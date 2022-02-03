@@ -1,0 +1,478 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="在上一篇文章中，博主带领大家一起深入了解 ConcurrencyLimiter 这个中间件，正当我得意洋洋地向 Catcher Wong 大佬吹嘘这一点小收获时，大佬一脸嫌弃地说，一个单机版的方案有什么好得意的啊。大佬言下之意，显然是指，这个中间件在分布式环境中毫无用武之地。其实，你只需要稍微想一下，就能想明白这个问题。毕竟，它只是通过SeamphoreSlim控制线程数量而已，一旦放到分布式环境中，这个并发控制就被大大地削弱。所以，在今天这篇文章中，博主会带领大家一起“探案” ASP.NET Core 中的限流中间件 AspNetCoreRateLimite，希望大家可以从中感悟到不一样的东西。对我而言，这可能是人到中年的焦虑感所催生出来的一种源动力，同时亦是为了不让那些订阅专栏的同学失望。
+关于“限流”这个话题，我个人以为，它可以引申出非常多的东西，譬如“熔断”和“限流”，其实可以看作是同一类问题的“一体两面”。最早接触熔断，是源于 Spring Cloud 中的 Hystrix，它其实是指当服务不可用的时候，客户端应该采取什么样的措施去应对，实际使用中我们可能会考虑重试、超时、降级等策略。相应地，当服务端在面对来自客户端的异常流量时，就产生了“限流”这个概念，“限流”可以是线程隔离**(线程数 + 队列大小限制)，可以是信号量隔离(设置最大并发请求数目)，可以是限制QPS。这里，我们讨论的主要是第三种，而实现限流的常见算法主要有计数器算法、漏桶算法和令牌桶算法。这里，AspNetCoreRateLimit 这个中间件，则主要使用了计数器算法，并配合 IMemoryCache 和 IDistributedCache 分别实现了基于内存和基于分布式缓存的持久化逻辑。
+源代码解读 首先，使用者通过配置定义了一个或者多个规则，这些规则决定了每个客户端在访问特定终结点时，一段时间内可以访问的最大次数。 RateLimitMiddleware 通过注入的IRateLimitProcessor 来匹配规则，然后依次判断每个规则是否达到了限流条件。一旦达到限流条件，中间件会改变 HTTP 响应的状态码、响应头、返回值，告知使用者已达到最大调用次数。而针对每一种 IRateLimitProcessor ，主要通过ProcessRequestAsync() 方法来实现计数，如果上一次的请求对应的时间戳 + 规则中时间间隔 &amp;gt;= 当前时间，则说明请求没有过期，此时，就需要给这个计数增加1。好了，现在我们来针对 AspNetCoreRateLimit 中的核心部件逐个进行解读。
+RateLimitProcessor RateLimitProcessor，是一个抽象类，实现了IRateLimitProcessor接口，公开的方法有 3 个：ProcessRequestAsync()、IsWhitelisted() 和 GetRateLimitHeaders()。在此基础上，派生出ClientRateLimitProcessor和IpRateLimitProcessor两个子类。两者最大的不同在于，其所依赖的Store不同，前者为IClientPolicyStore，后者IIpPolicyStore，它们都实现了同一个接口IRateLimitStore：
+1public interface IRateLimitStore&amp;lt;T&amp;gt; 2{ 3 Task&amp;lt;bool&amp;gt; ExistsAsync(string id, CancellationToken cancellationToken = default); 4 Task&amp;lt;T&amp;gt; GetAsync(string id, CancellationToken cancellationToken = default); 5 Task RemoveAsync(string id, CancellationToken cancellationToken = default); 6 Task SetAsync(string id, T entry, TimeSpan?"><title>源代码探案系列之 .NET Core 限流中间件 AspNetCoreRateLimit</title>
+<link rel=canonical href=/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E9%99%90%E6%B5%81%E4%B8%AD%E9%97%B4%E4%BB%B6-aspnetcoreratelimit/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="源代码探案系列之 .NET Core 限流中间件 AspNetCoreRateLimit">
+<meta property="og:description" content="在上一篇文章中，博主带领大家一起深入了解 ConcurrencyLimiter 这个中间件，正当我得意洋洋地向 Catcher Wong 大佬吹嘘这一点小收获时，大佬一脸嫌弃地说，一个单机版的方案有什么好得意的啊。大佬言下之意，显然是指，这个中间件在分布式环境中毫无用武之地。其实，你只需要稍微想一下，就能想明白这个问题。毕竟，它只是通过SeamphoreSlim控制线程数量而已，一旦放到分布式环境中，这个并发控制就被大大地削弱。所以，在今天这篇文章中，博主会带领大家一起“探案” ASP.NET Core 中的限流中间件 AspNetCoreRateLimite，希望大家可以从中感悟到不一样的东西。对我而言，这可能是人到中年的焦虑感所催生出来的一种源动力，同时亦是为了不让那些订阅专栏的同学失望。
+关于“限流”这个话题，我个人以为，它可以引申出非常多的东西，譬如“熔断”和“限流”，其实可以看作是同一类问题的“一体两面”。最早接触熔断，是源于 Spring Cloud 中的 Hystrix，它其实是指当服务不可用的时候，客户端应该采取什么样的措施去应对，实际使用中我们可能会考虑重试、超时、降级等策略。相应地，当服务端在面对来自客户端的异常流量时，就产生了“限流”这个概念，“限流”可以是线程隔离**(线程数 + 队列大小限制)，可以是信号量隔离(设置最大并发请求数目)，可以是限制QPS。这里，我们讨论的主要是第三种，而实现限流的常见算法主要有计数器算法、漏桶算法和令牌桶算法。这里，AspNetCoreRateLimit 这个中间件，则主要使用了计数器算法，并配合 IMemoryCache 和 IDistributedCache 分别实现了基于内存和基于分布式缓存的持久化逻辑。
+源代码解读 首先，使用者通过配置定义了一个或者多个规则，这些规则决定了每个客户端在访问特定终结点时，一段时间内可以访问的最大次数。 RateLimitMiddleware 通过注入的IRateLimitProcessor 来匹配规则，然后依次判断每个规则是否达到了限流条件。一旦达到限流条件，中间件会改变 HTTP 响应的状态码、响应头、返回值，告知使用者已达到最大调用次数。而针对每一种 IRateLimitProcessor ，主要通过ProcessRequestAsync() 方法来实现计数，如果上一次的请求对应的时间戳 + 规则中时间间隔 &amp;gt;= 当前时间，则说明请求没有过期，此时，就需要给这个计数增加1。好了，现在我们来针对 AspNetCoreRateLimit 中的核心部件逐个进行解读。
+RateLimitProcessor RateLimitProcessor，是一个抽象类，实现了IRateLimitProcessor接口，公开的方法有 3 个：ProcessRequestAsync()、IsWhitelisted() 和 GetRateLimitHeaders()。在此基础上，派生出ClientRateLimitProcessor和IpRateLimitProcessor两个子类。两者最大的不同在于，其所依赖的Store不同，前者为IClientPolicyStore，后者IIpPolicyStore，它们都实现了同一个接口IRateLimitStore：
+1public interface IRateLimitStore&amp;lt;T&amp;gt; 2{ 3 Task&amp;lt;bool&amp;gt; ExistsAsync(string id, CancellationToken cancellationToken = default); 4 Task&amp;lt;T&amp;gt; GetAsync(string id, CancellationToken cancellationToken = default); 5 Task RemoveAsync(string id, CancellationToken cancellationToken = default); 6 Task SetAsync(string id, T entry, TimeSpan?">
+<meta property="og:url" content="/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E9%99%90%E6%B5%81%E4%B8%AD%E9%97%B4%E4%BB%B6-aspnetcoreratelimit/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="限流"><meta property="article:tag" content=".NET Core"><meta property="article:tag" content="中间件"><meta property="article:tag" content="源码"><meta property="article:published_time" content="2021-03-10T21:52:47+00:00"><meta property="article:modified_time" content="2021-03-10T21:52:47+00:00">
+<meta name=twitter:title content="源代码探案系列之 .NET Core 限流中间件 AspNetCoreRateLimit">
+<meta name=twitter:description content="在上一篇文章中，博主带领大家一起深入了解 ConcurrencyLimiter 这个中间件，正当我得意洋洋地向 Catcher Wong 大佬吹嘘这一点小收获时，大佬一脸嫌弃地说，一个单机版的方案有什么好得意的啊。大佬言下之意，显然是指，这个中间件在分布式环境中毫无用武之地。其实，你只需要稍微想一下，就能想明白这个问题。毕竟，它只是通过SeamphoreSlim控制线程数量而已，一旦放到分布式环境中，这个并发控制就被大大地削弱。所以，在今天这篇文章中，博主会带领大家一起“探案” ASP.NET Core 中的限流中间件 AspNetCoreRateLimite，希望大家可以从中感悟到不一样的东西。对我而言，这可能是人到中年的焦虑感所催生出来的一种源动力，同时亦是为了不让那些订阅专栏的同学失望。
+关于“限流”这个话题，我个人以为，它可以引申出非常多的东西，譬如“熔断”和“限流”，其实可以看作是同一类问题的“一体两面”。最早接触熔断，是源于 Spring Cloud 中的 Hystrix，它其实是指当服务不可用的时候，客户端应该采取什么样的措施去应对，实际使用中我们可能会考虑重试、超时、降级等策略。相应地，当服务端在面对来自客户端的异常流量时，就产生了“限流”这个概念，“限流”可以是线程隔离**(线程数 + 队列大小限制)，可以是信号量隔离(设置最大并发请求数目)，可以是限制QPS。这里，我们讨论的主要是第三种，而实现限流的常见算法主要有计数器算法、漏桶算法和令牌桶算法。这里，AspNetCoreRateLimit 这个中间件，则主要使用了计数器算法，并配合 IMemoryCache 和 IDistributedCache 分别实现了基于内存和基于分布式缓存的持久化逻辑。
+源代码解读 首先，使用者通过配置定义了一个或者多个规则，这些规则决定了每个客户端在访问特定终结点时，一段时间内可以访问的最大次数。 RateLimitMiddleware 通过注入的IRateLimitProcessor 来匹配规则，然后依次判断每个规则是否达到了限流条件。一旦达到限流条件，中间件会改变 HTTP 响应的状态码、响应头、返回值，告知使用者已达到最大调用次数。而针对每一种 IRateLimitProcessor ，主要通过ProcessRequestAsync() 方法来实现计数，如果上一次的请求对应的时间戳 + 规则中时间间隔 &amp;gt;= 当前时间，则说明请求没有过期，此时，就需要给这个计数增加1。好了，现在我们来针对 AspNetCoreRateLimit 中的核心部件逐个进行解读。
+RateLimitProcessor RateLimitProcessor，是一个抽象类，实现了IRateLimitProcessor接口，公开的方法有 3 个：ProcessRequestAsync()、IsWhitelisted() 和 GetRateLimitHeaders()。在此基础上，派生出ClientRateLimitProcessor和IpRateLimitProcessor两个子类。两者最大的不同在于，其所依赖的Store不同，前者为IClientPolicyStore，后者IIpPolicyStore，它们都实现了同一个接口IRateLimitStore：
+1public interface IRateLimitStore&amp;lt;T&amp;gt; 2{ 3 Task&amp;lt;bool&amp;gt; ExistsAsync(string id, CancellationToken cancellationToken = default); 4 Task&amp;lt;T&amp;gt; GetAsync(string id, CancellationToken cancellationToken = default); 5 Task RemoveAsync(string id, CancellationToken cancellationToken = default); 6 Task SetAsync(string id, T entry, TimeSpan?">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E9%99%90%E6%B5%81%E4%B8%AD%E9%97%B4%E4%BB%B6-aspnetcoreratelimit/>源代码探案系列之 .NET Core 限流中间件 AspNetCoreRateLimit</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Mar 10, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 5 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>在上一篇文章中，博主带领大家一起深入了解 <a class=link href=https://github.com/dotnet/aspnetcore/tree/main/src/Middleware/ConcurrencyLimiter target=_blank rel=noopener>ConcurrencyLimiter</a> 这个中间件，正当我得意洋洋地向 <a class=link href=https://www.cnblogs.com/catcher1994/ target=_blank rel=noopener>Catcher Wong</a> 大佬吹嘘这一点小收获时，大佬一脸嫌弃地说，一个单机版的方案有什么好得意的啊。大佬言下之意，显然是指，这个中间件在分布式环境中毫无用武之地。其实，你只需要稍微想一下，就能想明白这个问题。毕竟，它只是通过<code>SeamphoreSlim</code>控制线程数量而已，一旦放到分布式环境中，这个并发控制就被大大地削弱。所以，在今天这篇文章中，博主会带领大家一起“<strong>探案</strong>” <a class=link href=https://github.com/dotnet/aspnetcore target=_blank rel=noopener>ASP.NET Core</a> 中的限流中间件 <a class=link href=https://github.com/stefanprodan/AspNetCoreRateLimit target=_blank rel=noopener>AspNetCoreRateLimite</a>，希望大家可以从中感悟到不一样的东西。对我而言，这可能是人到中年的焦虑感所催生出来的一种源动力，同时亦是为了不让那些订阅专栏的同学失望。</p>
+<p>关于“<strong>限流</strong>”这个话题，我个人以为，它可以引申出非常多的东西，譬如“熔断”和“限流”，其实可以看作是同一类问题的“一体两面”。最早接触熔断，是源于 <strong>Spring Cloud</strong> 中的 <strong>Hystrix</strong>，它其实是指当服务不可用的时候，客户端应该采取什么样的措施去应对，实际使用中我们可能会考虑重试、超时、降级等策略。相应地，当服务端在面对来自客户端的异常流量时，就产生了“限流”这个概念，“限流”可以是线程隔离**(<strong>线程数 + 队列大小限制</strong>)，可以是信号量隔离(<strong>设置最大并发请求数目</strong>)，可以是限制QPS。这里，我们讨论的主要是第三种，而实现限流的常见算法主要有<strong>计数器算法</strong>、<strong>漏桶算法</strong>和<strong>令牌桶算法</strong>。这里，<a class=link href=https://github.com/stefanprodan/AspNetCoreRateLimit target=_blank rel=noopener>AspNetCoreRateLimit</a> 这个中间件，则主要使用了<strong>计数器算法</strong>，并配合 <code>IMemoryCache</code> 和 <code>IDistributedCache</code> 分别实现了基于内存和基于分布式缓存的持久化逻辑。</p>
+<h1 id=源代码解读>源代码解读</h1>
+<p>首先，使用者通过配置定义了一个或者多个规则，这些规则决定了每个客户端在访问特定终结点时，一段时间内可以访问的最大次数。 <a class=link href>RateLimitMiddleware</a> 通过注入的<a class=link href=https://github.com/stefanprodan/AspNetCoreRateLimit/blob/master/src/AspNetCoreRateLimit/Middleware/RateLimitMiddleware.cs target=_blank rel=noopener>IRateLimitProcessor</a> 来匹配规则，然后依次判断每个规则是否达到了限流条件。一旦达到限流条件，中间件会改变 HTTP 响应的状态码、响应头、返回值，告知使用者已达到最大调用次数。而针对每一种 <a class=link href=https://github.com/stefanprodan/AspNetCoreRateLimit/blob/master/src/AspNetCoreRateLimit/Core/IRateLimitProcessor.cs target=_blank rel=noopener>IRateLimitProcessor</a> ，主要通过<code>ProcessRequestAsync()</code> 方法来实现计数，如果上一次的请求对应的时间戳 + 规则中时间间隔 >= 当前时间，则说明请求没有过期，此时，就需要给这个计数增加1。好了，现在我们来针对 <a class=link href=https://github.com/stefanprodan/AspNetCoreRateLimit target=_blank rel=noopener>AspNetCoreRateLimit</a> 中的核心部件逐个进行解读。</p>
+<h2 id=ratelimitprocessor>RateLimitProcessor</h2>
+<p><code>RateLimitProcessor</code>，是一个抽象类，实现了<code>IRateLimitProcessor</code>接口，公开的方法有 3 个：<code>ProcessRequestAsync()</code>、<code>IsWhitelisted()</code> 和 <code>GetRateLimitHeaders()</code>。在此基础上，派生出<code>ClientRateLimitProcessor</code>和<code>IpRateLimitProcessor</code>两个子类。两者最大的不同在于，其所依赖的<code>Store</code>不同，前者为<code>IClientPolicyStore</code>，后者<code>IIpPolicyStore</code>，它们都实现了同一个接口<code>IRateLimitStore</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=k>public</span> <span class=k>interface</span> <span class=n>IRateLimitStore</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span>
+<span class=ln>2</span><span class=p>{</span>
+<span class=ln>3</span>    <span class=n>Task</span><span class=p>&lt;</span><span class=kt>bool</span><span class=p>&gt;</span> <span class=n>ExistsAsync</span><span class=p>(</span><span class=kt>string</span> <span class=n>id</span><span class=p>,</span> <span class=n>CancellationToken</span> <span class=n>cancellationToken</span> <span class=p>=</span> <span class=k>default</span><span class=p>);</span>
+<span class=ln>4</span>    <span class=n>Task</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=n>GetAsync</span><span class=p>(</span><span class=kt>string</span> <span class=n>id</span><span class=p>,</span> <span class=n>CancellationToken</span> <span class=n>cancellationToken</span> <span class=p>=</span> <span class=k>default</span><span class=p>);</span>
+<span class=ln>5</span>    <span class=n>Task</span> <span class=n>RemoveAsync</span><span class=p>(</span><span class=kt>string</span> <span class=n>id</span><span class=p>,</span> <span class=n>CancellationToken</span> <span class=n>cancellationToken</span> <span class=p>=</span> <span class=k>default</span><span class=p>);</span>
+<span class=ln>6</span>    <span class=n>Task</span> <span class=n>SetAsync</span><span class=p>(</span><span class=kt>string</span> <span class=n>id</span><span class=p>,</span> <span class=n>T</span> <span class=n>entry</span><span class=p>,</span> <span class=n>TimeSpan</span><span class=p>?</span> <span class=n>expirationTime</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> 
+<span class=ln>7</span>        <span class=n>CancellationToken</span> <span class=n>cancellationToken</span> <span class=p>=</span> <span class=k>default</span>
+<span class=ln>8</span>    <span class=p>);</span>
+<span class=ln>9</span><span class=p>}</span>
+</code></pre></div><p>可以注意到，这些都是典型的基于键-值的存储，所以，不管是基于内存的IMemeryCache，还是基于分布式缓存的IDistributedCache，都可以做到无缝切换。不同的Processor，本质上是它们生成缓存键的方式不同，例如，<code>IpRateLimitProcessor</code>是用一个前缀来表示一组IP，而<code>ClientRateLimitProcessor</code>则是用通过客户端前缀和客户端Id来作为区分：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=c1>// src/AspNetCoreRateLimit/Core/IpRateLimitProcessor.cs
+</span><span class=ln> 2</span><span class=c1></span><span class=k>public</span> <span class=k>async</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>RateLimitRule</span><span class=p>&gt;&gt;</span> <span class=n>GetMatchingRulesAsync</span><span class=p>(</span>
+<span class=ln> 3</span>    <span class=n>ClientRequestIdentity</span> <span class=n>identity</span><span class=p>,</span> 
+<span class=ln> 4</span>    <span class=n>CancellationToken</span> <span class=n>cancellationToken</span> <span class=p>=</span> <span class=k>default</span>
+<span class=ln> 5</span><span class=p>)</span>
+<span class=ln> 6</span><span class=p>{</span>
+<span class=ln> 7</span>    <span class=kt>var</span> <span class=n>policies</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>policyStore</span><span class=p>.</span><span class=n>GetAsync</span><span class=p>(</span>
+<span class=ln> 8</span>        <span class=s>$&#34;{_options.IpPolicyPrefix}&#34;</span><span class=p>,</span>
+<span class=ln> 9</span>        <span class=n>cancellationToken</span>
+<span class=ln>10</span>    <span class=p>);</span>
+<span class=ln>11</span>    <span class=kt>var</span> <span class=n>rules</span> <span class=p>=</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>RateLimitRule</span><span class=p>&gt;();</span>
+<span class=ln>12</span>    <span class=k>if</span> <span class=p>(</span><span class=n>policies</span><span class=p>?.</span><span class=n>IpRules</span><span class=p>?.</span><span class=n>Any</span><span class=p>()</span> <span class=p>==</span> <span class=k>true</span><span class=p>)</span>
+<span class=ln>13</span>    <span class=p>{</span>
+<span class=ln>14</span>        <span class=c1>// search for rules with IP intervals containing client IP
+</span><span class=ln>15</span><span class=c1></span>        <span class=kt>var</span> <span class=n>matchPolicies</span> <span class=p>=</span> <span class=n>policies</span><span class=p>.</span><span class=n>IpRules</span>
+<span class=ln>16</span>            <span class=p>.</span><span class=n>Where</span><span class=p>(</span><span class=n>r</span> <span class=p>=&gt;</span> <span class=n>IpParser</span><span class=p>.</span><span class=n>ContainsIp</span><span class=p>(</span><span class=n>r</span><span class=p>.</span><span class=n>Ip</span><span class=p>,</span> <span class=n>identity</span><span class=p>.</span><span class=n>ClientIp</span><span class=p>));</span>
+<span class=ln>17</span>        <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>item</span> <span class=k>in</span> <span class=n>matchPolicies</span><span class=p>)</span>
+<span class=ln>18</span>        <span class=p>{</span>
+<span class=ln>19</span>            <span class=n>rules</span><span class=p>.</span><span class=n>AddRange</span><span class=p>(</span><span class=n>item</span><span class=p>.</span><span class=n>Rules</span><span class=p>);</span>
+<span class=ln>20</span>        <span class=p>}</span>
+<span class=ln>21</span>    <span class=p>}</span>
+<span class=ln>22</span>
+<span class=ln>23</span>    <span class=k>return</span> <span class=n>GetMatchingRules</span><span class=p>(</span><span class=n>identity</span><span class=p>,</span> <span class=n>rules</span><span class=p>);</span>
+<span class=ln>24</span><span class=p>}</span>
+<span class=ln>25</span>
+<span class=ln>26</span><span class=c1>// src/AspNetCoreRateLimit/Core/ClientRateLimitProcessor.cs
+</span><span class=ln>27</span><span class=c1></span><span class=k>public</span> <span class=k>async</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>RateLimitRule</span><span class=p>&gt;&gt;</span> <span class=n>GetMatchingRulesAsync</span><span class=p>(</span>
+<span class=ln>28</span>    <span class=n>ClientRequestIdentity</span> <span class=n>identity</span><span class=p>,</span> 
+<span class=ln>29</span>    <span class=n>CancellationToken</span> <span class=n>cancellationToken</span> <span class=p>=</span> <span class=k>default</span>
+<span class=ln>30</span><span class=p>)</span>
+<span class=ln>31</span><span class=p>{</span>
+<span class=ln>32</span>    <span class=kt>var</span> <span class=n>policy</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>policyStore</span><span class=p>.</span><span class=n>GetAsync</span><span class=p>(</span>
+<span class=ln>33</span>        <span class=s>$&#34;{_options.ClientPolicyPrefix}_{identity.ClientId}&#34;</span><span class=p>,</span> 
+<span class=ln>34</span>        <span class=n>cancellationToken</span>
+<span class=ln>35</span>    <span class=p>);</span>
+<span class=ln>36</span>    <span class=k>return</span> <span class=n>GetMatchingRules</span><span class=p>(</span><span class=n>identity</span><span class=p>,</span> <span class=n>policy</span><span class=p>?.</span><span class=n>Rules</span><span class=p>);</span>
+<span class=ln>37</span><span class=p>}</span>
+</code></pre></div><p>对于<code>RateLimitProcessor</code>而言，其实现思路是，通过<code>CounterKeyBuilder</code>及其子类来生成计数器标识(<strong>CounterId</strong>)，然后再通过<code>AsyncKeyLock</code>来实现计数，最终通过<code>IRateLimitCounterStore</code>来实现存储：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>virtual</span> <span class=k>async</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>RateLimitCounter</span><span class=p>&gt;</span> <span class=n>ProcessRequestAsync</span><span class=p>(</span>
+<span class=ln> 2</span>    <span class=n>ClientRequestIdentity</span> <span class=n>requestIdentity</span><span class=p>,</span> 
+<span class=ln> 3</span>    <span class=n>RateLimitRule</span> <span class=n>rule</span><span class=p>,</span> 
+<span class=ln> 4</span>    <span class=n>CancellationToken</span> <span class=n>cancellationToken</span> <span class=p>=</span> <span class=k>default</span>
+<span class=ln> 5</span><span class=p>)</span>
+<span class=ln> 6</span><span class=p>{</span>
+<span class=ln> 7</span>    <span class=kt>var</span> <span class=n>counter</span> <span class=p>=</span> <span class=k>new</span> <span class=n>RateLimitCounter</span>
+<span class=ln> 8</span>    <span class=p>{</span>
+<span class=ln> 9</span>        <span class=n>Timestamp</span> <span class=p>=</span> <span class=n>DateTime</span><span class=p>.</span><span class=n>UtcNow</span><span class=p>,</span>
+<span class=ln>10</span>        <span class=n>Count</span> <span class=p>=</span> <span class=m>1</span>
+<span class=ln>11</span>    <span class=p>};</span>
+<span class=ln>12</span>
+<span class=ln>13</span>    <span class=c1>// 生成CounterId
+</span><span class=ln>14</span><span class=c1></span>    <span class=kt>var</span> <span class=n>counterId</span> <span class=p>=</span> <span class=n>BuildCounterKey</span><span class=p>(</span><span class=n>requestIdentity</span><span class=p>,</span> <span class=n>rule</span><span class=p>);</span>
+<span class=ln>15</span>    
+<span class=ln>16</span>    <span class=c1>// 基于AsyncLock的计数器
+</span><span class=ln>17</span><span class=c1></span>    <span class=c1>// serial reads and writes on same key
+</span><span class=ln>18</span><span class=c1></span>    <span class=k>using</span> <span class=p>(</span><span class=k>await</span> <span class=n>AsyncLock</span><span class=p>.</span><span class=n>WriterLockAsync</span><span class=p>(</span><span class=n>counterId</span><span class=p>).</span><span class=n>ConfigureAwait</span><span class=p>(</span><span class=k>false</span><span class=p>))</span>
+<span class=ln>19</span>    <span class=p>{</span>
+<span class=ln>20</span>        <span class=kt>var</span> <span class=n>entry</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>counterStore</span><span class=p>.</span><span class=n>GetAsync</span><span class=p>(</span><span class=n>counterId</span><span class=p>,</span> <span class=n>cancellationToken</span><span class=p>);</span>
+<span class=ln>21</span>
+<span class=ln>22</span>        <span class=k>if</span> <span class=p>(</span><span class=n>entry</span><span class=p>.</span><span class=n>HasValue</span><span class=p>)</span>
+<span class=ln>23</span>        <span class=p>{</span>
+<span class=ln>24</span>            <span class=c1>// entry has not expired
+</span><span class=ln>25</span><span class=c1></span>            <span class=k>if</span> <span class=p>(</span><span class=n>entry</span><span class=p>.</span><span class=n>Value</span><span class=p>.</span><span class=n>Timestamp</span> <span class=p>+</span> <span class=n>rule</span><span class=p>.</span><span class=n>PeriodTimespan</span><span class=p>.</span><span class=n>Value</span> <span class=p>&gt;=</span> <span class=n>DateTime</span><span class=p>.</span><span class=n>UtcNow</span><span class=p>)</span>
+<span class=ln>26</span>            <span class=p>{</span>
+<span class=ln>27</span>                <span class=c1>// increment request count
+</span><span class=ln>28</span><span class=c1></span>                <span class=kt>var</span> <span class=n>totalCount</span> <span class=p>=</span> <span class=n>entry</span><span class=p>.</span><span class=n>Value</span><span class=p>.</span><span class=n>Count</span> <span class=p>+</span> <span class=m>_</span><span class=n>config</span><span class=p>.</span><span class=n>RateIncrementer</span><span class=p>?.</span><span class=n>Invoke</span><span class=p>()</span> <span class=p>??</span> <span class=m>1</span><span class=p>;</span>
+<span class=ln>29</span>
+<span class=ln>30</span>                <span class=c1>// deep copy
+</span><span class=ln>31</span><span class=c1></span>                <span class=n>counter</span> <span class=p>=</span> <span class=k>new</span> <span class=n>RateLimitCounter</span>
+<span class=ln>32</span>                <span class=p>{</span>
+<span class=ln>33</span>                    <span class=n>Timestamp</span> <span class=p>=</span> <span class=n>entry</span><span class=p>.</span><span class=n>Value</span><span class=p>.</span><span class=n>Timestamp</span><span class=p>,</span>
+<span class=ln>34</span>                    <span class=n>Count</span> <span class=p>=</span> <span class=n>totalCount</span>
+<span class=ln>35</span>                <span class=p>};</span>
+<span class=ln>36</span>            <span class=p>}</span>
+<span class=ln>37</span>        <span class=p>}</span>
+<span class=ln>38</span>        
+<span class=ln>39</span>        <span class=c1>// 计数器存储
+</span><span class=ln>40</span><span class=c1></span>        <span class=c1>// stores: id (string) - timestamp (datetime) - total_requests (long)
+</span><span class=ln>41</span><span class=c1></span>        <span class=k>await</span> <span class=m>_</span><span class=n>counterStore</span><span class=p>.</span><span class=n>SetAsync</span><span class=p>(</span>
+<span class=ln>42</span>            <span class=n>counterId</span><span class=p>,</span> 
+<span class=ln>43</span>            <span class=n>counter</span><span class=p>,</span> 
+<span class=ln>44</span>            <span class=n>rule</span><span class=p>.</span><span class=n>PeriodTimespan</span><span class=p>.</span><span class=n>Value</span><span class=p>,</span> 
+<span class=ln>45</span>            <span class=n>cancellationToken</span>
+<span class=ln>46</span>        <span class=p>);</span>
+<span class=ln>47</span>    <span class=p>}</span>
+<span class=ln>48</span>
+<span class=ln>49</span>    <span class=k>return</span> <span class=n>counter</span><span class=p>;</span>
+<span class=ln>50</span><span class=p>}</span>
+</code></pre></div><h2 id=asynckeylock>AsyncKeyLock</h2>
+<p>在分析<code>RateLimitProcessor</code>类的时候，我们提到了<code>AsyncKeyLock</code>。对于<code>AsyncKeyLock</code>的实现，我个人认为这是整个中间件的精华，因为这里出现了，和<code>SeamphoreSlim</code>一样经典的东西，这里用到了自旋锁<code>SpinLock</code>。我个人理解，<code>SpinLock</code> 约等于 <code>Interlocked</code> + 内核级别的while。这部分代码本身并不复杂，难就难在这样一个精妙的想法上面。其中，<a class=link href>AsyncKeyLockDoorman</a> 这个类的实现，应该是参考了微软的一篇博客—— <a class=link href=https://devblogs.microsoft.com/pfxteam/building-async-coordination-primitives-part-7-asyncreaderwriterlock/ target=_blank rel=noopener>Building Async Coordination Primitives, Part 7: AsyncReaderWriterLock</a>，因为<code>ReaderLockAsync()</code>、<code>WriterLockAsync()</code>、<code>ReaderRelease()</code> 和 <code>WriterRelease()</code> 这 4 个关键方法完全一样。结合限流这个场景来看，它是典型的“<strong>多写</strong>”场景，因为如果是相同的请求，那么就会产生相同的计数器标识(<strong>CounterId</strong>)，所以，这个<code>AsyncLockDoorman</code>这个类所定义的上下文边界，其实是“<strong>一读多写</strong>”的问题，所以，我们可以注意到，它里面定义了一个“写”操作的队列<code>_waitingWriters</code>，一个“读操作”的<code>_waitingReader</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=n>AsyncKeyLockDoorman</span><span class=p>(</span><span class=n>Action</span><span class=p>&lt;</span><span class=n>AsyncKeyLockDoorman</span><span class=p>&gt;</span> <span class=n>reset</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>   
+<span class=ln> 3</span>    <span class=c1>// 多个写入者
+</span><span class=ln> 4</span><span class=c1></span>    <span class=m>_</span><span class=n>waitingWriters</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Queue</span><span class=p>&lt;</span><span class=n>TaskCompletionSource</span><span class=p>&lt;</span><span class=n>Releaser</span><span class=p>&gt;&gt;();</span>
+<span class=ln> 5</span>    <span class=c1>// 单个读取者
+</span><span class=ln> 6</span><span class=c1></span>    <span class=m>_</span><span class=n>waitingReader</span> <span class=p>=</span> <span class=k>new</span> <span class=n>TaskCompletionSource</span><span class=p>&lt;</span><span class=n>Releaser</span><span class=p>&gt;();</span>
+<span class=ln> 7</span>    <span class=m>_</span><span class=n>status</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span>    <span class=m>_</span><span class=n>readerReleaser</span> <span class=p>=</span> <span class=n>Task</span><span class=p>.</span><span class=n>FromResult</span><span class=p>(</span><span class=k>new</span> <span class=n>Releaser</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=k>false</span><span class=p>));</span>
+<span class=ln>10</span>    <span class=m>_</span><span class=n>writerReleaser</span> <span class=p>=</span> <span class=n>Task</span><span class=p>.</span><span class=n>FromResult</span><span class=p>(</span><span class=k>new</span> <span class=n>Releaser</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=k>true</span><span class=p>));</span>
+<span class=ln>11</span>    <span class=m>_</span><span class=n>reset</span> <span class=p>=</span> <span class=n>reset</span><span class=p>;</span>
+<span class=ln>12</span><span class=p>}</span>
+</code></pre></div><p>对于“写”操作而言，当一个新的写入者希望进来的时候，如果此时锁没有被别人占用，那么这个新的写入者会获得这个锁，状态值<code>m_status</code>会被修改为-1。反之，如果此时这个锁已经被别人占用了，那么这个新的写入者将会进入等待队列。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>Releaser</span><span class=p>&gt;</span> <span class=n>WriterLockAsync</span><span class=p>()</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>lock</span> <span class=p>(</span><span class=m>_</span><span class=n>waitingWriters</span><span class=p>)</span>
+<span class=ln> 4</span>    <span class=p>{</span>
+<span class=ln> 5</span>        <span class=k>if</span> <span class=p>(</span><span class=m>_</span><span class=n>status</span> <span class=p>==</span> <span class=m>0</span><span class=p>)</span>
+<span class=ln> 6</span>        <span class=p>{</span>
+<span class=ln> 7</span>            <span class=m>_</span><span class=n>status</span> <span class=p>=</span> <span class=p>-</span><span class=m>1</span><span class=p>;</span>
+<span class=ln> 8</span>            <span class=k>return</span> <span class=m>_</span><span class=n>writerReleaser</span><span class=p>;</span>
+<span class=ln> 9</span>        <span class=p>}</span>
+<span class=ln>10</span>        <span class=k>else</span>
+<span class=ln>11</span>        <span class=p>{</span>
+<span class=ln>12</span>            <span class=kt>var</span> <span class=n>waiter</span> <span class=p>=</span> <span class=k>new</span> <span class=n>TaskCompletionSource</span><span class=p>&lt;</span><span class=n>Releaser</span><span class=p>&gt;();</span>
+<span class=ln>13</span>            <span class=m>_</span><span class=n>waitingWriters</span><span class=p>.</span><span class=n>Enqueue</span><span class=p>(</span><span class=n>waiter</span><span class=p>);</span>
+<span class=ln>14</span>            <span class=k>return</span> <span class=n>waiter</span><span class=p>.</span><span class=n>Task</span><span class=p>;</span>
+<span class=ln>15</span>        <span class=p>}</span>
+<span class=ln>16</span>    <span class=p>}</span>
+<span class=ln>17</span><span class=p>}</span>
+</code></pre></div><p>对于“读”操作而言，我们来思考这样一个问题，什么时候“读”操作会被允许呢？答案是这一时刻没有写入者正在“写”或者“等”，因为如果不这样的话，就会发生我们平常所说的“<strong>脏读</strong>”，所以，这种情况下，就必须强迫“读取者”去等待写入者“空闲”下来。此时，不难理解<code>ReadLockAsync()</code>的实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=n>Task</span><span class=p>&lt;</span><span class=n>Releaser</span><span class=p>&gt;</span> <span class=n>ReaderLockAsync</span><span class=p>()</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>lock</span> <span class=p>(</span><span class=m>_</span><span class=n>waitingWriters</span><span class=p>)</span>
+<span class=ln> 4</span>    <span class=p>{</span>
+<span class=ln> 5</span>        <span class=k>if</span> <span class=p>(</span><span class=m>_</span><span class=n>status</span> <span class=p>&gt;=</span> <span class=m>0</span> <span class=p>&amp;&amp;</span> <span class=m>_</span><span class=n>waitingWriters</span><span class=p>.</span><span class=n>Count</span> <span class=p>==</span> <span class=m>0</span><span class=p>)</span>
+<span class=ln> 6</span>        <span class=p>{</span>
+<span class=ln> 7</span>            <span class=p>++</span><span class=m>_</span><span class=n>status</span><span class=p>;</span>
+<span class=ln> 8</span>            <span class=k>return</span> <span class=m>_</span><span class=n>readerReleaser</span><span class=p>;</span>
+<span class=ln> 9</span>        <span class=p>}</span>
+<span class=ln>10</span>        <span class=k>else</span>
+<span class=ln>11</span>        <span class=p>{</span>
+<span class=ln>12</span>            <span class=p>++</span><span class=m>_</span><span class=n>readersWaiting</span><span class=p>;</span>
+<span class=ln>13</span>            <span class=k>return</span> <span class=m>_</span><span class=n>waitingReader</span><span class=p>.</span><span class=n>Task</span><span class=p>.</span><span class=n>ContinueWith</span><span class=p>(</span><span class=n>t</span> <span class=p>=&gt;</span> <span class=n>t</span><span class=p>.</span><span class=n>Result</span><span class=p>);</span>
+<span class=ln>14</span>        <span class=p>}</span>
+<span class=ln>15</span>    <span class=p>}</span>
+<span class=ln>16</span><span class=p>}</span>
+</code></pre></div><p>现在，让我们把视线拉回到<code>AsyncKeyLock</code>，它负责维护一组<code>AsyncKeyLockDoorman</code>，其内部部通过一个字典来维护<code>CounterId</code>和<code>AsyncKeyLockDoorman</code>间的关系。与此同时，为了减少创建·AsyncKeyLockDoorman·带来的性能损耗，它使用一个栈来存储<code>AsyncKeyLockDoorman</code>。每次获取<code>AsyncKeyLockDoorman</code>的过程，本质上就是为指定的<code>Key</code>分配<code>AsyncKeyLockDoorman</code>的过程，同时会更新其引用数<code>RefCount</code>。相应地，释放<code>AsyncKeyLockDoorman</code>的过程，本质上就是减少其引用数<code>RefCount</code>，从字典中移除指定<code>Key</code>，“<strong>归还</strong>”对象池的过程：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=c1>// GetDoorman()
+</span><span class=ln> 2</span><span class=c1></span><span class=k>private</span> <span class=k>static</span> <span class=n>AsyncKeyLockDoorman</span> <span class=n>GetDoorman</span><span class=p>(</span><span class=kt>string</span> <span class=n>key</span><span class=p>)</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=n>AsyncKeyLockDoorman</span> <span class=n>doorman</span><span class=p>;</span>
+<span class=ln> 5</span>    <span class=kt>bool</span> <span class=n>lockTaken</span> <span class=p>=</span> <span class=k>false</span><span class=p>;</span>
+<span class=ln> 6</span>    <span class=k>try</span>
+<span class=ln> 7</span>    <span class=p>{</span>
+<span class=ln> 8</span>        <span class=m>_</span><span class=n>spinLock</span><span class=p>.</span><span class=n>Enter</span><span class=p>(</span><span class=k>ref</span> <span class=n>lockTaken</span><span class=p>);</span>
+<span class=ln> 9</span>        <span class=k>if</span> <span class=p>(!</span><span class=n>Keys</span><span class=p>.</span><span class=n>TryGetValue</span><span class=p>(</span><span class=n>key</span><span class=p>,</span> <span class=k>out</span> <span class=n>doorman</span><span class=p>))</span>
+<span class=ln>10</span>        <span class=p>{</span>
+<span class=ln>11</span>            <span class=n>doorman</span> <span class=p>=</span> <span class=p>(</span><span class=n>Pool</span><span class=p>.</span><span class=n>Count</span> <span class=p>&gt;</span> <span class=m>0</span><span class=p>)</span> <span class=p>?</span> <span class=n>Pool</span><span class=p>.</span><span class=n>Pop</span><span class=p>()</span> <span class=p>:</span> 
+<span class=ln>12</span>                <span class=k>new</span> <span class=n>AsyncKeyLockDoorman</span><span class=p>(</span><span class=n>ReleaseDoorman</span><span class=p>);</span>
+<span class=ln>13</span>            <span class=n>doorman</span><span class=p>.</span><span class=n>Key</span> <span class=p>=</span> <span class=n>key</span><span class=p>;</span>
+<span class=ln>14</span>            <span class=n>Keys</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>key</span><span class=p>,</span> <span class=n>doorman</span><span class=p>);</span>
+<span class=ln>15</span>        <span class=p>}</span>
+<span class=ln>16</span>
+<span class=ln>17</span>        <span class=n>doorman</span><span class=p>.</span><span class=n>RefCount</span><span class=p>++;</span>
+<span class=ln>18</span>    <span class=p>}</span>
+<span class=ln>19</span>    <span class=k>finally</span>
+<span class=ln>20</span>    <span class=p>{</span>
+<span class=ln>21</span>        <span class=k>if</span> <span class=p>(</span><span class=n>lockTaken</span><span class=p>)</span>
+<span class=ln>22</span>        <span class=p>{</span>
+<span class=ln>23</span>            <span class=m>_</span><span class=n>spinLock</span><span class=p>.</span><span class=n>Exit</span><span class=p>();</span>
+<span class=ln>24</span>        <span class=p>}</span>
+<span class=ln>25</span>    <span class=p>}</span>
+<span class=ln>26</span>
+<span class=ln>27</span>    <span class=k>return</span> <span class=n>doorman</span><span class=p>;</span>
+<span class=ln>28</span><span class=p>}</span>
+<span class=ln>29</span>
+<span class=ln>30</span><span class=c1>// ReleaseDoorman()
+</span><span class=ln>31</span><span class=c1></span><span class=k>private</span> <span class=k>static</span> <span class=k>void</span> <span class=n>ReleaseDoorman</span><span class=p>(</span><span class=n>AsyncKeyLockDoorman</span> <span class=n>doorman</span><span class=p>)</span>
+<span class=ln>32</span><span class=p>{</span>
+<span class=ln>33</span>    <span class=kt>bool</span> <span class=n>lockTaken</span> <span class=p>=</span> <span class=k>false</span><span class=p>;</span>
+<span class=ln>34</span>    <span class=k>try</span>
+<span class=ln>35</span>    <span class=p>{</span>
+<span class=ln>36</span>        <span class=m>_</span><span class=n>spinLock</span><span class=p>.</span><span class=n>Enter</span><span class=p>(</span><span class=k>ref</span> <span class=n>lockTaken</span><span class=p>);</span>
+<span class=ln>37</span>        <span class=k>if</span> <span class=p>(--</span><span class=n>doorman</span><span class=p>.</span><span class=n>RefCount</span> <span class=p>==</span> <span class=m>0</span><span class=p>)</span>
+<span class=ln>38</span>        <span class=p>{</span>
+<span class=ln>39</span>            <span class=n>Keys</span><span class=p>.</span><span class=n>Remove</span><span class=p>(</span><span class=n>doorman</span><span class=p>.</span><span class=n>Key</span><span class=p>);</span>
+<span class=ln>40</span>            <span class=k>if</span> <span class=p>(</span><span class=n>Pool</span><span class=p>.</span><span class=n>Count</span> <span class=p>&lt;</span> <span class=n>MaxPoolSize</span><span class=p>)</span>
+<span class=ln>41</span>            <span class=p>{</span>
+<span class=ln>42</span>                <span class=n>doorman</span><span class=p>.</span><span class=n>Key</span> <span class=p>=</span> <span class=k>null</span><span class=p>;</span>
+<span class=ln>43</span>                <span class=n>Pool</span><span class=p>.</span><span class=n>Push</span><span class=p>(</span><span class=n>doorman</span><span class=p>);</span>
+<span class=ln>44</span>            <span class=p>}</span>
+<span class=ln>45</span>        <span class=p>}</span>
+<span class=ln>46</span>    <span class=p>}</span>
+<span class=ln>47</span>    <span class=k>finally</span>
+<span class=ln>48</span>    <span class=p>{</span>
+<span class=ln>49</span>        <span class=k>if</span> <span class=p>(</span><span class=n>lockTaken</span><span class=p>)</span>
+<span class=ln>50</span>        <span class=p>{</span>
+<span class=ln>51</span>            <span class=m>_</span><span class=n>spinLock</span><span class=p>.</span><span class=n>Exit</span><span class=p>();</span>
+<span class=ln>52</span>        <span class=p>}</span>
+<span class=ln>53</span>    <span class=p>}</span>
+<span class=ln>54</span><span class=p>}</span>
+</code></pre></div><h2 id=ratelimitmiddleware>RateLimitMiddleware</h2>
+<p>OK，到这里，我们再回过头去看<strong>源代码解读</strong>这里的内容，大概就可以串起来整合中间件的调用链路，<code>Middleware</code>-><code>RateLimteProcessor</code>-><code>AsyncKeyLock</code>-><code>AsyncKeyLockDoorman</code>，坦白来讲，我一直没能想明白为什么要用<code>SpinLock</code>？难道仅仅是为了减少等待时间、提高性能吗？经过精简，我们发现，整个中间件的<code>Invoke()</code>方法，大致要经历下面几个阶段：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>async</span> <span class=n>Task</span> <span class=n>Invoke</span><span class=p>(</span><span class=n>HttpContext</span> <span class=n>context</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=c1>// 检查限流是否启用
+</span><span class=ln> 4</span><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=m>_</span><span class=n>options</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln> 5</span>    <span class=p>{</span>
+<span class=ln> 6</span>        <span class=k>await</span> <span class=m>_</span><span class=n>next</span><span class=p>.</span><span class=n>Invoke</span><span class=p>(</span><span class=n>context</span><span class=p>);</span>
+<span class=ln> 7</span>        <span class=k>return</span><span class=p>;</span>
+<span class=ln> 8</span>    <span class=p>}</span>
+<span class=ln> 9</span>
+<span class=ln>10</span>    <span class=c1>// 获取用户身份
+</span><span class=ln>11</span><span class=c1></span>    <span class=kt>var</span> <span class=n>identity</span> <span class=p>=</span> <span class=k>await</span> <span class=n>ResolveIdentityAsync</span><span class=p>(</span><span class=n>context</span><span class=p>);</span>
+<span class=ln>12</span>
+<span class=ln>13</span>    <span class=c1>// 检查白名单
+</span><span class=ln>14</span><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=m>_</span><span class=n>processor</span><span class=p>.</span><span class=n>IsWhitelisted</span><span class=p>(</span><span class=n>identity</span><span class=p>))</span>
+<span class=ln>15</span>    <span class=p>{</span>
+<span class=ln>16</span>        <span class=k>await</span> <span class=m>_</span><span class=n>next</span><span class=p>.</span><span class=n>Invoke</span><span class=p>(</span><span class=n>context</span><span class=p>);</span>
+<span class=ln>17</span>        <span class=k>return</span><span class=p>;</span>
+<span class=ln>18</span>    <span class=p>}</span>
+<span class=ln>19</span>
+<span class=ln>20</span>    <span class=c1>//获取限流规则
+</span><span class=ln>21</span><span class=c1></span>    <span class=kt>var</span> <span class=n>rulesDict</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=n>RateLimitRule</span><span class=p>,</span> <span class=n>RateLimitCounter</span><span class=p>&gt;();</span>
+<span class=ln>22</span>    <span class=kt>var</span> <span class=n>rules</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>processor</span><span class=p>.</span><span class=n>GetMatchingRulesAsync</span><span class=p>(</span>
+<span class=ln>23</span>        <span class=n>identity</span><span class=p>,</span> 
+<span class=ln>24</span>        <span class=n>context</span><span class=p>.</span><span class=n>RequestAborted</span>
+<span class=ln>25</span>    <span class=p>);</span>
+<span class=ln>26</span>    <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>rule</span> <span class=k>in</span> <span class=n>rules</span><span class=p>)</span>
+<span class=ln>27</span>    <span class=p>{</span>
+<span class=ln>28</span>        <span class=c1>// 获取计数器数目
+</span><span class=ln>29</span><span class=c1></span>        <span class=kt>var</span> <span class=n>rateLimitCounter</span> <span class=p>=</span> <span class=k>await</span> <span class=m>_</span><span class=n>processor</span><span class=p>.</span><span class=n>ProcessRequestAsync</span><span class=p>(</span>
+<span class=ln>30</span>            <span class=n>identity</span><span class=p>,</span> 
+<span class=ln>31</span>            <span class=n>rule</span><span class=p>,</span> 
+<span class=ln>32</span>            <span class=n>context</span><span class=p>.</span><span class=n>RequestAborted</span>
+<span class=ln>33</span>        <span class=p>);</span>
+<span class=ln>34</span>        <span class=k>if</span> <span class=p>(</span><span class=n>rule</span><span class=p>.</span><span class=n>Limit</span> <span class=p>&gt;</span> <span class=m>0</span><span class=p>)</span>
+<span class=ln>35</span>        <span class=p>{</span>
+<span class=ln>36</span>            <span class=c1>// 请求未过期
+</span><span class=ln>37</span><span class=c1></span>            <span class=k>if</span> <span class=p>(</span><span class=n>rateLimitCounter</span><span class=p>.</span><span class=n>Timestamp</span> <span class=p>+</span> <span class=n>rule</span><span class=p>.</span><span class=n>PeriodTimespan</span><span class=p>.</span><span class=n>Value</span> <span class=p>&lt;</span> <span class=n>DateTime</span><span class=p>.</span><span class=n>UtcNow</span><span class=p>)</span>
+<span class=ln>38</span>            <span class=p>{</span>
+<span class=ln>39</span>                <span class=k>continue</span><span class=p>;</span>
+<span class=ln>40</span>            <span class=p>}</span>
+<span class=ln>41</span>
+<span class=ln>42</span>            <span class=c1>// 请求过期
+</span><span class=ln>43</span><span class=c1></span>            <span class=k>if</span> <span class=p>(</span><span class=n>rateLimitCounter</span><span class=p>.</span><span class=n>Count</span> <span class=p>&gt;</span> <span class=n>rule</span><span class=p>.</span><span class=n>Limit</span><span class=p>)</span>
+<span class=ln>44</span>            <span class=p>{</span>
+<span class=ln>45</span>                <span class=c1>// 各种记日志，告诉调用者多长时间后再重试
+</span><span class=ln>46</span><span class=c1></span>                <span class=kt>var</span> <span class=n>retryAfter</span> <span class=p>=</span> <span class=n>rateLimitCounter</span><span class=p>.</span><span class=n>Timestamp</span><span class=p>.</span><span class=n>RetryAfterFrom</span><span class=p>(</span><span class=n>rule</span><span class=p>);</span>
+<span class=ln>47</span>                
+<span class=ln>48</span>                <span class=c1>// ...
+</span><span class=ln>49</span><span class=c1></span>
+<span class=ln>50</span>                <span class=c1>// 中止请求
+</span><span class=ln>51</span><span class=c1></span>                <span class=k>await</span> <span class=n>ReturnQuotaExceededResponse</span><span class=p>(</span><span class=n>context</span><span class=p>,</span> <span class=n>rule</span><span class=p>,</span> <span class=n>retryAfter</span><span class=p>);</span>
+<span class=ln>52</span>                <span class=k>return</span><span class=p>;</span>
+<span class=ln>53</span>            <span class=p>}</span>
+<span class=ln>54</span>        <span class=p>}</span>
+<span class=ln>55</span>        <span class=k>else</span>
+<span class=ln>56</span>        <span class=p>{</span>
+<span class=ln>57</span>            <span class=c1>// Limit &lt;= 0, 相当于直接不允许放行，中止请求
+</span><span class=ln>58</span><span class=c1></span>            <span class=k>await</span> <span class=n>ReturnQuotaExceededResponse</span><span class=p>(</span>
+<span class=ln>59</span>                <span class=n>context</span><span class=p>,</span> 
+<span class=ln>60</span>                <span class=n>rule</span><span class=p>,</span> 
+<span class=ln>61</span>                <span class=kt>int</span><span class=p>.</span><span class=n>MaxValue</span><span class=p>.</span><span class=n>ToString</span><span class=p>(</span><span class=n>System</span><span class=p>.</span><span class=n>Globalization</span><span class=p>.</span><span class=n>CultureInfo</span><span class=p>.</span><span class=n>InvariantCulture</span><span class=p>)</span>
+<span class=ln>62</span>            <span class=p>);</span> 
+<span class=ln>63</span>        <span class=p>}</span>
+<span class=ln>64</span>
+<span class=ln>65</span>        <span class=c1>// ...
+</span><span class=ln>66</span><span class=c1></span>    <span class=p>}</span>
+<span class=ln>67</span>
+<span class=ln>68</span>    <span class=c1>// 设置X-Rate-Limit头
+</span><span class=ln>69</span><span class=c1></span>    <span class=c1>// ...
+</span><span class=ln>70</span><span class=c1></span>
+<span class=ln>71</span>    <span class=k>await</span> <span class=m>_</span><span class=n>next</span><span class=p>.</span><span class=n>Invoke</span><span class=p>(</span><span class=n>context</span><span class=p>);</span>
+<span class=ln>72</span><span class=p>}</span>
+</code></pre></div><h1 id=本文小结>本文小结</h1>
+<p>作为 <a class=link href=https://blog.yuanpei.me/posts/18417412/ target=_blank rel=noopener>并发限制</a> 这一篇的“姊妹篇”，这一篇的难度相对上一篇堪称“高山仰止”，主要的难点是 <strong>SpinLock</strong> 、“一读多写”的异步读写锁 <strong>AsyncKeyLock</strong> 以及 <strong>AsyncKeyLockDoorman</strong> 。如果大家感兴趣的话，可以去搜索一下 <strong>AsyncKeyLock</strong> 这个关键字，大家就会发现在好多<a class=link href=https://github.com/SixLabors/ImageSharp.Web/ target=_blank rel=noopener>开源项目</a> 中都能找到类似的代码片段，莫非这是某种神奇的算法吗？阅读源代码，其实是一个无法“立竿见影”的学习方法，有时候我们要通过叙述或者表达来输出我们对待一件事物的看法。这是因为，我们自以为是的“学会”和真正的“学会”，这两者间可能千差万别，就像我最近在用 <a class=link href=https://abp.io target=_blank rel=noopener>ABP vNext</a> 搭建一个小项目，阅读文档的时候，眼睛觉得它“学会”了，而实际需要需要扩展或者替换 ABP 的实体/服务的时候。我的手会告诉我，它真的“不会”。做一个知难行易的“调包”侠也许会非常容易，可正因为如此，你要凸显自我就会非常困难。世上的事情，“<strong>夫夷以近，则游者众；险以远，则至者少。而世之奇伟、瑰怪，非常之观，常在于险远，而人之所罕至焉，故非有志者不能至也</strong>”，哪怕就是增长一下见识呢，你说对吧……</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E9%99%90%E6%B5%81/>限流</a>
+<a href=/tags/.net-core/>.NET Core</a>
+<a href=/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/>中间件</a>
+<a href=/tags/%E6%BA%90%E7%A0%81/>源码</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E5%B9%B6%E5%8F%91%E9%99%90%E5%88%B6%E4%B8%AD%E9%97%B4%E4%BB%B6-concurrencylimiter/>
+<div class=article-details>
+<h2 class=article-title>源代码探案系列之 .NET Core 并发限制中间件 ConcurrencyLimiter</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E8%B7%A8%E5%9F%9F%E4%B8%AD%E9%97%B4%E4%BB%B6-cors/>
+<div class=article-details>
+<h2 class=article-title>源代码探案系列之 .NET Core 跨域中间件 CORS</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E9%80%9A%E8%BF%87-embededfileprovider-%E5%AE%9E%E7%8E%B0-blazor-%E7%9A%84%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE/>
+<div class=article-details>
+<h2 class=article-title>通过 EmbededFileProvider 实现 Blazor 的静态文件访问</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%B8%80%E9%81%93-hashset-%E9%9D%A2%E8%AF%95%E9%A2%98%E5%BC%95%E5%8F%91%E7%9A%84%E8%9D%B4%E8%9D%B6%E6%95%88%E5%BA%94/>
+<div class=article-details>
+<h2 class=article-title>一道 HashSet 面试题引发的蝴蝶效应</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/.net-core-%E4%B8%AD%E5%AF%B9%E8%B1%A1%E6%B1%A0object-pool%E7%9A%84%E4%BD%BF%E7%94%A8/>
+<div class=article-details>
+<h2 class=article-title>.NET Core 中对象池(Object Pool)的使用</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#源代码解读>源代码解读</a>
+<ol>
+<li><a href=#ratelimitprocessor>RateLimitProcessor</a></li>
+<li><a href=#asynckeylock>AsyncKeyLock</a></li>
+<li><a href=#ratelimitmiddleware>RateLimitMiddleware</a></li>
+</ol>
+</li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

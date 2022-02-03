@@ -1,0 +1,418 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="相信大家还记得我们在《C#中 Socket 通信编程的同步实现》这篇文章中使用多线程来实现简单聊天的案例吧，在这个案例中我们需要开启两个线程来不断监听客户端的连接和客户端的消息，这样的效率肯定是很低的;if (socket == null || message == string.Empty) return;在 Socket 的异步编程中，服务端不需要为一个客户端单独创建一个线程来维护其连接，可是这样带来的一个问题就是博主不知道该如何实现一个多客户端的异步编程的实例"><title>C#中 Socket 通信编程的异步实现</title>
+<link rel=canonical href=/posts/c#%E4%B8%AD-socket-%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%BC%82%E6%AD%A5%E5%AE%9E%E7%8E%B0/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="C#中 Socket 通信编程的异步实现">
+<meta property="og:description" content="相信大家还记得我们在《C#中 Socket 通信编程的同步实现》这篇文章中使用多线程来实现简单聊天的案例吧，在这个案例中我们需要开启两个线程来不断监听客户端的连接和客户端的消息，这样的效率肯定是很低的;if (socket == null || message == string.Empty) return;在 Socket 的异步编程中，服务端不需要为一个客户端单独创建一个线程来维护其连接，可是这样带来的一个问题就是博主不知道该如何实现一个多客户端的异步编程的实例">
+<meta property="og:url" content="/posts/c#%E4%B8%AD-socket-%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%BC%82%E6%AD%A5%E5%AE%9E%E7%8E%B0/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Socket"><meta property="article:tag" content="异步"><meta property="article:tag" content="通信"><meta property="article:tag" content="编程"><meta property="article:published_time" content="2015-03-22T09:37:04+00:00"><meta property="article:modified_time" content="2015-03-22T09:37:04+00:00">
+<meta name=twitter:title content="C#中 Socket 通信编程的异步实现">
+<meta name=twitter:description content="相信大家还记得我们在《C#中 Socket 通信编程的同步实现》这篇文章中使用多线程来实现简单聊天的案例吧，在这个案例中我们需要开启两个线程来不断监听客户端的连接和客户端的消息，这样的效率肯定是很低的;if (socket == null || message == string.Empty) return;在 Socket 的异步编程中，服务端不需要为一个客户端单独创建一个线程来维护其连接，可是这样带来的一个问题就是博主不知道该如何实现一个多客户端的异步编程的实例">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/c#%E4%B8%AD-socket-%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%BC%82%E6%AD%A5%E5%AE%9E%E7%8E%B0/>C#中 Socket 通信编程的异步实现</a>
+</h2>
+<h3 class=article-subtitle>
+相信大家还记得我们在《C#中 Socket 通信编程的同步实现》这篇文章中使用多线程来实现简单聊天的案例吧，在这个案例中我们需要开启两个线程来不断监听客户端的连接和客户端的消息，这样的效率肯定是很低的;if (socket == null || message == string.Empty) return;在 Socket 的异步编程中，服务端不需要为一个客户端单独创建一个线程来维护其连接，可是这样带来的一个问题就是博主不知道该如何实现一个多客户端的异步编程的实例
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Mar 22, 2015</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 3 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>本文将在 C#中 Socket 同步通信的基础上，分析和研究 Socket 异步编程的实现方法，目的是深入了解 Socket 编程的基本原理，增强对网络游戏开发相关内容的认识。</p>
+<h1 id=什么是-socket-编程的异步的实现>什么是 Socket 编程的异步的实现</h1>
+<p>所谓 Socket 编程的异步实现是指按照异步过程来实现 Socket 编程，那么什么是异步过程呢，我们把在完成了一次调用后通过状态、通知和回调来告知调用者的方式成为异步过程，换句话说，在异步过程中当调用一个方法时，调用者并不能够立刻得到结果，只有当这个方法调用完毕后调用者才能获得调用结果。这样做的好处是什么呢？答案是高效。相信大家还记得我们在《C#中 Socket 通信编程的同步实现》这篇文章中使用多线程来实现简单聊天的案例吧，在这个案例中我们需要开启两个线程来不断监听客户端的连接和客户端的消息，这样的效率肯定是很低的。那么现在好了，我们可以通过异步过程来解决这个问题，下面我们就来看看如何实现 Socket 的异步通信。</p>
+<h1 id=如何实现-socket-异步通信>如何实现 Socket 异步通信</h1>
+<h2 id=服务端>服务端</h2>
+<h3 id=基本流程>基本流程</h3>
+<ul>
+<li>创建套接字</li>
+<li>绑定套接字的 IP 和端口号——Bind()</li>
+<li>使套接字处于监听状态等待客户端的连接请求——Listen()</li>
+<li>当请求到来后，使用 BeginAccept()和 EndAccept()方法接受请求，返回新的套接字</li>
+<li>使用 BeginSend()/EndSend 和 BeginReceive()/EndReceive()两组方法与客户端进行收发通信</li>
+<li>返回，再次等待新的连接请求</li>
+<li>关闭套接字</li>
+</ul>
+<h3 id=代码示例>代码示例</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
+<span class=ln> 2</span><span class=k>using</span> <span class=nn>System.Collections.Generic</span><span class=p>;</span>
+<span class=ln> 3</span><span class=k>using</span> <span class=nn>System.Text</span><span class=p>;</span>
+<span class=ln> 4</span><span class=k>using</span> <span class=nn>System.Net</span><span class=p>;</span>
+<span class=ln> 5</span><span class=k>using</span> <span class=nn>System.Net.Sockets</span><span class=p>;</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span><span class=k>namespace</span> <span class=nn>AsyncServer</span>
+<span class=ln> 8</span><span class=p>{</span>
+<span class=ln> 9</span>    <span class=k>public</span> <span class=k>class</span> <span class=nc>AsyncTCPServer</span>
+<span class=ln>10</span>    <span class=p>{</span>
+<span class=ln>11</span>        <span class=k>public</span> <span class=k>void</span> <span class=n>Start</span><span class=p>()</span>
+<span class=ln>12</span>        <span class=p>{</span>
+<span class=ln>13</span>            <span class=c1>//创建套接字
+</span><span class=ln>14</span><span class=c1></span>            <span class=n>IPEndPoint</span> <span class=n>ipe</span> <span class=p>=</span> <span class=k>new</span> <span class=n>IPEndPoint</span><span class=p>(</span><span class=n>IPAddress</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=s>&#34;127.0.0.1&#34;</span><span class=p>),</span> <span class=m>6065</span><span class=p>);</span>
+<span class=ln>15</span>            <span class=n>Socket</span> <span class=n>socket</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Socket</span><span class=p>(</span><span class=n>AddressFamily</span><span class=p>.</span><span class=n>InterNetwork</span><span class=p>,</span> <span class=n>SocketType</span><span class=p>.</span><span class=n>Stream</span><span class=p>,</span> <span class=n>ProtocolType</span><span class=p>.</span><span class=n>Tcp</span><span class=p>);</span>
+<span class=ln>16</span>            <span class=c1>//绑定端口和IP
+</span><span class=ln>17</span><span class=c1></span>            <span class=n>socket</span><span class=p>.</span><span class=n>Bind</span><span class=p>(</span><span class=n>ipe</span><span class=p>);</span>
+<span class=ln>18</span>            <span class=c1>//设置监听
+</span><span class=ln>19</span><span class=c1></span>            <span class=n>socket</span><span class=p>.</span><span class=n>Listen</span><span class=p>(</span><span class=m>10</span><span class=p>);</span>
+<span class=ln>20</span>            <span class=c1>//连接客户端
+</span><span class=ln>21</span><span class=c1></span>            <span class=n>AsyncAccept</span><span class=p>(</span><span class=n>socket</span><span class=p>);</span>
+<span class=ln>22</span>        <span class=p>}</span>
+<span class=ln>23</span>
+<span class=ln>24</span>        <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>25</span><span class=c1></span>        <span class=c1>/// 连接到客户端
+</span><span class=ln>26</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>27</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;socket&#34;&gt;&lt;/param&gt;
+</span><span class=ln>28</span><span class=c1></span>        <span class=k>private</span> <span class=k>void</span> <span class=n>AsyncAccept</span><span class=p>(</span><span class=n>Socket</span> <span class=n>socket</span><span class=p>)</span>
+<span class=ln>29</span>        <span class=p>{</span>
+<span class=ln>30</span>            <span class=n>socket</span><span class=p>.</span><span class=n>BeginAccept</span><span class=p>(</span><span class=n>asyncResult</span> <span class=p>=&gt;</span>
+<span class=ln>31</span>            <span class=p>{</span>
+<span class=ln>32</span>                <span class=c1>//获取客户端套接字
+</span><span class=ln>33</span><span class=c1></span>                <span class=n>Socket</span> <span class=n>client</span> <span class=p>=</span> <span class=n>socket</span><span class=p>.</span><span class=n>EndAccept</span><span class=p>(</span><span class=n>asyncResult</span><span class=p>);</span>
+<span class=ln>34</span>                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;客户端{0}请求连接...&#34;</span><span class=p>,</span> <span class=n>client</span><span class=p>.</span><span class=n>RemoteEndPoint</span><span class=p>));</span>
+<span class=ln>35</span>                <span class=n>AsyncSend</span><span class=p>(</span><span class=n>client</span><span class=p>,</span> <span class=s>&#34;服务器收到连接请求&#34;</span><span class=p>);</span>
+<span class=ln>36</span>                <span class=n>AsyncSend</span><span class=p>(</span><span class=n>client</span><span class=p>,</span> <span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;欢迎你{0}&#34;</span><span class=p>,</span><span class=n>client</span><span class=p>.</span><span class=n>RemoteEndPoint</span><span class=p>));</span>
+<span class=ln>37</span>                <span class=n>AsyncReveive</span><span class=p>(</span><span class=n>client</span><span class=p>);</span>
+<span class=ln>38</span>            <span class=p>},</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln>39</span>        <span class=p>}</span>
+<span class=ln>40</span>
+<span class=ln>41</span>        <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>42</span><span class=c1></span>        <span class=c1>/// 接收消息
+</span><span class=ln>43</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>44</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;client&#34;&gt;&lt;/param&gt;
+</span><span class=ln>45</span><span class=c1></span>        <span class=k>private</span> <span class=k>void</span> <span class=n>AsyncReveive</span><span class=p>(</span><span class=n>Socket</span> <span class=n>socket</span><span class=p>)</span>
+<span class=ln>46</span>        <span class=p>{</span>
+<span class=ln>47</span>            <span class=kt>byte</span><span class=p>[]</span> <span class=n>data</span> <span class=p>=</span> <span class=k>new</span> <span class=kt>byte</span><span class=p>[</span><span class=m>1024</span><span class=p>];</span>
+<span class=ln>48</span>            <span class=k>try</span>
+<span class=ln>49</span>            <span class=p>{</span>
+<span class=ln>50</span>                <span class=c1>//开始接收消息
+</span><span class=ln>51</span><span class=c1></span>                <span class=n>socket</span><span class=p>.</span><span class=n>BeginReceive</span><span class=p>(</span><span class=n>data</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>data</span><span class=p>.</span><span class=n>Length</span><span class=p>,</span> <span class=n>SocketFlags</span><span class=p>.</span><span class=n>None</span><span class=p>,</span>
+<span class=ln>52</span>                <span class=n>asyncResult</span> <span class=p>=&gt;</span>
+<span class=ln>53</span>                <span class=p>{</span>
+<span class=ln>54</span>                    <span class=kt>int</span> <span class=n>length</span> <span class=p>=</span> <span class=n>socket</span><span class=p>.</span><span class=n>EndReceive</span><span class=p>(</span><span class=n>asyncResult</span><span class=p>);</span>
+<span class=ln>55</span>                    <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;客户端发送消息:{0}&#34;</span><span class=p>,</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>data</span><span class=p>)));</span>
+<span class=ln>56</span>                <span class=p>},</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln>57</span>            <span class=p>}</span>
+<span class=ln>58</span>            <span class=k>catch</span> <span class=p>(</span><span class=n>Exception</span> <span class=n>ex</span><span class=p>)</span>
+<span class=ln>59</span>            <span class=p>{</span>
+<span class=ln>60</span>                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=n>ex</span><span class=p>.</span><span class=n>Message</span><span class=p>);</span>
+<span class=ln>61</span>            <span class=p>}</span>
+<span class=ln>62</span>        <span class=p>}</span>
+<span class=ln>63</span>
+<span class=ln>64</span>        <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>65</span><span class=c1></span>        <span class=c1>/// 发送消息
+</span><span class=ln>66</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>67</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;client&#34;&gt;&lt;/param&gt;
+</span><span class=ln>68</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;p&#34;&gt;&lt;/param&gt;
+</span><span class=ln>69</span><span class=c1></span>        <span class=k>private</span> <span class=k>void</span> <span class=n>AsyncSend</span><span class=p>(</span><span class=n>Socket</span> <span class=n>client</span><span class=p>,</span> <span class=kt>string</span> <span class=n>p</span><span class=p>)</span>
+<span class=ln>70</span>        <span class=p>{</span>
+<span class=ln>71</span>            <span class=k>if</span> <span class=p>(</span><span class=n>client</span> <span class=p>==</span> <span class=k>null</span> <span class=p>||</span> <span class=n>p</span> <span class=p>==</span> <span class=kt>string</span><span class=p>.</span><span class=n>Empty</span><span class=p>)</span> <span class=k>return</span><span class=p>;</span>
+<span class=ln>72</span>            <span class=c1>//数据转码
+</span><span class=ln>73</span><span class=c1></span>            <span class=kt>byte</span><span class=p>[]</span> <span class=n>data</span> <span class=p>=</span> <span class=k>new</span> <span class=kt>byte</span><span class=p>[</span><span class=m>1024</span><span class=p>];</span>
+<span class=ln>74</span>            <span class=n>data</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>p</span><span class=p>);</span>
+<span class=ln>75</span>            <span class=k>try</span>
+<span class=ln>76</span>            <span class=p>{</span>
+<span class=ln>77</span>                <span class=c1>//开始发送消息
+</span><span class=ln>78</span><span class=c1></span>                <span class=n>client</span><span class=p>.</span><span class=n>BeginSend</span><span class=p>(</span><span class=n>data</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>data</span><span class=p>.</span><span class=n>Length</span><span class=p>,</span> <span class=n>SocketFlags</span><span class=p>.</span><span class=n>None</span><span class=p>,</span> <span class=n>asyncResult</span> <span class=p>=&gt;</span>
+<span class=ln>79</span>                <span class=p>{</span>
+<span class=ln>80</span>                    <span class=c1>//完成消息发送
+</span><span class=ln>81</span><span class=c1></span>                    <span class=kt>int</span> <span class=n>length</span> <span class=p>=</span> <span class=n>client</span><span class=p>.</span><span class=n>EndSend</span><span class=p>(</span><span class=n>asyncResult</span><span class=p>);</span>
+<span class=ln>82</span>                    <span class=c1>//输出消息
+</span><span class=ln>83</span><span class=c1></span>                    <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;服务器发出消息:{0}&#34;</span><span class=p>,</span> <span class=n>p</span><span class=p>));</span>
+<span class=ln>84</span>                <span class=p>},</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln>85</span>            <span class=p>}</span>
+<span class=ln>86</span>            <span class=k>catch</span> <span class=p>(</span><span class=n>Exception</span> <span class=n>e</span><span class=p>)</span>
+<span class=ln>87</span>            <span class=p>{</span>
+<span class=ln>88</span>                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=n>e</span><span class=p>.</span><span class=n>Message</span><span class=p>);</span>
+<span class=ln>89</span>            <span class=p>}</span>
+<span class=ln>90</span>        <span class=p>}</span>
+<span class=ln>91</span>    <span class=p>}</span>
+<span class=ln>92</span><span class=p>}</span>
+</code></pre></div><h2 id=客户端>客户端</h2>
+<h3 id=基本流程-1>基本流程</h3>
+<ul>
+<li>创建套接字并保证与服务器的端口一致</li>
+<li>使用 BeginConnect()和 EndConnect()这组方法向服务端发送连接请求</li>
+<li>使用 BeginSend()/EndSend 和 BeginReceive()/EndReceive()两组方法与服务端进行收发通信</li>
+<li>关闭套接字</li>
+</ul>
+<h3 id=代码示例-1>代码示例</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>using</span> <span class=nn>System</span><span class=p>;</span>
+<span class=ln> 2</span><span class=k>using</span> <span class=nn>System.Collections.Generic</span><span class=p>;</span>
+<span class=ln> 3</span><span class=k>using</span> <span class=nn>System.Text</span><span class=p>;</span>
+<span class=ln> 4</span><span class=k>using</span> <span class=nn>System.Net</span><span class=p>;</span>
+<span class=ln> 5</span><span class=k>using</span> <span class=nn>System.Net.Sockets</span><span class=p>;</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span><span class=k>namespace</span> <span class=nn>AsyncClient</span>
+<span class=ln> 8</span><span class=p>{</span>
+<span class=ln> 9</span>    <span class=k>public</span> <span class=k>class</span> <span class=nc>AsyncTCPClient</span>
+<span class=ln>10</span>    <span class=p>{</span>
+<span class=ln>11</span>        <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>12</span><span class=c1></span>        <span class=c1>/// 连接到服务器
+</span><span class=ln>13</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>14</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>AsynConnect</span><span class=p>()</span>
+<span class=ln>15</span>        <span class=p>{</span>
+<span class=ln>16</span>            <span class=c1>//端口及IP
+</span><span class=ln>17</span><span class=c1></span>            <span class=n>IPEndPoint</span> <span class=n>ipe</span> <span class=p>=</span> <span class=k>new</span> <span class=n>IPEndPoint</span><span class=p>(</span><span class=n>IPAddress</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=s>&#34;127.0.0.1&#34;</span><span class=p>),</span> <span class=m>6065</span><span class=p>);</span>
+<span class=ln>18</span>            <span class=c1>//创建套接字
+</span><span class=ln>19</span><span class=c1></span>            <span class=n>Socket</span> <span class=n>client</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Socket</span><span class=p>(</span><span class=n>AddressFamily</span><span class=p>.</span><span class=n>InterNetwork</span><span class=p>,</span> <span class=n>SocketType</span><span class=p>.</span><span class=n>Stream</span><span class=p>,</span> <span class=n>ProtocolType</span><span class=p>.</span><span class=n>Tcp</span><span class=p>);</span>
+<span class=ln>20</span>            <span class=c1>//开始连接到服务器
+</span><span class=ln>21</span><span class=c1></span>            <span class=n>client</span><span class=p>.</span><span class=n>BeginConnect</span><span class=p>(</span><span class=n>ipe</span><span class=p>,</span> <span class=n>asyncResult</span> <span class=p>=&gt;</span>
+<span class=ln>22</span>            <span class=p>{</span>
+<span class=ln>23</span>                <span class=n>client</span><span class=p>.</span><span class=n>EndConnect</span><span class=p>(</span><span class=n>asyncResult</span><span class=p>);</span>
+<span class=ln>24</span>                <span class=c1>//向服务器发送消息
+</span><span class=ln>25</span><span class=c1></span>                <span class=n>AsynSend</span><span class=p>(</span><span class=n>client</span><span class=p>,</span><span class=s>&#34;你好我是客户端&#34;</span><span class=p>);</span>
+<span class=ln>26</span>                <span class=n>AsynSend</span><span class=p>(</span><span class=n>client</span><span class=p>,</span> <span class=s>&#34;第一条消息&#34;</span><span class=p>);</span>
+<span class=ln>27</span>                <span class=n>AsynSend</span><span class=p>(</span><span class=n>client</span><span class=p>,</span> <span class=s>&#34;第二条消息&#34;</span><span class=p>);</span>
+<span class=ln>28</span>                <span class=c1>//接受消息
+</span><span class=ln>29</span><span class=c1></span>                <span class=n>AsynRecive</span><span class=p>(</span><span class=n>client</span><span class=p>);</span>
+<span class=ln>30</span>            <span class=p>},</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln>31</span>        <span class=p>}</span>
+<span class=ln>32</span>
+<span class=ln>33</span>        <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>34</span><span class=c1></span>        <span class=c1>/// 发送消息
+</span><span class=ln>35</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>36</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;socket&#34;&gt;&lt;/param&gt;
+</span><span class=ln>37</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;message&#34;&gt;&lt;/param&gt;
+</span><span class=ln>38</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>AsynSend</span><span class=p>(</span><span class=n>Socket</span> <span class=n>socket</span><span class=p>,</span> <span class=kt>string</span> <span class=n>message</span><span class=p>)</span>
+<span class=ln>39</span>        <span class=p>{</span>
+<span class=ln>40</span>            <span class=k>if</span> <span class=p>(</span><span class=n>socket</span> <span class=p>==</span> <span class=k>null</span> <span class=p>||</span> <span class=n>message</span> <span class=p>==</span> <span class=kt>string</span><span class=p>.</span><span class=n>Empty</span><span class=p>)</span> <span class=k>return</span><span class=p>;</span>
+<span class=ln>41</span>            <span class=c1>//编码
+</span><span class=ln>42</span><span class=c1></span>            <span class=kt>byte</span><span class=p>[]</span> <span class=n>data</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>message</span><span class=p>);</span>
+<span class=ln>43</span>            <span class=k>try</span>
+<span class=ln>44</span>            <span class=p>{</span>
+<span class=ln>45</span>                <span class=n>socket</span><span class=p>.</span><span class=n>BeginSend</span><span class=p>(</span><span class=n>data</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>data</span><span class=p>.</span><span class=n>Length</span><span class=p>,</span> <span class=n>SocketFlags</span><span class=p>.</span><span class=n>None</span><span class=p>,</span> <span class=n>asyncResult</span> <span class=p>=&gt;</span>
+<span class=ln>46</span>                <span class=p>{</span>
+<span class=ln>47</span>                    <span class=c1>//完成发送消息
+</span><span class=ln>48</span><span class=c1></span>                    <span class=kt>int</span> <span class=n>length</span> <span class=p>=</span> <span class=n>socket</span><span class=p>.</span><span class=n>EndSend</span><span class=p>(</span><span class=n>asyncResult</span><span class=p>);</span>
+<span class=ln>49</span>                    <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;客户端发送消息:{0}&#34;</span><span class=p>,</span> <span class=n>message</span><span class=p>));</span>
+<span class=ln>50</span>                <span class=p>},</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln>51</span>            <span class=p>}</span>
+<span class=ln>52</span>            <span class=k>catch</span> <span class=p>(</span><span class=n>Exception</span> <span class=n>ex</span><span class=p>)</span>
+<span class=ln>53</span>            <span class=p>{</span>
+<span class=ln>54</span>                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;异常信息：{0}&#34;</span><span class=p>,</span> <span class=n>ex</span><span class=p>.</span><span class=n>Message</span><span class=p>);</span>
+<span class=ln>55</span>            <span class=p>}</span>
+<span class=ln>56</span>        <span class=p>}</span>
+<span class=ln>57</span>
+<span class=ln>58</span>        <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>59</span><span class=c1></span>        <span class=c1>/// 接收消息
+</span><span class=ln>60</span><span class=c1></span>        <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>61</span><span class=c1></span>        <span class=c1>/// &lt;param name=&#34;socket&#34;&gt;&lt;/param&gt;
+</span><span class=ln>62</span><span class=c1></span>        <span class=k>public</span> <span class=k>void</span> <span class=n>AsynRecive</span><span class=p>(</span><span class=n>Socket</span> <span class=n>socket</span><span class=p>)</span>
+<span class=ln>63</span>        <span class=p>{</span>
+<span class=ln>64</span>            <span class=kt>byte</span><span class=p>[]</span> <span class=n>data</span> <span class=p>=</span> <span class=k>new</span> <span class=kt>byte</span><span class=p>[</span><span class=m>1024</span><span class=p>];</span>
+<span class=ln>65</span>            <span class=k>try</span>
+<span class=ln>66</span>            <span class=p>{</span>
+<span class=ln>67</span>                <span class=c1>//开始接收数据
+</span><span class=ln>68</span><span class=c1></span>                <span class=n>socket</span><span class=p>.</span><span class=n>BeginReceive</span><span class=p>(</span><span class=n>data</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>data</span><span class=p>.</span><span class=n>Length</span><span class=p>,</span> <span class=n>SocketFlags</span><span class=p>.</span><span class=n>None</span><span class=p>,</span>
+<span class=ln>69</span>                <span class=n>asyncResult</span> <span class=p>=&gt;</span>
+<span class=ln>70</span>                <span class=p>{</span>
+<span class=ln>71</span>                    <span class=kt>int</span> <span class=n>length</span> <span class=p>=</span> <span class=n>socket</span><span class=p>.</span><span class=n>EndReceive</span><span class=p>(</span><span class=n>asyncResult</span><span class=p>);</span>
+<span class=ln>72</span>                    <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;收到服务器消息:{0}&#34;</span><span class=p>,</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>data</span><span class=p>)));</span>
+<span class=ln>73</span>                    <span class=n>AsynRecive</span><span class=p>(</span><span class=n>socket</span><span class=p>);</span>
+<span class=ln>74</span>                <span class=p>},</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln>75</span>            <span class=p>}</span>
+<span class=ln>76</span>            <span class=k>catch</span> <span class=p>(</span><span class=n>Exception</span> <span class=n>ex</span><span class=p>)</span>
+<span class=ln>77</span>            <span class=p>{</span>
+<span class=ln>78</span>                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;异常信息：&#34;</span><span class=p>,</span> <span class=n>ex</span><span class=p>.</span><span class=n>Message</span><span class=p>);</span>
+<span class=ln>79</span>            <span class=p>}</span>
+<span class=ln>80</span>        <span class=p>}</span>
+<span class=ln>81</span>    <span class=p>}</span>
+<span class=ln>82</span><span class=p>}</span>
+<span class=ln>83</span>
+</code></pre></div><p>从总体上来讲 Socket 异步编程的逻辑性更加明确了，因为我们只需要为每一个过程写好回调函数就好了。那么这个示例的效果如何呢？我们来看看它的演示效果：</p>
+<p><figure>
+<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1fyzctofo6zj211y0lcdi3.jpg>
+<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1fyzctofo6zj211y0lcdi3.jpg loading=lazy alt=Socket异步编程效果演示>
+</a>
+<figcaption>Socket异步编程效果演示</figcaption>
+</figure></p>
+<h1 id=总结>总结</h1>
+<p>和 Socket 同步编程的案例相比，今天的这个案例可能只是对 Socket 异步编程内容的一个简单应用，因为博主到现在为止都还没有写出一个可以进行交互聊天的程序来。在 Socket 的异步编程中，服务端不需要为一个客户端单独创建一个线程来维护其连接，可是这样带来的一个问题就是博主不知道该如何实现一个多客户端的异步编程的实例。如果有朋友知道如何实现的话，还希望能够告诉我，毕竟学习就是一个相互促进的过程啊。好了，最后想说的是博主这段时间研究 Socket 异步编程中关于异步方法调用的写法问题。我们知道 Socket 异步编程中的方法是成对出现的，每一个方法都有一个回调函数，对于回调函数，这里有两种写法，以 BeginConnect 方法为例：</p>
+<pre tabindex=0><code class=language-csahrp data-lang=csahrp>m_Socket.BeginConnect(this.m_ipEndPoint, 
+        new AsyncCallback(this.ConnectCallBack), 
+        this.m_Socket);//其中ConnectCallBack是一个回调函数
+</code></pre><p>或者</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=n>m_Socket</span><span class=p>.</span><span class=n>BeginConnect</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=n>m_ipEndPoint</span><span class=p>,</span><span class=n>asyncResult</span><span class=p>=&gt;</span>
+<span class=ln>2</span><span class=p>{</span>
+<span class=ln>3</span>    <span class=c1>//在这里添加更多代码
+</span><span class=ln>4</span><span class=c1></span><span class=p>},</span><span class=k>null</span><span class=p>)</span>
+</code></pre></div><p>博主为什么要在这里说这两种写法呢，有两个原因：</p>
+<ul>
+<li>第二种写法更为简洁，无需去构造容器传递 Socket 和消息，因为它们都是局部变量。如果我们使用第一种方法，因为主函数和回调函数是两个不同的函数，因此如果想要共享变量就需要通过 IAsyncResult 接口来访问容器中的值，这样显然增加了我们的工作量。</li>
+<li>第二种写法更为优雅，这似乎是 C#语言中某种高级语法，具体叫什么我忘了，反正在 Linq 中经常看到这种写法的影子。</li>
+</ul>
+<p>综合以上两个观点，博主还是建议大家使用第二种写法，博主打算有空的话将之前写的程序再重新写一遍，看看能不能找出代码中的问题。好了，今天的内容就是这样了，谢谢大家，希望大家喜欢！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/socket/>Socket</a>
+<a href=/tags/%E5%BC%82%E6%AD%A5/>异步</a>
+<a href=/tags/%E9%80%9A%E4%BF%A1/>通信</a>
+<a href=/tags/%E7%BC%96%E7%A8%8B/>编程</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E5%BC%82%E6%AD%A5-lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F%E9%97%AE%E9%A2%98%E7%9A%84%E6%8E%A2%E7%B4%A2/>
+<div class=article-details>
+<h2 class=article-title>异步 Lambda 表达式问题的探索</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/c#%E4%B8%AD-socket-%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%90%8C%E6%AD%A5%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>C#中 Socket 通信编程的同步实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%8E%E4%BB%A3%E7%A0%81%E6%83%B3%E8%AF%B4%E7%88%B1%E4%BD%A0%E4%B8%8D%E5%AE%B9%E6%98%93/>
+<div class=article-details>
+<h2 class=article-title>低代码，想说爱你不容易</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%B8%80%E9%81%93-hashset-%E9%9D%A2%E8%AF%95%E9%A2%98%E5%BC%95%E5%8F%91%E7%9A%84%E8%9D%B4%E8%9D%B6%E6%95%88%E5%BA%94/>
+<div class=article-details>
+<h2 class=article-title>一道 HashSet 面试题引发的蝴蝶效应</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/envoy-%E9%9B%86%E6%88%90-jaeger-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%B7%9F%E8%B8%AA/>
+<div class=article-details>
+<h2 class=article-title>Envoy 集成 Jaeger 实现分布式链路跟踪</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#什么是-socket-编程的异步的实现>什么是 Socket 编程的异步的实现</a></li>
+<li><a href=#如何实现-socket-异步通信>如何实现 Socket 异步通信</a>
+<ol>
+<li><a href=#服务端>服务端</a>
+<ol>
+<li><a href=#基本流程>基本流程</a></li>
+<li><a href=#代码示例>代码示例</a></li>
+</ol>
+</li>
+<li><a href=#客户端>客户端</a>
+<ol>
+<li><a href=#基本流程-1>基本流程</a></li>
+<li><a href=#代码示例-1>代码示例</a></li>
+</ol>
+</li>
+</ol>
+</li>
+<li><a href=#总结>总结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

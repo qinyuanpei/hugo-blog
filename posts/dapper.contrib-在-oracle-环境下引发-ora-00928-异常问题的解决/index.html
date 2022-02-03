@@ -1,0 +1,364 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="话说最近这两周里，被迫官宣996的生活实在是无趣，在两周时间里安排三周的工作量，倘若用丞相的口吻来说，那便是: 我从未见过有如此厚颜无耻之人。无法为工作的紧急程度排出优先级，这便是身为肉食者们的鄙。古人云：肉食者鄙，未能远谋，诚不欺我也。一味地追求快速迭代，“屎”山越滚越高没有人在乎；一味地追求功能叠加，技术债务越来越多没有人在乎。所以，本着“多一事不如少一事”的原则，直接通过 Dapper 写 SQL 语句一样没有问题，因为被压榨完以后的时间只能写这个。在今天的这篇博客里，我想和大家分享的是，Dapper.Contrib在操作 Oracle 数据库时引发 ORA-00928: 缺失 SELECT 关键字 这一错误背后的根本原因，以及 Dapper 作为一个轻量级 ORM 在设计上做出的取舍。
+问题回顾 在使用 Dapper.Contrib 操作 Oracle 数据库的时候，通过 Insert() 方法来插入一个实体对象，此时，会引发 ORA-00928: 缺失 SELECT 关键字 这种典型的 Oracle 数据库错误，对于经常使用 Dapper 的博主而言，对于 @ 还是 : 这种无聊的语法还是有一点经验的，在尝试手写 SQL 语句后，发现使用 Dapper 提供的 Execute() 扩展方法一点问题都没有，初步判定应该是 Dapper.Contrib 这个扩展库的问题，在翻阅 Dapper 的源代码以后，终于找到了问题的根源所在，所以，下面请跟随博主的目光，来一起解读解读 Dapper.Contrib 这个扩展库，相信你看完以后就会明白，为什么这里会被 Oracle 数据库摆上一道，以及为什么它至今都不考虑合并 Oracle 数据库相关的 PR。
+原因分析 众所周知，Dapper 的核心其实就是一个 SqlMapper ，它提供的 Query() 和 Execute() 接口本身都是附加在 IDbConnection 接口上的扩展方法，所以，最基础的 Dapper 用法其实是伴随着 SQL 语句和以匿名对象为主的参数化查询，这可以说是 Dapper 的核心，而 Dapper."><title>Dapper.Contrib 在 Oracle 环境下引发 ORA-00928 异常问题的解决</title>
+<link rel=canonical href=/posts/dapper.contrib-%E5%9C%A8-oracle-%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BC%95%E5%8F%91-ora-00928-%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="Dapper.Contrib 在 Oracle 环境下引发 ORA-00928 异常问题的解决">
+<meta property="og:description" content="话说最近这两周里，被迫官宣996的生活实在是无趣，在两周时间里安排三周的工作量，倘若用丞相的口吻来说，那便是: 我从未见过有如此厚颜无耻之人。无法为工作的紧急程度排出优先级，这便是身为肉食者们的鄙。古人云：肉食者鄙，未能远谋，诚不欺我也。一味地追求快速迭代，“屎”山越滚越高没有人在乎；一味地追求功能叠加，技术债务越来越多没有人在乎。所以，本着“多一事不如少一事”的原则，直接通过 Dapper 写 SQL 语句一样没有问题，因为被压榨完以后的时间只能写这个。在今天的这篇博客里，我想和大家分享的是，Dapper.Contrib在操作 Oracle 数据库时引发 ORA-00928: 缺失 SELECT 关键字 这一错误背后的根本原因，以及 Dapper 作为一个轻量级 ORM 在设计上做出的取舍。
+问题回顾 在使用 Dapper.Contrib 操作 Oracle 数据库的时候，通过 Insert() 方法来插入一个实体对象，此时，会引发 ORA-00928: 缺失 SELECT 关键字 这种典型的 Oracle 数据库错误，对于经常使用 Dapper 的博主而言，对于 @ 还是 : 这种无聊的语法还是有一点经验的，在尝试手写 SQL 语句后，发现使用 Dapper 提供的 Execute() 扩展方法一点问题都没有，初步判定应该是 Dapper.Contrib 这个扩展库的问题，在翻阅 Dapper 的源代码以后，终于找到了问题的根源所在，所以，下面请跟随博主的目光，来一起解读解读 Dapper.Contrib 这个扩展库，相信你看完以后就会明白，为什么这里会被 Oracle 数据库摆上一道，以及为什么它至今都不考虑合并 Oracle 数据库相关的 PR。
+原因分析 众所周知，Dapper 的核心其实就是一个 SqlMapper ，它提供的 Query() 和 Execute() 接口本身都是附加在 IDbConnection 接口上的扩展方法，所以，最基础的 Dapper 用法其实是伴随着 SQL 语句和以匿名对象为主的参数化查询，这可以说是 Dapper 的核心，而 Dapper.">
+<meta property="og:url" content="/posts/dapper.contrib-%E5%9C%A8-oracle-%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BC%95%E5%8F%91-ora-00928-%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Dapper"><meta property="article:tag" content="ORM"><meta property="article:tag" content="数据库"><meta property="article:tag" content="源码"><meta property="article:published_time" content="2020-09-05T14:28:20+00:00"><meta property="article:modified_time" content="2020-09-05T14:28:20+00:00">
+<meta name=twitter:title content="Dapper.Contrib 在 Oracle 环境下引发 ORA-00928 异常问题的解决">
+<meta name=twitter:description content="话说最近这两周里，被迫官宣996的生活实在是无趣，在两周时间里安排三周的工作量，倘若用丞相的口吻来说，那便是: 我从未见过有如此厚颜无耻之人。无法为工作的紧急程度排出优先级，这便是身为肉食者们的鄙。古人云：肉食者鄙，未能远谋，诚不欺我也。一味地追求快速迭代，“屎”山越滚越高没有人在乎；一味地追求功能叠加，技术债务越来越多没有人在乎。所以，本着“多一事不如少一事”的原则，直接通过 Dapper 写 SQL 语句一样没有问题，因为被压榨完以后的时间只能写这个。在今天的这篇博客里，我想和大家分享的是，Dapper.Contrib在操作 Oracle 数据库时引发 ORA-00928: 缺失 SELECT 关键字 这一错误背后的根本原因，以及 Dapper 作为一个轻量级 ORM 在设计上做出的取舍。
+问题回顾 在使用 Dapper.Contrib 操作 Oracle 数据库的时候，通过 Insert() 方法来插入一个实体对象，此时，会引发 ORA-00928: 缺失 SELECT 关键字 这种典型的 Oracle 数据库错误，对于经常使用 Dapper 的博主而言，对于 @ 还是 : 这种无聊的语法还是有一点经验的，在尝试手写 SQL 语句后，发现使用 Dapper 提供的 Execute() 扩展方法一点问题都没有，初步判定应该是 Dapper.Contrib 这个扩展库的问题，在翻阅 Dapper 的源代码以后，终于找到了问题的根源所在，所以，下面请跟随博主的目光，来一起解读解读 Dapper.Contrib 这个扩展库，相信你看完以后就会明白，为什么这里会被 Oracle 数据库摆上一道，以及为什么它至今都不考虑合并 Oracle 数据库相关的 PR。
+原因分析 众所周知，Dapper 的核心其实就是一个 SqlMapper ，它提供的 Query() 和 Execute() 接口本身都是附加在 IDbConnection 接口上的扩展方法，所以，最基础的 Dapper 用法其实是伴随着 SQL 语句和以匿名对象为主的参数化查询，这可以说是 Dapper 的核心，而 Dapper.">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+数据存储
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/dapper.contrib-%E5%9C%A8-oracle-%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BC%95%E5%8F%91-ora-00928-%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/>Dapper.Contrib 在 Oracle 环境下引发 ORA-00928 异常问题的解决</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Sep 05, 2020</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 5 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>话说最近这两周里，被迫官宣<strong>996</strong>的生活实在是无趣，在两周时间里安排三周的工作量，倘若用丞相的口吻来说，那便是: <strong>我从未见过有如此厚颜无耻之人</strong>。无法为工作的紧急程度排出优先级，这便是身为肉食者们的<strong>鄙</strong>。古人云：<strong>肉食者鄙，未能远谋</strong>，诚不欺我也。一味地追求快速迭代，“屎”山越滚越高没有人在乎；一味地追求功能叠加，技术债务越来越多没有人在乎。所以，本着“多一事不如少一事”的原则，直接通过 Dapper 写 SQL 语句一样没有问题，因为被压榨完以后的时间只能写这个。在今天的这篇博客里，我想和大家分享的是，<code>Dapper.Contrib</code>在操作 Oracle 数据库时引发 <strong>ORA-00928: 缺失 SELECT 关键字</strong> 这一错误背后的根本原因，以及 Dapper 作为一个轻量级 ORM 在设计上做出的取舍。</p>
+<h1 id=问题回顾>问题回顾</h1>
+<p>在使用 <code>Dapper.Contrib</code> 操作 Oracle 数据库的时候，通过 Insert() 方法来插入一个实体对象，此时，会引发 <strong>ORA-00928: 缺失 SELECT 关键字</strong> 这种典型的 Oracle 数据库错误，对于经常使用 Dapper 的博主而言，对于 <code>@</code> 还是 <code>:</code> 这种无聊的语法还是有一点经验的，在尝试手写 SQL 语句后，发现使用 Dapper 提供的 <code>Execute()</code> 扩展方法一点问题都没有，初步判定应该是 <code>Dapper.Contrib</code> 这个扩展库的问题，在翻阅 <code>Dapper</code> 的源代码以后，终于找到了问题的根源所在，所以，下面请跟随博主的目光，来一起解读解读 <code>Dapper.Contrib</code> 这个扩展库，相信你看完以后就会明白，为什么这里会被 Oracle 数据库摆上一道，以及为什么它至今都不考虑合并 Oracle 数据库相关的 PR。</p>
+<h1 id=原因分析>原因分析</h1>
+<p>众所周知，<code>Dapper</code> 的核心其实就是一个 SqlMapper ，它提供的 Query() 和 Execute() 接口本身都是附加在 <code>IDbConnection</code> 接口上的扩展方法，所以，最基础的 <code>Dapper</code> 用法其实是伴随着 SQL 语句和以匿名对象为主的参数化查询，这可以说是 Dapper 的核心，而 <code>Dapper.Contrib</code> 在这个基础上提供了 Get()、Insert()、Delete() 和 Update() 等等常见的 CRUD 方法，这些方法都针对的是单主键的表，让 <code>Dapper</code>有了一点 ORM 的感觉，可惜的是 <code>Dapper.Contrib</code> 的实现是不完整的，主要是指下面两个方面，即：第一，官方未能提供 Oracle 版本的 <code>ISqlAdapter</code>。第二，兼容不同数据库自增 ID 的实现，让官方在处理 Id 的参数化查询时束手束脚，对 <code>ISqlAdapter</code> 的设计并不全面。</p>
+<h2 id=oracle-版本的-isqladapter>Oracle 版本的 ISqlAdapter</h2>
+<p>首先，第一个结论，<code>Dapper.Contrib</code> 没有实现 Oracle 版本的 <code>ISqlAdapter</code> 。关于这个接口，我们可以在 <code>SqlMapperExtensions</code> 这个类中找到定义，而 <code>Dapper.Contrib</code> 内部实际上是维护了一个字典 <code>AdapterDictionary</code> ，在 <code>SqlMapperExtensions.cs</code> 文件的第 62 行 ~ 第 73 行，我们可以注意到，其内部提供了 6 种 <code>ISqlAdapter</code> 的实现，且默认为 <code>SqlServerAdapter</code> ：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>private</span> <span class=k>static</span> <span class=k>readonly</span> <span class=n>ISqlAdapter</span> <span class=n>DefaultAdapter</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SqlServerAdapter</span><span class=p>();</span>
+<span class=ln> 2</span><span class=k>private</span> <span class=k>static</span> <span class=k>readonly</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=n>ISqlAdapter</span><span class=p>&gt;</span> <span class=n>AdapterDictionary</span>
+<span class=ln> 3</span>    <span class=p>=</span> <span class=k>new</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=n>ISqlAdapter</span><span class=p>&gt;(</span><span class=m>6</span><span class=p>)</span>
+<span class=ln> 4</span>      <span class=p>{</span>
+<span class=ln> 5</span><span class=na>          [&#34;sqlconnection&#34;]</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SqlServerAdapter</span><span class=p>(),</span>
+<span class=ln> 6</span><span class=na>          [&#34;sqlceconnection&#34;]</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SqlCeServerAdapter</span><span class=p>(),</span>
+<span class=ln> 7</span><span class=na>          [&#34;npgsqlconnection&#34;]</span> <span class=p>=</span> <span class=k>new</span> <span class=n>PostgresAdapter</span><span class=p>(),</span>
+<span class=ln> 8</span><span class=na>          [&#34;sqliteconnection&#34;]</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SQLiteAdapter</span><span class=p>(),</span>
+<span class=ln> 9</span><span class=na>          [&#34;mysqlconnection&#34;]</span> <span class=p>=</span> <span class=k>new</span> <span class=n>MySqlAdapter</span><span class=p>(),</span>
+<span class=ln>10</span><span class=na>          [&#34;fbconnection&#34;]</span> <span class=p>=</span> <span class=k>new</span> <span class=n>FbAdapter</span><span class=p>()</span>
+<span class=ln>11</span>    <span class=p>};</span>
+</code></pre></div><p>一个自然而然的问题是，这个 <code>ISqlAdapter</code> 接口是做什么的呢？为什么说 <code>Dapper.Contrib</code> 没有实现 Oracle 版本的 ISqlAdapter 呢？如果我们看一下 <code>ISqlAdapter</code> 的定义，就可以了解到其作用是告诉 Dapper ，应该怎么样处理数据库里的自增 ID、怎么样表示 <code>Column = Value</code> 这样的结构，以及怎么样处理列名：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>partial</span> <span class=k>interface</span> <span class=n>ISqlAdapter</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=kt>int</span> <span class=n>Insert</span><span class=p>(</span><span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>transaction</span><span class=p>,</span> 
+<span class=ln> 4</span>        <span class=kt>int?</span> <span class=n>commandTimeout</span><span class=p>,</span> <span class=kt>string</span> <span class=n>tableName</span><span class=p>,</span> <span class=kt>string</span> <span class=n>columnList</span><span class=p>,</span> 
+<span class=ln> 5</span>        <span class=kt>string</span> <span class=n>parameterList</span><span class=p>,</span> <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>PropertyInfo</span><span class=p>&gt;</span> <span class=n>keyProperties</span><span class=p>,</span> 
+<span class=ln> 6</span>        <span class=kt>object</span> <span class=n>entityToInsert</span>
+<span class=ln> 7</span>    <span class=p>);</span>
+<span class=ln> 8</span>    <span class=k>void</span> <span class=n>AppendColumnName</span><span class=p>(</span><span class=n>StringBuilder</span> <span class=n>sb</span><span class=p>,</span> <span class=kt>string</span> <span class=n>columnName</span><span class=p>);</span>
+<span class=ln> 9</span>    <span class=k>void</span> <span class=n>AppendColumnNameEqualsValue</span><span class=p>(</span><span class=n>StringBuilder</span> <span class=n>sb</span><span class=p>,</span> <span class=kt>string</span> <span class=n>columnName</span><span class=p>);</span>
+<span class=ln>10</span><span class=p>}</span>
+</code></pre></div><p>这里以 <code>MySqlAdapter</code> 的实现为例：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>partial</span> <span class=k>class</span> <span class=nc>MySqlAdapter</span> <span class=p>:</span> <span class=n>ISqlAdapter</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>public</span> <span class=kt>int</span> <span class=n>Insert</span><span class=p>(</span><span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>transaction</span><span class=p>,</span> 
+<span class=ln> 4</span>        <span class=kt>int?</span> <span class=n>commandTimeout</span><span class=p>,</span> <span class=kt>string</span> <span class=n>tableName</span><span class=p>,</span> <span class=kt>string</span> <span class=n>columnList</span><span class=p>,</span> 
+<span class=ln> 5</span>        <span class=kt>string</span> <span class=n>parameterList</span><span class=p>,</span> <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>PropertyInfo</span><span class=p>&gt;</span> <span class=n>keyProperties</span><span class=p>,</span> 
+<span class=ln> 6</span>        <span class=kt>object</span> <span class=n>entityToInsert</span>
+<span class=ln> 7</span>    <span class=p>)</span>
+<span class=ln> 8</span>    <span class=p>{</span>
+<span class=ln> 9</span>        <span class=kt>var</span> <span class=n>cmd</span> <span class=p>=</span> <span class=s>$&#34;insert into {tableName} ({columnList}) values ({parameterList})&#34;</span><span class=p>;</span>
+<span class=ln>10</span>        <span class=n>connection</span><span class=p>.</span><span class=n>Execute</span><span class=p>(</span><span class=n>cmd</span><span class=p>,</span> <span class=n>entityToInsert</span><span class=p>,</span> <span class=n>transaction</span><span class=p>,</span> <span class=n>commandTimeout</span><span class=p>);</span>
+<span class=ln>11</span>        <span class=kt>var</span> <span class=n>r</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>Query</span><span class=p>(</span><span class=s>&#34;Select LAST_INSERT_ID() id&#34;</span><span class=p>,</span> <span class=n>transaction</span><span class=p>:</span> <span class=n>transaction</span><span class=p>,</span> <span class=n>commandTimeout</span><span class=p>:</span> <span class=n>commandTimeout</span><span class=p>);</span>
+<span class=ln>12</span>
+<span class=ln>13</span>        <span class=kt>var</span> <span class=n>id</span> <span class=p>=</span> <span class=n>r</span><span class=p>.</span><span class=n>First</span><span class=p>().</span><span class=n>id</span><span class=p>;</span>
+<span class=ln>14</span>        <span class=k>if</span> <span class=p>(</span><span class=n>id</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span> <span class=k>return</span> <span class=m>0</span><span class=p>;</span>
+<span class=ln>15</span>        <span class=kt>var</span> <span class=n>propertyInfos</span> <span class=p>=</span> <span class=n>keyProperties</span> <span class=k>as</span> <span class=n>PropertyInfo</span><span class=p>[]</span> <span class=p>??</span> <span class=n>keyProperties</span><span class=p>.</span><span class=n>ToArray</span><span class=p>();</span>
+<span class=ln>16</span>        <span class=k>if</span> <span class=p>(</span><span class=n>propertyInfos</span><span class=p>.</span><span class=n>Length</span> <span class=p>==</span> <span class=m>0</span><span class=p>)</span> <span class=k>return</span> <span class=n>Convert</span><span class=p>.</span><span class=n>ToInt32</span><span class=p>(</span><span class=n>id</span><span class=p>);</span>
+<span class=ln>17</span>
+<span class=ln>18</span>        <span class=kt>var</span> <span class=n>idp</span> <span class=p>=</span> <span class=n>propertyInfos</span><span class=p>[</span><span class=m>0</span><span class=p>];</span>
+<span class=ln>19</span>        <span class=n>idp</span><span class=p>.</span><span class=n>SetValue</span><span class=p>(</span><span class=n>entityToInsert</span><span class=p>,</span> <span class=n>Convert</span><span class=p>.</span><span class=n>ChangeType</span><span class=p>(</span><span class=n>id</span><span class=p>,</span> <span class=n>idp</span><span class=p>.</span><span class=n>PropertyType</span><span class=p>),</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln>20</span>
+<span class=ln>21</span>        <span class=k>return</span> <span class=n>Convert</span><span class=p>.</span><span class=n>ToInt32</span><span class=p>(</span><span class=n>id</span><span class=p>);</span>
+<span class=ln>22</span>    <span class=p>}</span>
+<span class=ln>23</span>
+<span class=ln>24</span>    <span class=k>public</span> <span class=k>void</span> <span class=n>AppendColumnName</span><span class=p>(</span><span class=n>StringBuilder</span> <span class=n>sb</span><span class=p>,</span> <span class=kt>string</span> <span class=n>columnName</span><span class=p>)</span>
+<span class=ln>25</span>    <span class=p>{</span>
+<span class=ln>26</span>        <span class=n>sb</span><span class=p>.</span><span class=n>AppendFormat</span><span class=p>(</span><span class=s>&#34;`{0}`&#34;</span><span class=p>,</span> <span class=n>columnName</span><span class=p>);</span>
+<span class=ln>27</span>    <span class=err>｝</span>
+<span class=ln>28</span>
+<span class=ln>29</span>    <span class=k>public</span> <span class=k>void</span> <span class=n>AppendColumnNameEqualsValue</span><span class=p>(</span><span class=n>StringBuilder</span> <span class=n>sb</span><span class=p>,</span> <span class=kt>string</span> <span class=n>columnName</span><span class=p>)</span>
+<span class=ln>30</span>    <span class=p>{</span>
+<span class=ln>31</span>        <span class=n>sb</span><span class=p>.</span><span class=n>AppendFormat</span><span class=p>(</span><span class=s>&#34;`{0}` = @{1}&#34;</span><span class=p>,</span> <span class=n>columnName</span><span class=p>,</span> <span class=n>columnName</span><span class=p>);</span>
+<span class=ln>32</span>    <span class=p>}</span>
+<span class=ln>33</span><span class=p>}</span>
+</code></pre></div><p>相信看到这里的时候，大家会和我一样感到失望，因为 Dapper 的底层依然是在拼 SQL ，尤其是看到 <code>AppendColumnNameEqualsValue()</code> 这个方法的时候，会有一种恍然大明白的感觉，因为 @ 这个符号对于 Dapper 的参数化查询而言，实在是熟悉得不能再熟悉了。我们都知道为 Dapper 写 SQL 语句的时候，要对 Oracle 区别对待，因为这个奇葩非要用 <code>:</code> 这个奇怪的符号。回到我们一开始的问题，为啥 <code>Dapper.Contrib</code> 在 Oracle 环境下会提示 <code>ORA-XXXXX</code> 这种鬼都看不明白的错误，因为它在处理 SQL 的语句的时候依然使用的是 <code>@</code> 这个符号。这又是为什么呢？因为当指定的 <code>IDbConnection</code> 在 <code>AdapterDictionary</code> 中不存在的时候，它会使用默认的 <code>SqlServerAdapter</code> ，显然，全世界只有 Oracle 这个奇葩会用 <code>:</code> 这个奇怪的符号。我们不是在调用 Insert() 方法的时候提示这个错误吗？那么 <code>Dapper.Contrib</code> 是怎么实现 <code>Insert()</code> 方法的呢？这个部分实现主要在第 352 行 ~ 第 360 行：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln>1</span><span class=kt>var</span> <span class=n>adapter</span> <span class=p>=</span> <span class=n>GetFormatter</span><span class=p>(</span><span class=n>connection</span><span class=p>);</span>
+<span class=ln>2</span>
+<span class=ln>3</span><span class=k>for</span> <span class=p>(</span><span class=kt>var</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>allPropertiesExceptKeyAndComputed</span><span class=p>.</span><span class=n>Count</span><span class=p>;</span> <span class=n>i</span><span class=p>++)</span>
+<span class=ln>4</span> <span class=p>{</span>
+<span class=ln>5</span>    <span class=kt>var</span> <span class=n>property</span> <span class=p>=</span> <span class=n>allPropertiesExceptKeyAndComputed</span><span class=p>[</span><span class=n>i</span><span class=p>];</span>
+<span class=ln>6</span>    <span class=n>adapter</span><span class=p>.</span><span class=n>AppendColumnName</span><span class=p>(</span><span class=n>sbColumnList</span><span class=p>,</span> <span class=n>property</span><span class=p>.</span><span class=n>Name</span><span class=p>);</span>  <span class=c1>//fix for issue #336
+</span><span class=ln>7</span><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=n>i</span> <span class=p>&lt;</span> <span class=n>allPropertiesExceptKeyAndComputed</span><span class=p>.</span><span class=n>Count</span> <span class=p>-</span> <span class=m>1</span><span class=p>)</span>
+<span class=ln>8</span>       <span class=n>sbColumnList</span><span class=p>.</span><span class=n>Append</span><span class=p>(</span><span class=s>&#34;, &#34;</span><span class=p>);</span>
+<span class=ln>9</span> <span class=p>}</span>
+</code></pre></div><p>显然，这部分是按照属性名去组织 <code>columnList</code> 和 <code>parameterList</code> 的过程，对于 Oracle ，永远是充满吐槽的，比如不加双引号则强制大写的设定，这意味着如果你的表名或者字段名是区分大小写的话，在 Oracle 这里都要加上双引号，这对 <code>Dapper.Contrib</code> 有什么影响呢？原本我们只需要给实体添加<code>[Table]</code>标签即可，而现在你不得不考虑带上反斜杠转义，甚至当你需要为 <code>DBeaver</code> 下载一个 JDBC 的驱动的时候，甲骨文这家公司居然要强制你去注册，对于一个习惯像<code>·.NET Core</code>、<code>GCC</code>、<code>Python</code>、<code>Lua</code> 和 <code>Node</code> 这样开箱即用的人来说，这就像强迫你注册一大堆真实信息，然后发现 API 接口完全无法匹配你的需求一样痛苦。关于 <code>GetFormatter()</code> 方法，它和我们猜想的完全一致：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln>1</span><span class=k>private</span> <span class=k>static</span> <span class=n>ISqlAdapter</span> <span class=n>GetFormatter</span><span class=p>(</span><span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>)</span>
+<span class=ln>2</span><span class=p>{</span>
+<span class=ln>3</span>   <span class=kt>var</span> <span class=n>name</span> <span class=p>=</span> <span class=n>GetDatabaseType</span><span class=p>?.</span><span class=n>Invoke</span><span class=p>(</span><span class=n>connection</span><span class=p>).</span><span class=n>ToLower</span><span class=p>()</span> <span class=p>??</span> <span class=n>connection</span><span class=p>.</span><span class=n>GetType</span><span class=p>().</span><span class=n>Name</span><span class=p>.</span><span class=n>ToLower</span><span class=p>();</span>
+<span class=ln>4</span>   <span class=k>return</span> <span class=n>AdapterDictionary</span><span class=p>.</span><span class=n>TryGetValue</span><span class=p>(</span><span class=n>name</span><span class=p>,</span> <span class=k>out</span> <span class=kt>var</span> <span class=n>adapter</span><span class=p>)</span> <span class=p>?</span> <span class=n>adapter</span> <span class=p>:</span> <span class=n>DefaultAdapter</span><span class=p>;</span>
+<span class=ln>5</span><span class=p>}</span>
+</code></pre></div><p>好了，在明白了以上种种因果关系以后，我们现在来考虑如何解决 Oracle 的问题。按照人类最直观的思维，既然它没有实现 Oracle 版本的 <code>ISqlAdapter</code> ，我自己实现一个不就好啦：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>class</span> <span class=nc>OracleSqlAdapter</span> <span class=p>:</span> <span class=n>ISqlAdapter</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>public</span> <span class=k>void</span> <span class=n>AppendColumnName</span><span class=p>(</span><span class=n>StringBuilder</span> <span class=n>sb</span><span class=p>,</span> <span class=kt>string</span> <span class=n>columnName</span><span class=p>)</span>
+<span class=ln> 4</span>   <span class=p>{</span>
+<span class=ln> 5</span>        <span class=n>sb</span><span class=p>.</span><span class=n>AppendFormat</span><span class=p>(</span><span class=s>&#34;{0}&#34;</span><span class=p>,</span> <span class=n>columnName</span><span class=p>);</span>
+<span class=ln> 6</span>   <span class=p>}</span>
+<span class=ln> 7</span>
+<span class=ln> 8</span>   <span class=k>public</span> <span class=k>void</span> <span class=n>AppendColumnNameEqualsValue</span><span class=p>(</span><span class=n>StringBuilder</span> <span class=n>sb</span><span class=p>,</span> <span class=kt>string</span> <span class=n>columnName</span><span class=p>)</span>
+<span class=ln> 9</span>   <span class=p>{</span>
+<span class=ln>10</span>        <span class=n>sb</span><span class=p>.</span><span class=n>AppendFormat</span><span class=p>(</span><span class=s>&#34;{0} = :{1}&#34;</span><span class=p>,</span> <span class=n>columnName</span><span class=p>,</span> <span class=n>columnName</span><span class=p>);</span>
+<span class=ln>11</span>   <span class=p>}</span>
+<span class=ln>12</span>
+<span class=ln>13</span>   <span class=k>public</span> <span class=kt>int</span> <span class=n>Insert</span><span class=p>(</span><span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>transaction</span><span class=p>,</span> <span class=kt>int?</span> <span class=n>commandTimeout</span><span class=p>,</span> <span class=kt>string</span> <span class=n>tableName</span><span class=p>,</span> 
+<span class=ln>14</span>            <span class=kt>string</span> <span class=n>columnList</span><span class=p>,</span> <span class=kt>string</span> <span class=n>parameterList</span><span class=p>,</span> <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>PropertyInfo</span><span class=p>&gt;</span> <span class=n>keyProperties</span><span class=p>,</span> <span class=kt>object</span> <span class=n>entityToInsert</span><span class=p>)</span>
+<span class=ln>15</span>   <span class=p>{</span>
+<span class=ln>16</span>        <span class=kt>var</span> <span class=n>sql</span> <span class=p>=</span> <span class=s>$&#34;insert into {tableName} ({columnList}) values ({parameterList})&#34;</span><span class=p>;</span>
+<span class=ln>17</span>        <span class=k>return</span> <span class=n>connection</span><span class=p>.</span><span class=n>Execute</span><span class=p>(</span><span class=n>sql</span><span class=p>,</span> <span class=n>entityToInsert</span><span class=p>,</span> <span class=n>transaction</span><span class=p>,</span> <span class=n>commandTimeout</span><span class=p>);</span>
+<span class=ln>18</span>    <span class=p>}</span>
+<span class=ln>19</span>
+<span class=ln>20</span>    <span class=k>public</span> <span class=n>Task</span><span class=p>&lt;</span><span class=kt>int</span><span class=p>&gt;</span> <span class=n>InsertAsync</span><span class=p>(</span><span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>transaction</span><span class=p>,</span> <span class=kt>int?</span> <span class=n>commandTimeout</span><span class=p>,</span> <span class=kt>string</span> <span class=n>tableName</span><span class=p>,</span> 
+<span class=ln>21</span>            <span class=kt>string</span> <span class=n>columnList</span><span class=p>,</span> <span class=kt>string</span> <span class=n>parameterList</span><span class=p>,</span> <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>PropertyInfo</span><span class=p>&gt;</span> <span class=n>keyProperties</span><span class=p>,</span> <span class=kt>object</span> <span class=n>entityToInsert</span><span class=p>)</span>
+<span class=ln>22</span>    <span class=p>{</span>
+<span class=ln>23</span>         <span class=kt>var</span> <span class=n>sql</span> <span class=p>=</span> <span class=s>$&#34;insert into {tableName} ({columnList}) values ({parameterList})&#34;</span><span class=p>;</span>
+<span class=ln>24</span>         <span class=k>return</span> <span class=n>connection</span><span class=p>.</span><span class=n>ExecuteAsync</span><span class=p>(</span><span class=n>sql</span><span class=p>,</span> <span class=n>entityToInsert</span><span class=p>,</span> <span class=n>transaction</span><span class=p>,</span> <span class=n>commandTimeout</span><span class=p>);</span>
+<span class=ln>25</span>    <span class=p>}</span>
+<span class=ln>26</span><span class=p>}</span>
+</code></pre></div><p>坦白说， <code>Dapper.Contrib</code> 这种纯静态类的设计，完全就不给别人留扩展的口子，为此，扩展方法 + 反射搞一个突破口：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span> <span class=k>public</span> <span class=k>static</span> <span class=k>class</span> <span class=nc>SqlAdapterrExtensions</span>
+<span class=ln> 2</span> <span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>public</span> <span class=k>static</span> <span class=k>void</span> <span class=n>UseSqlAdapter</span><span class=p>&lt;</span><span class=n>TSqlAdapter</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=n>TSqlAdapter</span> <span class=n>sqlAdapter</span><span class=p>)</span>
+<span class=ln> 4</span>        <span class=k>where</span> <span class=n>TSqlAdapter</span> <span class=p>:</span> <span class=n>ISqlAdapter</span><span class=p>,</span> <span class=k>new</span><span class=p>()</span>
+<span class=ln> 5</span>    <span class=p>{</span>
+<span class=ln> 6</span>        <span class=kt>var</span> <span class=n>adapters</span> <span class=p>=</span> <span class=p>(</span><span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=n>ISqlAdapter</span><span class=p>&gt;)</span>
+<span class=ln> 7</span>            <span class=k>typeof</span><span class=p>(</span><span class=n>SqlMapperExtensions</span><span class=p>)</span>
+<span class=ln> 8</span>            <span class=p>.</span><span class=n>GetField</span><span class=p>(</span><span class=s>&#34;AdapterDictionary&#34;</span><span class=p>,</span> <span class=n>BindingFlags</span><span class=p>.</span><span class=n>NonPublic</span> <span class=p>|</span> <span class=n>BindingFlags</span><span class=p>.</span><span class=n>Instance</span> <span class=p>|</span> <span class=n>BindingFlags</span><span class=p>.</span><span class=n>Static</span><span class=p>)</span>
+<span class=ln> 9</span>            <span class=p>?.</span><span class=n>GetValue</span><span class=p>(</span><span class=k>null</span><span class=p>);</span>
+<span class=ln>10</span>
+<span class=ln>11</span>        <span class=kt>var</span> <span class=n>connectionType</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>GetType</span><span class=p>().</span><span class=n>Name</span><span class=p>.</span><span class=n>ToLower</span><span class=p>();</span>
+<span class=ln>12</span>        <span class=k>if</span> <span class=p>(</span><span class=n>adapters</span> <span class=p>!=</span> <span class=k>null</span> <span class=p>&amp;&amp;</span> <span class=p>!</span><span class=n>adapters</span><span class=p>.</span><span class=n>ContainsKey</span><span class=p>(</span><span class=n>connectionType</span><span class=p>))</span>
+<span class=ln>13</span>            <span class=n>adapters</span><span class=p>?.</span><span class=n>Add</span><span class=p>(</span><span class=n>connectionType</span><span class=p>,</span> <span class=n>sqlAdapter</span><span class=p>);</span>
+<span class=ln>14</span>    <span class=p>}</span>
+<span class=ln>15</span><span class=p>}</span>
+</code></pre></div><p>这样，我们不但可以满足眼下，还可以着眼未来，虽然未来有时候挺遥远，但梦想还是要有的，开闭原则，我做到了！改进后，我们这样处理即可：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln>1</span><span class=n>connection</span> <span class=p>=</span> <span class=k>new</span> <span class=n>OracleConnection</span><span class=p>(</span><span class=n>ConnectionStrings</span><span class=p>.</span><span class=n>Default</span><span class=p>);</span>
+<span class=ln>2</span><span class=n>connection</span><span class=p>.</span><span class=n>UseSqlAdapter</span><span class=p>(</span><span class=k>new</span> <span class=n>OracleSqlAdapter</span><span class=p>());</span>
+</code></pre></div><p>此时，我们发现，我们解决了 Insert() 的问题，但随之而来的，Get()、Delete()、Update() 这一系列和主键相关的方法，都因为 <code>Dapper.Contrib</code> 中的主键设计而出现了问题，而这就是我们接下来要讲的主键 Id 参数化问题。</p>
+<h2 id=主键-id-参数化问题>主键 Id 参数化问题</h2>
+<p>当我谈起这个问题的时候，我对于 <code>Dapper.Contrib</code> 中支持自增 ID 的坚持是怀疑的，因为在分布式盛行的今天，有大量的分布式 ID 生成方案供我们选择，比如基于 <code>Redis</code> 的号段策略，基于雪花算法的 ID 生成等等。大家会注意到我实现的 OracleSqlAdapter 在实现 Insert() 方法的时候简化了大量代码，这是因为我真的不知道，怎么从 Oracle 中获取一个新生成的 ID，尤其是这个 ID 居然还要依赖一个我听都没有听说过的“序列”，而之所以要在 ISqlAdapter 中实现 Insert() 方法，最根本的原因就是，各个数据库对于自增 ID 的实现是不一样的，比如 MySQL 中使用的是 <code>SCOPE_IDENTITY()</code>，而 MSSQL 中使用的则是 <code>SCOPE_IDENTITY()</code> ，就因为这一点点差异，我们就必须要去折腾一遍，可以说， Dapper.Contrib 不支持 Oracle 的一个重要原因，就是在 Oracle 下实现自增 ID 太麻烦了。</p>
+<p>既然大家都不用自增 ID 了，为什么还要在一个通用的 ORM 里折腾这个呢？说实话，我真担心有一天自增 ID 会溢出，谁让每个数据库里的上限都不一样呢？另一方面，既然 Id 在每个数据库的实现都不一样，那么，作为 Id 本身应该考虑放到 <code>ISqlAdapter</code> 接口中由使用者来实现啊，可偏偏 ISqlAdapter 里只定义了一个 Insert() 方法，所以，就算我们实现了 OracleSqlAdapter ，一样无法解决 Insert() 方法以外的其它方法在 Oracle 下面的问题，正因为如此，默认的 @ 符号在 Oracle 环境下下没有被完全替换掉，这就需要修改 Dapper.Contrib 的底层代码，这真的是一个不好的设计，因为使用者完全没有办法通过重写来覆盖某些默认行为，我们一起来看看，需要修改哪些地方：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>static</span> <span class=n>T</span> <span class=n>Get</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>dynamic</span> <span class=n>id</span><span class=p>,</span> 
+<span class=ln> 2</span><span class=n>IDbTransaction</span> <span class=n>transaction</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=kt>int?</span> <span class=n>commandTimeout</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span> <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=k>class</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=kt>var</span> <span class=n>type</span> <span class=p>=</span> <span class=k>typeof</span><span class=p>(</span><span class=n>T</span><span class=p>);</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span>    <span class=k>if</span> <span class=p>(!</span><span class=n>GetQueries</span><span class=p>.</span><span class=n>TryGetValue</span><span class=p>(</span><span class=n>type</span><span class=p>.</span><span class=n>TypeHandle</span><span class=p>,</span> <span class=k>out</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>))</span>
+<span class=ln> 7</span>    <span class=p>{</span>
+<span class=ln> 8</span>        <span class=kt>var</span> <span class=n>key</span> <span class=p>=</span> <span class=n>GetSingleKey</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=n>nameof</span><span class=p>(</span><span class=n>Get</span><span class=p>));</span>
+<span class=ln> 9</span>        <span class=kt>var</span> <span class=n>name</span> <span class=p>=</span> <span class=n>GetTableName</span><span class=p>(</span><span class=n>type</span><span class=p>);</span>
+<span class=ln>10</span>
+<span class=ln>11</span>        <span class=c1>//第一个坏事儿的地方，为什么不用AppendColumnName()方法?
+</span><span class=ln>12</span><span class=c1></span>        <span class=n>sql</span> <span class=p>=</span> <span class=s>$&#34;select * from {name} where {key.Name} = @id&#34;</span><span class=p>;</span>
+<span class=ln>13</span>        <span class=n>GetQueries</span><span class=p>[</span><span class=n>type</span><span class=p>.</span><span class=n>TypeHandle</span><span class=p>]</span> <span class=p>=</span> <span class=n>sql</span><span class=p>;</span>
+<span class=ln>14</span>    <span class=p>}</span>
+<span class=ln>15</span>
+<span class=ln>16</span>    <span class=kt>var</span> <span class=n>dynParams</span> <span class=p>=</span> <span class=k>new</span> <span class=n>DynamicParameters</span><span class=p>();</span>
+<span class=ln>17</span>    <span class=c1>//第二个坏事的地方，什么不用AppendColumnName()方法??
+</span><span class=ln>18</span><span class=c1></span>    <span class=n>dynParams</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=s>&#34;@id&#34;</span><span class=p>,</span> <span class=n>id</span><span class=p>);</span>
+<span class=ln>19</span>
+<span class=ln>20</span>    <span class=c1>//以下代码已省略
+</span><span class=ln>21</span><span class=c1></span><span class=p>}</span>
+</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>static</span> <span class=kt>long</span> <span class=n>Insert</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=n>T</span> <span class=n>entityToInsert</span><span class=p>,</span>
+<span class=ln> 2</span><span class=n>IDbTransaction</span> <span class=n>transaction</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=kt>int?</span> <span class=n>commandTimeout</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span> <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=k>class</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=c1>//以上代码已省略
+</span><span class=ln> 5</span><span class=c1></span>
+<span class=ln> 6</span>    <span class=kt>var</span> <span class=n>sbParameterList</span> <span class=p>=</span> <span class=k>new</span> <span class=n>StringBuilder</span><span class=p>(</span><span class=k>null</span><span class=p>);</span>
+<span class=ln> 7</span>    <span class=k>for</span> <span class=p>(</span><span class=kt>var</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>allPropertiesExceptKeyAndComputed</span><span class=p>.</span><span class=n>Count</span><span class=p>;</span> <span class=n>i</span><span class=p>++)</span>
+<span class=ln> 8</span>    <span class=p>{</span>
+<span class=ln> 9</span>        <span class=c1>//第三个坏事的地方，什么不用AppendColumnName()方法???
+</span><span class=ln>10</span><span class=c1></span>        <span class=kt>var</span> <span class=n>property</span> <span class=p>=</span> <span class=n>allPropertiesExceptKeyAndComputed</span><span class=p>[</span><span class=n>i</span><span class=p>];</span>
+<span class=ln>11</span>        <span class=n>sbParameterList</span><span class=p>.</span><span class=n>AppendFormat</span><span class=p>(</span><span class=s>&#34;@{0}&#34;</span><span class=p>,</span> <span class=n>property</span><span class=p>.</span><span class=n>Name</span><span class=p>);</span>
+<span class=ln>12</span>        <span class=k>if</span> <span class=p>(</span><span class=n>i</span> <span class=p>&lt;</span> <span class=n>allPropertiesExceptKeyAndComputed</span><span class=p>.</span><span class=n>Count</span> <span class=p>-</span> <span class=m>1</span><span class=p>)</span>
+<span class=ln>13</span>            <span class=n>sbParameterList</span><span class=p>.</span><span class=n>Append</span><span class=p>(</span><span class=s>&#34;, &#34;</span><span class=p>);</span>
+<span class=ln>14</span>    <span class=p>}</span>
+<span class=ln>15</span>
+<span class=ln>16</span>    <span class=c1>//以下代码已省略
+</span><span class=ln>17</span><span class=c1></span><span class=p>}</span>
+</code></pre></div><p>其实，仔细阅读 Update() 和 Delete() 两个方法的实现，就会发现它们都非常完美地避开了这一点，就是不知道为什么只有两个方法采用了不同地方式去拼接 SQL ，当然，这里我们会意识到有个列名的问题，尤其是在需要区分大小写的情况下，为此，我们可能需要去定义一个 ColumnAttribute，还能说什么呢？请和我大声地吐槽：**垃圾 Oracle ！**你看，就为了这一点点差异，我们不得不去额外写一点代码，所以，喊了很多年的去 IOE，我表示举双手赞成。</p>
+<p>事实上，社区里已经有类似的PR，可因为改动的范围比较大，官方至今都没有考虑过将其合并到主干分支上，所以，这个问题一直没有解决，这是一个悲伤的故事。</p>
+<h1 id=相关思考>相关思考</h1>
+<p>在阅读 Dapper 源码的同时，我查阅了一个和 Dapper.Contrib 类似的项目：DapperExtension，我发现这个项目目前处在“荒废”的状态，因为它遇到了相同的问题，即 SQL 这门看起来统一实则相当不统一的语言，因为每一个数据库厂商几乎都在给标准“添砖加瓦“，就以自增 ID 为例，MySQL、MSSQL、Oracle 居然是三种不同的实现方式，尤其是 Oracle 这个奇葩，居然还需要定义一个序列来解决这个问题，这个奇葩给数据库加注释都那么另类，这带来的问题是什么？Dapper.Contrib 无力去实现 Oracle 的自增 ID 而放弃了 Oracle ，所以，即使社区里提交了 PR，因为实现方式有点脏，官方一直没有合并到主干上去。</p>
+<p>再回过头来看 Dapper.Contrib 支持自增 ID 的举动，总会觉得有点不合时宜，因为不同数据库自增 ID 的上限不一样不说，现在都普遍在分布式的环境中，数据库的自增 ID 其实是非常鸡肋的功能，而实际应用中常常会用 <code>Redis</code> 、雪花算法等来实现分布式 ID，所以，当你回顾历史发展的趋势的时候，就会感慨有标准化的东西该多好，并不是说这个世界不需要多样性，显然这是一个标准约束性不强的领域，看起来大家都实现了 SQL，无一例外地都夹藏了私货，对于商业行为而言，这无可厚非；可对于这个世界而言，这无疑增加了工作量。</p>
+<p>有时候，当一个行业没有什么标准的时候，到底是突破勇气去率先制定标准，还是放弃自我去迎合各种不成文的规则，对于企业而言，是战略上的一种选择；而对于个人而言，其实是人生的一种选择。当彼时青春年少的人们，竞相以标新立异为荣的时候，如果想到有一天，终究要活成千篇一律的人生，为了生活而选择跪着的时候，内心又会有什么不一样的举动呢？</p>
+<h1 id=本文小结>本文小结</h1>
+<p>本文分析了 Dapper.Contrib 这个扩展库，在搭配 Oracle 数据库使用时遇到 ORA-XXXXX 系列错误的原因及相应地处理方法，这个问题的表象是 Dapper.Contrib 没有实现 OracleSqlAdapter ，而更深层的原因，实际上是 Dapper.Contrib 选择支持自增 ID 而带来的 SQL 标准差异化问题。因为不同的数据库在实现自增 ID 时的机制不同，Oracle 甚至需要引入序列这个概念，这种差异化，增加了 Dapper 各个扩展库维护的工作量，这是官方一直不愿意实现 OracleSqlAdapter 的原因，其次， Dapper.Contrib 底层设计不合理，除了 Insert() 方法以外，其它依赖主键的方法都没有提供扩展接口，导致使用者只能通过修改底层代码的方式解决问题，这严重违反开闭原则。好了，这是一篇利用 996 闲暇(可能是指做梦)写的一篇博客，如果文章中有什么不周到的地方，欢迎大家在博客下面给我留言，谢谢，晚安！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/dapper/>Dapper</a>
+<a href=/tags/orm/>ORM</a>
+<a href=/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/>数据库</a>
+<a href=/tags/%E6%BA%90%E7%A0%81/>源码</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/efcore-%E5%AE%9E%E4%BD%93%E5%91%BD%E5%90%8D%E7%BA%A6%E5%AE%9A%E5%BA%93efcore.namingconventions/>
+<div class=article-details>
+<h2 class=article-title>EFCore 实体命名约定库：EFCore.NamingConventions</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%B5%85%E8%AE%AE-ef-core-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E5%A4%9A%E7%A7%9F%E6%88%B7%E6%9E%B6%E6%9E%84%E7%9A%84%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>浅议 EF Core 分库分表及多租户架构的实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E9%80%9A%E8%BF%87-ef/dapper-%E6%89%A9%E5%B1%95%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%A1%E8%AE%A1%E5%8A%9F%E8%83%BD/>
+<div class=article-details>
+<h2 class=article-title>通过 EF/Dapper 扩展实现数据库审计功能</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%85%B3%E4%BA%8E%E5%8D%95%E4%BD%8D%E8%BD%AC%E6%8D%A2%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98%E7%9A%84%E5%B8%B8%E8%A7%81%E6%80%9D%E8%B7%AF/>
+<div class=article-details>
+<h2 class=article-title>关于单位转换相关问题的常见思路</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/redis-%E7%BC%93%E5%AD%98%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E7%B3%BB%E5%88%97%E4%B9%8B-lua-%E8%84%9A%E6%9C%AC/>
+<div class=article-details>
+<h2 class=article-title>Redis 缓存技术学习系列之 Lua 脚本</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#问题回顾>问题回顾</a></li>
+<li><a href=#原因分析>原因分析</a>
+<ol>
+<li><a href=#oracle-版本的-isqladapter>Oracle 版本的 ISqlAdapter</a></li>
+<li><a href=#主键-id-参数化问题>主键 Id 参数化问题</a></li>
+</ol>
+</li>
+<li><a href=#相关思考>相关思考</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

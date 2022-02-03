@@ -1,0 +1,293 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="下面，按照惯例，我们将实现一个“**Hello World**”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息;所以，从今天开始，我将为大家带来 **.NET Core + ELK 搭建可视化日志分析平台** 系列文章，希望大家喜欢;博主计划在接下来的篇幅中介绍`Logstash`/`FireBeat`管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客"><title>.NET Core + ELK 搭建可视化日志分析平台(上)</title>
+<link rel=canonical href=/posts/.net-core-elk-%E6%90%AD%E5%BB%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E5%B9%B3%E5%8F%B0%E4%B8%8A/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content=".NET Core + ELK 搭建可视化日志分析平台(上)">
+<meta property="og:description" content="下面，按照惯例，我们将实现一个“**Hello World**”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息;所以，从今天开始，我将为大家带来 **.NET Core + ELK 搭建可视化日志分析平台** 系列文章，希望大家喜欢;博主计划在接下来的篇幅中介绍`Logstash`/`FireBeat`管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客">
+<meta property="og:url" content="/posts/.net-core-elk-%E6%90%AD%E5%BB%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E5%B9%B3%E5%8F%B0%E4%B8%8A/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content=".NET Core"><meta property="article:tag" content="ELK"><meta property="article:tag" content="日志"><meta property="article:tag" content="监控"><meta property="article:published_time" content="2020-02-15T16:01:13+00:00"><meta property="article:modified_time" content="2020-02-15T16:01:13+00:00">
+<meta name=twitter:title content=".NET Core + ELK 搭建可视化日志分析平台(上)">
+<meta name=twitter:description content="下面，按照惯例，我们将实现一个“**Hello World**”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息;所以，从今天开始，我将为大家带来 **.NET Core + ELK 搭建可视化日志分析平台** 系列文章，希望大家喜欢;博主计划在接下来的篇幅中介绍`Logstash`/`FireBeat`管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/.net-core-elk-%E6%90%AD%E5%BB%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E5%B9%B3%E5%8F%B0%E4%B8%8A/>.NET Core + ELK 搭建可视化日志分析平台(上)</a>
+</h2>
+<h3 class=article-subtitle>
+下面，按照惯例，我们将实现一个“**Hello World**”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息;所以，从今天开始，我将为大家带来 **.NET Core + ELK 搭建可视化日志分析平台** 系列文章，希望大家喜欢;博主计划在接下来的篇幅中介绍`Logstash`/`FireBeat`管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Feb 15, 2020</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>Hi，各位朋友，大家好！欢迎大家关注我的博客，我的博客地址是: <a class=link href=https://blog.yuanpei.me target=_blank rel=noopener>https://blog.yuanpei.me</a>。今天是远程办公以来的第一个周末，虽然公司计划在远程两周后恢复正常办公，可面对着每天都有人离开的疫情，深知这一切都不会那么容易。窗外的阳光透过玻璃照射进屋子，这一切都昭示着春天的脚步渐渐近了。可春天来了，有的人却没有再回来。那些在 2019 年结束时许下的美好期待、豪言壮语，在这样一场灾难面前，终究是如此的无力而苍白。可不管怎么样，生活还是要继续，在这些无法出门的日子里，在这样一个印象深刻的春节长假里，除了做好<strong>勤洗手</strong>、<strong>多通风</strong>、<strong>戴口罩</strong>这些防疫保护措施以外，博主还是希望大家能够抽空学习，通过知识来充实这“枯燥"的生活。所以，从今天开始，我将为大家带来 <strong>.NET Core + ELK 搭建可视化日志分析平台</strong> 系列文章，希望大家喜欢。</p>
+<h1 id=什么是-elk>什么是 ELK</h1>
+<p>当接触到一个新的事物的时候，我们最好是从它的概念开始入手。那么，什么是 ELK 呢？ELK，是<code>Elastaicsearch</code>、<code>Logstash</code>和<code>Kibana</code>三款软件的简称。其中，<code>Elastaicsearch</code>是一个开源的全文搜索引擎。如果你没有听说过它，那至少应该听说过<code>Lucene</code>这个开源搜索引擎。事实上，<code>Elastaicsearch</code>是<code>Lucene</code>的封装，它提供了<code>REST</code> API 的操作接口 。而<code>Logstash</code>则是一个开源的数据收集引擎，具有实时的管道，它可以动态地将不同的数据源的数据统一起来。最后，<code>Kibana</code>是一个日志可视化分析的平台，它提供了一系列日志分析的 Web 接口，可以使用它对日志进行高效地搜索、分析和可视化操作。至此，我们可以给 ELK 一个简单的定义：</p>
+<blockquote>
+<p>ELK 是一个集日志收集、搜索、日志聚合和日志分析于一身的完整解决方案。</p>
+</blockquote>
+<p>下面这张图，展示了<code>Elastaicsearch</code>、<code>Logstash</code>和<code>Kibana</code>三款软件间的协作关系。可以注意到，<code>Logstash</code>负责从应用服务器收集日志。我们知道，现在的应用程序都是跨端应用，程序可能运行在 PC、移动端、H5、小程序等等各种各样的终端上，而<code>Logstash</code>则可以将这些不同的日志信息通过管道转换为统一的数据接口。这些日志将被存储到<code>Elasticsearch</code>中。我们提到<code>Elastaicsearch</code>是一个开源的全文搜索引擎，故而它在数据查询上相对传统的数据库有着更好的优势，并且<code>Elasticsearch</code>可以根据需要搭建单机或者集群。最终，<code>Kibana</code>从<code>Elasticsearch</code>中查询数据并绘制可视化图表，并展示在浏览器中。在最新的 ELK 架构中，新增了<code>FireBeat</code>这个软件，它是它是一个轻量级的日志收集处理工具(Agent)，适合于在各个服务器上搜集日志后传输给<code>Logstash</code>。</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/02/15/mbJRXGo56YA9jQP.png>
+<img src=/https:/i.loli.net/2020/02/15/mbJRXGo56YA9jQP.png loading=lazy alt=ELK-01.png>
+</a>
+<figcaption>ELK-01.png</figcaption>
+</figure></p>
+<p>总而言之，ELK 可以让我们以一种更优雅的方式来收集日志，传统的日志收集通常会把日志写到文件或者数据库中。前者，不利于日志的集中管理和查询；后者，则无法应对海量文本检索的需求。所以，使用 ELK 可以为我们带来下面这些便利：<strong>分布式日志数据集中式查询和管理；系统监控，譬如对系统硬件和应用各个组件的监控；故障排查；报表功能；日志查询，问题排查，上线检查； 服务器监控、应用监控、错误报警；性能分析、用户行为分析、时间管理等等</strong>。</p>
+<h1 id=如何安装-elk>如何安装 ELK</h1>
+<p>安装 ELK 的方式，首推以 Docker 方式安装。关于 Docker 的安装、使用请大家查阅官方文档：<a class=link href=https://docs.docker.com/ target=_blank rel=noopener>https://docs.docker.com/</a>。这里我假设大家都已经掌握了 Linux 和 Docker 的使用。首先我们拉取 ELK 镜像：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>docker pull sebp/elk
+</code></pre></div><p>接下来，我们利用此镜像来运行一个容器:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>docker run -p 5601:5601 -p 9200:9200 -p 5044:5044 --name elk sebp/elk 
+</code></pre></div><p>通常情况下，完成这两个步骤以后，我们就完成了 ELK 安装。此时，我们可以在浏览器中输入地址：<code>http//localhost:9200</code>，这是<code>Elasticsearch</code>的默认端口。如果浏览器中返回了了类似下面的信息，则表示 ELK 安装成功。这里是博主获得的关于<code>Elasticseach</code>的信息：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=ln> 1</span><span class=p>{</span>
+<span class=ln> 2</span>  <span class=nt>&#34;name&#34;</span> <span class=p>:</span> <span class=s2>&#34;elk&#34;</span><span class=p>,</span>
+<span class=ln> 3</span>  <span class=nt>&#34;cluster_name&#34;</span> <span class=p>:</span> <span class=s2>&#34;elasticsearch&#34;</span><span class=p>,</span>
+<span class=ln> 4</span>  <span class=nt>&#34;cluster_uuid&#34;</span> <span class=p>:</span> <span class=s2>&#34;GGlJrOvtT2uSfoHioLCWww&#34;</span><span class=p>,</span>
+<span class=ln> 5</span>  <span class=nt>&#34;version&#34;</span> <span class=p>:</span> <span class=p>{</span>
+<span class=ln> 6</span>    <span class=nt>&#34;number&#34;</span> <span class=p>:</span> <span class=s2>&#34;7.5.2&#34;</span><span class=p>,</span>
+<span class=ln> 7</span>    <span class=nt>&#34;build_flavor&#34;</span> <span class=p>:</span> <span class=s2>&#34;default&#34;</span><span class=p>,</span>
+<span class=ln> 8</span>    <span class=nt>&#34;build_type&#34;</span> <span class=p>:</span> <span class=s2>&#34;tar&#34;</span><span class=p>,</span>
+<span class=ln> 9</span>    <span class=nt>&#34;build_hash&#34;</span> <span class=p>:</span> <span class=s2>&#34;8bec50e1e0ad29dad5653712cf3bb580cd1afcdf&#34;</span><span class=p>,</span>
+<span class=ln>10</span>    <span class=nt>&#34;build_date&#34;</span> <span class=p>:</span> <span class=s2>&#34;2020-01-15T12:11:52.313576Z&#34;</span><span class=p>,</span>
+<span class=ln>11</span>    <span class=nt>&#34;build_snapshot&#34;</span> <span class=p>:</span> <span class=kc>false</span><span class=p>,</span>
+<span class=ln>12</span>    <span class=nt>&#34;lucene_version&#34;</span> <span class=p>:</span> <span class=s2>&#34;8.3.0&#34;</span><span class=p>,</span>
+<span class=ln>13</span>    <span class=nt>&#34;minimum_wire_compatibility_version&#34;</span> <span class=p>:</span> <span class=s2>&#34;6.8.0&#34;</span><span class=p>,</span>
+<span class=ln>14</span>    <span class=nt>&#34;minimum_index_compatibility_version&#34;</span> <span class=p>:</span> <span class=s2>&#34;6.0.0-beta1&#34;</span>
+<span class=ln>15</span>  <span class=p>},</span>
+<span class=ln>16</span>  <span class=nt>&#34;tagline&#34;</span> <span class=p>:</span> <span class=s2>&#34;You Know, for Search&#34;</span>
+<span class=ln>17</span><span class=p>}</span>
+</code></pre></div><p>接下来，我们继续在浏览器中输入地址：<code>http://localhost:5601/app/kibana</code>。显然，这是<code>Kibana</code>的默认地址，至此<strong>ELK</strong>的“庐山真面目”<strong>终于揭晓，首次安装完</strong>ELK，<code>Kibana</code>的界面应该试类似下面这样：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/02/15/uOQSCUxfWYManK6.png>
+<img src=/https:/i.loli.net/2020/02/15/uOQSCUxfWYManK6.png loading=lazy alt=ELK的庐山真面目>
+</a>
+<figcaption>ELK的庐山真面目</figcaption>
+</figure></p>
+<p>按照指引，我们可以添加示例数据来感受下<strong>ELK</strong>全家桶的魅力：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/02/15/j6xFzedsPf7y9gL.png>
+<img src=/https:/i.loli.net/2020/02/15/j6xFzedsPf7y9gL.png loading=lazy alt="ELK示例 - Global Flight Dashboard">
+</a>
+<figcaption>ELK示例 - Global Flight Dashboard</figcaption>
+</figure></p>
+<p>这样，我们就完成<strong>ELK</strong>环境的快速搭建。下面，按照惯例，我们将实现一个“<strong>Hello World</strong>”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息。为了让这个示例尽可能地简单一点，我们选择了直接向<code>Elasticsearch</code>写入日志的方式，这里选择的日志库是<a class=link href=https://serilog.net/ target=_blank rel=noopener>Serilog</a>。</p>
+<h1 id=hello-elk>Hello ELK</h1>
+<p>本文所用的例子已发布到<a class=link href=https://github.com/qinyuanpei/DynamicWebApi/tree/master/DynamicWebApi.Core target=_blank rel=noopener>Github</a>。首先，我们准备一个 ASP.NET Core 的项目，MVC 或者 Web API 都可以。接下来，在项目中引入三个依赖项：<code>Serilog</code>、<code>Serilog.Extensions.Logging</code>和<code>Serilog.Sinks.ElasticSearch</code>。对于前两个，如果大家用过<code>Log4Net</code>或者<code>NLog</code>应该会感到非常熟悉啦，这一点不在赘述。而第三个，从名字就可以看出来这是冲着<code>Elasticsearch</code>来的，因为这是这个系列的第一篇文章，所以，我们直接写<code>Elasticsearch</code>即可。<code>Logstash</code>管道相关的内容，是一个非常复杂的东西，我们会在下一篇文章中单独来讲。</p>
+<p>接下来，主要是<code>Serilog</code>在 ASP.NET Core 中的配置。首先是<code>Startup</code>类，在构造函数中初始化<code>Serilog</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=n>Startup</span><span class=p>(</span><span class=n>IConfiguration</span> <span class=n>configuration</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span> <span class=n>Log</span><span class=p>.</span><span class=n>Logger</span> <span class=p>=</span> <span class=k>new</span> <span class=n>LoggerConfiguration</span><span class=p>()</span>
+<span class=ln> 4</span>  <span class=p>.</span><span class=n>Enrich</span><span class=p>.</span><span class=n>FromLogContext</span><span class=p>()</span>
+<span class=ln> 5</span>  <span class=p>.</span><span class=n>MinimumLevel</span><span class=p>.</span><span class=n>Debug</span><span class=p>()</span>
+<span class=ln> 6</span>  <span class=p>.</span><span class=n>WriteTo</span><span class=p>.</span><span class=n>Elasticsearch</span><span class=p>(</span>
+<span class=ln> 7</span>  <span class=k>new</span> <span class=n>ElasticsearchSinkOptions</span><span class=p>(</span><span class=k>new</span> <span class=n>Uri</span><span class=p>(</span><span class=s>&#34;http://localhost:9200&#34;</span><span class=p>))</span>
+<span class=ln> 8</span>  <span class=p>{</span>
+<span class=ln> 9</span>   <span class=n>MinimumLogEventLevel</span> <span class=p>=</span> <span class=n>LogEventLevel</span><span class=p>.</span><span class=n>Verbose</span><span class=p>,</span>
+<span class=ln>10</span>   <span class=n>AutoRegisterTemplate</span> <span class=p>=</span> <span class=k>true</span>
+<span class=ln>11</span>  <span class=p>})</span>
+<span class=ln>12</span>  <span class=p>.</span><span class=n>CreateLogger</span><span class=p>();</span>
+<span class=ln>13</span> <span class=n>Configuration</span> <span class=p>=</span> <span class=n>configuration</span><span class=p>;</span>
+<span class=ln>14</span><span class=p>}</span>
+<span class=ln>15</span>
+</code></pre></div><p>还记得<code>http://localhost:9200</code>这个地址是什么吗？不错，这是<code>Elasticsearch</code>的默认地址，所以，这部分代码主要的作用就是告诉<code>Elasticsearch</code>，接下来的日志信息都写到<code>Elasticsearch</code>中。为了让日志的信息更丰富一点，我们这里设置最小的日志事件级别为<code>Verbose</code>。</p>
+<p>接下来，在<code>ConfigureServices()</code>方法中注册 ILogger 实例：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=n>services</span><span class=p>.</span><span class=n>AddLogging</span><span class=p>(</span><span class=n>loggingBuilder</span> <span class=p>=&gt;</span> <span class=n>loggingBuilder</span><span class=p>.</span><span class=n>AddSerilog</span><span class=p>(</span><span class=n>dispose</span><span class=p>:</span> <span class=k>true</span><span class=p>));</span>
+</code></pre></div><p>接下来，在业务层增加日志：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=k>private</span> <span class=k>readonly</span> <span class=n>ILogger</span> <span class=m>_l</span><span class=n>ogger</span> <span class=p>=</span> <span class=n>Log</span><span class=p>.</span><span class=n>Logger</span><span class=p>;</span>
+<span class=ln>2</span><span class=na>      
+</span><span class=ln>3</span><span class=na>[HttpGet]</span>
+<span class=ln>4</span><span class=k>public</span> <span class=kt>double</span> <span class=n>Add</span><span class=p>(</span><span class=kt>double</span> <span class=n>n1</span><span class=p>,</span> <span class=kt>double</span> <span class=n>n2</span><span class=p>)</span>
+<span class=ln>5</span><span class=p>{</span>
+<span class=ln>6</span> <span class=m>_l</span><span class=n>ogger</span><span class=p>.</span><span class=n>Information</span><span class=p>(</span><span class=s>$&#34;Invoke {typeof(CoreCalculatorService).Name}/Add: {n1},{n2}&#34;</span><span class=p>);</span>
+<span class=ln>7</span> <span class=k>return</span> <span class=n>n1</span> <span class=p>+</span> <span class=n>n2</span><span class=p>;</span>
+<span class=ln>8</span><span class=p>}</span>
+</code></pre></div><p>至此，ELK 在 ASP.NET Core 中的集成已经全部结束，这意味着我们所有的日志都会写入到 ELK 中。那么，要到那里去找这些日志信息呢？且听博主娓娓道来。我们在<code>Kibana</code>中点击左侧导航栏最底下的设置按钮，然后再点击右侧的<code>Create index pattern</code>按钮创建一个索引。什么叫做索引呢？在<code>Elasticsearch</code>中索引相当于一张"表"，而这个“表”中的一条行记录则被称为<code>Document</code>，如图：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/02/15/fywAlQcH45mId1F.png>
+<img src=/https:/i.loli.net/2020/02/15/fywAlQcH45mId1F.png loading=lazy alt=为Kibana创建索引1>
+</a>
+<figcaption>为Kibana创建索引1</figcaption>
+</figure></p>
+<p>创建索引的时候，会发现列表中列出了目前<code>Elasticsearch</code>中可用的数据。以博主为例，这里的<code>logstash-2020.02.15</code>就是本文中的 ASP.NET Core 应用产生的日志信息。在这里，我们可以通过一个模糊匹配来匹配同种类型的数据。通常这里需要我们选择一个过滤字段，我们选择时间戳即可：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/02/15/8fD1EabSUV7OeZM.png>
+<img src=/https:/i.loli.net/2020/02/15/8fD1EabSUV7OeZM.png loading=lazy alt=为Kibana创建索引2>
+</a>
+<figcaption>为Kibana创建索引2</figcaption>
+</figure></p>
+<p>创建完索引，就可以看到目前收集的日志信息了，在此基础上，我们可以做进一步的检索、过滤，来生成各种各样的“查询”。而每一个“查询”实际上就是一个数据源。我们就可以利用这些数据源来完成可视化，这是利用 ELK 进行可视化分析的一般流程：</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/02/15/m5jufkQW4qEiZAJ.png>
+<img src=/https:/i.loli.net/2020/02/15/m5jufkQW4qEiZAJ.png loading=lazy alt=在Kibana中查看当前日志信息>
+</a>
+<figcaption>在Kibana中查看当前日志信息</figcaption>
+</figure></p>
+<p>下面是博主自己制作的一个简单的可视化看板，果然很长时间没有再用过<code>Kibana</code>，我都快忘记了要怎么做一个折线图。这实在是一篇迟到的博客，我早该在 2019 年的时候就完成这个系列的，这要命的拖延症啊，虽然没有新冠病毒恐怖，可终究不是什么好习惯！</p>
+<p><figure>
+<a href=/https:/i.loli.net/2020/02/15/me7v2LBIOCUfM5a.png>
+<img src=/https:/i.loli.net/2020/02/15/me7v2LBIOCUfM5a.png loading=lazy alt=一个简单的可视化看板>
+</a>
+<figcaption>一个简单的可视化看板</figcaption>
+</figure></p>
+<h1 id=本文小结>本文小结</h1>
+<p>这篇博客是这个系列的第一篇，是一篇珊珊来迟的博客，因为博主早在 2019 年就开始着手学习 ELK。考虑最新公司有使用 ELK 的打算，而因疫情又让博主有充足的时间，所以，博主决定把 ELK 相关的内容花点时间梳理出来。ELK 是一个集日志收集、搜索、日志聚合和日志分析于一身的完整解决方案。博主计划在接下来的篇幅中介绍<code>Logstash</code>/<code>FireBeat</code>管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客。以上就是这篇博客的全部内容啦，晚安！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/.net-core/>.NET Core</a>
+<a href=/tags/elk/>ELK</a>
+<a href=/tags/%E6%97%A5%E5%BF%97/>日志</a>
+<a href=/tags/%E7%9B%91%E6%8E%A7/>监控</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%9B%91%E6%8E%A7%E9%A2%84%E8%AD%A6/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现微服务的监控预警</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-grpc-%E6%8B%A6%E6%88%AA%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 拦截器的使用技巧分享</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E9%99%90%E6%B5%81%E4%B8%AD%E9%97%B4%E4%BB%B6-aspnetcoreratelimit/>
+<div class=article-details>
+<h2 class=article-title>源代码探案系列之 .NET Core 限流中间件 AspNetCoreRateLimit</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E5%B9%B6%E5%8F%91%E9%99%90%E5%88%B6%E4%B8%AD%E9%97%B4%E4%BB%B6-concurrencylimiter/>
+<div class=article-details>
+<h2 class=article-title>源代码探案系列之 .NET Core 并发限制中间件 ConcurrencyLimiter</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E9%80%9A%E8%BF%87-embededfileprovider-%E5%AE%9E%E7%8E%B0-blazor-%E7%9A%84%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE/>
+<div class=article-details>
+<h2 class=article-title>通过 EmbededFileProvider 实现 Blazor 的静态文件访问</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#什么是-elk>什么是 ELK</a></li>
+<li><a href=#如何安装-elk>如何安装 ELK</a></li>
+<li><a href=#hello-elk>Hello ELK</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

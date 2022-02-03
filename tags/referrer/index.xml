@@ -4,4 +4,5 @@
 请注意区分Referer和Referrer这两个单词，眼尖的人会发现后者多了一个 r，这有点像什么呢，大概类似于 usr 和 user。我们总是不情愿地相信这是历史的错误，而固执地想要找到一种能自圆其说的理由。诚然，“前人栽树，后人乘凉”，可我实在不肯承认，这是一群卓越而智慧的先驱们，所创造出的某种高效简写。回顾一下，使用 Referer 的场合，基本都是在 HTTP 头部，最常见的场景就是防盗链，Nginx 能用 Referer 判断访问者来源，爬虫就能用 Referer 和 UserAgent 伪造访问者身份。那什么时候用 Referrer 呢？我目前发现是在 a 标签的 rel 属性里，例如下面的例子：
 1&amp;lt;a rel=&amp;#34;noreferrer&amp;#34; href=&amp;#34;https://www.w3school.com.cn/tags/att_a_rel.asp&amp;#34;&amp;gt;w3school&amp;lt;/a&amp;gt; 除此之外，rel 属性还支持像 nofollow、friend、licence 这样的属性，详细地大家可以参考这里。相信大家想到博主经历了什么了，没错，我就是按照平时的书写习惯写了 Referer，然后被 Web 标准委员会给疯狂地嘲讽了。那么，为什么表达同一个含义的词会有两种写法？为什么有时候要用 Referer，而有时候要用 Referrer? 这特么到底是怎么一回事儿……带着这些疑问，让我们一起回顾野蛮生长的 Web 标准，为什么要埋这样一个坑在这里。
 后世不忘，前世之锅 故事要追溯到上个世纪 90 年代，当时 HTTP 协议中需要有一个用来表示页面或资源来源的请求头部，Philip Hallam-Baker 将这个请求头部定义为 Referer，并将其写入了RFC1945，这就是著名的 HTTP/1.0 协议。
+HTTP/1.0协议中定义的Referer
 然而这里发生一件有趣的事情，这个单词实际上是被作者给拼错了，即正确的拼写应该是Referrer。因为发现这个错误时为时已晚，大量的服务端和客户端都采用了这个错误的拼写，谁让它被写到了 HTTP 协议里呢？这其中就有像 Nginx 里的ngx_http_referer_module、Django 里的HttpRequest.</description></item></channel></rss>

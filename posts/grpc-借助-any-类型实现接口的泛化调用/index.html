@@ -1,0 +1,341 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="我发现，人们非常喜欢在一件事情上反复横跳。譬如，以编程语言为例，人们喜欢静态的、强类型语言的严谨和安全，可难免会羡慕动态的、弱类型语言的自由和灵活。于是，在过去的这些年里，我们注意到，.NET 的世界里出现了 dynamic 类型，JavaScript 的世界里出现了 TypeScript，甚至连 Python 都开始支持类型标注。这种动与静、强与弱的角逐，隐隐然有种太极圆转、轮回不绝的感觉。果然，“城外的人想冲进去，城里的人想逃出来”，钱钟书先生说的固然是婚姻，可世上的事情，也许都差不多罢！人们反复横跳的样子，像极了「九品芝麻官」里的方唐镜。曾经有段时间，好多人吹捧 Vue3 + TypeScript 的技术栈，有位前辈一针见血地戳破了这种叶公好龙式的喜欢，“你那么喜欢 TypeScript，不还是关掉了 ESLint 的规则，项目里全部都用 Any”。对于这个吐槽，我表示非常真实，因为我们对于动与静、强与弱的心理变化是非常微妙的。常言道，“动态类型一时爽，代码重构火葬场”，你是如何看待编程语言里的动与静静、强与弱的呢？在 gRPC 中我们通过 Protobuf 来描述接口的参数和返回值，由此对服务提供/消费方进行约束。此时，参数和返回值都是静态的、强类型的。如果我们希望提供某种“泛型”的接口，又该如何去做呢？所以，这篇文章我们来聊聊 gPRC 里的 Any 类型。
+Protobuf 里的 Any 类型 在讲 Any 类型前，我想，我们应该想明白，为什么需要这样一个类型？现在，假设我们有下面的 Protobuf 定义：
+1// Vehicle 2message Vehicle {3 int32 VehicleId = 1;4 string FleetNo = 2;5}67// Officer 8message Officer {9 int32 OfficerId = 1;10 string Department = 2;11} 此时，按照Protobuf的规范，我们必须像下面这样定义对应的集合：
+1// VehicleList 2message VehicleList {3 repeated Vehicle List = 1;4}56// OfficerList 7message OfficerList {8 repeated Officer List = 1;9} 考虑到，在C# 中我们只需要使用 List&amp;lt;Vehicle&amp;gt; 和 List&amp;lt;Officer&amp;gt; 即可，这样难免就会形成一种割裂感，因为你几乎要为每一种类型建立对应的表示集合的类型，从语义化的角度考虑，我们更希望使用下面的 Protobuf 定义："><title>gRPC 借助 Any 类型实现接口的泛化调用</title>
+<link rel=canonical href=/posts/grpc-%E5%80%9F%E5%8A%A9-any-%E7%B1%BB%E5%9E%8B%E5%AE%9E%E7%8E%B0%E6%8E%A5%E5%8F%A3%E7%9A%84%E6%B3%9B%E5%8C%96%E8%B0%83%E7%94%A8/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="gRPC 借助 Any 类型实现接口的泛化调用">
+<meta property="og:description" content="我发现，人们非常喜欢在一件事情上反复横跳。譬如，以编程语言为例，人们喜欢静态的、强类型语言的严谨和安全，可难免会羡慕动态的、弱类型语言的自由和灵活。于是，在过去的这些年里，我们注意到，.NET 的世界里出现了 dynamic 类型，JavaScript 的世界里出现了 TypeScript，甚至连 Python 都开始支持类型标注。这种动与静、强与弱的角逐，隐隐然有种太极圆转、轮回不绝的感觉。果然，“城外的人想冲进去，城里的人想逃出来”，钱钟书先生说的固然是婚姻，可世上的事情，也许都差不多罢！人们反复横跳的样子，像极了「九品芝麻官」里的方唐镜。曾经有段时间，好多人吹捧 Vue3 + TypeScript 的技术栈，有位前辈一针见血地戳破了这种叶公好龙式的喜欢，“你那么喜欢 TypeScript，不还是关掉了 ESLint 的规则，项目里全部都用 Any”。对于这个吐槽，我表示非常真实，因为我们对于动与静、强与弱的心理变化是非常微妙的。常言道，“动态类型一时爽，代码重构火葬场”，你是如何看待编程语言里的动与静静、强与弱的呢？在 gRPC 中我们通过 Protobuf 来描述接口的参数和返回值，由此对服务提供/消费方进行约束。此时，参数和返回值都是静态的、强类型的。如果我们希望提供某种“泛型”的接口，又该如何去做呢？所以，这篇文章我们来聊聊 gPRC 里的 Any 类型。
+Protobuf 里的 Any 类型 在讲 Any 类型前，我想，我们应该想明白，为什么需要这样一个类型？现在，假设我们有下面的 Protobuf 定义：
+1// Vehicle 2message Vehicle {3 int32 VehicleId = 1;4 string FleetNo = 2;5}67// Officer 8message Officer {9 int32 OfficerId = 1;10 string Department = 2;11} 此时，按照Protobuf的规范，我们必须像下面这样定义对应的集合：
+1// VehicleList 2message VehicleList {3 repeated Vehicle List = 1;4}56// OfficerList 7message OfficerList {8 repeated Officer List = 1;9} 考虑到，在C# 中我们只需要使用 List&amp;lt;Vehicle&amp;gt; 和 List&amp;lt;Officer&amp;gt; 即可，这样难免就会形成一种割裂感，因为你几乎要为每一种类型建立对应的表示集合的类型，从语义化的角度考虑，我们更希望使用下面的 Protobuf 定义：">
+<meta property="og:url" content="/posts/grpc-%E5%80%9F%E5%8A%A9-any-%E7%B1%BB%E5%9E%8B%E5%AE%9E%E7%8E%B0%E6%8E%A5%E5%8F%A3%E7%9A%84%E6%B3%9B%E5%8C%96%E8%B0%83%E7%94%A8/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="gRPC"><meta property="article:tag" content="Protobuf"><meta property="article:tag" content="Any"><meta property="article:published_time" content="2021-12-10T11:53:29+00:00"><meta property="article:modified_time" content="2021-12-10T11:53:29+00:00">
+<meta name=twitter:title content="gRPC 借助 Any 类型实现接口的泛化调用">
+<meta name=twitter:description content="我发现，人们非常喜欢在一件事情上反复横跳。譬如，以编程语言为例，人们喜欢静态的、强类型语言的严谨和安全，可难免会羡慕动态的、弱类型语言的自由和灵活。于是，在过去的这些年里，我们注意到，.NET 的世界里出现了 dynamic 类型，JavaScript 的世界里出现了 TypeScript，甚至连 Python 都开始支持类型标注。这种动与静、强与弱的角逐，隐隐然有种太极圆转、轮回不绝的感觉。果然，“城外的人想冲进去，城里的人想逃出来”，钱钟书先生说的固然是婚姻，可世上的事情，也许都差不多罢！人们反复横跳的样子，像极了「九品芝麻官」里的方唐镜。曾经有段时间，好多人吹捧 Vue3 + TypeScript 的技术栈，有位前辈一针见血地戳破了这种叶公好龙式的喜欢，“你那么喜欢 TypeScript，不还是关掉了 ESLint 的规则，项目里全部都用 Any”。对于这个吐槽，我表示非常真实，因为我们对于动与静、强与弱的心理变化是非常微妙的。常言道，“动态类型一时爽，代码重构火葬场”，你是如何看待编程语言里的动与静静、强与弱的呢？在 gRPC 中我们通过 Protobuf 来描述接口的参数和返回值，由此对服务提供/消费方进行约束。此时，参数和返回值都是静态的、强类型的。如果我们希望提供某种“泛型”的接口，又该如何去做呢？所以，这篇文章我们来聊聊 gPRC 里的 Any 类型。
+Protobuf 里的 Any 类型 在讲 Any 类型前，我想，我们应该想明白，为什么需要这样一个类型？现在，假设我们有下面的 Protobuf 定义：
+1// Vehicle 2message Vehicle {3 int32 VehicleId = 1;4 string FleetNo = 2;5}67// Officer 8message Officer {9 int32 OfficerId = 1;10 string Department = 2;11} 此时，按照Protobuf的规范，我们必须像下面这样定义对应的集合：
+1// VehicleList 2message VehicleList {3 repeated Vehicle List = 1;4}56// OfficerList 7message OfficerList {8 repeated Officer List = 1;9} 考虑到，在C# 中我们只需要使用 List&amp;lt;Vehicle&amp;gt; 和 List&amp;lt;Officer&amp;gt; 即可，这样难免就会形成一种割裂感，因为你几乎要为每一种类型建立对应的表示集合的类型，从语义化的角度考虑，我们更希望使用下面的 Protobuf 定义：">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/grpc-%E5%80%9F%E5%8A%A9-any-%E7%B1%BB%E5%9E%8B%E5%AE%9E%E7%8E%B0%E6%8E%A5%E5%8F%A3%E7%9A%84%E6%B3%9B%E5%8C%96%E8%B0%83%E7%94%A8/>gRPC 借助 Any 类型实现接口的泛化调用</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Dec 10, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 3 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>我发现，人们非常喜欢在一件事情上反复横跳。譬如，以编程语言为例，人们喜欢静态的、强类型语言的严谨和安全，可难免会羡慕动态的、弱类型语言的自由和灵活。于是，在过去的这些年里，我们注意到，<code>.NET</code> 的世界里出现了 <code>dynamic</code> 类型，<code>JavaScript</code> 的世界里出现了 <code>TypeScript</code>，甚至连 <code>Python</code> 都开始支持类型标注。这种动与静、强与弱的角逐，隐隐然有种太极圆转、轮回不绝的感觉。果然，“城外的人想冲进去，城里的人想逃出来”，钱钟书先生说的固然是婚姻，可世上的事情，也许都差不多罢！人们反复横跳的样子，像极了「九品芝麻官」里的方唐镜。曾经有段时间，好多人吹捧 <a class=link href=https://v3.cn.vuejs.org/ target=_blank rel=noopener>Vue3</a> + <a class=link href=https://www.tslang.cn/ target=_blank rel=noopener>TypeScript</a> 的技术栈，有位前辈一针见血地戳破了这种叶公好龙式的喜欢，“你那么喜欢 TypeScript，不还是关掉了 ESLint 的规则，项目里全部都用 Any”。对于这个吐槽，我表示非常真实，因为我们对于动与静、强与弱的心理变化是非常微妙的。常言道，“动态类型一时爽，代码重构火葬场”，你是如何看待编程语言里的动与静静、强与弱的呢？在 gRPC 中我们通过 Protobuf 来描述接口的参数和返回值，由此对服务提供/消费方进行约束。此时，参数和返回值都是静态的、强类型的。如果我们希望提供某种“泛型”的接口，又该如何去做呢？所以，这篇文章我们来聊聊 gPRC 里的 Any 类型。</p>
+<h1 id=protobuf-里的-any-类型>Protobuf 里的 Any 类型</h1>
+<p>在讲 Any 类型前，我想，我们应该想明白，为什么需要这样一个类型？现在，假设我们有下面的 <code>Protobuf</code> 定义：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-protobuf data-lang=protobuf><span class=ln> 1</span><span class=c1>// Vehicle
+</span><span class=ln> 2</span><span class=c1></span><span class=kd>message</span> <span class=nc>Vehicle</span> <span class=p>{</span><span class=err>
+</span><span class=ln> 3</span><span class=err></span>  <span class=kt>int32</span> <span class=n>VehicleId</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span><span class=ln> 4</span><span class=err></span>  <span class=kt>string</span> <span class=n>FleetNo</span> <span class=o>=</span> <span class=mi>2</span><span class=p>;</span><span class=err>
+</span><span class=ln> 5</span><span class=err></span><span class=p>}</span><span class=err>
+</span><span class=ln> 6</span><span class=err>
+</span><span class=ln> 7</span><span class=err></span><span class=c1>// Officer
+</span><span class=ln> 8</span><span class=c1></span><span class=kd>message</span> <span class=nc>Officer</span> <span class=p>{</span><span class=err>
+</span><span class=ln> 9</span><span class=err></span>  <span class=kt>int32</span> <span class=n>OfficerId</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span><span class=ln>10</span><span class=err></span>  <span class=kt>string</span> <span class=n>Department</span> <span class=o>=</span> <span class=mi>2</span><span class=p>;</span><span class=err>
+</span><span class=ln>11</span><span class=err></span><span class=p>}</span> <span class=err>
+</span></code></pre></div><p>此时，按照<code>Protobuf</code>的规范，我们必须像下面这样定义对应的集合：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-protobuf data-lang=protobuf><span class=ln>1</span><span class=c1>// VehicleList
+</span><span class=ln>2</span><span class=c1></span><span class=kd>message</span> <span class=nc>VehicleList</span> <span class=p>{</span><span class=err>
+</span><span class=ln>3</span><span class=err></span>  <span class=k>repeated</span> <span class=n>Vehicle</span> <span class=n>List</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span><span class=ln>4</span><span class=err></span><span class=p>}</span><span class=err>
+</span><span class=ln>5</span><span class=err>
+</span><span class=ln>6</span><span class=err></span><span class=c1>// OfficerList
+</span><span class=ln>7</span><span class=c1></span><span class=kd>message</span> <span class=nc>OfficerList</span> <span class=p>{</span><span class=err>
+</span><span class=ln>8</span><span class=err></span>  <span class=k>repeated</span> <span class=n>Officer</span> <span class=n>List</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span><span class=ln>9</span><span class=err></span><span class=p>}</span> <span class=err>
+</span></code></pre></div><p>考虑到，在<code>C#</code> 中我们只需要使用 <code>List&lt;Vehicle></code> 和 <code>List&lt;Officer></code> 即可，这样难免就会形成一种割裂感，因为你几乎要为每一种类型建立对应的表示集合的类型，从语义化的角度考虑，我们更希望使用下面的 <code>Protobuf</code> 定义：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-protobuf data-lang=protobuf><span class=ln>1</span><span class=kd>message</span> <span class=nc>Collection</span> <span class=p>{</span><span class=err>
+</span><span class=ln>2</span><span class=err></span>  <span class=k>repeated</span> <span class=n>Any</span> <span class=n>List</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span><span class=ln>3</span><span class=err></span><span class=p>}</span><span class=err>
+</span></code></pre></div><p>此时，<code>VehicleList</code> 和 <code>OfficerList</code> 就可以统一到 <code>Collection</code> 这个类型中，这样，不但减少了花在类型定义的时间，更能帮助我们打开一点思路。在过去，我们编写 API 的时候，通常会定义下面的类来返回结果：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=k>public</span> <span class=k>class</span> <span class=nc>ApiResult</span><span class=p>&lt;</span><span class=n>TData</span><span class=p>&gt;</span> <span class=p>{</span>
+<span class=ln>2</span>  <span class=k>public</span> <span class=kt>int</span> <span class=n>Code</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln>3</span>  <span class=k>public</span> <span class=kt>string</span> <span class=n>Msg</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln>4</span>  <span class=k>public</span> <span class=n>TData</span> <span class=n>Data</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln>5</span><span class=p>}</span>
+</code></pre></div><p>类似地，当我们用 gPRC 来做微服务的时候，我们希望在 <code>Protobuf</code> 中沿用这个设计：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-protobuf data-lang=protobuf><span class=ln>1</span><span class=kd>message</span> <span class=nc>ApiResult</span> <span class=p>{</span><span class=err>
+</span><span class=ln>2</span><span class=err></span>  <span class=kt>int32</span> <span class=n>Code</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span><span class=ln>3</span><span class=err></span>  <span class=kt>string</span> <span class=n>Msg</span> <span class=o>=</span> <span class=mi>2</span><span class=p>;</span><span class=err>
+</span><span class=ln>4</span><span class=err></span>  <span class=n>Any</span> <span class=n>Data</span> <span class=o>=</span> <span class=mi>3</span><span class=p>;</span><span class=err>
+</span><span class=ln>5</span><span class=err></span><span class=p>}</span><span class=err>
+</span></code></pre></div><p>至此，它可以和我们在 <code>C#</code> 中的认知联系起来，不会让你有太多心智上的负担。基于上述两种诉求，我们发现， <code>Protobuf</code> 中存在着需要泛化的场景，你可以理解为，我们需要用 <code>Protobuf</code> 来表示泛型或者模板类这样的东西。幸运的是，Google 为我们定义了 <code>Any</code> 类型，它到底是何方神圣呢？我们一起来看看：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-protobuf data-lang=protobuf><span class=ln>1</span><span class=kd>message</span> <span class=nc>Any</span> <span class=p>{</span><span class=err>
+</span><span class=ln>2</span><span class=err></span>  <span class=kt>string</span> <span class=n>type_url</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span><span class=ln>3</span><span class=err></span>  <span class=kt>bytes</span> <span class=n>value</span> <span class=o>=</span> <span class=mi>2</span><span class=p>;</span><span class=err>
+</span><span class=ln>4</span><span class=err></span><span class=p>}</span><span class=err>
+</span></code></pre></div><p>没错，它就是这样的朴实无华，甚至比古天乐还要平平无奇，简单来说，<code>type_url</code>字段告诉你这是一个什么类型，<code>value</code>字段里则存放对应的二进制数据，而这就是 <code>Any</code> 类型的全部秘密！</p>
+<h1 id=在-net-中使用-any-类型>在 .NET 中使用 Any 类型</h1>
+<p>好了，下面我们来演示，如何在 .NET 中使用 <code>Any</code> 类型。通过前面我们已经知道， <code>Any</code> 类型和我们自定义的消息没有区别，所以，它同样实现了 <code>IMessage</code> 和 <code>IMessage&lt;Any></code>两个接口，唯一不同的地方在于，它拥有<code>Pack()</code>、<code>Unpack&lt;T>()</code>、<code>TryUnpack&lt;T>()</code>这样几个静态方法，这是实现任意 <code>IMessage</code> 到 <code>Any</code> 相互转换的关键。现在，假设我们现在有如下的 <code>Protobuf</code> 定义：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-protobuf data-lang=protobuf><span class=ln> 1</span><span class=kd>message</span> <span class=nc>AnyRequest</span> <span class=p>{</span><span class=err>
+</span><span class=ln> 2</span><span class=err></span>  <span class=n>google.protobuf.Any</span> <span class=n>Data</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span> <span class=err>
+</span><span class=ln> 3</span><span class=err></span><span class=p>}</span><span class=err>
+</span><span class=ln> 4</span><span class=err>
+</span><span class=ln> 5</span><span class=err></span><span class=kd>message</span> <span class=nc>AnyResponse</span> <span class=p>{</span><span class=err>
+</span><span class=ln> 6</span><span class=err></span>  <span class=n>google.protobuf.Any</span> <span class=n>Data</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span><span class=ln> 7</span><span class=err></span><span class=p>}</span><span class=err>
+</span><span class=ln> 8</span><span class=err>
+</span><span class=ln> 9</span><span class=err></span><span class=kd>message</span> <span class=nc>Foo</span> <span class=p>{</span><span class=err>
+</span><span class=ln>10</span><span class=err></span>  <span class=kt>string</span> <span class=n>Name</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span><span class=ln>11</span><span class=err></span><span class=p>}</span><span class=err>
+</span><span class=ln>12</span><span class=err>
+</span><span class=ln>13</span><span class=err></span><span class=kd>message</span> <span class=nc>Bar</span> <span class=p>{</span><span class=err>
+</span><span class=ln>14</span><span class=err></span>  <span class=kt>string</span> <span class=n>Name</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span><span class=ln>15</span><span class=err></span><span class=p>}</span><span class=err>
+</span></code></pre></div><p>此时，如果我们希望在 <code>AnyRequest</code> 或者 <code>AnyResponse</code> 里传递 <code>Any</code> 类型，我们可以这样做：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=kt>var</span> <span class=n>anyRequest</span> <span class=p>=</span> <span class=k>new</span> <span class=n>AnyRequest</span><span class=p>()</span>
+<span class=ln> 2</span>
+<span class=ln> 3</span><span class=c1>// Foo -&gt; Any，默认类型地址前缀
+</span><span class=ln> 4</span><span class=c1></span><span class=kt>var</span> <span class=n>foo</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Foo</span><span class=p>();</span>
+<span class=ln> 5</span><span class=n>foo</span><span class=p>.</span><span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;Foo&#34;</span><span class=p>;</span>
+<span class=ln> 6</span><span class=n>anyRequest</span><span class=p>.</span><span class=n>Data</span> <span class=p>=</span> <span class=n>Any</span><span class=p>.</span><span class=n>Pack</span><span class=p>(</span><span class=n>foo</span><span class=p>);</span>
+<span class=ln> 7</span>
+<span class=ln> 8</span><span class=c1>// Bar -&gt; Any, 自定义类型地址前缀
+</span><span class=ln> 9</span><span class=c1></span><span class=kt>var</span> <span class=n>bar</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Bar</span><span class=p>();</span>
+<span class=ln>10</span><span class=n>bar</span><span class=p>.</span><span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;Bar&#34;</span><span class=p>;</span>
+<span class=ln>11</span><span class=n>anyRequest</span><span class=p>.</span><span class=n>Data</span> <span class=p>=</span> <span class=n>Any</span><span class=p>.</span><span class=n>Pack</span><span class=p>(</span><span class=n>bar</span><span class=p>,</span> <span class=s>&#34;type.company.com/bar&#34;</span><span class=p>);</span>
+</code></pre></div><p>反过来，我们可以从 <code>Any</code> 中解析出 <code>IMessage</code> ：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>if</span> <span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Data</span><span class=p>.</span><span class=n>Is</span><span class=p>(</span><span class=n>Foo</span><span class=p>.</span><span class=n>Descriptor</span><span class=p>))</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>  <span class=c1>// Any -&gt; Foo
+</span><span class=ln> 4</span><span class=c1></span>  <span class=kt>var</span> <span class=n>foo</span> <span class=p>=</span> <span class=n>request</span><span class=p>.</span><span class=n>Data</span><span class=p>.</span><span class=n>Unapck</span><span class=p>&lt;</span><span class=n>Foo</span><span class=p>&gt;();</span>
+<span class=ln> 5</span><span class=p>}</span> 
+<span class=ln> 6</span><span class=k>else</span> <span class=k>if</span> <span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>Data</span><span class=p>.</span><span class=n>Is</span><span class=p>(</span><span class=n>Bar</span><span class=p>.</span><span class=n>Descriptor</span><span class=p>))</span>
+<span class=ln> 7</span><span class=p>{</span>
+<span class=ln> 8</span>  <span class=c1>// Any -&gt; Bar
+</span><span class=ln> 9</span><span class=c1></span>  <span class=kt>var</span> <span class=n>bar</span> <span class=p>=</span> <span class=n>request</span><span class=p>.</span><span class=n>Data</span><span class=p>.</span><span class=n>Unapck</span><span class=p>&lt;</span><span class=n>Bar</span><span class=p>&gt;();</span>
+<span class=ln>10</span><span class=p>}</span>
+</code></pre></div><p>默认的 <code>Any</code> 类型，只能对 <code>Protobuf</code> 生成的类型(即实现了 IMessage 接口)进行 <code>Pack</code> ，如果我们想做得更绝一点(最好还是不要)，那么，可以使用自定义的 <code>MyAny</code> 类型：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-protobuf data-lang=protobuf><span class=ln>1</span><span class=kd>message</span> <span class=nc>MyAny</span> <span class=p>{</span><span class=err>
+</span><span class=ln>2</span><span class=err></span>  <span class=kt>string</span> <span class=n>TypeUrl</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span><span class=ln>3</span><span class=err></span>  <span class=kt>bytes</span> <span class=n>Value</span> <span class=o>=</span> <span class=mi>2</span><span class=p>;</span><span class=err>
+</span><span class=ln>4</span><span class=err></span><span class=p>}</span><span class=err>
+</span></code></pre></div><p>相应地，我们为 <code>MyAny</code> 类型编写一点扩展方法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>static</span> <span class=k>class</span> <span class=nc>MyAnyExtension</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>public</span> <span class=k>static</span> <span class=n>MyAny</span> <span class=n>Pack</span><span class=p>(</span><span class=k>this</span> <span class=kt>object</span> <span class=n>obj</span><span class=p>,</span> <span class=kt>string</span> <span class=n>typeUrlPrefix</span> <span class=p>=</span> <span class=s>&#34;&#34;</span><span class=p>)</span>
+<span class=ln> 4</span>    <span class=p>{</span>
+<span class=ln> 5</span>        <span class=kt>var</span> <span class=n>any</span> <span class=p>=</span> <span class=k>new</span> <span class=n>MyAny</span><span class=p>();</span>
+<span class=ln> 6</span>        <span class=n>any</span><span class=p>.</span><span class=n>TypeUrl</span> <span class=p>=</span> <span class=s>$&#34;{typeUrlPrefix}/{obj.GetType().FullName}&#34;</span><span class=p>;</span>
+<span class=ln> 7</span>        <span class=kt>var</span> <span class=n>bytes</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span><span class=p>(</span><span class=n>JsonConvert</span><span class=p>.</span><span class=n>SerializeObject</span><span class=p>(</span><span class=n>obj</span><span class=p>));</span>
+<span class=ln> 8</span>        <span class=n>any</span><span class=p>.</span><span class=n>Value</span> <span class=p>=</span> <span class=n>Google</span><span class=p>.</span><span class=n>Protobuf</span><span class=p>.</span><span class=n>ByteString</span><span class=p>.</span><span class=n>CopyFrom</span><span class=p>(</span><span class=n>bytes</span><span class=p>);</span>
+<span class=ln> 9</span>        <span class=k>return</span> <span class=n>any</span><span class=p>;</span>
+<span class=ln>10</span>    <span class=p>}</span>
+<span class=ln>11</span>
+<span class=ln>12</span>    <span class=k>public</span> <span class=k>static</span> <span class=n>T</span> <span class=n>Unpack</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>MyAny</span> <span class=n>any</span><span class=p>,</span> <span class=kt>string</span> <span class=n>typeUrlPrefix</span> <span class=p>=</span> <span class=s>&#34;&#34;</span><span class=p>)</span>
+<span class=ln>13</span>    <span class=p>{</span>
+<span class=ln>14</span>        <span class=kt>var</span> <span class=n>typeUrl</span> <span class=p>=</span> <span class=s>$&#34;{typeUrlPrefix}/{typeof(T).FullName}&#34;</span><span class=p>;</span>
+<span class=ln>15</span>        <span class=k>if</span> <span class=p>(</span><span class=n>typeUrl</span> <span class=p>==</span> <span class=n>any</span><span class=p>.</span><span class=n>TypeUrl</span><span class=p>)</span>
+<span class=ln>16</span>        <span class=p>{</span>
+<span class=ln>17</span>            <span class=kt>var</span> <span class=n>json</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>any</span><span class=p>.</span><span class=n>Value</span><span class=p>.</span><span class=n>ToByteArray</span><span class=p>());</span>
+<span class=ln>18</span>            <span class=k>return</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>DeserializeObject</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=n>json</span><span class=p>);</span>
+<span class=ln>19</span>        <span class=p>}</span>
+<span class=ln>20</span>
+<span class=ln>21</span>        <span class=k>return</span> <span class=k>default</span><span class=p>(</span><span class=n>T</span><span class=p>);</span>
+<span class=ln>22</span>    <span class=p>}</span>
+<span class=ln>23</span>
+<span class=ln>24</span>    <span class=k>public</span> <span class=k>static</span> <span class=kt>bool</span> <span class=n>Is</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>MyAny</span> <span class=n>any</span><span class=p>,</span> <span class=kt>string</span> <span class=n>typeUrlPrefix</span> <span class=p>=</span> <span class=s>&#34;&#34;</span><span class=p>)</span>
+<span class=ln>25</span>    <span class=p>{</span>
+<span class=ln>26</span>        <span class=kt>var</span> <span class=n>typeUrl</span> <span class=p>=</span> <span class=s>$&#34;{typeUrlPrefix}/{typeof(T).FullName}&#34;</span><span class=p>;</span>
+<span class=ln>27</span>        <span class=k>return</span> <span class=n>typeUrl</span> <span class=p>==</span> <span class=n>any</span><span class=p>.</span><span class=n>TypeUrl</span><span class=p>;</span>
+<span class=ln>28</span>    <span class=p>}</span>
+<span class=ln>29</span><span class=p>}</span>
+</code></pre></div><p>接下来，我们就可以对任意类型进行处理，虽然，此时此刻，从严格意义上来讲，它已不再属于 <code>Protobuf</code> 的范畴，因为序列化/反序列化都交给了 JSON ：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=kt>var</span> <span class=n>client</span> <span class=p>=</span> <span class=n>serviceProvider</span><span class=p>.</span><span class=n>GetService</span><span class=p>&lt;</span><span class=n>ProtobufAny</span><span class=p>.</span><span class=n>Greeter</span><span class=p>.</span><span class=n>GreeterClient</span><span class=p>&gt;();</span>
+<span class=ln>2</span><span class=n>client</span><span class=p>.</span><span class=n>Ping</span><span class=p>(</span><span class=k>new</span> <span class=n>Foo</span><span class=p>()</span> <span class=p>{</span> <span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;Foo&#34;</span> <span class=p>}.</span><span class=n>Pack</span><span class=p>());</span>
+<span class=ln>3</span><span class=n>client</span><span class=p>.</span><span class=n>Ping</span><span class=p>(</span><span class=k>new</span> <span class=n>Bar</span><span class=p>()</span> <span class=p>{</span> <span class=n>Name</span> <span class=p>=</span> <span class=s>&#34;Foo&#34;</span> <span class=p>}.</span><span class=n>Pack</span><span class=p>());</span>
+<span class=ln>4</span><span class=n>client</span><span class=p>.</span><span class=n>Ping</span><span class=p>(</span><span class=k>new</span> <span class=p>{</span> <span class=n>X</span> <span class=p>=</span> <span class=m>0</span><span class=p>,</span> <span class=n>Y</span> <span class=p>=</span> <span class=m>1</span><span class=p>,</span> <span class=n>Z</span> <span class=p>=</span> <span class=m>0</span> <span class=p>}.</span><span class=n>Pack</span><span class=p>());</span>
+</code></pre></div><p>这样看起来是不是非常酷？我始终认为，这件事情是有意义的，一个系统中最多的接口显然是查询接口，此时，我们可以构建一个通用的 <a class=link href=https://github.com/qinyuanpei/DynamicSearch target=_blank rel=noopener>查询</a> 来处理，使用者只需要传递一个实体、一个Proto，一组过滤条件，它就可以返回对应的数据，这样是不是比写一个又一个差不多的接口要好一点呢？过去我们开发 API，主张用数据传输对象(DTO)来隔离持久化层和业务层，从这个角度来看，Protobuf 本身就是 一种 DTO ，对于大多数相似的、模板化的、套路化的接口，我们完全可以考虑用这种方案来实现，只要双方约定好类型即可。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=c1>// 在业务层构建通用的查询
+</span><span class=ln> 2</span><span class=c1></span><span class=k>public</span> <span class=n>QueryReply</span> <span class=n>Query</span><span class=p>&lt;</span><span class=n>TInput</span><span class=p>,</span> <span class=n>TOutput</span><span class=p>&gt;(</span><span class=n>SearchParameters</span> <span class=n>searchParameters</span><span class=p>)</span> <span class=k>where</span> <span class=n>TInput</span> <span class=p>:</span> <span class=k>class</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=kt>var</span> <span class=n>result</span> <span class=p>=</span> <span class=m>_</span><span class=n>chinookContext</span><span class=p>.</span><span class=n>Set</span><span class=p>&lt;</span><span class=n>TInput</span><span class=p>&gt;().</span><span class=n>AsQueryable</span><span class=p>().</span><span class=n>Search</span><span class=p>(</span><span class=n>searchParameters</span><span class=p>).</span><span class=n>ToList</span><span class=p>();</span>
+<span class=ln> 5</span>    <span class=kt>var</span> <span class=n>output</span> <span class=p>=</span> <span class=n>result</span><span class=p>.</span><span class=n>Adapt</span><span class=p>&lt;</span><span class=n>List</span><span class=p>&lt;</span><span class=n>TOutput</span><span class=p>&gt;&gt;();</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span>    <span class=kt>var</span> <span class=n>reply</span> <span class=p>=</span> <span class=k>new</span> <span class=n>QueryReply</span><span class=p>();</span>
+<span class=ln> 8</span>    <span class=n>reply</span><span class=p>.</span><span class=n>List</span><span class=p>.</span><span class=n>AddRange</span><span class=p>(</span><span class=n>output</span><span class=p>.</span><span class=n>Select</span><span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>Pack</span><span class=p>()));</span>
+<span class=ln> 9</span>    <span class=k>return</span> <span class=n>reply</span><span class=p>;</span>
+<span class=ln>10</span><span class=p>}</span>
+<span class=ln>11</span>
+<span class=ln>12</span><span class=c1>// x =&gt; { 1, 2, 3 }.Contains(x.AlbumId)
+</span><span class=ln>13</span><span class=c1></span><span class=kt>var</span> <span class=n>searchParameters</span> <span class=p>=</span> <span class=n>SearchParameters</span><span class=p>();</span>
+<span class=ln>14</span><span class=n>searchParameters</span><span class=p>.</span><span class=n>QueryModel</span> <span class=p>=</span> <span class=k>new</span> <span class=n>QueryModel</span><span class=p>();</span>
+<span class=ln>15</span><span class=n>searchParameters</span><span class=p>.</span><span class=n>QueryModel</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=k>new</span> <span class=n>Condition</span><span class=p>()</span> <span class=p>{</span> <span class=n>Field</span> <span class=p>=</span> <span class=s>&#34;AlbumId&#34;</span><span class=p>,</span> <span class=n>Op</span> <span class=p>=</span> <span class=n>Operation</span><span class=p>.</span><span class=n>StdIn</span><span class=p>,</span> <span class=n>Value</span> <span class=p>=</span> <span class=k>new</span> <span class=kt>int</span><span class=p>[]</span> <span class=p>{</span> <span class=m>1</span><span class=p>,</span> <span class=m>2</span><span class=p>,</span> <span class=m>3</span><span class=p>}</span> <span class=p>});</span>
+<span class=ln>16</span>
+<span class=ln>17</span><span class=c1>// 在服务层解析参数，完全可以由调用方提供 SearchParameters
+</span><span class=ln>18</span><span class=c1></span><span class=kt>var</span> <span class=n>inputType</span> <span class=p>=</span> <span class=n>Type</span><span class=p>.</span><span class=n>GetType</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>InputType</span><span class=p>);</span>
+<span class=ln>19</span><span class=kt>var</span> <span class=n>outputType</span> <span class=p>=</span> <span class=n>Type</span><span class=p>.</span><span class=n>GetType</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>OutputType</span><span class=p>);</span>
+<span class=ln>20</span><span class=k>if</span> <span class=p>(</span><span class=n>inputType</span> <span class=p>!=</span> <span class=k>null</span> <span class=p>&amp;&amp;</span> <span class=n>outputType</span> <span class=p>!=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln>21</span><span class=p>{</span>
+<span class=ln>22</span>    <span class=kt>var</span> <span class=n>queryMethod</span> <span class=p>=</span> <span class=m>_</span><span class=n>queryService</span><span class=p>.</span><span class=n>GetType</span><span class=p>().</span><span class=n>GetMethod</span><span class=p>(</span><span class=s>&#34;Query&#34;</span><span class=p>).</span><span class=n>MakeGenericMethod</span><span class=p>(</span><span class=n>inputType</span><span class=p>,</span> <span class=n>outputType</span><span class=p>);</span>
+<span class=ln>23</span>    <span class=n>QueryReply</span> <span class=n>queryResult</span> <span class=p>=</span> <span class=p>(</span><span class=n>QueryReply</span><span class=p>)</span><span class=n>queryMethod</span><span class=p>.</span><span class=n>Invoke</span><span class=p>(</span><span class=m>_</span><span class=n>queryService</span><span class=p>,</span> <span class=k>new</span> <span class=kt>object</span><span class=p>[]</span> <span class=p>{</span> 
+<span class=ln>24</span>      <span class=k>new</span> <span class=n>DynamicSearch</span><span class=p>.</span><span class=n>Core</span><span class=p>.</span><span class=n>SearchParameters</span><span class=p>()</span>
+<span class=ln>25</span>    <span class=p>});</span>
+<span class=ln>26</span>    <span class=k>return</span> <span class=n>Task</span><span class=p>.</span><span class=n>FromResult</span><span class=p>(</span><span class=n>queryResult</span><span class=p>);</span>
+<span class=ln>27</span><span class=p>}</span>
+</code></pre></div><h1 id=本文小结>本文小结</h1>
+<p>对于编程语言中的动与静、强与弱，我个人觉得还是要看场景，只要双方定义好契约，我相信，它都可以运作起来，当然，更多的时候，我们是在灵活与严谨间反复横跳。作为一门 DSL，Protobuf 虽然可以对服务提供/消费方产生一定约束，可当我们面对需要泛型或者模板类的场景的时候，这种做法就变成了一种负担，更不必说它缺乏对继承的支持。想象一下，你要写二十多个大同小异的接口，譬如为每一张数据表写一个 <code>GetXXXById()</code> 的接口。此时，我们可以借助 <code>Any</code> 类型来实现类似泛型、模板类的东西，它本质上还是 <code> IMessage</code> 接口的实现类，唯一的不同是增加了 Pack/Unpack 这组静态方法，可以帮助我们实现 <code>Any</code> 和 <code>IMessage</code> 的相互转换，关于本文中使用的的实例，可以参考：<a class=link href=https://github.com/Regularly-Archive/2021/tree/master/src/ProtobufAny target=_blank rel=noopener>ProtobufAny</a>，好了，以上就是这篇博客的全部内容，如果有朋友对文章中的内容和观点存在疑问，欢迎在评论区积极留言，谢谢大家！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/grpc/>gRPC</a>
+<a href=/tags/protobuf/>Protobuf</a>
+<a href=/tags/any/>Any</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E6%B5%85%E8%AE%AE%E9%9D%9E%E5%85%B8%E5%9E%8B-web-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/>
+<div class=article-details>
+<h2 class=article-title>浅议非典型 Web 应用场景下的身份认证</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/grpc-%E6%90%AD%E9%85%8D-swagger-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%96%87%E6%A1%A3%E5%8C%96/>
+<div class=article-details>
+<h2 class=article-title>gRPC 搭配 Swagger 实现微服务文档化</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-%E6%90%AD%E8%BD%BD-envoy-%E5%AE%9E%E7%8E%B0-grpc-%E6%9C%8D%E5%8A%A1%E4%BB%A3%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现 gRPC 服务代理</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-grpc-%E6%89%93%E9%80%9A%E5%89%8D%E7%AB%AF%E4%B8%96%E7%95%8C%E7%9A%84%E5%B0%9D%E8%AF%95/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 打通前端世界的尝试</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/asp.net-core-grpc-%E9%9B%86%E6%88%90-polly-%E5%AE%9E%E7%8E%B0%E4%BC%98%E9%9B%85%E9%87%8D%E8%AF%95/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 集成 Polly 实现优雅重试</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#protobuf-里的-any-类型>Protobuf 里的 Any 类型</a></li>
+<li><a href=#在-net-中使用-any-类型>在 .NET 中使用 Any 类型</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

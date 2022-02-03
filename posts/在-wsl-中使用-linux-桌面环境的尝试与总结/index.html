@@ -1,0 +1,299 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Linux Deepin 安装是非常顺畅的，但即便安装完这个桌面环境，博主还是不知道怎么启动这个环境，因为你常规使用 Ubuntu 的话，安装完切换桌面管理器就可以了，可当你用 WSL 这种方式使用 Ubuntu 的时候，可能你就会感到非常困惑;虽然目前应用商店里已经提供了 Ubuntu、Debian、Kail Linux、OpenSUSE 这些常见的发行版，可当你熟悉了 Linux 的世界以后，就会明白这个世界对多元化的追求是永无止境的，我不想去 Judge 这些多元化间优劣，我只想自由地使用我喜欢的技术，比如 Linux Deepin、Elementary OS;在对比了 Gnome、KDE、Unity、Mint、xfce 等等的桌面环境以后，我觉得 Linux 在桌面市场输给 Windows 是理所当然的，因为实在太混乱了，WSL 下需要的应该是一个轻量级的桌面，因为越是华而不实东西，越会消耗大量资源"><title>在 WSL 中使用 Linux 桌面环境的尝试与总结</title>
+<link rel=canonical href=/posts/%E5%9C%A8-wsl-%E4%B8%AD%E4%BD%BF%E7%94%A8-linux-%E6%A1%8C%E9%9D%A2%E7%8E%AF%E5%A2%83%E7%9A%84%E5%B0%9D%E8%AF%95%E4%B8%8E%E6%80%BB%E7%BB%93/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="在 WSL 中使用 Linux 桌面环境的尝试与总结">
+<meta property="og:description" content="Linux Deepin 安装是非常顺畅的，但即便安装完这个桌面环境，博主还是不知道怎么启动这个环境，因为你常规使用 Ubuntu 的话，安装完切换桌面管理器就可以了，可当你用 WSL 这种方式使用 Ubuntu 的时候，可能你就会感到非常困惑;虽然目前应用商店里已经提供了 Ubuntu、Debian、Kail Linux、OpenSUSE 这些常见的发行版，可当你熟悉了 Linux 的世界以后，就会明白这个世界对多元化的追求是永无止境的，我不想去 Judge 这些多元化间优劣，我只想自由地使用我喜欢的技术，比如 Linux Deepin、Elementary OS;在对比了 Gnome、KDE、Unity、Mint、xfce 等等的桌面环境以后，我觉得 Linux 在桌面市场输给 Windows 是理所当然的，因为实在太混乱了，WSL 下需要的应该是一个轻量级的桌面，因为越是华而不实东西，越会消耗大量资源">
+<meta property="og:url" content="/posts/%E5%9C%A8-wsl-%E4%B8%AD%E4%BD%BF%E7%94%A8-linux-%E6%A1%8C%E9%9D%A2%E7%8E%AF%E5%A2%83%E7%9A%84%E5%B0%9D%E8%AF%95%E4%B8%8E%E6%80%BB%E7%BB%93/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="WSL"><meta property="article:tag" content="Linux"><meta property="article:tag" content="桌面"><meta property="article:published_time" content="2019-08-17T21:09:46+00:00"><meta property="article:modified_time" content="2019-08-17T21:09:46+00:00">
+<meta name=twitter:title content="在 WSL 中使用 Linux 桌面环境的尝试与总结">
+<meta name=twitter:description content="Linux Deepin 安装是非常顺畅的，但即便安装完这个桌面环境，博主还是不知道怎么启动这个环境，因为你常规使用 Ubuntu 的话，安装完切换桌面管理器就可以了，可当你用 WSL 这种方式使用 Ubuntu 的时候，可能你就会感到非常困惑;虽然目前应用商店里已经提供了 Ubuntu、Debian、Kail Linux、OpenSUSE 这些常见的发行版，可当你熟悉了 Linux 的世界以后，就会明白这个世界对多元化的追求是永无止境的，我不想去 Judge 这些多元化间优劣，我只想自由地使用我喜欢的技术，比如 Linux Deepin、Elementary OS;在对比了 Gnome、KDE、Unity、Mint、xfce 等等的桌面环境以后，我觉得 Linux 在桌面市场输给 Windows 是理所当然的，因为实在太混乱了，WSL 下需要的应该是一个轻量级的桌面，因为越是华而不实东西，越会消耗大量资源">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=/https:/github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=/https:/blog.csdn.me/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/>
+开发工具
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E5%9C%A8-wsl-%E4%B8%AD%E4%BD%BF%E7%94%A8-linux-%E6%A1%8C%E9%9D%A2%E7%8E%AF%E5%A2%83%E7%9A%84%E5%B0%9D%E8%AF%95%E4%B8%8E%E6%80%BB%E7%BB%93/>在 WSL 中使用 Linux 桌面环境的尝试与总结</a>
+</h2>
+<h3 class=article-subtitle>
+Linux Deepin 安装是非常顺畅的，但即便安装完这个桌面环境，博主还是不知道怎么启动这个环境，因为你常规使用 Ubuntu 的话，安装完切换桌面管理器就可以了，可当你用 WSL 这种方式使用 Ubuntu 的时候，可能你就会感到非常困惑;虽然目前应用商店里已经提供了 Ubuntu、Debian、Kail Linux、OpenSUSE 这些常见的发行版，可当你熟悉了 Linux 的世界以后，就会明白这个世界对多元化的追求是永无止境的，我不想去 Judge 这些多元化间优劣，我只想自由地使用我喜欢的技术，比如 Linux Deepin、Elementary OS;在对比了 Gnome、KDE、Unity、Mint、xfce 等等的桌面环境以后，我觉得 Linux 在桌面市场输给 Windows 是理所当然的，因为实在太混乱了，WSL 下需要的应该是一个轻量级的桌面，因为越是华而不实东西，越会消耗大量资源
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Aug 17, 2019</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>最近忙里偷闲的博主，再次迷恋上折腾 Linux。话说自从微软推出 WSL 以后，我就彻底地停止了 Windows + Linux 的双系统组合。回想起从前使用过的各种 Linux 发行版，基本上每隔一段时间就会崩溃一次，所以，面对 WSL 这种近乎<code>应用</code>级别的方案，我个人是非常愿意去接受的。因为一不小心玩坏了的话，可以直接对应用程序进行重置，或者重新从应用商店下载，相比重装系统，我觉得这种方式要更友好一点。虽然说 Windows10 是有史以来最好的 Linux 发行版:smile:，可面对只有命令行的 Linux，果然还是有一丝丝的失望啊:beetle:。所以，在这篇博客里，主要想和大家分享下，关于在 WSL 下使用 Linux 桌面系统的一点点尝试和体会。虽然目前应用商店里已经提供了 Ubuntu、Debian、Kail Linux、OpenSUSE 这些常见的发行版，可当你熟悉了 Linux 的世界以后，就会明白这个世界对多元化的追求是永无止境的，我不想去 Judge 这些多元化间优劣，我只想自由地使用我喜欢的技术，比如 Linux Deepin、Elementary OS。这是我想要使用 Linux 桌面环境的理由。</p>
+<p>我们知道，目前应用商店里提供的 Linux 发行版都是<code>"命令行"</code>版本。因为 Windows 本身就提供了非常出色的桌面环境，虽然每一次设计都给人一种相当前卫的感觉。平时我们使用<code>SSH</code>登录远程服务器的时候，其实是使用它的终端环境即 CLI。Linux 和 Windows 最大的不同在于，Linux 的桌面环境并不是 Linux 本身的一部分，它和所有的 Linux 应用程序并没有什么区别，因为脱离桌面环境的 Linux 的单独运行，而脱离桌面环境的 Windows 则未必可以。那么，我们怎么样在 Windows 里使用 Linux 的桌面环境呢？常见的思路主要有<code>XServer</code>和<code>远程桌面</code>两种。这里我们主要介绍第一种方式，即<code>XServer</code>。什么是 XServer 呢？Linux 的 GUI 架构其实是 C/S 模式的，其中 XServer 负责显示，XClient 负责请求。所以，我们只要在宿主机上安装 XServer 就可以啦。在这里，常见的 XServer 主要有：<code>VcXsrv</code>、<code>X410</code>和<code>MobaXterm</code>。理论上，我们只需要在 WSL 里安装桌面环境，在 Windows 上安装 XServer，然后通过命令行启动相应桌面环境即可。</p>
+<p>作为一个最流行的 Linux 发行版，微软非常贴心地给出了 16.04 和 18.04 两个版本。不过随着博主不甘寂寞地一通升级以后，最终还是稳定在了 18.04 这个版本。既然选择从 Ubuntu 这个发行版开始折腾，不如从它默认的桌面环境 Gnome 开始折腾吧！虽然我个人一直不太喜欢这个风格，不然就不会有接下来针对<code>Pantheon</code>和<code>Deepin</code>两个桌面环境的作死啦。这个过程最有意思的事情，居然是发现了一个更轻量级的桌面环境，可能真的是<code>"无心插柳柳成荫"</code>吧。好了，关于如何开启 WSL 及安装 Linux 发行版的过程不再多说。首先，让我们把系统默认的源切换到阿里云，因为这样能节省博主和大家的时间。:slightly_smiling_face:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span>sudo cp /etc/apt/sources.list /etc/apt/sources.list.2019016
+<span class=ln>2</span>sudo vim /etc/apt/sources.list
+</code></pre></div><p>接下来，我们使用下面的命令对文件内容进行替换, 或者你可以手动逐行去编辑。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span>:%s/security.ubuntu/mirrors.aliyun/g
+<span class=ln>2</span>:%s/archive.ubuntu/mirrors.aliyun/g
+</code></pre></div><p>除此以外，还推荐大家使用以下国内的镜像源：</p>
+<p>清华大学镜像源：<a class=link href=https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/ target=_blank rel=noopener>https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/</a></p>
+<p>网易开源镜像站：<a class=link href=http://mirrors.163.com/.help/ubuntu.html target=_blank rel=noopener>http://mirrors.163.com/.help/ubuntu.html</a></p>
+<p>完成镜像源的切换以后，我们就可以愉快地使用<code>apt-get update</code>刷一波存在感啦，话说最近看到一条微博，建议给<code>sudo</code>起一个别名<code>plz</code>或者<code>pls</code>。除了调侃以外，可能更多是想把冰冷的命令行变得充满人情味吧。Windows 下安装<code>VcXsrv</code>大家都轻车熟路啦，这个不再过多的说明。下面，我们来安装以下 Ubuntu 桌面环境：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span><span class=nb>echo</span> <span class=s2>&#34;y&#34;</span><span class=p>|</span>sudo apt-get install ubuntu-desktop unity compizconfig-settings-manager
+<span class=ln>2</span>sudo dpkg-reconfigure dbus <span class=o>&amp;&amp;</span> service dbus restart
+</code></pre></div><p>接下来配置<code>XLaunch</code>，这是我们安装完<code>VcXsrv</code>后自带一个应用程序：</p>
+<p><figure>
+<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g633ck83tij20ek0bpwfg.jpg>
+<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g633ck83tij20ek0bpwfg.jpg loading=lazy alt=配置XLaunch>
+</a>
+<figcaption>配置XLaunch</figcaption>
+</figure></p>
+<p>按照默认配置直至完成后我，我们会发现桌面上出现了一个黑色的窗口，如下图所示：</p>
+<p><figure>
+<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g633jddpbcj21200lcabq.jpg>
+<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g633jddpbcj21200lcabq.jpg loading=lazy alt=XLaunch经典黑屏>
+</a>
+<figcaption>XLaunch经典黑屏</figcaption>
+</figure></p>
+<p>此时，我们在 Ubuntu 的 Bash 窗口中输入<code>sudo compiz</code>命令并切回<code>XLaunch</code>界面。接下来，就是见证奇迹的时刻：</p>
+<p><figure>
+<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g67nqmov1yj21410p0qdr.jpg>
+<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g67nqmov1yj21410p0qdr.jpg loading=lazy alt=经典的Ubuntu桌面>
+</a>
+<figcaption>经典的Ubuntu桌面</figcaption>
+</figure></p>
+<p>如你所见，这是 Ubuntu 默认的 Unity 桌面，博主一开始是在 Ubuntu16.04 上研(折)究(腾)的，当时安装完以后桌面其实是黑色的，因为当时并没有保留下这历史性的一刻，所以，从网上找了张图来这里充数啦，这张图片出自：<a class=link href=https://github.com/microsoft/WSL/issues/637 target=_blank rel=noopener>Run any Desktop Environment in WSL</a>。</p>
+<p>OK，既然 Ubuntu 可以装桌面，那么，衍生自 Ubuntu 的 Elementary OS 和 Linux Deepin 应该同样可以吧，虽然目前应用商店里还有这两个发行版。本着不折腾就不会死的选择，先装个 Elementary OS 的桌面环境试试呗！我个人挺喜欢这个发行版的，理由是默认主题样式就很好看，同理，Linux Deepin 除了好看以外，本身就带有大量优秀的软件。所以说，人类果然还是始于颜值的啊！Elementary OS 使用的桌面环境是 Pantheon，我们可以通过下面的命令行快速安装：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span>sudo add-apt-repository ppa:elementary-os/stable
+<span class=ln>2</span>sudo apt update
+<span class=ln>3</span>sudo apt install elementary-desktop
+</code></pre></div><p>通常，每个桌面环境都会自带一部分“最佳”适配的应用程序，考虑到 WSL 并不是一个完整的 Linux 实现，我们在这里卸载掉一部分 WSL 下不支持的应用程序。而微软新推出的 WSL2，则是基于 VM 的实现，两种方式完全没有可比性，这里不做无意义的争论：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span>sudo apt purge gnome-screensaver <span class=se>\
+</span><span class=ln>2</span><span class=se></span>switchboard-plug-power switchboard-plug-bluetooth switchboard-plug-networking <span class=se>\
+</span><span class=ln>3</span><span class=se></span>wingpanel-indicator-bluetooth wingpanel
+</code></pre></div><p>参考<a class=link href=https://token2shell.com/howto/x410/installing-pantheon-desktop-on-ubuntu-wsl/ target=_blank rel=noopener>Installing Pantheon Desktop On Ubuntu</a>这篇文章中的建议，为了启动 Pantheon 桌面环境，我们需要 <code>gala</code>、 <code>plank</code>和<code>wingpanel</code>三个软件，它们的作用有点像前面的<code>compiz</code>。而关于<code>X410</code>，你可以把它理解为和<code>VcXsrv</code>类似的软件，不同的是这是一个付费软件，作者写了一系列的博客来推广它。接下来，在安装<code>gala</code>的过程中，你大概会遇到这个错误：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span>The following packages have unmet dependencies:
+<span class=ln>2</span>gala : Depends: libmutter-2-0 <span class=o>(</span>&gt;<span class=o>=</span> 3.28.4-0ubuntu18.04.1+elementary4~ubuntu5.0.1<span class=o>)</span> but 3.28.4-0ubuntu18.04.1 is to be installed
+<span class=ln>3</span>E: Unable to correct problems, you have held broken packages.
+</code></pre></div><p>我向作者发邮件寻求帮助，作者非常热心地回复了我三次邮件，对方表示应该是 Elementary OS 团队正在基于 Ubuntu19.04 开发新版本，所以可能没有意识到<code>elementary-desktop</code>这个包已经 broken 了，并且他们在 18.04 版本上复现了这个问题，建议我直接联系官方。好吧，博主的英语表示受宠若惊，邮件在此为证：</p>
+<p><figure>
+<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g6877vhqhcj20io0hut9u.jpg>
+<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g6877vhqhcj20io0hut9u.jpg loading=lazy alt=来自国外网友的热心指导>
+</a>
+<figcaption>来自国外网友的热心指导</figcaption>
+</figure></p>
+<p>总而言之，博主试图在 WSL 上体验 Elementary OS 的想法彻底失败，既然这个最美的 Linux 发行版已失败告终，并不打算就此罢手的博主，决定继续在命令行终端里折腾 Linux Deepin。这个发行版是我从大学时开始接触的 Linux 发行版，那时有个小学弟第一次给我介绍了 Linux Mint，不过我对这个版本实在爱不起来，因为太像 Windows 了啊，可谁能想到若干年后，Windows 反而变成了最好的 Linux 发行版呢(:smile:)，果真是<code>“人生不相见，动如参与商”</code>啊……</p>
+<p>好啦，继续敲命令。Linux Deepin 的桌面环境是 Deepin Desktop Environment，简称 dde：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Shell data-lang=Shell><span class=ln>1</span>sudo add-apt-repository ppa:leaeasy/dde
+<span class=ln>2</span>sudo apt-get update
+<span class=ln>3</span>sudo apt install dde dde-file-manager
+</code></pre></div><p>Linux Deepin 安装是非常顺畅的，但即便安装完这个桌面环境，博主还是不知道怎么启动这个环境，因为你常规使用 Ubuntu 的话，安装完切换桌面管理器就可以了，可当你用 WSL 这种方式使用 Ubuntu 的时候，可能你就会感到非常困惑。相比之下，<code>xfce</code>就让人感觉友好得多，因为它只有一个命令<code>startxfce4</code>，而安装只需要安装<code>xfce4</code>和<code>xfce4-terminal</code>就可以了。在对比了 Gnome、KDE、Unity、Mint、xfce 等等的桌面环境以后，我觉得 Linux 在桌面市场输给 Windows 是理所当然的，因为实在太混乱了，WSL 下需要的应该是一个轻量级的桌面，因为越是华而不实东西，越会消耗大量资源。我最初想要折腾桌面环境，无非是为了下面这个结果，撒花完结，以上！</p>
+<p><figure>
+<a href=/https:/ww1.sinaimg.cn/large/4c36074fly1g67nrxqcm4j21hc0u0nat.jpg>
+<img src=/https:/ww1.sinaimg.cn/large/4c36074fly1g67nrxqcm4j21hc0u0nat.jpg loading=lazy alt=简洁/简陋的xfce桌面>
+</a>
+<figcaption>简洁/简陋的xfce桌面</figcaption>
+</figure></p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/wsl/>WSL</a>
+<a href=/tags/linux/>Linux</a>
+<a href=/tags/%E6%A1%8C%E9%9D%A2/>桌面</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-jexus-%E5%AE%9E%E7%8E%B0-asp.net-%E5%9C%A8-linux-%E5%B9%B3%E5%8F%B0%E4%B8%8B%E7%9A%84%E9%83%A8%E7%BD%B2/>
+<div class=article-details>
+<h2 class=article-title>使用 Jexus 实现 ASP.NET 在 Linux 平台下的部署</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E8%AE%B0%E4%B8%80%E6%AC%A1%E4%BB%8E%E5%B7%B2%E6%8D%9F%E5%9D%8F%E7%9A%84-git-%E4%BB%93%E5%BA%93%E4%B8%AD%E6%89%BE%E5%9B%9E%E4%BB%A3%E7%A0%81%E7%9A%84%E7%BB%8F%E5%8E%86/>
+<div class=article-details>
+<h2 class=article-title>记一次从已损坏的 Git 仓库中找回代码的经历</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/wsl-%E4%B8%8B-docker-%E4%BD%BF%E7%94%A8%E8%B8%A9%E5%9D%91%E5%B0%8F%E8%AE%B0/>
+<div class=article-details>
+<h2 class=article-title>WSL 下 Docker 使用踩坑小记</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-vscode-%E4%BD%9C%E4%B8%BA-sourcetree-%E7%9A%84-diff-%E5%92%8C-merge-%E5%B7%A5%E5%85%B7/>
+<div class=article-details>
+<h2 class=article-title>使用 VSCode 作为 SourceTree 的 Diff 和 Merge 工具</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9F%BA%E4%BA%8E-docker-%E6%9E%84%E5%BB%BA-.net-%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%E7%8E%AF%E5%A2%83/>
+<div class=article-details>
+<h2 class=article-title>基于 Docker 构建 .NET 持续集成环境</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

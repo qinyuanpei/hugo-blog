@@ -1,0 +1,253 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="###什么是SDL;在以上代码中我们基本遵循了SDL游戏开发的一般流程，即首先对SDL进行初始化，当SDL初始化完成后，我们创建一个标题为&#34;SDL学习示例1&#34;,窗口对齐方式为居中对齐，窗口大小为640*480的窗口，然后创建了模式为软件渲染的SDL渲染器，并设置渲染器的背景色为黑色;作为第一个项目，它简单到纯粹，当我们运行项目，会发现一个黑色的窗口一闪而过，这是因为我们这里在渲染了一次后就使用SDL_Quit()方法退出了，第一篇文章并不会有太复杂的内容，因为它的意义在于让我们对SDL游戏开发有个基本的认识和了解"><title>SDL 游戏开发系列第一话：Hello SDL</title>
+<link rel=canonical href=/posts/sdl-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E7%AC%AC%E4%B8%80%E8%AF%9Dhello-sdl/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="SDL 游戏开发系列第一话：Hello SDL">
+<meta property="og:description" content="###什么是SDL;在以上代码中我们基本遵循了SDL游戏开发的一般流程，即首先对SDL进行初始化，当SDL初始化完成后，我们创建一个标题为&#34;SDL学习示例1&#34;,窗口对齐方式为居中对齐，窗口大小为640*480的窗口，然后创建了模式为软件渲染的SDL渲染器，并设置渲染器的背景色为黑色;作为第一个项目，它简单到纯粹，当我们运行项目，会发现一个黑色的窗口一闪而过，这是因为我们这里在渲染了一次后就使用SDL_Quit()方法退出了，第一篇文章并不会有太复杂的内容，因为它的意义在于让我们对SDL游戏开发有个基本的认识和了解">
+<meta property="og:url" content="/posts/sdl-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E7%AC%AC%E4%B8%80%E8%AF%9Dhello-sdl/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="SDL"><meta property="article:tag" content="游戏"><meta property="article:tag" content="图形"><meta property="article:tag" content="引擎"><meta property="article:tag" content="教程"><meta property="article:published_time" content="2015-07-25T15:19:01+00:00"><meta property="article:modified_time" content="2015-07-25T15:19:01+00:00">
+<meta name=twitter:title content="SDL 游戏开发系列第一话：Hello SDL">
+<meta name=twitter:description content="###什么是SDL;在以上代码中我们基本遵循了SDL游戏开发的一般流程，即首先对SDL进行初始化，当SDL初始化完成后，我们创建一个标题为&#34;SDL学习示例1&#34;,窗口对齐方式为居中对齐，窗口大小为640*480的窗口，然后创建了模式为软件渲染的SDL渲染器，并设置渲染器的背景色为黑色;作为第一个项目，它简单到纯粹，当我们运行项目，会发现一个黑色的窗口一闪而过，这是因为我们这里在渲染了一次后就使用SDL_Quit()方法退出了，第一篇文章并不会有太复杂的内容，因为它的意义在于让我们对SDL游戏开发有个基本的认识和了解">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+游戏开发
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/sdl-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E7%AC%AC%E4%B8%80%E8%AF%9Dhello-sdl/>SDL 游戏开发系列第一话：Hello SDL</a>
+</h2>
+<h3 class=article-subtitle>
+###什么是SDL;在以上代码中我们基本遵循了SDL游戏开发的一般流程，即首先对SDL进行初始化，当SDL初始化完成后，我们创建一个标题为"SDL学习示例1",窗口对齐方式为居中对齐，窗口大小为640*480的窗口，然后创建了模式为软件渲染的SDL渲染器，并设置渲染器的背景色为黑色;作为第一个项目，它简单到纯粹，当我们运行项目，会发现一个黑色的窗口一闪而过，这是因为我们这里在渲染了一次后就使用SDL_Quit()方法退出了，第一篇文章并不会有太复杂的内容，因为它的意义在于让我们对SDL游戏开发有个基本的认识和了解
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jul 25, 2015</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>各位读者朋友大家好，我是秦元培，欢迎大家关注我的博客，我的博客地址是<a class=link href=http://qinyuanpei.com target=_blank rel=noopener>http://qinyuanpei.com</a>。从今天起博主将带领大家一起走进 SDL 游戏开发的世界，如果说此前的 Unity3D 游戏开发系列文章让大家感受到的是游戏引擎工具化开发的方便与快捷，那么这一次就让我们以 SDL 库为基础，通过了解游戏开发中的底层图形渲染、输入事件响应等内容来全面认识游戏引擎，博主为 SDL 游戏开发系列文章建立了专栏，大家可以通过<a class=link href=http://blog.csdn.net/column/details/sdlgame.html target=_blank rel=noopener>这里</a>获取所有的系列文章，希望大家能够喜欢！好了，作为<a class=link href=http://blog.csdn.net/column/details/sdlgame.html target=_blank rel=noopener> SDL 游戏开发系列</a>的第一篇文章，按照技术性文章写作的国际惯例这将是一篇介绍 SDL 入门内容的文章，因此这篇文章叫做：Hello SDL。</p>
+<h1 id=什么是-sdl>什么是 SDL</h1>
+<p><a class=link href=http://www.libsdl.org/ target=_blank rel=noopener>SDL</a>（Simple DirectMedia Layer）是一套开放源代码的跨平台多媒体开发库，使用 C 语言写成。SDL 提供了数种控制图像、声音、输出入的函数，让开发者只要用相同或是相似的代码就可以开发出跨多个平台如 Linux、Windows、Mac OS X 等的应用软件。目前 SDL 可用于游戏、模拟器、媒体播放器等多媒体应用领域的开发，SDL 最为著名的案例是曾赢得 Linux 组游戏开发大奖的游戏<a class=link href=https://en.wikipedia.org/wiki/Civilization:_Call_to_Power target=_blank rel=noopener>《文明：权利的召唤》</a>。或许大家对这个游戏会感到陌生吧，可是如果我提到一个 Linux 下经典单机游戏《仙剑奇侠传》的开源实现<a class=link href=http://sdlpal.codeplex.com/ target=_blank rel=noopener>SDLPal</a>相信大家就没有不知道的了吧？这款经典的单机游戏所以能够移植到 Linux 平台下就是因为使用 SDL 。好了，在对 SDL 有了大概的认识后，我们来看看 SDL 有哪些值得我们去研究的优良特性吧！</p>
+<ul>
+<li>SDL 提供了从图像、视频、音频、事件、线程、计时器的 API，功能特别强大。</li>
+<li>SDL 具有良好的跨平台性能，支持 Windows、Linux 及 Android 和 IOS，是开发跨平台多媒体应用的神兵利器。</li>
+<li>SDL 内置了 OpenGL 相关函数，使 SDL 开发 3D 应用成为可能，因此 SDL 是一个同时支持 2D 和 3D 开发的强力工具。</li>
+<li>通过使用 SDL_image、SDL_ttf、SDL_mixer、SDL_net 等外部扩展库，可以轻松实现 JPG、PNG、TIFF 图像的加载使用，TrueType 字体的使用，MP3 文件的使用、网络相关的使用等。</li>
+<li>SDL 支持 C++、C#、Java、 Lisp、Lua、Objective C、Pascal、Perl、 PHP、Python、Ruby 等近 20 种编程语言。</li>
+<li>SDL 是 GNU LGPL 2 开源协议下发布的开源软件，该协议允许用户将 SDL 以动态链接库的形式免费地用于商业游戏软件的开发。</li>
+</ul>
+<h1 id=sdl的下载安装和配置>SDL的下载、安装和配置</h1>
+<p>SDL 开发相关的资源都可以从 <a class=link href=http://www.libsdl.org/ target=_blank rel=noopener>http://www.libsdl.org/</a> 来获取。目前 SDL 存在 1.2 和 2.0 两个版本，从效率上来说 SDL 2.0 支持硬件加速效率较 SDL 1.2 有了较好的提升，从稳定性上来讲 SDL2.0 尚处于发展阶段，因此可能其中的 Bug 较 SDL1.2 可能会多些。博主这里选择的 SDL 2.0，下面是相关的下载链接：</p>
+<ul>
+<li>SDL 源代码——<a class=link href=http://www.libsdl.org/release/SDL2-2.0.3.zip target=_blank rel=noopener>下载</a></li>
+<li>SDL 二进制库——<a class=link href=http://www.libsdl.org/release/SDL2-2.0.3-win32-x86.zip target=_blank rel=noopener>Win_x86</a>、<a class=link href=http://www.libsdl.org/release/SDL2-2.0.3-win32-x64.zip target=_blank rel=noopener>Win_x64</a>、<a class=link href=http://www.libsdl.org/release/SDL2-2.0.3.dmg target=_blank rel=noopener>Mac</a></li>
+<li>SDL 开发包——<a class=link href=http://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip target=_blank rel=noopener>VC++</a>、<a class=link href=http://www.libsdl.org/release/SDL2-devel-2.0.3-mingw.tar.gz target=_blank rel=noopener>GCC</a>、<a class=link href=http://www.libsdl.org/release/SDL2-2.0.3.dmg target=_blank rel=noopener>Mac</a></li>
+</ul>
+<p>博主选择的开发环境是 Visual Studio 2012，因此下载 VC++ 的 SDL 开发包。我们将下载得到的 SDL 开发包解压到本地，可以发现 SDL 开发包中已经为我们准备好了相关的 include 文件夹和 lib 文件夹。其中 include 文件夹下存放的是 SDL 的各种头文件，lib 文件夹下存放的是编译好的动态链接库（.dll）和依赖库（.lib），如果读者朋友有能力或是希望自行编译 SDL 源代码的，请先去编译源代码。这里我们为了节省时间，就直接使用编译好的文件了,请大家不要鄙视我啊，哈哈。好了，下面我们来以一个 VC++ 项目为例来讲解 SDL 的配置：</p>
+<ul>
+<li>1、使用 Visual Studio 创建一个空的 VC++ 项目</li>
+<li>2、右键单击项目【属性】打开项目属性页找到【配置属性】->【VC++目录】然后将包含目录和库目录分别定位到 SDL 开发包中的 include 目录和 lib 目（x86 和 x64 视系统情况而定）</li>
+<li>3、在【配置属性】->【链接器】->【输入】->【附加依赖项】中增加 SDL2.lib 和 SDL2main.lib</li>
+<li>4、将【配置属性】->【链接器】->【系统】->【子系统】设置为窗口 (/SUBSYSTEM:WINDOWS)</li>
+<li>5、将 SDL2.dll 复制到项目的 Debug 目录中</li>
+</ul>
+<h1 id=sdl-游戏开发的基本流程>SDL 游戏开发的基本流程</h1>
+<p>SDL 游戏开发的一般流程是：</p>
+<ul>
+<li>1、使用 SDL_Init() 方法对 SDL 进行初始化。其中该初始化方法的参数类型为 int 类型，可以从 SDL_INIT_HAPTIC、SDL_INIT_AUDIO、SDL_INIT_VIDEO、SDL_INIT_TIMER、SDL_INIT_JOYSTICK、SDL_INIT_EVERYTHING、SDL_INIT_NOPARACHUTE 七个类型中选择，分别表示力反馈子系统、音频子系统、视频子系统、计时器子系统、摇杆子系统、全部和忽略致命信号。</li>
+<li>2、在 SDL 初始化成功后使用 SDL_CreateWindow() 方法创建一个 SDL 窗口（SDL_Window）。在这里我们可以设置窗口的名称、对齐方式、窗口宽度和窗口高度。</li>
+<li>3、在 SDL 窗口创建成功后使用 SDL_CreateRenderer() 方法创建一个 SDL 渲染器（SDL_Renderer）。其中 SDL 渲染器有 SDL_RENDERER_SOFTWARE、SDL_RENDERER_ACCELERATED、SDL_RENDERER_PRESENTVSYNC、SDL_RENDERER_TARGETTEXTURE 四种类型分别表示软件渲染、硬件加速、屏幕同步刷新渲染和支持渲染纹理。</li>
+<li>4、使用 SDL_RenderClear() 方法清空 SDL 渲染器、使用 SDL_RenderPresent() 方法将渲染的结果显示出来</li>
+</ul>
+<h1 id=工程示例>工程示例</h1>
+<p>下面以一个简单的示例来向大家演示 SDL 游戏开发的一般流程：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=ln> 1</span><span class=cm>/* 添加对SDL的引用*/</span>
+<span class=ln> 2</span><span class=cp>#include</span><span class=cpf>&lt;SDL.h&gt;</span><span class=cp>
+</span><span class=ln> 3</span><span class=cp></span>
+<span class=ln> 4</span><span class=cm>/* 声明SDL_Window */</span>
+<span class=ln> 5</span><span class=n>SDL_Window</span> <span class=o>*</span><span class=n>g_pWindow</span><span class=p>;</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span><span class=cm>/* 声明SDL_Renderer */</span>
+<span class=ln> 8</span><span class=n>SDL_Renderer</span> <span class=o>*</span><span class=n>g_pRenderer</span><span class=p>;</span>
+<span class=ln> 9</span>
+<span class=ln>10</span><span class=cm>/* 定义入口函数main */</span>
+<span class=ln>11</span><span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span><span class=kt>char</span> <span class=o>*</span><span class=n>args</span><span class=p>[])</span>
+<span class=ln>12</span><span class=p>{</span>
+<span class=ln>13</span>	<span class=cm>/* SDL三部曲——1:初始化SDL */</span>
+<span class=ln>14</span>	<span class=kt>int</span> <span class=n>sdlInit</span><span class=o>=</span><span class=n>SDL_Init</span><span class=p>(</span><span class=n>SDL_INIT_EVERYTHING</span><span class=p>);</span>
+<span class=ln>15</span>	<span class=k>if</span><span class=p>(</span><span class=n>sdlInit</span><span class=o>&gt;=</span><span class=mi>0</span><span class=p>){</span>
+<span class=ln>16</span>		<span class=cm>/* 当SDL初始化完成后创建一个标题为&#34;SDL Game Development——01&#34; */</span>
+<span class=ln>17</span>		<span class=cm>/* 窗口对齐方式为居中对齐，窗口大小为640*480的窗口 */</span>
+<span class=ln>18</span>		<span class=n>g_pWindow</span><span class=o>=</span><span class=n>SDL_CreateWindow</span><span class=p>(</span><span class=s>&#34;SDL Game Development——01&#34;</span><span class=p>,</span>
+<span class=ln>19</span>			<span class=n>SDL_WINDOWPOS_CENTERED</span><span class=p>,</span><span class=n>SDL_WINDOWPOS_CENTERED</span><span class=p>,</span>
+<span class=ln>20</span>			<span class=mi>640</span><span class=p>,</span><span class=mi>480</span><span class=p>,</span><span class=n>SDL_WINDOW_SHOWN</span><span class=p>);</span>
+<span class=ln>21</span>		<span class=cm>/* SDL三部曲——2:初始化SDL渲染 */</span>
+<span class=ln>22</span>		<span class=k>if</span><span class=p>(</span><span class=n>g_pWindow</span><span class=o>!=</span><span class=mi>0</span><span class=p>){</span>
+<span class=ln>23</span>			<span class=n>g_pRenderer</span><span class=o>=</span><span class=n>SDL_CreateRenderer</span><span class=p>(</span><span class=n>g_pWindow</span><span class=p>,</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span>
+<span class=ln>24</span>		<span class=p>}</span>
+<span class=ln>25</span>	<span class=p>}</span>
+<span class=ln>26</span>
+<span class=ln>27</span>	<span class=cm>/* SDL三部曲——3:绘制窗口 */</span>
+<span class=ln>28</span>	<span class=n>SDL_SetRenderDrawColor</span><span class=p>(</span><span class=n>g_pRenderer</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>255</span><span class=p>);</span>
+<span class=ln>29</span>	<span class=n>SDL_RenderClear</span><span class=p>(</span><span class=n>g_pRenderer</span><span class=p>);</span>
+<span class=ln>30</span>	<span class=n>SDL_RenderPresent</span><span class=p>(</span><span class=n>g_pRenderer</span><span class=p>);</span>
+<span class=ln>31</span>	
+<span class=ln>32</span>	<span class=n>SDL_Quit</span><span class=p>();</span>
+<span class=ln>33</span>	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=ln>34</span><span class=p>}</span>
+</code></pre></div><p>在以上代码中我们基本遵循了 SDL 游戏开发的一般流程，即首先对 SDL 进行初始化，当 SDL 初始化完成后，我们创建一个标题为"SDL学习示例1",窗口对齐方式为居中对齐，窗口大小为 640 * 480 的窗口，然后创建了模式为软件渲染的 SDL 渲染器，并设置渲染器的背景色为黑色。作为第一个项目，它简单到纯粹，当我们运行项目，会发现一个黑色的窗口一闪而过，这是因为我们这里在渲染了一次后就使用 SDL_Quit() 方法退出了，第一篇文章并不会有太复杂的内容，因为它的意义在于让我们对 SDL 游戏开发有个基本的认识和了解。关于 SDL 绘制图片、文字以及处理渲染循环等问题我们放到后面的文章中去讲，这篇文章的内容就是这样啦，谢谢大家！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/sdl/>SDL</a>
+<a href=/tags/%E6%B8%B8%E6%88%8F/>游戏</a>
+<a href=/tags/%E5%9B%BE%E5%BD%A2/>图形</a>
+<a href=/tags/%E5%BC%95%E6%93%8E/>引擎</a>
+<a href=/tags/%E6%95%99%E7%A8%8B/>教程</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/sdl-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E7%AC%AC%E4%BA%8C%E8%AF%9D%E5%9F%BA%E6%9C%AC%E5%9B%BE%E5%BD%A2%E7%9A%84%E7%BB%98%E5%88%B6/>
+<div class=article-details>
+<h2 class=article-title>SDL 游戏开发系列第二话：基本图形的绘制</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/unity3d-%E6%B8%B8%E6%88%8F%E5%9C%BA%E6%99%AF%E4%BC%98%E5%8C%96%E7%B3%BB%E5%88%97%E4%B9%8B%E6%89%B9%E5%A4%84%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>Unity3D 游戏场景优化系列之批处理</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/unity3d-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E6%89%93%E9%80%A0%E6%B5%81%E8%A1%8C%E7%9A%84%E5%85%B3%E5%8D%A1%E7%B3%BB%E7%BB%9F/>
+<div class=article-details>
+<h2 class=article-title>Unity3D 游戏开发之快速打造流行的关卡系统</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BB%8E%E5%A4%8D%E6%B4%BB%E5%92%8C%E6%9A%82%E5%81%9C/%E6%81%A2%E5%A4%8D%E8%B0%88%E6%B8%B8%E6%88%8F%E6%95%B0%E6%8D%AE%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>从「复活」和「暂停/恢复」谈游戏数据配置管理</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E4%BD%BF%E7%94%A8-unity3d-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B9%B8%E8%BF%90%E8%BD%AC%E7%9B%98/>
+<div class=article-details>
+<h2 class=article-title>使用 Unity3D 创建一个幸运转盘</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#什么是-sdl>什么是 SDL</a></li>
+<li><a href=#sdl的下载安装和配置>SDL的下载、安装和配置</a></li>
+<li><a href=#sdl-游戏开发的基本流程>SDL 游戏开发的基本流程</a></li>
+<li><a href=#工程示例>工程示例</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

@@ -6,6 +6,6 @@
 PWA中关键技术解析  Google对外提出PWA这个概念其实是在今天的二月份左右，所以现在我写这篇文章实际上是在赶一趟末班车。我最近比较喜欢的一个男演员张鲁一，在接受媒体采访时媒体称他是一个大器晚成的人，他的确让我找到了理想中成熟男人的一个标准，如果你要问我这个标准是什么，我推荐你去看他主演的电视剧《红色》。那么，好了，为了让大家了解渐进式Web应用(PWA)，相比其它跨平台方案有何优缺点，我们这里来简单讨论下PWA中的关键技术。
 ServiceWorker  我们知道，传统的Web应用需要在网络环境下使用，当处在离线环境下时，因为HTTP请求无法被发送到服务器上，所以浏览器通常会显示一个空白页，并告知用户页面无法加载，因此会影响用户在离线环境下的使用体验，与此同时，因为Web页面在打开的过程中需要加载大量资源，因此在页面刚刚打开的一段时间内，用户看到的页面通常都是一个空白页面，考虑到缓存或者是预加载的Web应用，通常都会以预设资源作为占位符来填充页面，因此带来访问者的印象往往会更好。那么渐进式Web应用带给我们最大的惊喜，就是它可以在离线环境下使用，其核心技术就是ServiceWorker，我们来一起看看如何使用SeviceWorker：
 if (navigator.serviceWorker) { navigator.serviceWorker.register('service-worker.js') .then(function(registration) { console.log('service worker 注册成功'); }).catch(function (err) { console.log('servcie worker 注册失败'); }); }  我们这里看到一个基本的注册ServiceWorker的代码片段，并且它采用了业界流行的Promise的写法。那么首先第一个问题，ServiceWorker到底是什么？ServiceWorker本质上是一个Web应用程序和浏览器间的代理服务器，它可以在离线环境下拦截网络请求，并基于网络是否可用以及资源是否可用，来采取相对应的处理动作，所以ServiceWorker最基本用法是作为离线缓存来使用，而高阶用法则是消息推送和后台同步。通常来讲，ServiceWorker会经历如下的生命周期：
-注：配图来自 http://web.jobbole.com/84792/
+ServiceWorker生命周期 注：配图来自 http://web.jobbole.com/84792/
  按照官方文档中的定义，ServiceWorker同WebWorker一样，是一段JavaScript脚本，作为一个后台独立线程运行，其运行环境与普通的JavaScript不同，因此不直接参与Web交互行为，从某种意义上来说，ServiceWorker的出现，正是为了弥补Web应用天生所不具备的离线使用、消息推送、后台自动更新等特性，我们这里来看一个使用ServiceWorker缓存文件已达到离线使用的目的的例子：
-var cacheStorageKey = 'minimal-pwa-1' var cacheList = [ '/', &amp;quot;index.html&amp;quot;, &amp;quot;main.css&amp;quot;, &amp;quot;e.png&amp;quot; ] self.addEventListener('install', e =&amp;gt; { e.</description></item></channel></rss>
+var cacheStorageKey = 'minimal-pwa-1' var cacheList = [ '/', &amp;quot;index.html&amp;quot;, &amp;quot;main.css&amp;quot;, &amp;quot;e.png&amp;quot; ] self.</description></item></channel></rss>

@@ -1,0 +1,277 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="说明：表达是否最好用 0 和 1 来表示，我们用 Y 和 N 时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用 unsigned tinyint 类型，它本身就自带默认值 0，这样就可以避免这种问题的出现;说明：建议全部使用小写，因为主流 SQL 教程的里关键字都采用大写，但在 PLSQL/SQLyog 里编写 SQL 语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写;说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某 SAP 提供的 OA 接口，除了超级难用以外，每次都要花大量时间去对字段"><title>《阿里巴巴 Java 开发手册》读书笔记</title>
+<link rel=canonical href=/posts/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4-java-%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<link rel=stylesheet href=/scss/style.min.38dc3f314b00147ebff0e390327aa530e6ab7a0f1203f84aa847351548de8ee5.css><meta property="og:title" content="《阿里巴巴 Java 开发手册》读书笔记">
+<meta property="og:description" content="说明：表达是否最好用 0 和 1 来表示，我们用 Y 和 N 时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用 unsigned tinyint 类型，它本身就自带默认值 0，这样就可以避免这种问题的出现;说明：建议全部使用小写，因为主流 SQL 教程的里关键字都采用大写，但在 PLSQL/SQLyog 里编写 SQL 语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写;说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某 SAP 提供的 OA 接口，除了超级难用以外，每次都要花大量时间去对字段">
+<meta property="og:url" content="/posts/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4-java-%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="阿里"><meta property="article:tag" content="Java"><meta property="article:tag" content="笔记"><meta property="article:published_time" content="2019-03-20T12:49:37+00:00"><meta property="article:modified_time" content="2019-03-20T12:49:37+00:00">
+<meta name=twitter:title content="《阿里巴巴 Java 开发手册》读书笔记">
+<meta name=twitter:description content="说明：表达是否最好用 0 和 1 来表示，我们用 Y 和 N 时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用 unsigned tinyint 类型，它本身就自带默认值 0，这样就可以避免这种问题的出现;说明：建议全部使用小写，因为主流 SQL 教程的里关键字都采用大写，但在 PLSQL/SQLyog 里编写 SQL 语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写;说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某 SAP 提供的 OA 接口，除了超级难用以外，每次都要花大量时间去对字段">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4-java-%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>《阿里巴巴 Java 开发手册》读书笔记</a>
+</h2>
+<h3 class=article-subtitle>
+说明：表达是否最好用 0 和 1 来表示，我们用 Y 和 N 时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用 unsigned tinyint 类型，它本身就自带默认值 0，这样就可以避免这种问题的出现;说明：建议全部使用小写，因为主流 SQL 教程的里关键字都采用大写，但在 PLSQL/SQLyog 里编写 SQL 语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写;说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某 SAP 提供的 OA 接口，除了超级难用以外，每次都要花大量时间去对字段
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Mar 20, 2019</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>最近利用闲暇时间从图书馆借了两三本书来“充电”，因为如果不及时摄取新的营养，感觉会越来越难有新的想法输出出来，尤其是像 ServerLess、组件化、分布式等等这样的场景慢慢开始接触，就势必无法再用从前的眼光去看待。大概去年的时候，阿里巴巴发布了「阿里巴巴开发手册」这本小册子，大概不到 100 页的样子，这次我就挑选了我觉得还不错的关键点，和大家简单分享一下，所以，这是一篇“典型”的读书笔记，下面的编号代表的是指定章节下的第几条规范，例如，1.1.2 表示的是第一章第一节中的第二条规范，欢迎大家一起讨论。</p>
+<h1 id=编程规范>编程规范</h1>
+<blockquote>
+<p>1.1.2 代码中的命名严禁使用拼音与英文混合的方式，不允许直接使用中文的方式，纯拼音命名方式更要避免采用。</p>
+</blockquote>
+<p>说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某 SAP 提供的 OA 接口，除了超级难用以外，每次都要花大量时间去对字段。</p>
+<blockquote>
+<p>1.4.3 相同参数类型，相同业务含义，才可以使用 Java 的可变参数，避免使用 Object，可变参数必须放置在参数列表最后。</p>
+</blockquote>
+<p>说明：例如一个接口同时支持单条更新或者批量更新，此时，完全就可以使用 param 关键字来声明相同的参数类型，而无须定义 InsertOne 和 InsertMany 两个方法。</p>
+<blockquote>
+<p>1.4.4 对外部正在使用或者二方库依赖的接口，不允许修改方法签名，以避免对接口调用方产生影响。若接口过时，必须加@Deprecated 注解，并清晰地说明采用的新接口或者新服务是什么。</p>
+</blockquote>
+<p>说明：对于过期的接口可以通过 Obsolete 特性来声明过期，这样在编译时期间可以告知使用者该接口已过期。对于 WebAPI 接口，除非有版本控制机制，否则一律不允许修改已上线的接口签名、参数和返回值。</p>
+<blockquote>
+<p>1.4.17 在循环体内，字符串的连接方式使用 StringBuilder 的 append 方法进行扩展。</p>
+</blockquote>
+<p>说明：这一点，在 C#中同样适用，因为字符串类型是 Immutable 的，对字符串进行拼接会产生大量的临时对象。</p>
+<blockquote>
+<p>1.5.7 不要在 foreach 循环内进行元素的 remove/add 操作。remove 元素请使用 Iterator 方式，如果并发操作，需要对 Iterator 对象加锁。</p>
+</blockquote>
+<p>说明：因为 foreach 是基于迭代器(IEnumerator)的，在 foreach 循环内部修改集合，会导致 Current 和 MoveNext()发生混乱，早期的集合使用 SynRoot 来解决线程安全(内部原理是使用了 Interlocked 锁)，现在我们使用 CurrentBag 等线程安全的集合。</p>
+<blockquote>
+<p>1.6.1 获取单例对象需要保证线程安全，其中的方法同样要保证线程安全。</p>
+</blockquote>
+<p>说明：只要类型中有静态成员存在，就要考虑线程安全，因为静态成员隶属于类型而非类型的实例。</p>
+<blockquote>
+<p>1.6.5 SimpleDataFormat 是线程不安全的类，一般不要定义为 static 变量，如果定义为 static，必须加锁，或者使用 DateUntils 工具类。</p>
+</blockquote>
+<p>说明：无论所声明的静态成员是否线程安全，都应该考虑到在竞态条件下，可能会出现多个线程同时修改静态成员的风险，此时最好对其进行加锁。</p>
+<blockquote>
+<p>1.6.8 在并发修改同一条记录时，为避免更新丢失，需要加锁。要么在应用层加锁，要么在缓存层加锁，要么在数据库层使用乐观锁，使用 version 作为更新依据。</p>
+</blockquote>
+<p>说明：所谓“悲观锁”，是指认为数据一定会被篡改，此时，在一个作用域结束前对其进行加锁，典型的如 lock 关键字。而所谓“乐观锁”，是认为数据不一定会被篡改，此时，通过一个 version 来作为更新的依据。</p>
+<blockquote>
+<p>1.6.12 在并发场景下，通过双重检查锁(double-checkedlocking)实现延迟初始化的优化问题隐患，推荐解决方案中较为简单的一种(JDK5 及以上版本)，即目标属性声明为 volatile 型。</p>
+</blockquote>
+<blockquote>
+<p>1.7.4 在表达异常的分支时，尽量少用 if-else 方式。如果不得不使用 if……elseif…else 方式，请勿超过 3 层。</p>
+</blockquote>
+<p>说明：当条件不满足时可以直接 return，或者先判断不满足的条件，则剩余逻辑默认就是满足条件的分支，尽量避免使用 if……elseif……else 方式，同时保证分支里的代码足够简单，复杂的逻辑应考虑封装或者用 switch……case 甚至多态来重构。</p>
+<blockquote>
+<p>1.7.8 循环体的语句要考量性能，以下操作请尽量移至循环体外处理，如定义对象或变量、获取数据库连接，避免进行不必要的 try……catch 操作。</p>
+</blockquote>
+<p>说明：抛出一个异常是非常简单的，然而捕获一个异常需要付出一定的性能代价，因为它需要捕捉程序异常时的上下文信息，建议在进入循环内部合理检验，覆盖到每一种考虑到的情况，考虑不到的请让它向上抛出。</p>
+<blockquote>
+<p>2.1.2 对大段代码进行 try-catch，使得程序无法根据不同的异常做出正确的应激反应，不利于定位问题，这是一种不负责任的表现。</p>
+</blockquote>
+<p>说明：对大段代码进行 try-catch，或许可以保证应用程序不崩溃，但在程序异常的一瞬间，可能业务数据已经出错，此时再让程序继续运行下去，不仅无法快速定位出错原因，而且会对下一流程的业务产生“污染”。</p>
+<h1 id=异常日志>异常日志</h1>
+<blockquote>
+<p>2.1.2 捕捉异常是为了处理它，不要捕捉了却什么都不处理而抛弃之，如果不想处理它，请将该异常抛给它的调用者，然后由调用者在最外层业务中处理异常，并将其转化为用户可以理解的内容。</p>
+</blockquote>
+<p>说明：捕捉了异常一定要去处理它，如果单单是为了记录个错误日志，完全可以通过 AOP 来记录，底层抛出的异常不允许被“吞掉”，必须将其抛给它的调用者，异常最终需要转化为友好的界面提示。</p>
+<blockquote>
+<p>2.2.5 finally 块必须对资源对象、流对象进行关闭操作，如果有异常同样要做 try-catch 操作(JDK7 及以上版本可以使用 try-with-resource 方式)</p>
+</blockquote>
+<p>说明：因为 finally 块一定会在 return 前执行，所以，无论程序是否发生了异常，我们都可以在 finally 块中对资源对象、流对象、数据库连接等进行关闭或者释放，using 其实是 try……finally 的语法糖，它会自动地在 finally 块里调用 Dispose 方法(因为它要实现 IDispose 接口)。</p>
+<blockquote>
+<p>2.2.7 不能在 finally 块中使用 return。</p>
+</blockquote>
+<p>说明：这里涉及到一个 return 和 finally，尽管 return 可以提前“跳出”，但对 finally 来说，不管是否发生异常，它都会执行，在此之前 return 会把返回值写入内存，等 finally 块执行结束后，return 再“跳出”。C#中 finally 块中不允许写 return，否则会导致编译错误。通常，finally 块用来做清理相关的工作。</p>
+<h1 id=数据库>数据库</h1>
+<blockquote>
+<p>5.1.1 表达是否的概念时，必须使用 is_xxx 的命名方式，数据类型是 unsigned tinyint。其中，1 表示是，0 表示否。</p>
+</blockquote>
+<p>说明：表达是否最好用 0 和 1 来表示，我们用 Y 和 N 时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用 unsigned tinyint 类型，它本身就自带默认值 0，这样就可以避免这种问题的出现。</p>
+<blockquote>
+<p>5.1.2 表名、字段名必须使用小写字母或数字，禁止出现数字开头，禁止两个下画线中间只出现数字。</p>
+</blockquote>
+<p>说明：建议全部使用小写，因为主流 SQL 教程的里关键字都采用大写，但在 PLSQL/SQLyog 里编写 SQL 语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写。我们表名用小写，表字段用大写，输出的 SQL 语句看起来特别奇怪。</p>
+<blockquote>
+<p>5.1.13 字段允许适当冗余，以提高查询性能，但必须考虑数据一致。冗余字段应遵循：</p>
+</blockquote>
+<ul>
+<li>不是频繁修改的字段</li>
+<li>不是 varchar 超长字段，更不能是 text 字段。</li>
+</ul>
+<p>说明：冗余字段是个好东西，但主表和扩展表间的一致性保证需要经过良好的设计，那种把相关表都放在一个事务里处理的做法，都声称是为了保证数据的一致性，可实际过程中依然会存在数据不一致的情况。</p>
+<blockquote>
+<p>5.1.15 当单表行数超过 500 万行活着单表容量超过 2G 时，才推荐进行分库分表。</p>
+</blockquote>
+<p>说明：多租户架构下，不同租户采用不同的库，是最简单的数据隔离方案，但缺点是增加了维护多个库的成本。如果要分库分表，最好从框架层面来“切库”，而不要让开发人员自行维护数据库的连接字符串。</p>
+<blockquote>
+<p>5.2.1 业务上具有唯一特性的字段，即使是多个字段的组合，也必须建成唯一索引。根据墨菲定律，只要没有唯一索引，必然会有脏数据产生，即使在应用层做了非常完善的检验控制。</p>
+</blockquote>
+<blockquote>
+<p>5.2.2 超过三个表禁止 join，需要 join 的字段，类型必须绝对一致；当多表关联查询时，保证被关联的字段需要有索引。</p>
+</blockquote>
+<p>说明：关系型数据库最值得炫耀的地方就是表多，超过三张表禁止 join，实际中根本不现实，所以，建议以业务场景为准，我就曾经 join 了 5 张表，大概客户就喜欢看这些东西吧！</p>
+<blockquote>
+<p>5.3.7 禁止使用存储过程，存储过程难以调试和扩展，更没有移植性。</p>
+</blockquote>
+<p>说明：存储过程和触发器是万恶之源，不同数据库下的 SQL 语句千姿百态，同样的业务逻辑，Oracle、MySQL 和 SQLServer 基本上是三种语法，更不用说$$、/和@这种奇葩的东西了，查询语言就老老实实写查询，写业务了逻辑，SQL 真的不行，太垃圾，虽然做权限划分非常容易……</p>
+<blockquote>
+<p>5.3.9 in 操作能避免则避免，如实在避免不了，需要仔细评估 in 后面的集合元素数量，最好控制在 1000 之内。</p>
+</blockquote>
+<p>说明：这一点表示认同，我们经常遇到这样的情况，先筛选出 A 表符合条件的所有记录，然后根据 A 表中某一列(通常是外键)，通过 IN 操作来筛选出 B 表中符合条件的所有记录，这个时候，应该注意控制 IN 后面集合内元素的数目，总之不要太大……</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E9%98%BF%E9%87%8C/>阿里</a>
+<a href=/tags/java/>Java</a>
+<a href=/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/envoy-%E9%9B%86%E6%88%90-jaeger-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%B7%9F%E8%B8%AA/>
+<div class=article-details>
+<h2 class=article-title>Envoy 集成 Jaeger 实现分布式链路跟踪</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%B5%85%E8%AE%AE%E9%9D%9E%E5%85%B8%E5%9E%8B-web-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/>
+<div class=article-details>
+<h2 class=article-title>浅议非典型 Web 应用场景下的身份认证</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/grpc-%E5%80%9F%E5%8A%A9-any-%E7%B1%BB%E5%9E%8B%E5%AE%9E%E7%8E%B0%E6%8E%A5%E5%8F%A3%E7%9A%84%E6%B3%9B%E5%8C%96%E8%B0%83%E7%94%A8/>
+<div class=article-details>
+<h2 class=article-title>gRPC 借助 Any 类型实现接口的泛化调用</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%9B%E6%9E%97%E6%8E%A2%E9%99%A9%E7%B3%BB%E5%88%97%E4%B9%8B-redis-%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/>
+<div class=article-details>
+<h2 class=article-title>分布式丛林探险系列之 Redis 集群模式</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%9B%E6%9E%97%E6%8E%A2%E9%99%A9%E7%B3%BB%E5%88%97%E4%B9%8B-redis-%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E6%A8%A1%E5%BC%8F/>
+<div class=article-details>
+<h2 class=article-title>分布式丛林探险系列之 Redis 主从复制模式</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#编程规范>编程规范</a></li>
+<li><a href=#异常日志>异常日志</a></li>
+<li><a href=#数据库>数据库</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

@@ -7,7 +7,7 @@
 <meta property="og:description" content="起风了，唯有努力生存">
 <meta property="og:url" content="/">
 <meta property="og:site_name" content="素履独行">
-<meta property="og:type" content="website"><meta property="og:updated_time" content=" 2022-01-14T16:46:23+00:00 ">
+<meta property="og:type" content="website"><meta property="og:updated_time" content=" 2022-02-03T18:30:45+00:00 ">
 <meta name=twitter:title content="素履独行">
 <meta name=twitter:description content="起风了，唯有努力生存"><link rel=alternate type=application/rss+xml href=/index.xml>
 </head>
@@ -92,6 +92,33 @@
 </aside>
 <main class="main full-width">
 <section class=article-list>
+<article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/unity3d/>
+Unity3D
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/%E5%9C%A8unity3d%E4%B8%AD%E5%9F%BA%E4%BA%8E%E8%AE%A2%E9%98%85%E8%80%85%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6/>在 Unity3D 中基于订阅者模式实现事件机制</a>
+</h2>
+<h3 class=article-subtitle>
+注意到在这个“通知中心”中，我们首先实现了单例模式，这样我们可以通过 Get 方法来获取该“通知中心”的唯一实例，其次这里利用一个字典来存储对所有事件的引用，这样保证外部可以通过 AddEventListener 和 RemoveEventListener 这两个方法来进行事件的添加和移除，对于添加的事件引用我们可以通过 DispatchEvent 方法来分发一个事件，事件的回调函数采用委托来实现，注意到这个委托需要一个 Notification 类型，对该类型简单定义如下：;public void DispatchEvent(string eventKey, GameObject sender, object param);public void DispatchEvent(string eventKey,object param)
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2016-01-15</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 7 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+</article>
 <article>
 <header class=article-header>
 <div class=article-details>
@@ -335,33 +362,6 @@ Unity3D
 </div>
 </header>
 </article>
-<article>
-<header class=article-header>
-<div class=article-details>
-<header class=article-category>
-<a href=/categories/unity3d/>
-Unity3D
-</a>
-</header>
-<h2 class=article-title>
-<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%88%86%E9%A1%B5%E6%95%88%E6%9E%9C%E5%9C%A8ugui%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/>Unity3D 游戏开发之分页效果在 uGUI 中的实现</a>
-</h2>
-<h3 class=article-subtitle>
-经过博客中一位朋友指出，这篇文章中实现 BindPage 这个方法时可以在代码上再精简些，主要是考虑这个代码中有部分功能是重合的，因此这里对这个方法进行重写，分页从本质上来讲是编写这样一个函数：输入数据集合 data、每页显示的元素个数 pageSize 以及当前页数 page，然后返回一个新的数据集合;在这段代码中，m_ItemList 表示我们要展示的元素列表，m_ItemsCount 表示元素列表中元素的个数，m_PageCount 表示这些元素可以分成的总页数，m_PageIndex 表示页数的索引**默认从 1 开始**;return sprite
-</h3>
-<footer class=article-time>
-<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
-<time class=article-time--published>2015-11-10</time>
-</div>
-<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-<time class=article-time--reading>
-阅读时长: 12 分钟
-</time>
-</div>
-</footer>
-</div>
-</header>
-</article>
 </section>
 <nav class=pagination>
 <a class=page-link href=/>1</a>
@@ -399,7 +399,7 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <div class=archives-year>
 <a href=/archives/#2022>
 <span class=year>2022</span>
-<span class=count>1</span>
+<span class=count>2</span>
 </a>
 </div>
 <div class=archives-year>
@@ -445,7 +445,7 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <div class=archives-year>
 <a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
 <span class=year>生活感悟</span>
-<span class=count>39</span>
+<span class=count>40</span>
 </a>
 </div>
 <div class=archives-year>
@@ -478,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/sklearn/ class=font_size_1>
-Sklearn
+<a href=/tags/%E8%AF%AD%E8%A8%80/ class=font_size_1>
+语言
 </a>
-<a href=/tags/%E7%BC%96%E7%A8%8B/ class=font_size_6>
-编程
+<a href=/tags/python/ class=font_size_17>
+Python
 </a>
-<a href=/tags/%E6%A0%BC%E5%BC%8F%E5%8C%96/ class=font_size_1>
-格式化
+<a href=/tags/easyar/ class=font_size_2>
+EasyAR
 </a>
-<a href=/tags/csharp/ class=font_size_2>
-CSharp
+<a href=/tags/%E5%85%B3%E5%8D%A1%E7%B3%BB%E7%BB%9F/ class=font_size_1>
+关卡系统
 </a>
-<a href=/tags/%E5%BC%82%E5%B8%B8/ class=font_size_3>
-异常
+<a href=/tags/%E9%9D%92%E6%98%A5/ class=font_size_1>
+青春
 </a>
-<a href=/tags/%E8%AE%BF%E9%97%AE%E9%87%8F/ class=font_size_1>
-访问量
+<a href=/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/ class=font_size_1>
+大数据
 </a>
-<a href=/tags/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF/ class=font_size_1>
-朴素贝叶斯
+<a href=/tags/%E8%AF%81%E4%B9%A6/ class=font_size_1>
+证书
 </a>
-<a href=/tags/%E6%97%A5%E6%9C%AC/ class=font_size_1>
-日本
+<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/ class=font_size_1>
+游戏引擎
+</a>
+<a href=/tags/selenium/ class=font_size_2>
+Selenium
+</a>
+<a href=/tags/visual-studio/ class=font_size_1>
+Visual Studio
+</a>
+<a href=/tags/retrofit/ class=font_size_1>
+Retrofit
+</a>
+<a href=/tags/web-api/ class=font_size_1>
+Web API
 </a>
 <a href=/tags/opencv/ class=font_size_3>
 OpenCV
 </a>
-<a href=/tags/jetbrain/ class=font_size_1>
-JetBrain
+<a href=/tags/sonar/ class=font_size_1>
+Sonar
 </a>
-<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
-面试
+<a href=/tags/%E7%94%BB%E5%AE%B6/ class=font_size_1>
+画家
 </a>
-<a href=/tags/%E6%B5%AA%E5%AE%A2%E5%89%91%E5%BF%83/ class=font_size_1>
-浪客剑心
+<a href=/tags/%E6%89%A9%E5%B1%95/ class=font_size_4>
+扩展
 </a>
-<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
-对象池
+<a href=/tags/%E5%9B%BE%E5%BD%A2/ class=font_size_3>
+图形
 </a>
-<a href=/tags/hyperlog/ class=font_size_1>
-Hyperlog
+<a href=/tags/docker/ class=font_size_4>
+Docker
 </a>
-<a href=/tags/%E5%AD%A4%E7%8B%AC/ class=font_size_1>
-孤独
+<a href=/tags/msbuild/ class=font_size_1>
+MSBuild
 </a>
-<a href=/tags/%E5%AE%9E%E4%BD%93/ class=font_size_2>
-实体
+<a href=/tags/%E5%89%8D%E7%AB%AF/ class=font_size_5>
+前端
 </a>
-<a href=/tags/%E9%98%B2%E7%96%AB/ class=font_size_1>
-防疫
+<a href=/tags/mvc/ class=font_size_1>
+MVC
 </a>
-<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
-加密
+<a href=/tags/%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/ class=font_size_1>
+配置中心
 </a>
-<a href=/tags/git/ class=font_size_2>
-Git
+<a href=/tags/%E9%9C%8D%E9%87%91/ class=font_size_1>
+霍金
 </a>
-<a href=/tags/%E4%BD%90%E8%97%A4%E5%81%A5/ class=font_size_1>
-佐藤健
+<a href=/tags/cg/ class=font_size_1>
+CG
 </a>
-<a href=/tags/%E6%AF%95%E4%B8%9A/ class=font_size_1>
-毕业
-</a>
-<a href=/tags/ide/ class=font_size_1>
-IDE
-</a>
-<a href=/tags/%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/ class=font_size_1>
-人脸检测
-</a>
-<a href=/tags/%E6%88%91%E6%98%AF%E7%8C%AB/ class=font_size_1>
-我是猫
-</a>
-<a href=/tags/%E9%9A%8F%E7%AC%94/ class=font_size_8>
-随笔
+<a href=/tags/%E7%A9%B9%E4%B9%8B%E6%89%89/ class=font_size_1>
+穹之扉
 </a>
 <a href=/tags class=font_size_9999>
 更多

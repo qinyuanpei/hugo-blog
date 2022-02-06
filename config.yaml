@@ -271,7 +271,7 @@ menu:
             icon: brand-weibo
         - identifier: csdn
           name: CSDN
-          url: https://blog.csdn.me/qinyuanpei
+          url: https://blog.csdn.net/qinyuanpei
           weight: 50
           params:
             icon: link

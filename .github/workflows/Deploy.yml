@@ -34,7 +34,7 @@ jobs:
 
     - name: Build Site
       run: |
-        hugo -t hugo-theme-stack --minify
+        hugo --minify
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3

@@ -145,6 +145,7 @@ params:
     widgets:
         enabled:
             - search
+            - toc
             - archives
             - categories
             - tag-cloud

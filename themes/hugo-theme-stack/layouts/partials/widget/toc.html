@@ -1,0 +1,14 @@
+{{ if (.Scratch.Get "hasTOC") }}
+    <section class="widget archives">
+        {{ if .Site.Params.widgets.toc.showIcon }}
+        <div class="widget-icon">
+            {{ partial "helper/icon" "hash" }}
+        </div>
+        {{ end }}
+        <h2 class="widget-title section-title">{{ T "article.tableOfContents" }}</h2>
+        
+        <div class="widget--toc">
+            {{ .TableOfContents }}
+        </div>
+    </section>
+{{ end }}

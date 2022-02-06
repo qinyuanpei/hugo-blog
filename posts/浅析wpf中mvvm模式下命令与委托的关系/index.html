@@ -1,10 +1,10 @@
 <!doctype html><html lang=en-us>
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="在这篇文章里我们讨论了 MVC、MVP、MVVM 各自架构变迁的前因后果，由此我们知道了软件设计中，一个典型的设计目标是让视图和模型分离，可我们同样发现，带着这个目标去设计软件的时候，我们基本鲜有更换视图的时候，虽然从理论上来讲，所有的业务逻辑都是在 ViewModel 中，视图和模型应该是可以进行更换的，可是你告诉我，有谁会为同一个软件制作不同的界面呢;所以，在这里我们纠结的地方，其实是选择让控制器更“重”还是让模型更“重”，我曾经接触过 1 年左右的 Android 开发，我认为 Android 工程是一个相对符合 MVC 架构的设计，可是我们难免会发现，作为控制器的 Activity 中的代码非常臃肿，因为我们在这里需要和视图、模型关联起来，所以综合现有的这些软件架构思想，我们发现模型和视图相对来讲都是可以复用的，可是作为连接这两者的 Controller/Presenter/ViewModel 是非常臃肿而且难以复用的，所以我怀疑我们是否是在真正的使用 MVVM;这里需要说明的是 CanExecuteChanged 这个事件，这个和 INotifyPropertyChanged 接口中的 PropertyChanged 成员类似，是在当 CanExecute 发生变化的时候通知视图的，我对这里的理解是 CanExecute 本身就具备对某一个过程是否应该被执行的支持，可是遗憾的是在，在我参与的项目中，人们更喜欢声明大量的布尔类型变量来处理这里的相关逻辑，因此无论是对 Property 还是 Command 而言，在 ViewModel 里都是看起来非常丑陋的代码实现"><title>浅析 WPF 中 MVVM 模式下命令与委托的关系</title>
-<link rel=canonical href=/posts/%E6%B5%85%E6%9E%90wpf%E4%B8%ADmvvm%E6%A8%A1%E5%BC%8F%E4%B8%8B%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%A7%94%E6%89%98%E7%9A%84%E5%85%B3%E7%B3%BB/>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E6%B5%85%E6%9E%90wpf%E4%B8%ADmvvm%E6%A8%A1%E5%BC%8F%E4%B8%8B%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%A7%94%E6%89%98%E7%9A%84%E5%85%B3%E7%B3%BB/>
 <link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="浅析 WPF 中 MVVM 模式下命令与委托的关系">
 <meta property="og:description" content="在这篇文章里我们讨论了 MVC、MVP、MVVM 各自架构变迁的前因后果，由此我们知道了软件设计中，一个典型的设计目标是让视图和模型分离，可我们同样发现，带着这个目标去设计软件的时候，我们基本鲜有更换视图的时候，虽然从理论上来讲，所有的业务逻辑都是在 ViewModel 中，视图和模型应该是可以进行更换的，可是你告诉我，有谁会为同一个软件制作不同的界面呢;所以，在这里我们纠结的地方，其实是选择让控制器更“重”还是让模型更“重”，我曾经接触过 1 年左右的 Android 开发，我认为 Android 工程是一个相对符合 MVC 架构的设计，可是我们难免会发现，作为控制器的 Activity 中的代码非常臃肿，因为我们在这里需要和视图、模型关联起来，所以综合现有的这些软件架构思想，我们发现模型和视图相对来讲都是可以复用的，可是作为连接这两者的 Controller/Presenter/ViewModel 是非常臃肿而且难以复用的，所以我怀疑我们是否是在真正的使用 MVVM;这里需要说明的是 CanExecuteChanged 这个事件，这个和 INotifyPropertyChanged 接口中的 PropertyChanged 成员类似，是在当 CanExecute 发生变化的时候通知视图的，我对这里的理解是 CanExecute 本身就具备对某一个过程是否应该被执行的支持，可是遗憾的是在，在我参与的项目中，人们更喜欢声明大量的布尔类型变量来处理这里的相关逻辑，因此无论是对 Property 还是 Command 而言，在 ViewModel 里都是看起来非常丑陋的代码实现">
-<meta property="og:url" content="/posts/%E6%B5%85%E6%9E%90wpf%E4%B8%ADmvvm%E6%A8%A1%E5%BC%8F%E4%B8%8B%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%A7%94%E6%89%98%E7%9A%84%E5%85%B3%E7%B3%BB/">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E6%B5%85%E6%9E%90wpf%E4%B8%ADmvvm%E6%A8%A1%E5%BC%8F%E4%B8%8B%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%A7%94%E6%89%98%E7%9A%84%E5%85%B3%E7%B3%BB/">
 <meta property="og:site_name" content="素履独行">
 <meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="MVVM"><meta property="article:tag" content="委托"><meta property="article:tag" content="命令"><meta property="article:published_time" content="2016-07-21T14:27:07+00:00"><meta property="article:modified_time" content="2016-07-21T14:27:07+00:00">
 <meta name=twitter:title content="浅析 WPF 中 MVVM 模式下命令与委托的关系">
@@ -35,23 +35,23 @@ on-phone--column extended">
 <h1 class=site-name><a href=/>素履独行</a></h1>
 <h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
 <li>
-<a href=/https:/github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
 </a>
 </li>
 <li>
-<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
 </a>
 </li>
 <li>
-<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
 </a>
 </li>
 <li>
-<a href=/https:/www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
 </a>
 </li>
 <li>
-<a href=/https:/blog.csdn.me/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<a href=https://blog.csdn.me/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
 </a>
 </li>
 </ol></header>
@@ -276,7 +276,7 @@ on-phone--column extended">
 <div id=comment class=valine-container></div>
 <script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
 <script src=//unpkg.com/valine/dist/Valine.min.js></script>
-<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'/posts/%E6%B5%85%E6%9E%90wpf%E4%B8%ADmvvm%E6%A8%A1%E5%BC%8F%E4%B8%8B%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%A7%94%E6%89%98%E7%9A%84%E5%85%B3%E7%B3%BB/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/%E6%B5%85%E6%9E%90wpf%E4%B8%ADmvvm%E6%A8%A1%E5%BC%8F%E4%B8%8B%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%A7%94%E6%89%98%E7%9A%84%E5%85%B3%E7%B3%BB/',avatar:'identicon',requiredFields:['nick','mail']})</script>
 <style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
 <footer class=site-footer>
 <section class=copyright>
@@ -433,80 +433,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E6%A6%82%E7%8E%87/ class=font_size_2>
-概率
+<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
+加密
 </a>
-<a href=/tags/nlp/ class=font_size_2>
-NLP
+<a href=/tags/%E7%9F%AB%E6%83%85/ class=font_size_1>
+矫情
 </a>
-<a href=/tags/signalr/ class=font_size_2>
-SignalR
+<a href=/tags/%E5%9B%9E%E5%BF%86/ class=font_size_1>
+回忆
 </a>
-<a href=/tags/cors/ class=font_size_2>
-CORS
+<a href=/tags/csharp/ class=font_size_2>
+CSharp
 </a>
-<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
-技巧
+<a href=/tags/%E9%87%8D%E8%AF%95/ class=font_size_2>
+重试
 </a>
-<a href=/tags/envoy/ class=font_size_6>
-Envoy
+<a href=/tags/.net/ class=font_size_7>
+.NET
 </a>
-<a href=/tags/%E6%A0%A1%E9%AA%8C/ class=font_size_1>
-校验
+<a href=/tags/json/ class=font_size_1>
+JSON
+</a>
+<a href=/tags/msbuild/ class=font_size_1>
+MSBuild
+</a>
+<a href=/tags/%E5%8A%A8%E7%94%BB/ class=font_size_1>
+动画
+</a>
+<a href=/tags/%E5%89%8D%E4%BB%BB/ class=font_size_1>
+前任
+</a>
+<a href=/tags/logger/ class=font_size_1>
+Logger
+</a>
+<a href=/tags/any/ class=font_size_1>
+Any
+</a>
+<a href=/tags/%E6%97%A5%E6%9C%AC%E6%96%87%E5%AD%A6/ class=font_size_1>
+日本文学
+</a>
+<a href=/tags/%E7%94%9F%E6%AD%BB/ class=font_size_1>
+生死
 </a>
 <a href=/tags/%E6%97%A0%E9%97%AE%E8%A5%BF%E4%B8%9C/ class=font_size_1>
 无问西东
 </a>
-<a href=/tags/%E7%94%9F%E6%B4%BB/ class=font_size_7>
-生活
+<a href=/tags/%E9%82%AA%E4%B8%8D%E5%8E%8B%E6%AD%A3/ class=font_size_1>
+邪不压正
 </a>
-<a href=/tags/%E5%8A%A8%E6%BC%AB/ class=font_size_1>
-动漫
+<a href=/tags/kindle/ class=font_size_3>
+Kindle
 </a>
-<a href=/tags/%E5%BC%95%E6%93%8E/ class=font_size_1>
-引擎
+<a href=/tags/cors/ class=font_size_2>
+CORS
 </a>
-<a href=/tags/%E5%8D%95%E6%9C%BA%E6%B8%B8%E6%88%8F/ class=font_size_1>
-单机游戏
+<a href=/tags/%E6%97%A5%E6%9C%AC/ class=font_size_1>
+日本
 </a>
-<a href=/tags/nginx/ class=font_size_1>
-Nginx
+<a href=/tags/mecanim/ class=font_size_1>
+Mecanim
 </a>
-<a href=/tags/%E6%84%9F%E6%82%9F/ class=font_size_14>
-感悟
+<a href=/tags/webassembly/ class=font_size_1>
+WebAssembly
 </a>
-<a href=/tags/polly/ class=font_size_1>
-Polly
+<a href=/tags/%E7%AE%97%E6%B3%95/ class=font_size_2>
+算法
 </a>
-<a href=/tags/%E4%BA%BA%E7%94%9F/ class=font_size_2>
-人生
+<a href=/tags/%E4%BA%BA%E6%96%87/ class=font_size_2>
+人文
 </a>
-<a href=/tags/%E5%A4%95%E9%9B%BE%E8%8A%B1%E5%9B%AD/ class=font_size_1>
-夕雾花园
+<a href=/tags/form/ class=font_size_1>
+Form
 </a>
-<a href=/tags/socket/ class=font_size_2>
-Socket
-</a>
-<a href=/tags/%E6%A0%87%E6%B3%A8/ class=font_size_1>
-标注
-</a>
-<a href=/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/ class=font_size_8>
-数据库
-</a>
-<a href=/tags/%E4%BD%8E%E4%BB%A3%E7%A0%81/ class=font_size_1>
-低代码
-</a>
-<a href=/tags/markdown/ class=font_size_1>
-Markdown
-</a>
-<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
-穿搭
-</a>
-<a href=/tags/%E7%A9%B9%E4%B9%8B%E6%89%89/ class=font_size_1>
-穹之扉
-</a>
-<a href=/tags/%E9%95%BF%E5%AE%89/ class=font_size_1>
-长安
+<a href=/tags/%E4%BA%92%E8%81%94%E7%BD%91/ class=font_size_2>
+互联网
 </a>
 <a href=/tags class=font_size_9999>
 更多

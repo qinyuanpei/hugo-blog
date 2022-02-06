@@ -1,4 +1,4 @@
-baseurl: 
+baseurl: https://hugo-blog-tan.vercel.app/
 languageCode: en-us
 theme: hugo-theme-stack
 paginate: 10

@@ -14,6 +14,11 @@
 <script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
 <div class="container main-container flex
 on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
 <aside class="sidebar left-sidebar sticky">
 <button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
 <span class=hamburger-box>
@@ -236,6 +241,181 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 </div>
 </div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
 </main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/di/ class=font_size_2>
+DI
+</a>
+<a href=/tags/swagger/ class=font_size_2>
+Swagger
+</a>
+<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
+加密
+</a>
+<a href=/tags/%E5%AD%A4%E7%8B%AC/ class=font_size_1>
+孤独
+</a>
+<a href=/tags/orm/ class=font_size_1>
+ORM
+</a>
+<a href=/tags/jsonp/ class=font_size_1>
+JSONP
+</a>
+<a href=/tags/%E5%A4%9A%E7%A7%9F%E6%88%B7/ class=font_size_1>
+多租户
+</a>
+<a href=/tags/%E7%A8%8B%E5%BA%8F%E5%91%98/ class=font_size_3>
+程序员
+</a>
+<a href=/tags/restful/ class=font_size_4>
+RESTful
+</a>
+<a href=/tags/selenium/ class=font_size_2>
+Selenium
+</a>
+<a href=/tags/%E4%BA%BA%E6%96%87/ class=font_size_2>
+人文
+</a>
+<a href=/tags/rsetful/ class=font_size_1>
+RSETful
+</a>
+<a href=/tags/%E7%AC%94%E8%AE%B0/ class=font_size_8>
+笔记
+</a>
+<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
+网易
+</a>
+<a href=/tags/%E4%BD%8E%E4%BB%A3%E7%A0%81/ class=font_size_1>
+低代码
+</a>
+<a href=/tags/%E4%BA%BA%E7%94%9F/ class=font_size_2>
+人生
+</a>
+<a href=/tags/csharp/ class=font_size_2>
+CSharp
+</a>
+<a href=/tags/%E5%AE%A1%E8%AE%A1/ class=font_size_1>
+审计
+</a>
+<a href=/tags/%E6%96%87%E6%A1%A3/ class=font_size_1>
+文档
+</a>
+<a href=/tags/%E5%9C%B0%E5%9B%BE/ class=font_size_1>
+地图
+</a>
+<a href=/tags/binlog/ class=font_size_2>
+Binlog
+</a>
+<a href=/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/ class=font_size_1>
+反向代理
+</a>
+<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
+塔防
+</a>
+<a href=/tags/sourcetree/ class=font_size_1>
+SourceTree
+</a>
+<a href=/tags/mecanim/ class=font_size_1>
+Mecanim
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
 </div>
 <script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
 <script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>

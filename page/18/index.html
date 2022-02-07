@@ -128,7 +128,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E6%89%A9%E5%B1%95unity3d%E7%BC%96%E8%BE%91%E5%99%A8%E7%9A%84%E8%84%9A%E6%9C%AC%E6%A8%A1%E6%9D%BF/>扩展 Unity3D 编辑器的脚本模板</a>
+<a href=/posts/3653662258/>扩展 Unity3D 编辑器的脚本模板</a>
 </h2>
 <h3 class=article-subtitle>
 现在解决了创建资源的问题，我们接下来只要调用 ProjectWindowUtil 的 StartNameEditingIfProjectWindowExists 方法即可，该方法需要传入一个继承自 EndNameEditAction 的类的实例、目标文件路径和模板文件的路径;好了，第二个参数作为一个验证的标志，如果该标志为 true，意味着我们定义的静态方法是一个验证方法在执行静态方法前会首先对方法进行验证，这个我们暂且不管，因为今天我们这个来自星星的黑科技主要和第三个参数有关，第三个参数表示一个优先级，它表示菜单项在菜单栏中的展示顺序，优先级大的菜单项会展示在优先级小的菜单项下面，由此我们就明白了了模板文件名中的类似 81、83 这样的数字的真实含义，注意到模板文件的排列顺序和编辑器中的菜单项顺序是一样的，我们做一个尝试，编写下面的代码：;Unity3D 默认的脚本模版位于/Editor/Data/Resources/ScriptTemplates/目录下，注意该目录相对 Unity3D 的安装目录而言，在这个目录中我们可以找到 Unity3D 中脚本模板的某些蛛丝马迹，首先，脚本模板是一个简单的文本文件，这个文本文件中预先填充了内容，我们在编辑器中创建模脚本或者 Shader 的时候实际上是读取这些文件然后在写入项目中的指定路径的
@@ -182,7 +182,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8B%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%9E%E7%8E%B0/>EasyAR 尝鲜系列教程之视频播放功能的实现</a>
+<a href=/posts/316230277/>EasyAR 尝鲜系列教程之视频播放功能的实现</a>
 </h2>
 <h3 class=article-subtitle>
 这个增强 ImageTarget 是指在 ImageTarget 的基础上融入 VideoPlayerBehaviour 的功能，因为按照官方的示例来考虑，这两部分功能是独立的，博主希望让大家在制作识别图的时候完全忘记区别 ImageTarget 和 VideoTarget，这样我们可以更为专注地制作识别图，因为视频组件就只是设置参数这一件事情，完全可以一次性搞定，所以我们首先来定义一个 VideoTargetBaseBehaviour 类，一起来看代码：;博主这里不太理解 EasyAR 为什么不采用 MovieTexture 或者 Unity3D 中针对视频播放提供的相关插件，因为 VideoTarget 本质上就是把三维模型换成了可以播放的视频而已，所以大家在前面文章的基础上创建一个 ImageTarget 然后再其下面放置一个附加了 VideoPlayerBehaviour 的的子物体就可以了;public void ShowObjects(Transform trans)
@@ -209,7 +209,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/easyar%E5%B0%9D%E9%B2%9C%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B%E4%B9%8Bimagetarget%E5%8D%83%E5%91%BC%E4%B8%87%E5%94%A4%E5%A7%8B%E5%87%BA%E6%9D%A5/>EasyAR 尝鲜系列教程之 ImageTarget 千呼万唤始出来</a>
+<a href=/posts/3736599391/>EasyAR 尝鲜系列教程之 ImageTarget 千呼万唤始出来</a>
 </h2>
 <h3 class=article-subtitle>
 好了，在了解了 EasyAR 中常用的标准接口以后，我们下面来着手构建第一个 ImageTarget 项目，和我们第一次接触 EasyAR 不同，这次我们会编写些简单地代码，打开场景填入应用程序密钥(Key)然后运行它，这种方式在这里会显得略 LOW;EasyAR 中的识别图相对来说比较简单，因为我们只需要选择一张图片然后为其创建一个材质，再将这个材质附加到 ImageTarget 物体上就可以了;我确信这个类简单到彻底，它需要开发者在编辑器中填入 KEY 然后再 Awake 方法中完成对 EasyAR 的初始化，就是这样简单，我们这里将这个脚本附加到 EasyAR 这个物体上去，这样我们就完成了引擎的初始化工作，下面我们就可以专注于 AR 内容的产生了
@@ -236,7 +236,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/c#%E4%B8%AD%E7%9A%84%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/>C#中的扩展方法学习总结</a>
+<a href=/posts/305484621/>C#中的扩展方法学习总结</a>
 </h2>
 <h3 class=article-subtitle>
 我们使用扩展方法无非是因为它在逻辑层需要这样的功能，所以我们没有必要去改变抽象层的逻辑，因为这样会“污染”整个代码;/// &lt;param name="str">4、第一个参数必须使用 this 关键字指定要使用扩展方法的类型&lt;/param>;为了解决这个问题，我们可以扩展出三个方法 SetPositionX、SetPositionY、SetPositionZ 来分别为 x、y、z 三个坐标分量进行赋值，我们继续在 SomeClass 这个类中添加方法：
@@ -317,7 +317,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9C%A8hexo%E4%B8%AD%E4%B8%BA%E6%96%87%E7%AB%A0%E8%87%AA%E5%8A%A8%E6%B7%BB%E5%8A%A0%E7%89%88%E6%9D%83%E4%BF%A1%E6%81%AF%E5%A3%B0%E6%98%8E%E6%A8%A1%E5%9D%97/>在 Hexo 中为文章自动添加版权信息声明模块</a>
+<a href=/posts/2950334112/>在 Hexo 中为文章自动添加版权信息声明模块</a>
 </h2>
 <h3 class=article-subtitle>
 大家可以看到这里就是一段 HTML 代码，因为我们要引入的这个模板和 article.ejs 在同一个页面中，所以我们可以直接在这里调用 item 这个变量，而 item 这个变量里是封装了当前文章的标题和链接的，因此我们可以顺利成章的构造这样一段 HTML 代码，因为博主不会写 CSS 样式，所以使用了一个默认的代码样式来完成这个工作，如果大家懂 CSS，请自行发挥你的创意将它做得更好;&lt;div class="article-content">;&lt;div class="article-content">
@@ -344,7 +344,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E8%A7%A3%E6%9E%90obj%E6%A8%A1%E5%9E%8B%E5%B9%B6%E5%B0%86%E5%85%B6%E5%8A%A0%E8%BD%BD%E5%88%B0unity3d%E5%9C%BA%E6%99%AF%E4%B8%AD/>解析 OBJ 模型并将其加载到 Unity3D 场景中</a>
+<a href=/posts/1124152964/>解析 OBJ 模型并将其加载到 Unity3D 场景中</a>
 </h2>
 <h3 class=article-subtitle>
 最后，全部的三角面会被读取到 faceVertexNormalUV 列表中，它表示的是每个三角面的顶点、法线和 UV 的索引向量，是一个 List&lt;Vector3>类型的变量;这里可以注意到我们在开始对文本化的.obj 文件的内容有 1 次替换操作，这是因为在 3dsMax 中导出的.obj 文件关键字**v**这一行中 v 后面的第一处空格位置是有 2 个空格，而我们在处理的时候是按照空格来分割每一行的内容的，这样 chars[1]就会变成一个空字符串，显然这不符合我们的初衷，所以这里就需要对字符串进行这样一个操作，希望大家在解析的过程中注意，好吧，我承认我想吐槽 3dsMax 了，我不明白同一家公司的 3dsMax 和 Maya 为什么不能互相转换，我不明白 3dsMax 导出.obj 文件的时候要做这样奇葩的设定，我更不明白为什么有开源、免费、轻巧的 Blender 都不去用非要每次都去安装容量动辄上 G 的盗版软件和不知道会不会变成下一个 GhostXXXX 的注册机，我更加不能容忍的是封闭的 FBX 格式和用起来就如同自虐的 FBX SDK;三角面的读取定义在 GetTriangleList()方法中，因此三角面的读取实际上首先需要将每一行文本按照空格进行分割，然后再将每一个元素按照/分割，这样就可以依次得到顶点索引、法线索引和 UV 索引
@@ -478,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E6%97%A5%E6%9C%AC%E6%96%87%E5%AD%A6/ class=font_size_1>
-日本文学
+<a href=/tags/dottrace/ class=font_size_1>
+dotTrace
 </a>
-<a href=/tags/%E8%AF%AD%E8%A8%80/ class=font_size_1>
-语言
+<a href=/tags/%E7%86%B5%E5%A2%9E%E5%AE%9A%E5%BE%8B/ class=font_size_1>
+熵增定律
 </a>
-<a href=/tags/travis/ class=font_size_3>
-Travis
+<a href=/tags/cg/ class=font_size_1>
+CG
 </a>
-<a href=/tags/matplotlib/ class=font_size_1>
-matplotlib
+<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
+部署
 </a>
-<a href=/tags/%E5%9B%9E%E5%AE%B6/ class=font_size_1>
-回家
+<a href=/tags/%E5%8D%B0%E5%BA%A6/ class=font_size_1>
+印度
 </a>
-<a href=/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/ class=font_size_3>
-跨平台
+<a href=/tags/%E5%B9%B4%E5%8D%8E/ class=font_size_1>
+年华
 </a>
-<a href=/tags/%E6%96%87%E6%A1%A3/ class=font_size_1>
-文档
+<a href=/tags/shader/ class=font_size_1>
+Shader
 </a>
-<a href=/tags/form/ class=font_size_1>
-Form
+<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
+网易
 </a>
-<a href=/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/ class=font_size_1>
-响应式
+<a href=/tags/%E4%BA%BA%E6%96%87/ class=font_size_2>
+人文
 </a>
-<a href=/tags/%E5%B7%A5%E4%BD%9C/ class=font_size_3>
-工作
+<a href=/tags/%E6%A0%87%E6%B3%A8/ class=font_size_1>
+标注
 </a>
-<a href=/tags/%E6%9C%8D%E5%8A%A1/ class=font_size_1>
-服务
+<a href=/tags/%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/ class=font_size_1>
+文本分类
+</a>
+<a href=/tags/gephi/ class=font_size_1>
+Gephi
+</a>
+<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
+调优
+</a>
+<a href=/tags/%E4%BA%B2%E6%83%85/ class=font_size_1>
+亲情
+</a>
+<a href=/tags/vscode/ class=font_size_2>
+VSCode
+</a>
+<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
+平凡
+</a>
+<a href=/tags/%E7%B1%B3%E8%8A%B1%E4%B9%8B%E5%91%B3/ class=font_size_1>
+米花之味
+</a>
+<a href=/tags/envoy/ class=font_size_6>
+Envoy
+</a>
+<a href=/tags/es6/ class=font_size_1>
+ES6
+</a>
+<a href=/tags/%E6%80%9D%E8%80%83/ class=font_size_1>
+思考
+</a>
+<a href=/tags/pwa/ class=font_size_1>
+PWA
+</a>
+<a href=/tags/%E9%80%9A%E4%BF%A1/ class=font_size_2>
+通信
+</a>
+<a href=/tags/%E8%AF%81%E4%B9%A6/ class=font_size_1>
+证书
+</a>
+<a href=/tags/ar/ class=font_size_3>
+AR
 </a>
 <a href=/tags/linux/ class=font_size_5>
 Linux
-</a>
-<a href=/tags/hyperlog/ class=font_size_1>
-Hyperlog
-</a>
-<a href=/tags/%E7%8E%B0%E5%AE%9E/ class=font_size_1>
-现实
-</a>
-<a href=/tags/%E6%B1%82%E8%81%8C/ class=font_size_3>
-求职
-</a>
-<a href=/tags/.net/ class=font_size_7>
-.NET
-</a>
-<a href=/tags/rpg/ class=font_size_1>
-RPG
-</a>
-<a href=/tags/%E5%88%86%E5%B8%83%E5%BC%8F/ class=font_size_2>
-分布式
-</a>
-<a href=/tags/%E5%8D%95%E4%BD%8D/ class=font_size_1>
-单位
-</a>
-<a href=/tags/sqlite/ class=font_size_1>
-SQLite
-</a>
-<a href=/tags/%E5%85%B3%E5%8D%A1%E7%B3%BB%E7%BB%9F/ class=font_size_1>
-关卡系统
-</a>
-<a href=/tags/%E5%BE%AE%E5%8D%9A/ class=font_size_3>
-微博
-</a>
-<a href=/tags/json/ class=font_size_1>
-JSON
-</a>
-<a href=/tags/mvvm/ class=font_size_1>
-MVVM
-</a>
-<a href=/tags/any/ class=font_size_1>
-Any
 </a>
 <a href=/tags class=font_size_9999>
 更多

@@ -1,0 +1,540 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="下面，按照惯例，我们将实现一个“**Hello World**”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息;所以，从今天开始，我将为大家带来 **.NET Core + ELK 搭建可视化日志分析平台** 系列文章，希望大家喜欢;博主计划在接下来的篇幅中介绍`Logstash`/`FireBeat`管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客"><title>.NET Core + ELK 搭建可视化日志分析平台(上)</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/3687594958/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content=".NET Core + ELK 搭建可视化日志分析平台(上)">
+<meta property="og:description" content="下面，按照惯例，我们将实现一个“**Hello World**”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息;所以，从今天开始，我将为大家带来 **.NET Core + ELK 搭建可视化日志分析平台** 系列文章，希望大家喜欢;博主计划在接下来的篇幅中介绍`Logstash`/`FireBeat`管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/3687594958/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content=".NET Core"><meta property="article:tag" content="ELK"><meta property="article:tag" content="日志"><meta property="article:tag" content="监控"><meta property="article:published_time" content="2020-02-15T16:01:13+00:00"><meta property="article:modified_time" content="2020-02-15T16:01:13+00:00">
+<meta name=twitter:title content=".NET Core + ELK 搭建可视化日志分析平台(上)">
+<meta name=twitter:description content="下面，按照惯例，我们将实现一个“**Hello World**”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息;所以，从今天开始，我将为大家带来 **.NET Core + ELK 搭建可视化日志分析平台** 系列文章，希望大家喜欢;博主计划在接下来的篇幅中介绍`Logstash`/`FireBeat`管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/3687594958/>.NET Core + ELK 搭建可视化日志分析平台(上)</a>
+</h2>
+<h3 class=article-subtitle>
+下面，按照惯例，我们将实现一个“**Hello World**”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息;所以，从今天开始，我将为大家带来 **.NET Core + ELK 搭建可视化日志分析平台** 系列文章，希望大家喜欢;博主计划在接下来的篇幅中介绍`Logstash`/`FireBeat`管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2020-02-15</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 7 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>Hi，各位朋友，大家好！欢迎大家关注我的博客，我的博客地址是: <a class=link href=https://blog.yuanpei.me target=_blank rel=noopener>https://blog.yuanpei.me</a>。今天是远程办公以来的第一个周末，虽然公司计划在远程两周后恢复正常办公，可面对着每天都有人离开的疫情，深知这一切都不会那么容易。窗外的阳光透过玻璃照射进屋子，这一切都昭示着春天的脚步渐渐近了。可春天来了，有的人却没有再回来。那些在 2019 年结束时许下的美好期待、豪言壮语，在这样一场灾难面前，终究是如此的无力而苍白。可不管怎么样，生活还是要继续，在这些无法出门的日子里，在这样一个印象深刻的春节长假里，除了做好<strong>勤洗手</strong>、<strong>多通风</strong>、<strong>戴口罩</strong>这些防疫保护措施以外，博主还是希望大家能够抽空学习，通过知识来充实这“枯燥"的生活。所以，从今天开始，我将为大家带来 <strong>.NET Core + ELK 搭建可视化日志分析平台</strong> 系列文章，希望大家喜欢。</p>
+<h1 id=什么是-elk>什么是 ELK</h1>
+<p>当接触到一个新的事物的时候，我们最好是从它的概念开始入手。那么，什么是 ELK 呢？ELK，是<code>Elastaicsearch</code>、<code>Logstash</code>和<code>Kibana</code>三款软件的简称。其中，<code>Elastaicsearch</code>是一个开源的全文搜索引擎。如果你没有听说过它，那至少应该听说过<code>Lucene</code>这个开源搜索引擎。事实上，<code>Elastaicsearch</code>是<code>Lucene</code>的封装，它提供了<code>REST</code> API 的操作接口 。而<code>Logstash</code>则是一个开源的数据收集引擎，具有实时的管道，它可以动态地将不同的数据源的数据统一起来。最后，<code>Kibana</code>是一个日志可视化分析的平台，它提供了一系列日志分析的 Web 接口，可以使用它对日志进行高效地搜索、分析和可视化操作。至此，我们可以给 ELK 一个简单的定义：</p>
+<blockquote>
+<p>ELK 是一个集日志收集、搜索、日志聚合和日志分析于一身的完整解决方案。</p>
+</blockquote>
+<p>下面这张图，展示了<code>Elastaicsearch</code>、<code>Logstash</code>和<code>Kibana</code>三款软件间的协作关系。可以注意到，<code>Logstash</code>负责从应用服务器收集日志。我们知道，现在的应用程序都是跨端应用，程序可能运行在 PC、移动端、H5、小程序等等各种各样的终端上，而<code>Logstash</code>则可以将这些不同的日志信息通过管道转换为统一的数据接口。这些日志将被存储到<code>Elasticsearch</code>中。我们提到<code>Elastaicsearch</code>是一个开源的全文搜索引擎，故而它在数据查询上相对传统的数据库有着更好的优势，并且<code>Elasticsearch</code>可以根据需要搭建单机或者集群。最终，<code>Kibana</code>从<code>Elasticsearch</code>中查询数据并绘制可视化图表，并展示在浏览器中。在最新的 ELK 架构中，新增了<code>FireBeat</code>这个软件，它是它是一个轻量级的日志收集处理工具(Agent)，适合于在各个服务器上搜集日志后传输给<code>Logstash</code>。</p>
+<p><figure>
+<a href=https://i.loli.net/2020/02/15/mbJRXGo56YA9jQP.png>
+<img src=https://i.loli.net/2020/02/15/mbJRXGo56YA9jQP.png loading=lazy alt=ELK-01.png>
+</a>
+<figcaption>ELK-01.png</figcaption>
+</figure></p>
+<p>总而言之，ELK 可以让我们以一种更优雅的方式来收集日志，传统的日志收集通常会把日志写到文件或者数据库中。前者，不利于日志的集中管理和查询；后者，则无法应对海量文本检索的需求。所以，使用 ELK 可以为我们带来下面这些便利：<strong>分布式日志数据集中式查询和管理；系统监控，譬如对系统硬件和应用各个组件的监控；故障排查；报表功能；日志查询，问题排查，上线检查； 服务器监控、应用监控、错误报警；性能分析、用户行为分析、时间管理等等</strong>。</p>
+<h1 id=如何安装-elk>如何安装 ELK</h1>
+<p>安装 ELK 的方式，首推以 Docker 方式安装。关于 Docker 的安装、使用请大家查阅官方文档：<a class=link href=https://docs.docker.com/ target=_blank rel=noopener>https://docs.docker.com/</a>。这里我假设大家都已经掌握了 Linux 和 Docker 的使用。首先我们拉取 ELK 镜像：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>docker pull sebp/elk
+</code></pre></div><p>接下来，我们利用此镜像来运行一个容器:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=ln>1</span>docker run -p 5601:5601 -p 9200:9200 -p 5044:5044 --name elk sebp/elk 
+</code></pre></div><p>通常情况下，完成这两个步骤以后，我们就完成了 ELK 安装。此时，我们可以在浏览器中输入地址：<code>http//localhost:9200</code>，这是<code>Elasticsearch</code>的默认端口。如果浏览器中返回了了类似下面的信息，则表示 ELK 安装成功。这里是博主获得的关于<code>Elasticseach</code>的信息：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=ln> 1</span><span class=p>{</span>
+<span class=ln> 2</span>  <span class=nt>&#34;name&#34;</span> <span class=p>:</span> <span class=s2>&#34;elk&#34;</span><span class=p>,</span>
+<span class=ln> 3</span>  <span class=nt>&#34;cluster_name&#34;</span> <span class=p>:</span> <span class=s2>&#34;elasticsearch&#34;</span><span class=p>,</span>
+<span class=ln> 4</span>  <span class=nt>&#34;cluster_uuid&#34;</span> <span class=p>:</span> <span class=s2>&#34;GGlJrOvtT2uSfoHioLCWww&#34;</span><span class=p>,</span>
+<span class=ln> 5</span>  <span class=nt>&#34;version&#34;</span> <span class=p>:</span> <span class=p>{</span>
+<span class=ln> 6</span>    <span class=nt>&#34;number&#34;</span> <span class=p>:</span> <span class=s2>&#34;7.5.2&#34;</span><span class=p>,</span>
+<span class=ln> 7</span>    <span class=nt>&#34;build_flavor&#34;</span> <span class=p>:</span> <span class=s2>&#34;default&#34;</span><span class=p>,</span>
+<span class=ln> 8</span>    <span class=nt>&#34;build_type&#34;</span> <span class=p>:</span> <span class=s2>&#34;tar&#34;</span><span class=p>,</span>
+<span class=ln> 9</span>    <span class=nt>&#34;build_hash&#34;</span> <span class=p>:</span> <span class=s2>&#34;8bec50e1e0ad29dad5653712cf3bb580cd1afcdf&#34;</span><span class=p>,</span>
+<span class=ln>10</span>    <span class=nt>&#34;build_date&#34;</span> <span class=p>:</span> <span class=s2>&#34;2020-01-15T12:11:52.313576Z&#34;</span><span class=p>,</span>
+<span class=ln>11</span>    <span class=nt>&#34;build_snapshot&#34;</span> <span class=p>:</span> <span class=kc>false</span><span class=p>,</span>
+<span class=ln>12</span>    <span class=nt>&#34;lucene_version&#34;</span> <span class=p>:</span> <span class=s2>&#34;8.3.0&#34;</span><span class=p>,</span>
+<span class=ln>13</span>    <span class=nt>&#34;minimum_wire_compatibility_version&#34;</span> <span class=p>:</span> <span class=s2>&#34;6.8.0&#34;</span><span class=p>,</span>
+<span class=ln>14</span>    <span class=nt>&#34;minimum_index_compatibility_version&#34;</span> <span class=p>:</span> <span class=s2>&#34;6.0.0-beta1&#34;</span>
+<span class=ln>15</span>  <span class=p>},</span>
+<span class=ln>16</span>  <span class=nt>&#34;tagline&#34;</span> <span class=p>:</span> <span class=s2>&#34;You Know, for Search&#34;</span>
+<span class=ln>17</span><span class=p>}</span>
+</code></pre></div><p>接下来，我们继续在浏览器中输入地址：<code>http://localhost:5601/app/kibana</code>。显然，这是<code>Kibana</code>的默认地址，至此<strong>ELK</strong>的“庐山真面目”<strong>终于揭晓，首次安装完</strong>ELK，<code>Kibana</code>的界面应该试类似下面这样：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/02/15/uOQSCUxfWYManK6.png>
+<img src=https://i.loli.net/2020/02/15/uOQSCUxfWYManK6.png loading=lazy alt=ELK的庐山真面目>
+</a>
+<figcaption>ELK的庐山真面目</figcaption>
+</figure></p>
+<p>按照指引，我们可以添加示例数据来感受下<strong>ELK</strong>全家桶的魅力：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/02/15/j6xFzedsPf7y9gL.png>
+<img src=https://i.loli.net/2020/02/15/j6xFzedsPf7y9gL.png loading=lazy alt="ELK示例 - Global Flight Dashboard">
+</a>
+<figcaption>ELK示例 - Global Flight Dashboard</figcaption>
+</figure></p>
+<p>这样，我们就完成<strong>ELK</strong>环境的快速搭建。下面，按照惯例，我们将实现一个“<strong>Hello World</strong>”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息。为了让这个示例尽可能地简单一点，我们选择了直接向<code>Elasticsearch</code>写入日志的方式，这里选择的日志库是<a class=link href=https://serilog.net/ target=_blank rel=noopener>Serilog</a>。</p>
+<h1 id=hello-elk>Hello ELK</h1>
+<p>本文所用的例子已发布到<a class=link href=https://github.com/qinyuanpei/DynamicWebApi/tree/master/DynamicWebApi.Core target=_blank rel=noopener>Github</a>。首先，我们准备一个 ASP.NET Core 的项目，MVC 或者 Web API 都可以。接下来，在项目中引入三个依赖项：<code>Serilog</code>、<code>Serilog.Extensions.Logging</code>和<code>Serilog.Sinks.ElasticSearch</code>。对于前两个，如果大家用过<code>Log4Net</code>或者<code>NLog</code>应该会感到非常熟悉啦，这一点不在赘述。而第三个，从名字就可以看出来这是冲着<code>Elasticsearch</code>来的，因为这是这个系列的第一篇文章，所以，我们直接写<code>Elasticsearch</code>即可。<code>Logstash</code>管道相关的内容，是一个非常复杂的东西，我们会在下一篇文章中单独来讲。</p>
+<p>接下来，主要是<code>Serilog</code>在 ASP.NET Core 中的配置。首先是<code>Startup</code>类，在构造函数中初始化<code>Serilog</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=n>Startup</span><span class=p>(</span><span class=n>IConfiguration</span> <span class=n>configuration</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span> <span class=n>Log</span><span class=p>.</span><span class=n>Logger</span> <span class=p>=</span> <span class=k>new</span> <span class=n>LoggerConfiguration</span><span class=p>()</span>
+<span class=ln> 4</span>  <span class=p>.</span><span class=n>Enrich</span><span class=p>.</span><span class=n>FromLogContext</span><span class=p>()</span>
+<span class=ln> 5</span>  <span class=p>.</span><span class=n>MinimumLevel</span><span class=p>.</span><span class=n>Debug</span><span class=p>()</span>
+<span class=ln> 6</span>  <span class=p>.</span><span class=n>WriteTo</span><span class=p>.</span><span class=n>Elasticsearch</span><span class=p>(</span>
+<span class=ln> 7</span>  <span class=k>new</span> <span class=n>ElasticsearchSinkOptions</span><span class=p>(</span><span class=k>new</span> <span class=n>Uri</span><span class=p>(</span><span class=s>&#34;http://localhost:9200&#34;</span><span class=p>))</span>
+<span class=ln> 8</span>  <span class=p>{</span>
+<span class=ln> 9</span>   <span class=n>MinimumLogEventLevel</span> <span class=p>=</span> <span class=n>LogEventLevel</span><span class=p>.</span><span class=n>Verbose</span><span class=p>,</span>
+<span class=ln>10</span>   <span class=n>AutoRegisterTemplate</span> <span class=p>=</span> <span class=k>true</span>
+<span class=ln>11</span>  <span class=p>})</span>
+<span class=ln>12</span>  <span class=p>.</span><span class=n>CreateLogger</span><span class=p>();</span>
+<span class=ln>13</span> <span class=n>Configuration</span> <span class=p>=</span> <span class=n>configuration</span><span class=p>;</span>
+<span class=ln>14</span><span class=p>}</span>
+<span class=ln>15</span>
+</code></pre></div><p>还记得<code>http://localhost:9200</code>这个地址是什么吗？不错，这是<code>Elasticsearch</code>的默认地址，所以，这部分代码主要的作用就是告诉<code>Elasticsearch</code>，接下来的日志信息都写到<code>Elasticsearch</code>中。为了让日志的信息更丰富一点，我们这里设置最小的日志事件级别为<code>Verbose</code>。</p>
+<p>接下来，在<code>ConfigureServices()</code>方法中注册 ILogger 实例：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=n>services</span><span class=p>.</span><span class=n>AddLogging</span><span class=p>(</span><span class=n>loggingBuilder</span> <span class=p>=&gt;</span> <span class=n>loggingBuilder</span><span class=p>.</span><span class=n>AddSerilog</span><span class=p>(</span><span class=n>dispose</span><span class=p>:</span> <span class=k>true</span><span class=p>));</span>
+</code></pre></div><p>接下来，在业务层增加日志：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln>1</span><span class=k>private</span> <span class=k>readonly</span> <span class=n>ILogger</span> <span class=m>_l</span><span class=n>ogger</span> <span class=p>=</span> <span class=n>Log</span><span class=p>.</span><span class=n>Logger</span><span class=p>;</span>
+<span class=ln>2</span><span class=na>      
+</span><span class=ln>3</span><span class=na>[HttpGet]</span>
+<span class=ln>4</span><span class=k>public</span> <span class=kt>double</span> <span class=n>Add</span><span class=p>(</span><span class=kt>double</span> <span class=n>n1</span><span class=p>,</span> <span class=kt>double</span> <span class=n>n2</span><span class=p>)</span>
+<span class=ln>5</span><span class=p>{</span>
+<span class=ln>6</span> <span class=m>_l</span><span class=n>ogger</span><span class=p>.</span><span class=n>Information</span><span class=p>(</span><span class=s>$&#34;Invoke {typeof(CoreCalculatorService).Name}/Add: {n1},{n2}&#34;</span><span class=p>);</span>
+<span class=ln>7</span> <span class=k>return</span> <span class=n>n1</span> <span class=p>+</span> <span class=n>n2</span><span class=p>;</span>
+<span class=ln>8</span><span class=p>}</span>
+</code></pre></div><p>至此，ELK 在 ASP.NET Core 中的集成已经全部结束，这意味着我们所有的日志都会写入到 ELK 中。那么，要到那里去找这些日志信息呢？且听博主娓娓道来。我们在<code>Kibana</code>中点击左侧导航栏最底下的设置按钮，然后再点击右侧的<code>Create index pattern</code>按钮创建一个索引。什么叫做索引呢？在<code>Elasticsearch</code>中索引相当于一张"表"，而这个“表”中的一条行记录则被称为<code>Document</code>，如图：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/02/15/fywAlQcH45mId1F.png>
+<img src=https://i.loli.net/2020/02/15/fywAlQcH45mId1F.png loading=lazy alt=为Kibana创建索引1>
+</a>
+<figcaption>为Kibana创建索引1</figcaption>
+</figure></p>
+<p>创建索引的时候，会发现列表中列出了目前<code>Elasticsearch</code>中可用的数据。以博主为例，这里的<code>logstash-2020.02.15</code>就是本文中的 ASP.NET Core 应用产生的日志信息。在这里，我们可以通过一个模糊匹配来匹配同种类型的数据。通常这里需要我们选择一个过滤字段，我们选择时间戳即可：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/02/15/8fD1EabSUV7OeZM.png>
+<img src=https://i.loli.net/2020/02/15/8fD1EabSUV7OeZM.png loading=lazy alt=为Kibana创建索引2>
+</a>
+<figcaption>为Kibana创建索引2</figcaption>
+</figure></p>
+<p>创建完索引，就可以看到目前收集的日志信息了，在此基础上，我们可以做进一步的检索、过滤，来生成各种各样的“查询”。而每一个“查询”实际上就是一个数据源。我们就可以利用这些数据源来完成可视化，这是利用 ELK 进行可视化分析的一般流程：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/02/15/m5jufkQW4qEiZAJ.png>
+<img src=https://i.loli.net/2020/02/15/m5jufkQW4qEiZAJ.png loading=lazy alt=在Kibana中查看当前日志信息>
+</a>
+<figcaption>在Kibana中查看当前日志信息</figcaption>
+</figure></p>
+<p>下面是博主自己制作的一个简单的可视化看板，果然很长时间没有再用过<code>Kibana</code>，我都快忘记了要怎么做一个折线图。这实在是一篇迟到的博客，我早该在 2019 年的时候就完成这个系列的，这要命的拖延症啊，虽然没有新冠病毒恐怖，可终究不是什么好习惯！</p>
+<p><figure>
+<a href=https://i.loli.net/2020/02/15/me7v2LBIOCUfM5a.png>
+<img src=https://i.loli.net/2020/02/15/me7v2LBIOCUfM5a.png loading=lazy alt=一个简单的可视化看板>
+</a>
+<figcaption>一个简单的可视化看板</figcaption>
+</figure></p>
+<h1 id=本文小结>本文小结</h1>
+<p>这篇博客是这个系列的第一篇，是一篇珊珊来迟的博客，因为博主早在 2019 年就开始着手学习 ELK。考虑最新公司有使用 ELK 的打算，而因疫情又让博主有充足的时间，所以，博主决定把 ELK 相关的内容花点时间梳理出来。ELK 是一个集日志收集、搜索、日志聚合和日志分析于一身的完整解决方案。博主计划在接下来的篇幅中介绍<code>Logstash</code>/<code>FireBeat</code>管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客。以上就是这篇博客的全部内容啦，晚安！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/.net-core/>.NET Core</a>
+<a href=/tags/elk/>ELK</a>
+<a href=/tags/%E6%97%A5%E5%BF%97/>日志</a>
+<a href=/tags/%E7%9B%91%E6%8E%A7/>监控</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/1519021197/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core 搭载 Envoy 实现微服务的监控预警</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/1679688265/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 拦截器的使用技巧分享</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/2396015802/>
+<div class=article-details>
+<h2 class=article-title>源代码探案系列之 .NET Core 限流中间件 AspNetCoreRateLimit</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/18417412/>
+<div class=article-details>
+<h2 class=article-title>源代码探案系列之 .NET Core 并发限制中间件 ConcurrencyLimiter</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3789745079/>
+<div class=article-details>
+<h2 class=article-title>通过 EmbededFileProvider 实现 Blazor 的静态文件访问</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/3687594958/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#什么是-elk>什么是 ELK</a></li>
+<li><a href=#如何安装-elk>如何安装 ELK</a></li>
+<li><a href=#hello-elk>Hello ELK</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/fp/ class=font_size_1>
+FP
+</a>
+<a href=/tags/%E6%80%9D%E8%80%83/ class=font_size_1>
+思考
+</a>
+<a href=/tags/%E9%99%90%E6%B5%81/ class=font_size_1>
+限流
+</a>
+<a href=/tags/sublime/ class=font_size_1>
+Sublime
+</a>
+<a href=/tags/%E7%A9%B9%E4%B9%8B%E6%89%89/ class=font_size_1>
+穹之扉
+</a>
+<a href=/tags/protobuf/ class=font_size_1>
+Protobuf
+</a>
+<a href=/tags/vscode/ class=font_size_2>
+VSCode
+</a>
+<a href=/tags/%E9%98%85%E8%AF%BB/ class=font_size_2>
+阅读
+</a>
+<a href=/tags/web-api/ class=font_size_1>
+Web API
+</a>
+<a href=/tags/%E5%8D%95%E6%9C%BA%E6%B8%B8%E6%88%8F/ class=font_size_1>
+单机游戏
+</a>
+<a href=/tags/%E6%97%B6%E5%8C%BA/ class=font_size_1>
+时区
+</a>
+<a href=/tags/c++/ class=font_size_1>
+C++
+</a>
+<a href=/tags/%E7%94%9F%E6%AD%BB/ class=font_size_1>
+生死
+</a>
+<a href=/tags/%E7%9F%A5%E8%AF%86%E5%85%B1%E4%BA%AB/ class=font_size_1>
+知识共享
+</a>
+<a href=/tags/envoy/ class=font_size_6>
+Envoy
+</a>
+<a href=/tags/script/ class=font_size_1>
+Script
+</a>
+<a href=/tags/rpg/ class=font_size_1>
+RPG
+</a>
+<a href=/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2/ class=font_size_2>
+计算机图形
+</a>
+<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
+装饰器
+</a>
+<a href=/tags/%E8%AF%8D%E4%BA%91/ class=font_size_1>
+词云
+</a>
+<a href=/tags/%E6%8A%80%E6%9C%AF/ class=font_size_2>
+技术
+</a>
+<a href=/tags/%E7%AD%BE%E5%90%8D/ class=font_size_1>
+签名
+</a>
+<a href=/tags/%E9%95%BF%E5%AE%89/ class=font_size_1>
+长安
+</a>
+<a href=/tags/%E6%9E%B6%E6%9E%84/ class=font_size_2>
+架构
+</a>
+<a href=/tags/%E5%A4%95%E9%9B%BE%E8%8A%B1%E5%9B%AD/ class=font_size_1>
+夕雾花园
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

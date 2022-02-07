@@ -101,7 +101,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/net-core-pococontroller%E5%9C%A8%E5%8A%A8%E6%80%81web-api%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/>.NET Core POCOController 在动态 Web API 中的应用</a>
+<a href=/posts/116795088/>.NET Core POCOController 在动态 Web API 中的应用</a>
 </h2>
 <h3 class=article-subtitle>
 POCOController 是 ASP.NET Core 中提供的一个新特性，按照约定大于配置的原则，在 ASP.NET Core 项目中，所有带有 Controller 后缀的类，或者是使用了[Controller]标记的类，即使它没有像模板中一样继承 Controller 类，ASP.NET Core 依然会将其识别为 Controller，并拥有和普通 Controller 一样的功能，说到这里，你是不是有点兴奋了呢，因为我们在 ASP.NET 里花了大力气去做类似的事情，因为 ASP.NET 里一个普通的类是没有办法成为 Controller 的，即使通过 Castle 的 Dynamic Proxy 黑科技，我们依然需要去 Hack 整个 MVC 框架创建、筛选 Controller 和 Action 的过程;所以，我们希望在提供默认路由的基础上，使用者可以自由配置路由风格，所以，我们需要通过这个接口来构造路由信息，值得一提的是，我们可以在这个过程中设置 ApiExplorer 是否可见，为接口参数设置合适的绑定模型等等，所以，我们会使用 HttpGet/HttpPost 等来标记接口的调用方式，使用 Route 来标记用户自定义的路由信息，使用 FromBody/FromQuery 等来标记参数的绑定信息，有了这些配合 Swagger 简直是无往不胜，并非是开发人员不愿意写文档，而是因为文档的更新速度往往赶不上需求的变化速度，一旦文档落后于实际业务，这样的文档实际是没有意义的，我真的讨厌所有人都来找你问接口的地址、参数这些东西，如果你写完了一个 Service，写好对应的方法注释，然后你就有了一个可用的 Web API，和一个可用的在线文档，何乐而不为呢;这篇博客延续了上一篇博客中关于动态 Controller 的设想，而借助于.NET Core 框架提供的良好特性，它以一种更为简洁的方式被实现了，核心的内容有两个点，其一是 ControllerFeatureProvider，它能决定 MVC 会不会把一个普通的类当做控制器
@@ -478,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/ class=font_size_1>
-负载均衡
+<a href=/tags/ai/ class=font_size_1>
+AI
 </a>
-<a href=/tags/%E7%A8%8B%E5%BA%8F%E5%91%98/ class=font_size_3>
-程序员
+<a href=/tags/%E5%9B%9E%E5%AE%B6/ class=font_size_1>
+回家
 </a>
-<a href=/tags/swagger/ class=font_size_2>
-Swagger
-</a>
-<a href=/tags/%E9%98%BF%E9%87%8C/ class=font_size_1>
-阿里
-</a>
-<a href=/tags/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/ class=font_size_2>
-主从复制
-</a>
-<a href=/tags/wsl/ class=font_size_2>
-WSL
-</a>
-<a href=/tags/%E6%95%B0%E5%AD%97/ class=font_size_1>
-数字
-</a>
-<a href=/tags/svn/ class=font_size_1>
-SVN
-</a>
-<a href=/tags/%E6%A8%A1%E5%9E%8B/ class=font_size_1>
-模型
-</a>
-<a href=/tags/.net/ class=font_size_7>
-.NET
-</a>
-<a href=/tags/%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/ class=font_size_1>
-数据交换
-</a>
-<a href=/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/ class=font_size_1>
-图像处理
-</a>
-<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
-部署
-</a>
-<a href=/tags/ado.net/ class=font_size_1>
-ADO.NET
-</a>
-<a href=/tags/lambda/ class=font_size_2>
-Lambda
-</a>
-<a href=/tags/%E8%AF%B7%E8%AE%B0%E4%BD%8F%E6%88%91/ class=font_size_1>
-请记住我
-</a>
-<a href=/tags/%E6%8B%96%E6%8B%BD/ class=font_size_1>
-拖拽
-</a>
-<a href=/tags/%E5%BD%B1%E8%AF%84/ class=font_size_10>
-影评
-</a>
-<a href=/tags/%E6%80%9D%E7%BB%B4/ class=font_size_1>
-思维
-</a>
-<a href=/tags/%E7%AE%97%E6%B3%95/ class=font_size_2>
-算法
-</a>
-<a href=/tags/%E8%B0%83%E8%AF%95/ class=font_size_1>
-调试
-</a>
-<a href=/tags/%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95/ class=font_size_1>
-扩展方法
+<a href=/tags/dynamic/ class=font_size_1>
+Dynamic
 </a>
 <a href=/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class=font_size_3>
 中间件
 </a>
-<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
-调优
+<a href=/tags/tracing/ class=font_size_1>
+Tracing
 </a>
-<a href=/tags/vue/ class=font_size_3>
-Vue
+<a href=/tags/sdl/ class=font_size_2>
+SDL
+</a>
+<a href=/tags/%E6%AF%95%E4%B8%9A%E5%AD%A3/ class=font_size_1>
+毕业季
+</a>
+<a href=/tags/docker/ class=font_size_4>
+Docker
+</a>
+<a href=/tags/jsonp/ class=font_size_1>
+JSONP
+</a>
+<a href=/tags/.net-core/ class=font_size_14>
+.NET Core
+</a>
+<a href=/tags/%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/ class=font_size_1>
+动态加载
+</a>
+<a href=/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/ class=font_size_1>
+反向代理
+</a>
+<a href=/tags/%E6%97%A5%E6%9C%AC/ class=font_size_1>
+日本
+</a>
+<a href=/tags/.net/ class=font_size_7>
+.NET
+</a>
+<a href=/tags/pl/sql/ class=font_size_1>
+PL/SQL
+</a>
+<a href=/tags/%E5%AE%A1%E8%AE%A1/ class=font_size_1>
+审计
+</a>
+<a href=/tags/%E8%AF%8D%E4%BA%91/ class=font_size_1>
+词云
+</a>
+<a href=/tags/mapreduce/ class=font_size_1>
+MapReduce
+</a>
+<a href=/tags/easyar/ class=font_size_2>
+EasyAR
+</a>
+<a href=/tags/envoy/ class=font_size_6>
+Envoy
+</a>
+<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
+脚本
+</a>
+<a href=/tags/%E8%B4%AA%E5%90%83%E8%9B%87/ class=font_size_1>
+贪吃蛇
+</a>
+<a href=/tags/excel/ class=font_size_1>
+Excel
+</a>
+<a href=/tags/%E8%BD%AC%E7%9B%98/ class=font_size_1>
+转盘
+</a>
+<a href=/tags/%E5%8D%95%E4%BD%8D/ class=font_size_1>
+单位
 </a>
 <a href=/tags class=font_size_9999>
 更多

@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="OK，现在我们来一起看看最终的效果，如你所见，在视频播放过程中，我们可以通过视频下方的输入框发送弹幕，弹幕会首先经由 Redis 缓存起来，当到达一定的时间间隔以后，我们就会将消息推送到客户端，这样所有的客户端都会看到这条弹幕，而对于客户端来说，它在和服务端建立 WebSocket 连接以后，唯一要做的事情就是在 onmessage 回调中取得弹幕数据，并将其追加到弹幕数组中，关于弹幕绘制的细节，我们在本文的第三节已经做了相关说明，在此不再赘述;当客户端接收到服务端推送的消息后，我们通过 Canvas API 完成对弹幕的绘制，这样就可以实现一个基本的弹幕系统啦;当 WebSocket 完成握手以后，我们定时从消息队列中取出弹幕，并推送到所有客户端"><title>基于 WebSocket 和 Redis 实现 Bilibili 弹幕效果</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E5%9F%BA%E4%BA%8Ewebsocket%E5%92%8Credis%E5%AE%9E%E7%8E%B0bilibili%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="基于 WebSocket 和 Redis 实现 Bilibili 弹幕效果">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="基于 WebSocket 和 Redis 实现 Bilibili 弹幕效果">
 <meta property="og:description" content="OK，现在我们来一起看看最终的效果，如你所见，在视频播放过程中，我们可以通过视频下方的输入框发送弹幕，弹幕会首先经由 Redis 缓存起来，当到达一定的时间间隔以后，我们就会将消息推送到客户端，这样所有的客户端都会看到这条弹幕，而对于客户端来说，它在和服务端建立 WebSocket 连接以后，唯一要做的事情就是在 onmessage 回调中取得弹幕数据，并将其追加到弹幕数组中，关于弹幕绘制的细节，我们在本文的第三节已经做了相关说明，在此不再赘述;当客户端接收到服务端推送的消息后，我们通过 Canvas API 完成对弹幕的绘制，这样就可以实现一个基本的弹幕系统啦;当 WebSocket 完成握手以后，我们定时从消息队列中取出弹幕，并推送到所有客户端">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E5%9F%BA%E4%BA%8Ewebsocket%E5%92%8Credis%E5%AE%9E%E7%8E%B0bilibili%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/">
 <meta property="og:site_name" content="素履独行">
@@ -476,80 +476,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E8%BD%AF%E4%BB%B6/ class=font_size_1>
-软件
+<a href=/tags/%E5%89%91%E6%8C%87offer/ class=font_size_1>
+剑指Offer
 </a>
-<a href=/tags/selenium/ class=font_size_2>
-Selenium
+<a href=/tags/elk/ class=font_size_1>
+ELK
 </a>
-<a href=/tags/%E9%95%BF%E5%AE%89/ class=font_size_1>
-长安
+<a href=/tags/%E5%92%8C%E5%B9%B3/ class=font_size_1>
+和平
 </a>
-<a href=/tags/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/ class=font_size_2>
-主从复制
+<a href=/tags/aop/ class=font_size_6>
+AOP
 </a>
-<a href=/tags/%E8%AF%97%E4%BA%BA/ class=font_size_1>
-诗人
+<a href=/tags/%E5%85%AC%E4%BC%97%E5%8F%B7/ class=font_size_1>
+公众号
 </a>
-<a href=/tags/%E9%BB%91%E5%AE%A2/ class=font_size_2>
-黑客
+<a href=/tags/%E6%9C%8D%E5%8A%A1/ class=font_size_1>
+服务
 </a>
-<a href=/tags/wechat/ class=font_size_1>
-Wechat
+<a href=/tags/%E9%99%90%E6%B5%81/ class=font_size_1>
+限流
 </a>
-<a href=/tags/%E5%93%B2%E5%AD%A6/ class=font_size_3>
-哲学
+<a href=/tags/%E6%A1%8C%E9%9D%A2/ class=font_size_1>
+桌面
 </a>
-<a href=/tags/%E5%9B%9E%E9%A1%BE/ class=font_size_1>
-回顾
+<a href=/tags/hangfire/ class=font_size_1>
+Hangfire
 </a>
-<a href=/tags/%E5%A4%9A%E7%A7%9F%E6%88%B7/ class=font_size_1>
-多租户
+<a href=/tags/%E5%B9%B4%E5%8D%8E/ class=font_size_1>
+年华
 </a>
-<a href=/tags/thoughtworks/ class=font_size_1>
-ThoughtWorks
+<a href=/tags/ef/ class=font_size_5>
+EF
 </a>
-<a href=/tags/%E8%AE%BE%E8%AE%A1/ class=font_size_2>
-设计
+<a href=/tags/restful/ class=font_size_4>
+RESTful
 </a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5/ class=font_size_1>
-健康检查
-</a>
-<a href=/tags/dynamic/ class=font_size_1>
-Dynamic
-</a>
-<a href=/tags/%E6%8E%A8%E8%8D%90/ class=font_size_1>
-推荐
-</a>
-<a href=/tags/%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6/ class=font_size_1>
-版本控制
-</a>
-<a href=/tags/hyperlog/ class=font_size_1>
-Hyperlog
-</a>
-<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
-脚本
-</a>
-<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
-同步
-</a>
-<a href=/tags/%E6%A0%A1%E9%AA%8C/ class=font_size_1>
-校验
+<a href=/tags/orm/ class=font_size_1>
+ORM
 </a>
 <a href=/tags/%E4%BA%BA%E7%94%9F/ class=font_size_2>
 人生
 </a>
-<a href=/tags/%E8%A5%BF%E6%BC%82/ class=font_size_1>
-西漂
+<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
+展望
 </a>
-<a href=/tags/%E5%8A%A8%E7%94%BB/ class=font_size_1>
-动画
+<a href=/tags/ide/ class=font_size_1>
+IDE
 </a>
-<a href=/tags/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/ class=font_size_2>
-动态代理
+<a href=/tags/%E6%95%B0%E5%AD%97/ class=font_size_1>
+数字
 </a>
-<a href=/tags/ci/ class=font_size_2>
-CI
+<a href=/tags/sonar/ class=font_size_1>
+Sonar
+</a>
+<a href=/tags/%E5%A4%95%E9%9B%BE%E8%8A%B1%E5%9B%AD/ class=font_size_1>
+夕雾花园
+</a>
+<a href=/tags/%E8%AE%BF%E9%97%AE%E9%87%8F/ class=font_size_1>
+访问量
+</a>
+<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
+脚本
+</a>
+<a href=/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/ class=font_size_1>
+自动化
+</a>
+<a href=/tags/assetbundle/ class=font_size_2>
+AssetBundle
+</a>
+<a href=/tags/%E6%96%87%E4%BB%B6/ class=font_size_1>
+文件
+</a>
+<a href=/tags/http/ class=font_size_9>
+HTTP
 </a>
 <a href=/tags class=font_size_9999>
 更多

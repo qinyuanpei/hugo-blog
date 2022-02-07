@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="接下来，我们在场景中添加一个角色模型来测试我们编写的虚拟摇杆，因为在 JoyStick 中我们已经定义了事件委托，所以在这里就是简单的调用啦;关于使用第三方插件来实现虚拟摇杆，请大家参照我以前写的文章[Unity3D 游戏开发之使用 EasyTouch 虚拟摇杆控制人物移动](http://blog.csdn.net/qinyuanpei/article/details/26204177)，在这里就不再赘述了;在这段脚本中，我们实现了 OnPointerDown、OnPointerUp 和 OnDrag 三个 uGUI 事件接口，然后注册了相关的事件委托，这里借鉴了 EasyTouch 的设计，可以使得虚拟摇杆的逻辑和角色控制逻辑相互分离"><title>教你一步步实现一个虚拟摇杆</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E6%95%99%E4%BD%A0%E4%B8%80%E6%AD%A5%E6%AD%A5%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="教你一步步实现一个虚拟摇杆">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="教你一步步实现一个虚拟摇杆">
 <meta property="og:description" content="接下来，我们在场景中添加一个角色模型来测试我们编写的虚拟摇杆，因为在 JoyStick 中我们已经定义了事件委托，所以在这里就是简单的调用啦;关于使用第三方插件来实现虚拟摇杆，请大家参照我以前写的文章[Unity3D 游戏开发之使用 EasyTouch 虚拟摇杆控制人物移动](http://blog.csdn.net/qinyuanpei/article/details/26204177)，在这里就不再赘述了;在这段脚本中，我们实现了 OnPointerDown、OnPointerUp 和 OnDrag 三个 uGUI 事件接口，然后注册了相关的事件委托，这里借鉴了 EasyTouch 的设计，可以使得虚拟摇杆的逻辑和角色控制逻辑相互分离">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E6%95%99%E4%BD%A0%E4%B8%80%E6%AD%A5%E6%AD%A5%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/">
 <meta property="og:site_name" content="素履独行">
@@ -566,80 +566,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/blazor/ class=font_size_1>
-Blazor
+<a href=/tags/%E5%AE%A1%E8%AE%A1/ class=font_size_1>
+审计
 </a>
-<a href=/tags/jetbrain/ class=font_size_1>
-JetBrain
+<a href=/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/ class=font_size_1>
+响应式
 </a>
-<a href=/tags/hashset/ class=font_size_1>
-HashSet
+<a href=/tags/%E7%88%AC%E8%99%AB/ class=font_size_2>
+爬虫
 </a>
-<a href=/tags/%E5%B7%A5%E4%BD%9C/ class=font_size_3>
-工作
+<a href=/tags/%E5%9B%BE%E5%BD%A2/ class=font_size_3>
+图形
 </a>
-<a href=/tags/valine/ class=font_size_1>
-Valine
+<a href=/tags/%E9%AA%8C%E8%AF%81/ class=font_size_1>
+验证
 </a>
-<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
-部署
+<a href=/tags/%E5%88%86%E9%A1%B5/ class=font_size_1>
+分页
 </a>
-<a href=/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/ class=font_size_3>
-多线程
+<a href=/tags/%E9%87%8D%E8%AF%95/ class=font_size_2>
+重试
 </a>
-<a href=/tags/%E6%97%A0%E9%97%AE%E8%A5%BF%E4%B8%9C/ class=font_size_1>
-无问西东
+<a href=/tags/dbeaver/ class=font_size_1>
+DBeaver
 </a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E7%A0%81/ class=font_size_1>
-健康码
-</a>
-<a href=/tags/%E5%A7%94%E6%89%98/ class=font_size_1>
-委托
-</a>
-<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
-网易
-</a>
-<a href=/tags/dottrace/ class=font_size_1>
-dotTrace
-</a>
-<a href=/tags/%E6%9C%8D%E5%8A%A1%E7%BC%96%E6%8E%92/ class=font_size_1>
-服务编排
+<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
+异步
 </a>
 <a href=/tags/%E6%AF%95%E4%B8%9A/ class=font_size_1>
 毕业
 </a>
-<a href=/tags/%E4%B8%83%E7%89%9B/ class=font_size_1>
-七牛
+<a href=/tags/%E5%9B%9E%E5%AE%B6/ class=font_size_1>
+回家
 </a>
-<a href=/tags/redis/ class=font_size_8>
-Redis
+<a href=/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/ class=font_size_3>
+多线程
 </a>
-<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
-塔防
+<a href=/tags/%E4%BC%98%E5%8C%96/ class=font_size_1>
+优化
 </a>
-<a href=/tags/%E6%A8%A1%E6%9D%BF/ class=font_size_1>
-模板
+<a href=/tags/%E5%85%AC%E4%BC%97%E5%8F%B7/ class=font_size_1>
+公众号
 </a>
-<a href=/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/ class=font_size_1>
-大数据
+<a href=/tags/web/ class=font_size_4>
+Web
 </a>
-<a href=/tags/%E7%A9%B9%E4%B9%8B%E6%89%89/ class=font_size_1>
-穹之扉
+<a href=/tags/sdl/ class=font_size_2>
+SDL
 </a>
-<a href=/tags/%E5%AD%A4%E7%8B%AC/ class=font_size_1>
-孤独
+<a href=/tags/%E6%80%A7%E8%83%BD/ class=font_size_1>
+性能
 </a>
-<a href=/tags/%E5%AE%A1%E8%AE%A1/ class=font_size_1>
-审计
+<a href=/tags/thoughtworks/ class=font_size_1>
+ThoughtWorks
 </a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5/ class=font_size_1>
-健康检查
+<a href=/tags/2019/ class=font_size_1>
+2019
 </a>
-<a href=/tags/%E8%B0%83%E8%AF%95/ class=font_size_1>
-调试
+<a href=/tags/%E5%85%A8%E6%99%BA%E8%B4%A4/ class=font_size_1>
+全智贤
 </a>
-<a href=/tags/envoy/ class=font_size_6>
-Envoy
+<a href=/tags/.net/ class=font_size_7>
+.NET
+</a>
+<a href=/tags/%E8%AF%B7%E8%AE%B0%E4%BD%8F%E6%88%91/ class=font_size_1>
+请记住我
+</a>
+<a href=/tags/grafana/ class=font_size_1>
+Grafana
+</a>
+<a href=/tags/any/ class=font_size_1>
+Any
+</a>
+<a href=/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class=font_size_3>
+中间件
 </a>
 <a href=/tags class=font_size_9999>
 更多

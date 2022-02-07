@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="注意到 DrawRotate()方法与 DrawPositin()及 DrawScale()方法在实现方式上略有不同，这是因为 Transform 组件的 Rotation 属性是一个 Quaternion 即四元数的结构，四元数是利用 x、y、z、w 四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的 API 接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过 Transform 的 eulerAngles 来实现，但是这种方式绘制的属性框大小和 EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新;此时如果我们给场景中的某个物体附加上该脚本，则我们在 Inspector 窗口可以看到 Example 类的实例 Example 将被序列化到编辑器面板中，同时我们可以注意到私有的 editable 字段并没有被序列化出来，这是因为**在 Unity3D 中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化**，这一点希望大家注意;在第一个示例中，可以注意到我们使用了 FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在 EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新"><title>Unity3D 游戏开发之 Unity3D 场景编辑器扩展开发</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8Bunity3d%E5%9C%BA%E6%99%AF%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="Unity3D 游戏开发之 Unity3D 场景编辑器扩展开发">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="Unity3D 游戏开发之 Unity3D 场景编辑器扩展开发">
 <meta property="og:description" content="注意到 DrawRotate()方法与 DrawPositin()及 DrawScale()方法在实现方式上略有不同，这是因为 Transform 组件的 Rotation 属性是一个 Quaternion 即四元数的结构，四元数是利用 x、y、z、w 四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的 API 接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过 Transform 的 eulerAngles 来实现，但是这种方式绘制的属性框大小和 EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新;此时如果我们给场景中的某个物体附加上该脚本，则我们在 Inspector 窗口可以看到 Example 类的实例 Example 将被序列化到编辑器面板中，同时我们可以注意到私有的 editable 字段并没有被序列化出来，这是因为**在 Unity3D 中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化**，这一点希望大家注意;在第一个示例中，可以注意到我们使用了 FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在 EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8Bunity3d%E5%9C%BA%E6%99%AF%E7%BC%96%E8%BE%91%E5%99%A8%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91/">
 <meta property="og:site_name" content="素履独行">
@@ -557,80 +557,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/docker/ class=font_size_4>
-Docker
+<a href=/tags/csharp/ class=font_size_2>
+CSharp
 </a>
-<a href=/tags/unity/ class=font_size_1>
-Unity
+<a href=/tags/%E5%8D%95%E4%BD%8D/ class=font_size_1>
+单位
 </a>
-<a href=/tags/.net-core/ class=font_size_14>
-.NET Core
-</a>
-<a href=/tags/%E5%89%8D%E7%AB%AF/ class=font_size_5>
-前端
-</a>
-<a href=/tags/svn/ class=font_size_1>
-SVN
-</a>
-<a href=/tags/%E7%89%88%E6%9D%83/ class=font_size_1>
-版权
-</a>
-<a href=/tags/hashset/ class=font_size_1>
-HashSet
-</a>
-<a href=/tags/valine/ class=font_size_1>
-Valine
-</a>
-<a href=/tags/vscode/ class=font_size_2>
-VSCode
-</a>
-<a href=/tags/%E6%A0%BC%E5%BC%8F%E5%8C%96/ class=font_size_1>
-格式化
-</a>
-<a href=/tags/consul/ class=font_size_1>
-Consul
-</a>
-<a href=/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/ class=font_size_1>
-响应式
-</a>
-<a href=/tags/%E6%88%90%E9%95%BF/ class=font_size_3>
-成长
-</a>
-<a href=/tags/%E4%BA%92%E8%81%94%E7%BD%91/ class=font_size_2>
-互联网
-</a>
-<a href=/tags/%E5%A4%A7%E6%8A%A4%E6%B3%95/ class=font_size_1>
-大护法
-</a>
-<a href=/tags/%E6%97%A5%E6%9C%AC%E6%96%87%E5%AD%A6/ class=font_size_1>
-日本文学
-</a>
-<a href=/tags/%E5%B9%B4%E5%BA%A6/ class=font_size_1>
-年度
-</a>
-<a href=/tags/jetbrain/ class=font_size_1>
-JetBrain
-</a>
-<a href=/tags/%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83/ class=font_size_1>
-鬼滅の刃
-</a>
-<a href=/tags/easyar/ class=font_size_2>
-EasyAR
-</a>
-<a href=/tags/%E6%8F%90%E7%BA%B2/ class=font_size_1>
-提纲
+<a href=/tags/mock/ class=font_size_1>
+Mock
 </a>
 <a href=/tags/%E8%B4%AA%E5%90%83%E8%9B%87/ class=font_size_1>
 贪吃蛇
 </a>
-<a href=/tags/%E6%A8%A1%E6%9D%BF/ class=font_size_1>
-模板
+<a href=/tags/react/ class=font_size_1>
+React
 </a>
-<a href=/tags/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/ class=font_size_2>
-动态代理
+<a href=/tags/java/ class=font_size_1>
+Java
 </a>
-<a href=/tags/rpg/ class=font_size_1>
-RPG
+<a href=/tags/jsonp/ class=font_size_1>
+JSONP
+</a>
+<a href=/tags/%E8%BD%AC%E7%9B%98/ class=font_size_1>
+转盘
+</a>
+<a href=/tags/disunity/ class=font_size_1>
+disunity
+</a>
+<a href=/tags/unity3d/ class=font_size_27>
+Unity3D
+</a>
+<a href=/tags/%E6%8A%80%E6%9C%AF/ class=font_size_2>
+技术
+</a>
+<a href=/tags/%E5%85%B3%E5%8D%A1%E7%B3%BB%E7%BB%9F/ class=font_size_1>
+关卡系统
+</a>
+<a href=/tags/jexus/ class=font_size_1>
+Jexus
+</a>
+<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
+展望
+</a>
+<a href=/tags/%E4%BA%8B%E4%BB%B6%E8%AE%A2%E9%98%85/ class=font_size_2>
+事件订阅
+</a>
+<a href=/tags/%E9%9F%A9%E5%AF%92/ class=font_size_1>
+韩寒
+</a>
+<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
+装饰器
+</a>
+<a href=/tags/mono/ class=font_size_4>
+Mono
+</a>
+<a href=/tags/%E8%AF%8D%E4%BA%91/ class=font_size_1>
+词云
+</a>
+<a href=/tags/polly/ class=font_size_1>
+Polly
+</a>
+<a href=/tags/%E6%AF%95%E4%B8%9A/ class=font_size_1>
+毕业
+</a>
+<a href=/tags/%E5%8F%8D%E7%BC%96%E8%AF%91/ class=font_size_1>
+反编译
+</a>
+<a href=/tags/%E7%BC%96%E8%BE%91%E5%99%A8/ class=font_size_4>
+编辑器
+</a>
+<a href=/tags/%E6%88%90%E9%95%BF/ class=font_size_3>
+成长
+</a>
+<a href=/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/ class=font_size_1>
+模板引擎
 </a>
 <a href=/tags class=font_size_9999>
 更多

@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="这里我们设定状态码为200，这是一个正常的请求，其次ContentType等字段可以自行阅读HTTP协议中头部字段的相关资料，最后我们通过ProcessResponse这个方法来处理响应，其内部是一个使用Socket发送消息的基本实现，详细的设计细节大家可以看项目代码;在HTTP协议中，客户端负责发起一个Request，该Request中含有请求方法、URL、协议版本等信息，服务端在接受到该Request后会返回一个Response，该Response中含有状态码、响应内容等信息，这一模型称为请求/响应模型;这里需要说明的是，实际的请求报文和响应报文会因为服务端设计的不同，和这里的报文示例略有不同，报文中头部信息参数种类比较多，我不打算在这里详细解释每个参数的含义，我们只需要对报文格式有一个基本的认识即可，想了解这些内容的朋友可以阅读[这里](http://www.cnblogs.com/xly1208/archive/2011/10/12/2208468.html)"><title>使用 C# 开发 HTTP 服务器系列之 Hello World</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8Bhello-world/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="使用 C# 开发 HTTP 服务器系列之 Hello World">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="使用 C# 开发 HTTP 服务器系列之 Hello World">
 <meta property="og:description" content="这里我们设定状态码为200，这是一个正常的请求，其次ContentType等字段可以自行阅读HTTP协议中头部字段的相关资料，最后我们通过ProcessResponse这个方法来处理响应，其内部是一个使用Socket发送消息的基本实现，详细的设计细节大家可以看项目代码;在HTTP协议中，客户端负责发起一个Request，该Request中含有请求方法、URL、协议版本等信息，服务端在接受到该Request后会返回一个Response，该Response中含有状态码、响应内容等信息，这一模型称为请求/响应模型;这里需要说明的是，实际的请求报文和响应报文会因为服务端设计的不同，和这里的报文示例略有不同，报文中头部信息参数种类比较多，我不打算在这里详细解释每个参数的含义，我们只需要对报文格式有一个基本的认识即可，想了解这些内容的朋友可以阅读[这里](http://www.cnblogs.com/xly1208/archive/2011/10/12/2208468.html)">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8Bhello-world/">
 <meta property="og:site_name" content="素履独行">
@@ -488,80 +488,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/sqlite/ class=font_size_1>
-SQLite
+<a href=/tags/sklearn/ class=font_size_1>
+Sklearn
 </a>
-<a href=/tags/%E5%8F%AF%E8%A7%86%E5%8C%96/ class=font_size_2>
-可视化
+<a href=/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/ class=font_size_3>
+跨平台
 </a>
-<a href=/tags/%E7%AB%A5%E8%AF%9D/ class=font_size_1>
-童话
+<a href=/tags/excel/ class=font_size_1>
+Excel
 </a>
-<a href=/tags/linq/ class=font_size_1>
-Linq
+<a href=/tags/%E5%9B%9E%E9%A6%96/ class=font_size_1>
+回首
 </a>
-<a href=/tags/%E7%94%9F%E6%AD%BB/ class=font_size_1>
-生死
+<a href=/tags/%E5%9B%BE%E5%BD%A2/ class=font_size_3>
+图形
 </a>
-<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
-技巧
+<a href=/tags/fp/ class=font_size_1>
+FP
 </a>
-<a href=/tags/%E6%A0%A1%E9%AA%8C/ class=font_size_1>
-校验
+<a href=/tags/form/ class=font_size_1>
+Form
 </a>
-<a href=/tags/%E6%95%B0%E6%8D%AE/ class=font_size_1>
-数据
+<a href=/tags/html5/ class=font_size_2>
+HTML5
 </a>
-<a href=/tags/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/ class=font_size_2>
-主从复制
+<a href=/tags/%E5%BB%BA%E7%AD%91/ class=font_size_1>
+建筑
 </a>
-<a href=/tags/%E4%BA%BA%E7%94%9F/ class=font_size_2>
-人生
+<a href=/tags/%E6%9E%B6%E6%9E%84/ class=font_size_2>
+架构
 </a>
-<a href=/tags/%E6%8B%96%E6%8B%BD/ class=font_size_1>
-拖拽
+<a href=/tags/%E5%89%91%E6%8C%87offer/ class=font_size_1>
+剑指Offer
 </a>
-<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
-脚本
+<a href=/tags/jexus/ class=font_size_1>
+Jexus
 </a>
-<a href=/tags/%E5%93%B2%E5%AD%A6/ class=font_size_3>
-哲学
+<a href=/tags/%E9%9B%86%E7%BE%A4/ class=font_size_1>
+集群
 </a>
-<a href=/tags/js/ class=font_size_1>
-JS
+<a href=/tags/%E6%80%9D%E8%80%83/ class=font_size_1>
+思考
 </a>
-<a href=/tags/%E6%A2%A6%E6%83%B3/ class=font_size_3>
-梦想
+<a href=/tags/socket/ class=font_size_2>
+Socket
 </a>
-<a href=/tags/%E7%9F%AB%E6%83%85/ class=font_size_1>
-矫情
+<a href=/tags/%E6%A6%82%E7%8E%87/ class=font_size_2>
+概率
 </a>
-<a href=/tags/%E5%AE%A1%E8%AE%A1/ class=font_size_1>
-审计
+<a href=/tags/%E8%AE%AD%E7%BB%83/ class=font_size_1>
+训练
 </a>
-<a href=/tags/markdown/ class=font_size_1>
-Markdown
+<a href=/tags/%E7%83%AD%E6%90%9C/ class=font_size_1>
+热搜
 </a>
-<a href=/tags/protobuf/ class=font_size_1>
-Protobuf
+<a href=/tags/%E9%87%8D%E8%AF%95/ class=font_size_2>
+重试
 </a>
-<a href=/tags/%E5%B7%A5%E4%BD%9C/ class=font_size_3>
-工作
+<a href=/tags/%E9%AA%8C%E8%AF%81/ class=font_size_1>
+验证
 </a>
-<a href=/tags/logger/ class=font_size_1>
-Logger
+<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
+平凡
 </a>
-<a href=/tags/trace/ class=font_size_1>
-Trace
+<a href=/tags/grpc/ class=font_size_8>
+gRPC
 </a>
-<a href=/tags/sse/ class=font_size_1>
-SSE
+<a href=/tags/%E5%AE%B9%E5%99%A8/ class=font_size_1>
+容器
 </a>
-<a href=/tags/%E4%BA%8C%E7%BB%B4%E7%A0%81/ class=font_size_1>
-二维码
+<a href=/tags/cg/ class=font_size_1>
+CG
 </a>
-<a href=/tags/%E5%8D%8A%E6%B3%BD%E7%9B%B4%E6%A0%91/ class=font_size_1>
-半泽直树
+<a href=/tags/%E7%94%9F%E6%B4%BB/ class=font_size_7>
+生活
 </a>
 <a href=/tags class=font_size_9999>
 更多

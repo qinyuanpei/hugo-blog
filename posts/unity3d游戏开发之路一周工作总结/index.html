@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="我不知道公司领导当初是怎么样确定使用 Unity3D 来做这个项目，因为考虑到虚拟展示的需要，这个项目最终展示给用户的是一个网页，这样就更需要考虑资源组织的问题，就这样在工作的第一周时间内我想到了以前在学校做游戏的时候都没&#34;舍得&#34;使用的技术方案，基本的思路是本地的游戏文件最终仅仅保留一个主场景文件(MainMenu.cs)，主场景负责维护从楼盘到户型再到家装的所有逻辑，各个场景中的动态的部分则是通过 Resource.Load()和 AssetBundle 来实现，将这些场景放到服务器上，主场景将决定具体加载哪一个场景;然而现实是残酷的，在这个项目中，因为楼盘、户型、家装等等因素的不可控性，所以在设计 UI 的时候全部都是以动态加载的形式来处理的，因为你并不能确定这些 UI 里显示的元素到底有多少个，这样我在设计这个框架的时候是这样考虑的，就是把所有需要人力来调整、控制的部分(如模型摆放、场景设计等等)都手动完成，所以和 UI 相关的部分(如 UI 元素的动态加载、模型的加载、本地配置文件等等)都通过动态加载来实现，因为在整个项目中第三部分的家装会涉及到大量的模型，所以这部分考虑的是将模型文件打包成 AssetBundle 文件从服务器加载;具体使用的时候需要将*号部分分别替换成允许跨域访问的地址和端口，因为我是用 WAMP 这个软件搭建的本地服务器，所以这里都采用的是默认值，具体怎么去设置这里的内容还需要大家自己去探索，不过这里就是像告诉大家使用 Unity3D 做网页游戏或者是从服务器上下载文件是一定要考虑这个问题的啊"><title>Unity3D 游戏开发之路：一周工作总结</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E8%B7%AF%E4%B8%80%E5%91%A8%E5%B7%A5%E4%BD%9C%E6%80%BB%E7%BB%93/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="Unity3D 游戏开发之路：一周工作总结">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="Unity3D 游戏开发之路：一周工作总结">
 <meta property="og:description" content="我不知道公司领导当初是怎么样确定使用 Unity3D 来做这个项目，因为考虑到虚拟展示的需要，这个项目最终展示给用户的是一个网页，这样就更需要考虑资源组织的问题，就这样在工作的第一周时间内我想到了以前在学校做游戏的时候都没&#34;舍得&#34;使用的技术方案，基本的思路是本地的游戏文件最终仅仅保留一个主场景文件(MainMenu.cs)，主场景负责维护从楼盘到户型再到家装的所有逻辑，各个场景中的动态的部分则是通过 Resource.Load()和 AssetBundle 来实现，将这些场景放到服务器上，主场景将决定具体加载哪一个场景;然而现实是残酷的，在这个项目中，因为楼盘、户型、家装等等因素的不可控性，所以在设计 UI 的时候全部都是以动态加载的形式来处理的，因为你并不能确定这些 UI 里显示的元素到底有多少个，这样我在设计这个框架的时候是这样考虑的，就是把所有需要人力来调整、控制的部分(如模型摆放、场景设计等等)都手动完成，所以和 UI 相关的部分(如 UI 元素的动态加载、模型的加载、本地配置文件等等)都通过动态加载来实现，因为在整个项目中第三部分的家装会涉及到大量的模型，所以这部分考虑的是将模型文件打包成 AssetBundle 文件从服务器加载;具体使用的时候需要将*号部分分别替换成允许跨域访问的地址和端口，因为我是用 WAMP 这个软件搭建的本地服务器，所以这里都采用的是默认值，具体怎么去设置这里的内容还需要大家自己去探索，不过这里就是像告诉大家使用 Unity3D 做网页游戏或者是从服务器上下载文件是一定要考虑这个问题的啊">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E8%B7%AF%E4%B8%80%E5%91%A8%E5%B7%A5%E4%BD%9C%E6%80%BB%E7%BB%93/">
 <meta property="og:site_name" content="素履独行">
@@ -390,80 +390,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E7%AC%94%E8%AE%B0/ class=font_size_8>
-笔记
+<a href=/tags/fp/ class=font_size_1>
+FP
 </a>
-<a href=/tags/wsl/ class=font_size_2>
-WSL
+<a href=/tags/assetbundle/ class=font_size_2>
+AssetBundle
 </a>
-<a href=/tags/%E5%AD%A4%E7%8B%AC/ class=font_size_1>
-孤独
-</a>
-<a href=/tags/%E8%A1%8C%E4%B8%9A/ class=font_size_1>
-行业
-</a>
-<a href=/tags/easyar/ class=font_size_2>
-EasyAR
-</a>
-<a href=/tags/rabbitmq/ class=font_size_2>
-RabbitMQ
-</a>
-<a href=/tags/%E6%AF%95%E4%B8%9A%E5%AD%A3/ class=font_size_1>
-毕业季
-</a>
-<a href=/tags/python/ class=font_size_17>
-Python
-</a>
-<a href=/tags/%E6%A1%8C%E9%9D%A2/ class=font_size_1>
-桌面
-</a>
-<a href=/tags/hangfire/ class=font_size_1>
-Hangfire
-</a>
-<a href=/tags/jetbrain/ class=font_size_1>
-JetBrain
-</a>
-<a href=/tags/%E6%A0%BC%E5%BC%8F%E5%8C%96/ class=font_size_1>
-格式化
-</a>
-<a href=/tags/%E5%89%91%E6%8C%87offer/ class=font_size_1>
-剑指Offer
-</a>
-<a href=/tags/tracing/ class=font_size_1>
-Tracing
-</a>
-<a href=/tags/%E9%A9%AC%E5%B0%94%E5%85%8B%E6%96%AF/ class=font_size_1>
-马尔克斯
-</a>
-<a href=/tags/%E7%BC%96%E8%AF%91/ class=font_size_1>
-编译
-</a>
-<a href=/tags/%E6%B5%AA%E5%AE%A2%E5%89%91%E5%BF%83/ class=font_size_1>
-浪客剑心
+<a href=/tags/json/ class=font_size_1>
+JSON
 </a>
 <a href=/tags/unity/ class=font_size_1>
 Unity
 </a>
-<a href=/tags/ar/ class=font_size_3>
-AR
+<a href=/tags/ai/ class=font_size_1>
+AI
+</a>
+<a href=/tags/%E5%A4%95%E9%9B%BE%E8%8A%B1%E5%9B%AD/ class=font_size_1>
+夕雾花园
+</a>
+<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
+穿搭
+</a>
+<a href=/tags/%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6/ class=font_size_1>
+版本控制
+</a>
+<a href=/tags/%E8%B0%83%E8%AF%95/ class=font_size_1>
+调试
+</a>
+<a href=/tags/.net/ class=font_size_7>
+.NET
+</a>
+<a href=/tags/%E6%A8%A1%E5%9E%8B/ class=font_size_1>
+模型
+</a>
+<a href=/tags/%E5%8D%8A%E6%B3%BD%E7%9B%B4%E6%A0%91/ class=font_size_1>
+半泽直树
+</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1/ class=font_size_1>
+服务
+</a>
+<a href=/tags/%E8%AF%97%E4%BA%BA/ class=font_size_1>
+诗人
+</a>
+<a href=/tags/%E5%8F%8D%E7%BC%96%E8%AF%91/ class=font_size_1>
+反编译
+</a>
+<a href=/tags/%E5%85%A8%E6%99%BA%E8%B4%A4/ class=font_size_1>
+全智贤
+</a>
+<a href=/tags/%E6%A0%87%E6%B3%A8/ class=font_size_1>
+标注
+</a>
+<a href=/tags/%E7%89%88%E6%9D%83/ class=font_size_1>
+版权
 </a>
 <a href=/tags/%E4%BA%91%E9%9F%B3%E4%B9%90/ class=font_size_1>
 云音乐
 </a>
-<a href=/tags/redis/ class=font_size_8>
-Redis
+<a href=/tags/%E8%B4%AA%E5%90%83%E8%9B%87/ class=font_size_1>
+贪吃蛇
 </a>
-<a href=/tags/%E9%85%8D%E8%BD%BD/ class=font_size_1>
-配载
+<a href=/tags/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF/ class=font_size_1>
+朴素贝叶斯
 </a>
-<a href=/tags/csharp/ class=font_size_2>
-CSharp
+<a href=/tags/sourcetree/ class=font_size_1>
+SourceTree
 </a>
-<a href=/tags/web-api/ class=font_size_1>
-Web API
+<a href=/tags/%E6%80%9D%E8%80%83/ class=font_size_1>
+思考
 </a>
-<a href=/tags/%E6%96%87%E4%BB%B6/ class=font_size_1>
-文件
+<a href=/tags/%E8%A5%BF%E5%AE%89/ class=font_size_3>
+西安
+</a>
+<a href=/tags/%E7%88%AC%E8%99%AB/ class=font_size_2>
+爬虫
 </a>
 <a href=/tags class=font_size_9999>
 更多

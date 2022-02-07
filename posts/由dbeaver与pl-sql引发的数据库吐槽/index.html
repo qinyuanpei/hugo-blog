@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="也许这些东西写多了就可以记住，就像我现在可以分清 SYSDATE、NOW()和 GETDATE()，可它带来的问题是什么呢，大多数的触发器、存储过程、函数都是没有移植性可言的，很多年前，我们讲设计模式，最喜欢觉的例子就是，如果项目发生变动，需要更换数据库，我们要怎么设计能不改动代码，现在看起来，当时还是太天真了，真要换了数据库，估计就是重新做了，敢把全部业务写到数据库里，Web 就做一个展示层的项目，有生之年应该是不会换数据库啦;可最近在写 Oracle 环境的触发器(**存储过程和触发器都是万恶之源**)时，我发现 DBeaver 和 PL/SQL 在面对同一段 SQL 脚本时，居然因为一点点语法上的差异而不兼容，这让我内心深处不由得想对 Oracle 吐槽一番;你甚至连分页、排序、分组这种事情，都无法在不同的数据库上获得一致的书写体验，读取指定数目的数据库记录，居然要纠结用到底用 Limit 还是 Top，像 Select Into 这样把指定列存储到指定变量中的操作，居然要求使用者来限制结果集的数目，从函数的角度来看，返回的必然是结果集中的一个元素，只有这样才可以赋值给指定的变量，可问题是存在多条记录的时候，你必须用游标去循环读取，而不能像大多数编程语言一样，直接 Map()到一个类型上然后 ToList()，可能是我对 SQL 的要求太高了吧，毕竟它就是个面向过程的语言，OO 不 OO 的没那么重要，可明明你可以抛出异常啊，可以对字符串做截取啊正则啊，可以在控制台里输出日志啊，可以调用各种有的没的的内部函数啊，elsif 可能是因为 e 不发音，就像 usr 绝对不是拼写错误"><title>由 DBeaver 与 PL/SQL 引发的数据库吐槽</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E7%94%B1dbeaver%E4%B8%8Epl-sql%E5%BC%95%E5%8F%91%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%90%E6%A7%BD/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="由 DBeaver 与 PL/SQL 引发的数据库吐槽">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="由 DBeaver 与 PL/SQL 引发的数据库吐槽">
 <meta property="og:description" content="也许这些东西写多了就可以记住，就像我现在可以分清 SYSDATE、NOW()和 GETDATE()，可它带来的问题是什么呢，大多数的触发器、存储过程、函数都是没有移植性可言的，很多年前，我们讲设计模式，最喜欢觉的例子就是，如果项目发生变动，需要更换数据库，我们要怎么设计能不改动代码，现在看起来，当时还是太天真了，真要换了数据库，估计就是重新做了，敢把全部业务写到数据库里，Web 就做一个展示层的项目，有生之年应该是不会换数据库啦;可最近在写 Oracle 环境的触发器(**存储过程和触发器都是万恶之源**)时，我发现 DBeaver 和 PL/SQL 在面对同一段 SQL 脚本时，居然因为一点点语法上的差异而不兼容，这让我内心深处不由得想对 Oracle 吐槽一番;你甚至连分页、排序、分组这种事情，都无法在不同的数据库上获得一致的书写体验，读取指定数目的数据库记录，居然要纠结用到底用 Limit 还是 Top，像 Select Into 这样把指定列存储到指定变量中的操作，居然要求使用者来限制结果集的数目，从函数的角度来看，返回的必然是结果集中的一个元素，只有这样才可以赋值给指定的变量，可问题是存在多条记录的时候，你必须用游标去循环读取，而不能像大多数编程语言一样，直接 Map()到一个类型上然后 ToList()，可能是我对 SQL 的要求太高了吧，毕竟它就是个面向过程的语言，OO 不 OO 的没那么重要，可明明你可以抛出异常啊，可以对字符串做截取啊正则啊，可以在控制台里输出日志啊，可以调用各种有的没的的内部函数啊，elsif 可能是因为 e 不发音，就像 usr 绝对不是拼写错误">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E7%94%B1dbeaver%E4%B8%8Epl-sql%E5%BC%95%E5%8F%91%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%90%E6%A7%BD/">
 <meta property="og:site_name" content="素履独行">
@@ -380,80 +380,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E6%88%91%E6%98%AF%E7%8C%AB/ class=font_size_1>
-我是猫
+<a href=/tags/%E9%9B%86%E7%BE%A4/ class=font_size_1>
+集群
 </a>
-<a href=/tags/%E9%95%BF%E6%88%AA%E5%9B%BE/ class=font_size_1>
-长截图
+<a href=/tags/dottrace/ class=font_size_1>
+dotTrace
 </a>
-<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
-展望
+<a href=/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/ class=font_size_1>
+反向代理
 </a>
-<a href=/tags/webapi/ class=font_size_4>
-WebApi
+<a href=/tags/%E4%BD%8E%E4%BB%A3%E7%A0%81/ class=font_size_1>
+低代码
 </a>
-<a href=/tags/lua/ class=font_size_2>
-Lua
+<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
+穿搭
 </a>
-<a href=/tags/%E6%80%BB%E7%BB%93/ class=font_size_2>
-总结
+<a href=/tags/github/ class=font_size_2>
+Github
 </a>
-<a href=/tags/%E8%9B%8B%E7%82%92%E9%A5%AD/ class=font_size_1>
-蛋炒饭
+<a href=/tags/%E8%B4%AA%E5%90%83%E8%9B%87/ class=font_size_1>
+贪吃蛇
 </a>
-<a href=/tags/%E6%80%9D%E8%80%83/ class=font_size_1>
-思考
+<a href=/tags/%E6%A1%8C%E9%9D%A2/ class=font_size_1>
+桌面
 </a>
-<a href=/tags/%E9%87%8D%E8%AF%95/ class=font_size_2>
-重试
+<a href=/tags/%E5%89%8D%E4%BB%BB/ class=font_size_1>
+前任
 </a>
-<a href=/tags/%E9%9A%8F%E7%AC%94/ class=font_size_9>
-随笔
+<a href=/tags/%E8%AE%A4%E8%AF%81/ class=font_size_1>
+认证
 </a>
-<a href=/tags/%E5%9B%9E%E9%A1%BE/ class=font_size_1>
-回顾
+<a href=/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/ class=font_size_1>
+插件化
 </a>
-<a href=/tags/blazor/ class=font_size_1>
-Blazor
+<a href=/tags/mapreduce/ class=font_size_1>
+MapReduce
 </a>
-<a href=/tags/%E7%9F%A5%E8%AF%86%E5%85%B1%E4%BA%AB/ class=font_size_1>
-知识共享
+<a href=/tags/.net/ class=font_size_7>
+.NET
 </a>
-<a href=/tags/disunity/ class=font_size_1>
-disunity
+<a href=/tags/%E6%A8%A1%E5%9E%8B/ class=font_size_1>
+模型
 </a>
-<a href=/tags/envoy/ class=font_size_6>
-Envoy
+<a href=/tags/nlp/ class=font_size_2>
+NLP
 </a>
-<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/ class=font_size_1>
-游戏引擎
+<a href=/tags/linux/ class=font_size_5>
+Linux
 </a>
-<a href=/tags/retrofit/ class=font_size_1>
-Retrofit
+<a href=/tags/kafka/ class=font_size_1>
+Kafka
 </a>
-<a href=/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2/ class=font_size_2>
-计算机图形
+<a href=/tags/%E8%AF%AD%E8%A8%80/ class=font_size_1>
+语言
 </a>
-<a href=/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/ class=font_size_1>
-云原生
+<a href=/tags/dapper/ class=font_size_3>
+Dapper
 </a>
-<a href=/tags/%E8%AF%AD%E6%B3%95/ class=font_size_1>
-语法
+<a href=/tags/%E9%98%BF%E9%87%8C/ class=font_size_1>
+阿里
 </a>
-<a href=/tags/%E5%BC%80%E6%BA%90/ class=font_size_1>
-开源
+<a href=/tags/%E5%8D%95%E4%BD%8D/ class=font_size_1>
+单位
 </a>
-<a href=/tags/easyar/ class=font_size_2>
-EasyAR
+<a href=/tags/rpg/ class=font_size_1>
+RPG
 </a>
-<a href=/tags/hangfire/ class=font_size_1>
-Hangfire
+<a href=/tags/%E5%8F%AF%E8%A7%86%E5%8C%96/ class=font_size_2>
+可视化
 </a>
-<a href=/tags/%E8%AF%97%E4%BA%BA/ class=font_size_1>
-诗人
+<a href=/tags/%E5%A3%81%E7%BA%B8/ class=font_size_1>
+壁纸
 </a>
-<a href=/tags/unity/ class=font_size_1>
-Unity
+<a href=/tags/%E7%83%AD%E6%90%9C/ class=font_size_1>
+热搜
 </a>
 <a href=/tags class=font_size_9999>
 更多

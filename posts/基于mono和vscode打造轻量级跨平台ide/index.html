@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="我们现在按 F5 进行调试，和编译时一样，如果用户没有为当前项目配置“任务调试程序”，VSCode 会提示我们去创建一个配置文件 launch.json，我们这里选择 mono，该选项在安装 Mono-Debug 插件以前是没有的，该配置文件如下，我们注意到这里需要修改 program 属性为 MainClass.exe:;现在，我们应该会得到一个 MainClass.exe 的文件，最初博主尝试直接去配置 launch.json，发现直接填写 type 为 mono 在 VSCode 中是无法识别的，最后决定去安装 mono-debug 的插件，安装插件在 VSCode 中是非常简单的，按下 Ctrl+Shift+X 打开插件界面，可以在这里查看最流行的插件列表、官方推荐的插件列表等等，我们直接搜索 mono-debug 然后安装插件即可;因为博主的计算机上安装了 Mono，所以在一开始使用 VSCode 的时候，就先入为主地认为在不安装插件的情况下，应该就可以直接在 VSCode 中编译和调试代码了"><title>基于 Mono 和 VSCode 打造轻量级跨平台 IDE</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E5%9F%BA%E4%BA%8Emono%E5%92%8Cvscode%E6%89%93%E9%80%A0%E8%BD%BB%E9%87%8F%E7%BA%A7%E8%B7%A8%E5%B9%B3%E5%8F%B0ide/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="基于 Mono 和 VSCode 打造轻量级跨平台 IDE">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="基于 Mono 和 VSCode 打造轻量级跨平台 IDE">
 <meta property="og:description" content="我们现在按 F5 进行调试，和编译时一样，如果用户没有为当前项目配置“任务调试程序”，VSCode 会提示我们去创建一个配置文件 launch.json，我们这里选择 mono，该选项在安装 Mono-Debug 插件以前是没有的，该配置文件如下，我们注意到这里需要修改 program 属性为 MainClass.exe:;现在，我们应该会得到一个 MainClass.exe 的文件，最初博主尝试直接去配置 launch.json，发现直接填写 type 为 mono 在 VSCode 中是无法识别的，最后决定去安装 mono-debug 的插件，安装插件在 VSCode 中是非常简单的，按下 Ctrl+Shift+X 打开插件界面，可以在这里查看最流行的插件列表、官方推荐的插件列表等等，我们直接搜索 mono-debug 然后安装插件即可;因为博主的计算机上安装了 Mono，所以在一开始使用 VSCode 的时候，就先入为主地认为在不安装插件的情况下，应该就可以直接在 VSCode 中编译和调试代码了">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E5%9F%BA%E4%BA%8Emono%E5%92%8Cvscode%E6%89%93%E9%80%A0%E8%BD%BB%E9%87%8F%E7%BA%A7%E8%B7%A8%E5%B9%B3%E5%8F%B0ide/">
 <meta property="og:site_name" content="素履独行">
@@ -403,80 +403,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/rpg/ class=font_size_1>
-RPG
+<a href=/tags/form/ class=font_size_1>
+Form
 </a>
-<a href=/tags/envoy/ class=font_size_6>
-Envoy
+<a href=/tags/windows/ class=font_size_1>
+Windows
 </a>
-<a href=/tags/rsetful/ class=font_size_1>
-RSETful
+<a href=/tags/linux/ class=font_size_5>
+Linux
 </a>
-<a href=/tags/%E7%94%9F%E6%B4%BB/ class=font_size_7>
-生活
+<a href=/tags/%E5%8E%86%E5%8F%B2/ class=font_size_3>
+历史
 </a>
-<a href=/tags/kindle/ class=font_size_3>
-Kindle
+<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
+调优
 </a>
-<a href=/tags/webassembly/ class=font_size_1>
-WebAssembly
+<a href=/tags/valine/ class=font_size_1>
+Valine
 </a>
-<a href=/tags/ide/ class=font_size_1>
-IDE
+<a href=/tags/%E7%AE%97%E6%B3%95/ class=font_size_2>
+算法
 </a>
-<a href=/tags/retrofit/ class=font_size_1>
-Retrofit
+<a href=/tags/%E6%88%90%E9%95%BF/ class=font_size_3>
+成长
 </a>
-<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/ class=font_size_1>
-游戏引擎
+<a href=/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/ class=font_size_1>
+自动化
 </a>
-<a href=/tags/%E5%8D%8A%E6%B3%BD%E7%9B%B4%E6%A0%91/ class=font_size_1>
-半泽直树
+<a href=/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/ class=font_size_8>
+数据库
 </a>
-<a href=/tags/%E5%8A%A8%E7%94%BB/ class=font_size_1>
-动画
-</a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E7%A0%81/ class=font_size_1>
-健康码
-</a>
-<a href=/tags/c#/ class=font_size_7>
-C#
-</a>
-<a href=/tags/%E4%BD%90%E8%97%A4%E5%81%A5/ class=font_size_1>
-佐藤健
-</a>
-<a href=/tags/%E7%A8%8B%E5%BA%8F%E5%91%98/ class=font_size_3>
-程序员
-</a>
-<a href=/tags/matplotlib/ class=font_size_1>
-matplotlib
-</a>
-<a href=/tags/%E5%BB%BA%E7%AD%91/ class=font_size_1>
-建筑
-</a>
-<a href=/tags/selenium/ class=font_size_2>
-Selenium
-</a>
-<a href=/tags/fp/ class=font_size_1>
-FP
+<a href=/tags/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/ class=font_size_2>
+主从复制
 </a>
 <a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
 长安十二时辰
 </a>
-<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
-平凡
+<a href=/tags/selenium/ class=font_size_2>
+Selenium
 </a>
-<a href=/tags/script/ class=font_size_1>
-Script
+<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
+异步
 </a>
-<a href=/tags/%E6%A6%82%E7%8E%87/ class=font_size_2>
-概率
+<a href=/tags/sublime/ class=font_size_1>
+Sublime
 </a>
-<a href=/tags/mvc/ class=font_size_1>
-MVC
+<a href=/tags/mmd/ class=font_size_1>
+MMD
 </a>
-<a href=/tags/%E5%8E%86%E5%8F%B2/ class=font_size_3>
-历史
+<a href=/tags/hyperlog/ class=font_size_1>
+Hyperlog
+</a>
+<a href=/tags/sdl/ class=font_size_2>
+SDL
+</a>
+<a href=/tags/%E9%9C%8D%E9%87%91/ class=font_size_1>
+霍金
+</a>
+<a href=/tags/%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/ class=font_size_1>
+文本分类
+</a>
+<a href=/tags/%E4%B8%80%E5%87%BA%E5%A5%BD%E6%88%8F/ class=font_size_1>
+一出好戏
+</a>
+<a href=/tags/gephi/ class=font_size_1>
+Gephi
+</a>
+<a href=/tags/visual-studio/ class=font_size_1>
+Visual Studio
+</a>
+<a href=/tags/https/ class=font_size_1>
+HTTPS
+</a>
+<a href=/tags/%E5%B9%B6%E5%8F%91/ class=font_size_1>
+并发
 </a>
 <a href=/tags class=font_size_9999>
 更多

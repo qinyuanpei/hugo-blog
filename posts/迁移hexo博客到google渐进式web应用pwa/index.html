@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="现在，我们基本了解了PWA的概念以及实现PWA的关键技术，我们现在考虑将Hexo博客改造成一个PWA应用，我们这里不打算考虑消息推送的相关问题，所以对Hexo这样一个静态博客生成器而言，我们可以做的实际上只有两件事情，即通过Web App Manifest让它更像一个Native应用，通过ServiceWorker为它提供离线缓存的特性;我们知道传统Web应用有两个关键问题无法解决，即**需要从网络实时加载内容而带来的网络延迟**和**依赖浏览器入口而带来的用户体验**，从某种意义上而言，渐进式应用的出现有望让这些问题得到解决，首先，渐进式应用可以显著加快应用加载速度，其提供的离线缓存机制可以让应用在离线环境下继续使用，关键技术为Service Worker和Cache Storage;按照[官方文档](https://developer.mozilla.org/zh-CN/docs/Web/API/Service_Worker_API)中的定义，ServiceWorker同WebWorker一样，是一段JavaScript脚本，作为一个后台独立线程运行，其运行环境与普通的JavaScript不同，因此不直接参与Web交互行为，从某种意义上来说，ServiceWorker的出现，正是为了弥补Web应用天生所不具备的离线使用、消息推送、后台自动更新等特性，我们这里来看一个使用ServiceWorker缓存文件已达到离线使用的目的的例子："><title>迁移Hexo博客到Google渐进式Web应用(PWA)</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E8%BF%81%E7%A7%BBhexo%E5%8D%9A%E5%AE%A2%E5%88%B0google%E6%B8%90%E8%BF%9B%E5%BC%8Fweb%E5%BA%94%E7%94%A8pwa/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="迁移Hexo博客到Google渐进式Web应用(PWA)">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="迁移Hexo博客到Google渐进式Web应用(PWA)">
 <meta property="og:description" content="现在，我们基本了解了PWA的概念以及实现PWA的关键技术，我们现在考虑将Hexo博客改造成一个PWA应用，我们这里不打算考虑消息推送的相关问题，所以对Hexo这样一个静态博客生成器而言，我们可以做的实际上只有两件事情，即通过Web App Manifest让它更像一个Native应用，通过ServiceWorker为它提供离线缓存的特性;我们知道传统Web应用有两个关键问题无法解决，即**需要从网络实时加载内容而带来的网络延迟**和**依赖浏览器入口而带来的用户体验**，从某种意义上而言，渐进式应用的出现有望让这些问题得到解决，首先，渐进式应用可以显著加快应用加载速度，其提供的离线缓存机制可以让应用在离线环境下继续使用，关键技术为Service Worker和Cache Storage;按照[官方文档](https://developer.mozilla.org/zh-CN/docs/Web/API/Service_Worker_API)中的定义，ServiceWorker同WebWorker一样，是一段JavaScript脚本，作为一个后台独立线程运行，其运行环境与普通的JavaScript不同，因此不直接参与Web交互行为，从某种意义上来说，ServiceWorker的出现，正是为了弥补Web应用天生所不具备的离线使用、消息推送、后台自动更新等特性，我们这里来看一个使用ServiceWorker缓存文件已达到离线使用的目的的例子：">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E8%BF%81%E7%A7%BBhexo%E5%8D%9A%E5%AE%A2%E5%88%B0google%E6%B8%90%E8%BF%9B%E5%BC%8Fweb%E5%BA%94%E7%94%A8pwa/">
 <meta property="og:site_name" content="素履独行">
@@ -531,80 +531,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/webapi/ class=font_size_4>
-WebApi
+<a href=/tags/%E5%81%A5%E5%BA%B7%E7%A0%81/ class=font_size_1>
+健康码
 </a>
-<a href=/tags/%E7%AE%A1%E9%81%93/ class=font_size_1>
-管道
+<a href=/tags/%E5%85%AC%E4%BC%97%E5%8F%B7/ class=font_size_1>
+公众号
 </a>
-<a href=/tags/%E5%9B%9E%E5%BF%86/ class=font_size_1>
-回忆
+<a href=/tags/restful/ class=font_size_4>
+RESTful
 </a>
-<a href=/tags/html5/ class=font_size_2>
-HTML5
+<a href=/tags/%E6%96%87%E6%A1%A3/ class=font_size_1>
+文档
 </a>
 <a href=/tags/tracing/ class=font_size_1>
 Tracing
 </a>
-<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
-技巧
+<a href=/tags/%E6%A2%A6%E6%83%B3/ class=font_size_3>
+梦想
 </a>
-<a href=/tags/%E5%A7%94%E6%89%98/ class=font_size_1>
-委托
+<a href=/tags/%E6%A0%87%E6%B3%A8/ class=font_size_1>
+标注
 </a>
-<a href=/tags/kafka/ class=font_size_1>
-Kafka
+<a href=/tags/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF/ class=font_size_1>
+朴素贝叶斯
 </a>
-<a href=/tags/%E4%BA%8B%E4%BB%B6%E8%AE%A2%E9%98%85/ class=font_size_2>
-事件订阅
+<a href=/tags/%E9%99%90%E6%B5%81/ class=font_size_1>
+限流
 </a>
-<a href=/tags/ado.net/ class=font_size_1>
-ADO.NET
+<a href=/tags/%E6%A8%A1%E6%9D%BF/ class=font_size_1>
+模板
 </a>
-<a href=/tags/%E5%BD%B1%E8%AF%84/ class=font_size_10>
-影评
+<a href=/tags/grpc/ class=font_size_8>
+gRPC
 </a>
-<a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
-长安十二时辰
+<a href=/tags/pl/sql/ class=font_size_1>
+PL/SQL
 </a>
-<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
-展望
+<a href=/tags/mapreduce/ class=font_size_1>
+MapReduce
 </a>
-<a href=/tags/github/ class=font_size_2>
-Github
+<a href=/tags/c#/ class=font_size_7>
+C#
 </a>
 <a href=/tags/%E6%95%B0%E5%AD%A6/ class=font_size_4>
 数学
 </a>
-<a href=/tags/%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6/ class=font_size_1>
-版本控制
+<a href=/tags/github/ class=font_size_2>
+Github
 </a>
-<a href=/tags/polly/ class=font_size_1>
-Polly
+<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/ class=font_size_10>
+游戏开发
 </a>
-<a href=/tags/%E7%83%AD%E6%90%9C/ class=font_size_1>
-热搜
+<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
+对象池
 </a>
-<a href=/tags/mmd/ class=font_size_1>
-MMD
+<a href=/tags/http/ class=font_size_9>
+HTTP
 </a>
-<a href=/tags/sourcetree/ class=font_size_1>
-SourceTree
+<a href=/tags/%E7%AC%94%E8%AE%B0/ class=font_size_8>
+笔记
 </a>
-<a href=/tags/windows/ class=font_size_1>
-Windows
+<a href=/tags/%E5%93%B2%E5%AD%A6/ class=font_size_3>
+哲学
 </a>
-<a href=/tags/%E6%95%99%E7%A8%8B/ class=font_size_7>
-教程
+<a href=/tags/%E5%AE%A1%E8%AE%A1/ class=font_size_1>
+审计
 </a>
-<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
-脚本
+<a href=/tags/kindle/ class=font_size_3>
+Kindle
 </a>
-<a href=/tags/%E7%94%BB%E5%AE%B6/ class=font_size_1>
-画家
+<a href=/tags/react/ class=font_size_1>
+React
 </a>
-<a href=/tags/%E5%BF%83%E6%83%85/ class=font_size_1>
-心情
+<a href=/tags/kafka/ class=font_size_1>
+Kafka
 </a>
 <a href=/tags class=font_size_9999>
 更多

@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="博主有一个 Python[脚本](https://github.com/qinyuanpei/BlogScripts/blob/master/HexoBlog.py)运行在 TravisCI 的服务器上，而 TravisCI 来自一家法国的技术公司，因此在不指定时区的情况下，会默认使用 TravisCI 服务器上的时间，这并不是我想要的结果，所以，我们需要 pytz 来解决这个问题，至于这里为什么我们使用的是上海而不是北京，这是因为中国横跨 5 个时区，在国内大家习惯使用北京时间，而在国外这些时区数据没有做及时更新，所以这算是一个关于时区的历史遗留问题吧;* Time 类型仅存储时间，不存储日期，需要 7 个字节的存储空间，默认格式为 hh:mm:ss.nnnnnnn，可以注意到默认的秒分量小数部分为 7 位，建议使用字符串或者 SysDateTime()这两种方式赋值，不建议使用 GetDate()，因为该方法返回值为 DateTime 类型，其时间部分的精度没有 Time 类型的经度高;简单来说，在 Python 中我们只需要给定时区，即可将本地时间转化为指定时区对应的 UTC 时间，这里我们使用的是 Python 中的 pytz 这个库，如果你打开这个库的安装目录，就会发现其实它有大量时区相关的数据组成，如果我们直接调用 pytz.timezone()就可以获得所有的时区信息"><title>一个由服务器时区引发的 Bug</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E4%B8%80%E4%B8%AA%E7%94%B1%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%B6%E5%8C%BA%E5%BC%95%E5%8F%91%E7%9A%84bug/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="一个由服务器时区引发的 Bug">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="一个由服务器时区引发的 Bug">
 <meta property="og:description" content="博主有一个 Python[脚本](https://github.com/qinyuanpei/BlogScripts/blob/master/HexoBlog.py)运行在 TravisCI 的服务器上，而 TravisCI 来自一家法国的技术公司，因此在不指定时区的情况下，会默认使用 TravisCI 服务器上的时间，这并不是我想要的结果，所以，我们需要 pytz 来解决这个问题，至于这里为什么我们使用的是上海而不是北京，这是因为中国横跨 5 个时区，在国内大家习惯使用北京时间，而在国外这些时区数据没有做及时更新，所以这算是一个关于时区的历史遗留问题吧;* Time 类型仅存储时间，不存储日期，需要 7 个字节的存储空间，默认格式为 hh:mm:ss.nnnnnnn，可以注意到默认的秒分量小数部分为 7 位，建议使用字符串或者 SysDateTime()这两种方式赋值，不建议使用 GetDate()，因为该方法返回值为 DateTime 类型，其时间部分的精度没有 Time 类型的经度高;简单来说，在 Python 中我们只需要给定时区，即可将本地时间转化为指定时区对应的 UTC 时间，这里我们使用的是 Python 中的 pytz 这个库，如果你打开这个库的安装目录，就会发现其实它有大量时区相关的数据组成，如果我们直接调用 pytz.timezone()就可以获得所有的时区信息">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E4%B8%80%E4%B8%AA%E7%94%B1%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%B6%E5%8C%BA%E5%BC%95%E5%8F%91%E7%9A%84bug/">
 <meta property="og:site_name" content="素履独行">
@@ -481,80 +481,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/msbuild/ class=font_size_1>
-MSBuild
+<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
+平凡
 </a>
-<a href=/tags/webapi/ class=font_size_4>
-WebApi
+<a href=/tags/%E7%AD%BE%E5%90%8D/ class=font_size_1>
+签名
 </a>
-<a href=/tags/%E6%95%B0%E6%8D%AE/ class=font_size_1>
-数据
-</a>
-<a href=/tags/%E4%B8%83%E7%89%9B/ class=font_size_1>
-七牛
-</a>
-<a href=/tags/%E6%97%A5%E5%89%A7/ class=font_size_1>
-日剧
-</a>
-<a href=/tags/abp/ class=font_size_2>
-ABP
-</a>
-<a href=/tags/%E5%B9%B4%E5%8D%8E/ class=font_size_1>
-年华
-</a>
-<a href=/tags/%E7%AE%A1%E9%81%93/ class=font_size_1>
-管道
-</a>
-<a href=/tags/nginx/ class=font_size_1>
-Nginx
-</a>
-<a href=/tags/%E5%AE%A1%E8%AE%A1/ class=font_size_1>
-审计
-</a>
-<a href=/tags/mmd/ class=font_size_1>
-MMD
-</a>
-<a href=/tags/%E5%AE%9E%E4%BD%93/ class=font_size_2>
-实体
-</a>
-<a href=/tags/%E7%BC%96%E7%A8%8B/ class=font_size_6>
-编程
-</a>
-<a href=/tags/binlog/ class=font_size_2>
-Binlog
-</a>
-<a href=/tags/%E5%A3%81%E7%BA%B8/ class=font_size_1>
-壁纸
-</a>
-<a href=/tags/envoy/ class=font_size_6>
-Envoy
-</a>
-<a href=/tags/%E5%A4%A7%E6%8A%A4%E6%B3%95/ class=font_size_1>
-大护法
-</a>
-<a href=/tags/unity3d/ class=font_size_27>
-Unity3D
-</a>
-<a href=/tags/websocket/ class=font_size_3>
-WebSocket
+<a href=/tags/%E5%9B%9E%E5%BF%86/ class=font_size_1>
+回忆
 </a>
 <a href=/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/ class=font_size_2>
 依赖注入
 </a>
-<a href=/tags/%E6%95%99%E7%A8%8B/ class=font_size_7>
-教程
+<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
+部署
 </a>
-<a href=/tags/kindle/ class=font_size_3>
-Kindle
+<a href=/tags/cdn/ class=font_size_1>
+CDN
 </a>
-<a href=/tags/%E8%BD%AC%E7%9B%98/ class=font_size_1>
-转盘
+<a href=/tags/%E6%80%9D%E8%80%83/ class=font_size_1>
+思考
 </a>
-<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
-调优
+<a href=/tags/%E5%85%A8%E6%99%BA%E8%B4%A4/ class=font_size_1>
+全智贤
 </a>
-<a href=/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/ class=font_size_1>
-负载均衡
+<a href=/tags/github/ class=font_size_2>
+Github
+</a>
+<a href=/tags/opencv/ class=font_size_3>
+OpenCV
+</a>
+<a href=/tags/valine/ class=font_size_1>
+Valine
+</a>
+<a href=/tags/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A0%91/ class=font_size_1>
+表达式树
+</a>
+<a href=/tags/%E7%8E%B0%E5%AE%9E/ class=font_size_1>
+现实
+</a>
+<a href=/tags/%E4%BA%BA%E7%94%9F/ class=font_size_2>
+人生
+</a>
+<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
+穿搭
+</a>
+<a href=/tags/%E9%95%BF%E5%AE%89/ class=font_size_1>
+长安
+</a>
+<a href=/tags/%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/ class=font_size_1>
+配置中心
+</a>
+<a href=/tags/grafana/ class=font_size_1>
+Grafana
+</a>
+<a href=/tags/%E6%83%85%E6%84%9F/ class=font_size_1>
+情感
+</a>
+<a href=/tags/mock/ class=font_size_1>
+Mock
+</a>
+<a href=/tags/%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5/ class=font_size_1>
+健康检查
+</a>
+<a href=/tags/%E5%89%91%E6%8C%87offer/ class=font_size_1>
+剑指Offer
+</a>
+<a href=/tags/consul/ class=font_size_1>
+Consul
+</a>
+<a href=/tags/%E5%8F%8C%E5%8D%81%E4%B8%80/ class=font_size_1>
+双十一
+</a>
+<a href=/tags/mecanim/ class=font_size_1>
+Mecanim
 </a>
 <a href=/tags class=font_size_9999>
 更多

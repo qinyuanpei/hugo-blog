@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="这篇文章主要分享了三种实现列表拖拽排序的方案，在技术选型阶段，主要选择 Nestable 和 Sortable 这两种方案，前者对层级节点提供的序列化支持非常好，但经过一番折腾后，发现要想像作者一样用好这个插件，着实是件困难的事情，而且貌似作者已经不再维护这个项目了，最近的代码提交历史大概是 6 年前，**毕竟属于 jQuery 的辉煌时代已经过去，何况是一个基于 jQuery 的插件呢;[Sortable](https://sortablejs.github.io/Sortable/)相比 Nestable 好的一点就是，它对自己的定位是“一个用于可重新排序的拖放列表的 JavaScript 库”;最终的结果是我们打算为用户提供自定义的功能，考虑到操作的便利性问题，我们放弃了那种通过上下箭头按钮进行排序的方案，这样就回到了本文的主题，如何在前端中对一组列表进行拖拽排序，最终我们选定了两组方案，它们分别是[Nestable](https://github.com/dbushell/Nestable)和[Sortable](http://sortablejs.github.io/Sortable/)"><title>分享两种实现前端拖拽排序的方案</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E5%88%86%E4%BA%AB%E4%B8%A4%E7%A7%8D%E5%AE%9E%E7%8E%B0%E5%89%8D%E7%AB%AF%E6%8B%96%E6%8B%BD%E6%8E%92%E5%BA%8F%E7%9A%84%E6%96%B9%E6%A1%88/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="分享两种实现前端拖拽排序的方案">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="分享两种实现前端拖拽排序的方案">
 <meta property="og:description" content="这篇文章主要分享了三种实现列表拖拽排序的方案，在技术选型阶段，主要选择 Nestable 和 Sortable 这两种方案，前者对层级节点提供的序列化支持非常好，但经过一番折腾后，发现要想像作者一样用好这个插件，着实是件困难的事情，而且貌似作者已经不再维护这个项目了，最近的代码提交历史大概是 6 年前，**毕竟属于 jQuery 的辉煌时代已经过去，何况是一个基于 jQuery 的插件呢;[Sortable](https://sortablejs.github.io/Sortable/)相比 Nestable 好的一点就是，它对自己的定位是“一个用于可重新排序的拖放列表的 JavaScript 库”;最终的结果是我们打算为用户提供自定义的功能，考虑到操作的便利性问题，我们放弃了那种通过上下箭头按钮进行排序的方案，这样就回到了本文的主题，如何在前端中对一组列表进行拖拽排序，最终我们选定了两组方案，它们分别是[Nestable](https://github.com/dbushell/Nestable)和[Sortable](http://sortablejs.github.io/Sortable/)">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E5%88%86%E4%BA%AB%E4%B8%A4%E7%A7%8D%E5%AE%9E%E7%8E%B0%E5%89%8D%E7%AB%AF%E6%8B%96%E6%8B%BD%E6%8E%92%E5%BA%8F%E7%9A%84%E6%96%B9%E6%A1%88/">
 <meta property="og:site_name" content="素履独行">
@@ -468,80 +468,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E7%86%B5%E5%A2%9E%E5%AE%9A%E5%BE%8B/ class=font_size_1>
-熵增定律
+<a href=/tags/%E9%BB%91%E5%AE%A2/ class=font_size_2>
+黑客
 </a>
-<a href=/tags/%E6%B6%88%E6%81%AF/ class=font_size_1>
-消息
+<a href=/tags/socket/ class=font_size_2>
+Socket
 </a>
-<a href=/tags/%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83/ class=font_size_1>
-鬼滅の刃
+<a href=/tags/%E5%B7%A5%E4%BD%9C/ class=font_size_3>
+工作
 </a>
-<a href=/tags/%E6%8F%90%E7%BA%B2/ class=font_size_1>
-提纲
+<a href=/tags/%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/ class=font_size_1>
+动态加载
 </a>
-<a href=/tags/%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6/ class=font_size_1>
-版本控制
+<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
+同步
 </a>
-<a href=/tags/pl/sql/ class=font_size_1>
-PL/SQL
+<a href=/tags/%E5%8D%B0%E5%BA%A6/ class=font_size_1>
+印度
 </a>
-<a href=/tags/opencv/ class=font_size_3>
-OpenCV
+<a href=/tags/%E6%A0%BC%E5%BC%8F/ class=font_size_1>
+格式
 </a>
-<a href=/tags/%E6%A8%A1%E6%9D%BF/ class=font_size_1>
-模板
-</a>
-<a href=/tags/%E5%BE%AE%E4%BF%A1/ class=font_size_1>
-微信
-</a>
-<a href=/tags/java/ class=font_size_1>
-Java
-</a>
-<a href=/tags/nginx/ class=font_size_1>
-Nginx
-</a>
-<a href=/tags/%E5%85%A8%E6%99%BA%E8%B4%A4/ class=font_size_1>
-全智贤
-</a>
-<a href=/tags/assetbundle/ class=font_size_2>
-AssetBundle
-</a>
-<a href=/tags/grpc/ class=font_size_8>
-gRPC
-</a>
-<a href=/tags/%E8%AE%BE%E8%AE%A1/ class=font_size_2>
-设计
-</a>
-<a href=/tags/msbuild/ class=font_size_1>
-MSBuild
-</a>
-<a href=/tags/sourcetree/ class=font_size_1>
-SourceTree
-</a>
-<a href=/tags/.net/ class=font_size_7>
-.NET
-</a>
-<a href=/tags/%E4%BD%8E%E4%BB%A3%E7%A0%81/ class=font_size_1>
-低代码
+<a href=/tags/%E8%BD%AC%E7%9B%98/ class=font_size_1>
+转盘
 </a>
 <a href=/tags/%E5%8A%A8%E6%BC%AB/ class=font_size_1>
 动漫
 </a>
-<a href=/tags/grafana/ class=font_size_1>
-Grafana
+<a href=/tags/unity3d/ class=font_size_27>
+Unity3D
 </a>
-<a href=/tags/mecanim/ class=font_size_1>
-Mecanim
+<a href=/tags/%E7%AE%A1%E9%81%93/ class=font_size_1>
+管道
 </a>
-<a href=/tags/ztree/ class=font_size_1>
-zTree
+<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
+加密
 </a>
-<a href=/tags/linq/ class=font_size_1>
-Linq
+<a href=/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/ class=font_size_1>
+图像处理
 </a>
-<a href=/tags/nlp/ class=font_size_2>
-NLP
+<a href=/tags/%E5%BC%95%E6%93%8E/ class=font_size_1>
+引擎
+</a>
+<a href=/tags/liquid/ class=font_size_1>
+Liquid
+</a>
+<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
+塔防
+</a>
+<a href=/tags/%E4%BB%99%E5%89%91%E5%A5%87%E4%BE%A0%E4%BC%A0/ class=font_size_1>
+仙剑奇侠传
+</a>
+<a href=/tags/ai/ class=font_size_1>
+AI
+</a>
+<a href=/tags/%E6%97%A5%E6%9C%AC%E6%96%87%E5%AD%A6/ class=font_size_1>
+日本文学
+</a>
+<a href=/tags/webassembly/ class=font_size_1>
+WebAssembly
+</a>
+<a href=/tags/%E9%80%9A%E4%BF%A1/ class=font_size_2>
+通信
+</a>
+<a href=/tags/%E5%BF%83%E6%83%85/ class=font_size_1>
+心情
+</a>
+<a href=/tags/thoughtworks/ class=font_size_1>
+ThoughtWorks
+</a>
+<a href=/tags/%E6%B8%B8%E6%88%8F/ class=font_size_13>
+游戏
+</a>
+<a href=/tags/%E9%82%AA%E4%B8%8D%E5%8E%8B%E6%AD%A3/ class=font_size_1>
+邪不压正
 </a>
 <a href=/tags class=font_size_9999>
 更多

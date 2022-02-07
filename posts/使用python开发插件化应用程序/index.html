@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="考虑到 Python 是一门解释型的语言，我们在编写插件的时候，更希望做到“热插拔”，比如修改了某个插件后，希望它可以立刻生效，这个时候我们就需要重新加载模块，此时 importlib 的 reload 就能满足我们的要求，这正是博主一开始就要使用 importlib，而不是 import 语法对应内建方法__import__()的原因;好了，现在我们就完成了这次“插件化”的迭代，截止到目前为止，博主共完成了 [Unsplash](.) 、 [Bing 壁纸](.) 、 [WallHaven](.) 和 [国家地理](.) 四个“源”的接入，这些插件在实现上基本大同小异，本质上来讲它们是一个又一个的爬虫，只要实现了 getImage()这个方法都可以接入进来，这就是我们通常说的“约定大于配置”，关于更多的代码细节，大家可以通过[Github]((https://github.com/qinyuanpei/WallPaper))来了解;mkt=zh-CN) 和 [WallHaven](https://wallhaven.cc) 两个壁纸来源，考虑到大多数的壁纸抓取流程是一样的，博主决定以“插件”的方式完成这次迭代，换句话说，主程序不需要再做任何调整，当我们希望增加新的数据源的时候，只需要写一个.py 脚本即可，这就是今天这篇文章的写作缘由"><title>使用 Python 开发插件化应用程序</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E4%BD%BF%E7%94%A8python%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="使用 Python 开发插件化应用程序">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="使用 Python 开发插件化应用程序">
 <meta property="og:description" content="考虑到 Python 是一门解释型的语言，我们在编写插件的时候，更希望做到“热插拔”，比如修改了某个插件后，希望它可以立刻生效，这个时候我们就需要重新加载模块，此时 importlib 的 reload 就能满足我们的要求，这正是博主一开始就要使用 importlib，而不是 import 语法对应内建方法__import__()的原因;好了，现在我们就完成了这次“插件化”的迭代，截止到目前为止，博主共完成了 [Unsplash](.) 、 [Bing 壁纸](.) 、 [WallHaven](.) 和 [国家地理](.) 四个“源”的接入，这些插件在实现上基本大同小异，本质上来讲它们是一个又一个的爬虫，只要实现了 getImage()这个方法都可以接入进来，这就是我们通常说的“约定大于配置”，关于更多的代码细节，大家可以通过[Github]((https://github.com/qinyuanpei/WallPaper))来了解;mkt=zh-CN) 和 [WallHaven](https://wallhaven.cc) 两个壁纸来源，考虑到大多数的壁纸抓取流程是一样的，博主决定以“插件”的方式完成这次迭代，换句话说，主程序不需要再做任何调整，当我们希望增加新的数据源的时候，只需要写一个.py 脚本即可，这就是今天这篇文章的写作缘由">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E4%BD%BF%E7%94%A8python%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6%E5%8C%96%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/">
 <meta property="og:site_name" content="素履独行">
@@ -447,80 +447,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/ class=font_size_1>
-动态加载
-</a>
-<a href=/tags/%E9%AA%8C%E8%AF%81/ class=font_size_1>
-验证
-</a>
-<a href=/tags/pl/sql/ class=font_size_1>
-PL/SQL
-</a>
-<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
-部署
-</a>
-<a href=/tags/mecanim/ class=font_size_1>
-Mecanim
-</a>
-<a href=/tags/%E9%95%BF%E6%88%AA%E5%9B%BE/ class=font_size_1>
-长截图
-</a>
-<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
-平凡
-</a>
-<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
-穿搭
-</a>
-<a href=/tags/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/ class=font_size_1>
-读写分离
-</a>
-<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
-技巧
+<a href=/tags/%E6%8A%80%E6%9C%AF/ class=font_size_2>
+技术
 </a>
 <a href=/tags/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/ class=font_size_2>
 动态代理
 </a>
-<a href=/tags/%E5%AE%B9%E5%99%A8/ class=font_size_1>
-容器
+<a href=/tags/%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/ class=font_size_1>
+动态加载
 </a>
-<a href=/tags/%E4%BA%8C%E7%BB%B4%E7%A0%81/ class=font_size_1>
-二维码
+<a href=/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/ class=font_size_1>
+图像处理
 </a>
-<a href=/tags/redis/ class=font_size_8>
-Redis
+<a href=/tags/mock/ class=font_size_1>
+Mock
 </a>
-<a href=/tags/jsdelivr/ class=font_size_1>
-jsDelivr
+<a href=/tags/disunity/ class=font_size_1>
+disunity
 </a>
-<a href=/tags/%E5%89%91%E6%8C%87offer/ class=font_size_1>
-剑指Offer
+<a href=/tags/swagger/ class=font_size_2>
+Swagger
 </a>
-<a href=/tags/%E5%8D%95%E6%9C%BA%E6%B8%B8%E6%88%8F/ class=font_size_1>
-单机游戏
+<a href=/tags/.net/ class=font_size_7>
+.NET
 </a>
-<a href=/tags/%E7%9F%A5%E8%AF%86%E5%85%B1%E4%BA%AB/ class=font_size_1>
-知识共享
+<a href=/tags/%E6%B5%AA%E5%AE%A2%E5%89%91%E5%BF%83/ class=font_size_1>
+浪客剑心
 </a>
-<a href=/tags/%E5%8E%86%E5%8F%B2/ class=font_size_3>
-历史
+<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
+调优
 </a>
-<a href=/tags/%E8%AE%A4%E8%AF%81/ class=font_size_1>
-认证
+<a href=/tags/mvvm/ class=font_size_1>
+MVVM
 </a>
-<a href=/tags/mvc/ class=font_size_1>
-MVC
+<a href=/tags/python/ class=font_size_17>
+Python
 </a>
-<a href=/tags/%E6%95%B0%E6%8D%AE/ class=font_size_1>
-数据
+<a href=/tags/mysql/ class=font_size_2>
+MySQL
 </a>
-<a href=/tags/%E5%8D%95%E4%BD%8D/ class=font_size_1>
-单位
+<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/ class=font_size_1>
+游戏引擎
 </a>
-<a href=/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/ class=font_size_1>
-大数据
+<a href=/tags/server-%E9%85%B1/ class=font_size_1>
+Server 酱
 </a>
-<a href=/tags/ado.net/ class=font_size_1>
-ADO.NET
+<a href=/tags/sklearn/ class=font_size_1>
+Sklearn
+</a>
+<a href=/tags/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/ class=font_size_1>
+读写分离
+</a>
+<a href=/tags/sqlite/ class=font_size_1>
+SQLite
+</a>
+<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/ class=font_size_10>
+游戏开发
+</a>
+<a href=/tags/%E6%95%B0%E5%AD%A6/ class=font_size_4>
+数学
+</a>
+<a href=/tags/%E9%98%85%E8%AF%BB/ class=font_size_2>
+阅读
+</a>
+<a href=/tags/%E6%95%99%E7%A8%8B/ class=font_size_7>
+教程
+</a>
+<a href=/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/ class=font_size_3>
+跨平台
+</a>
+<a href=/tags/unity3d/ class=font_size_27>
+Unity3D
+</a>
+<a href=/tags/hexo/ class=font_size_8>
+Hexo
 </a>
 <a href=/tags class=font_size_9999>
 更多

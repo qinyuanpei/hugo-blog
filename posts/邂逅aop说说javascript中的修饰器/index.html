@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="再比如，我们的业务中要求：用户在访问相关资源或者是执行相关操作时，需要确保用户的状态是登录着的，因此，我们不可避免地在代码中，使用 if 语句去判断用户是否登录，试想如果所有的业务代码都这样写，两个模块间就存在了直接耦合，当然我们可以说这是最简单的做法，因为它照顾了大部分人的思维和情绪，可你看 Angular/Redux/TypeScript 等项目中无一不遍布着修饰器的身影，当一种框架逐渐流行并成为一种趋势的时候，好像大家立刻就忘记了一件事情：原本我们都是非常排斥这些奇技淫巧的，可因为框架的流行你就默认接受了这种设定;在这个例子中，我们通过修饰器函数 readonly()对 getName()方法进行修饰，使其变成一个 readonly 的方法;此种差别，大家可以非常明显地看出来，我们在使用修饰器函数 setProp()的时候，现在允许传入一个参数 20，此时的结果是非常地显而易见的，这段代码将如你所愿地输出 20"><title>邂逅 AOP：说说 JavaScript 中的修饰器</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E9%82%82%E9%80%85aop%E8%AF%B4%E8%AF%B4javascript%E4%B8%AD%E7%9A%84%E4%BF%AE%E9%A5%B0%E5%99%A8/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="邂逅 AOP：说说 JavaScript 中的修饰器">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="邂逅 AOP：说说 JavaScript 中的修饰器">
 <meta property="og:description" content="再比如，我们的业务中要求：用户在访问相关资源或者是执行相关操作时，需要确保用户的状态是登录着的，因此，我们不可避免地在代码中，使用 if 语句去判断用户是否登录，试想如果所有的业务代码都这样写，两个模块间就存在了直接耦合，当然我们可以说这是最简单的做法，因为它照顾了大部分人的思维和情绪，可你看 Angular/Redux/TypeScript 等项目中无一不遍布着修饰器的身影，当一种框架逐渐流行并成为一种趋势的时候，好像大家立刻就忘记了一件事情：原本我们都是非常排斥这些奇技淫巧的，可因为框架的流行你就默认接受了这种设定;在这个例子中，我们通过修饰器函数 readonly()对 getName()方法进行修饰，使其变成一个 readonly 的方法;此种差别，大家可以非常明显地看出来，我们在使用修饰器函数 setProp()的时候，现在允许传入一个参数 20，此时的结果是非常地显而易见的，这段代码将如你所愿地输出 20">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E9%82%82%E9%80%85aop%E8%AF%B4%E8%AF%B4javascript%E4%B8%AD%E7%9A%84%E4%BF%AE%E9%A5%B0%E5%99%A8/">
 <meta property="og:site_name" content="素履独行">
@@ -517,80 +517,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/ class=font_size_1>
-数据交换
-</a>
-<a href=/tags/cdn/ class=font_size_1>
-CDN
-</a>
-<a href=/tags/c++/ class=font_size_1>
-C++
-</a>
-<a href=/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/ class=font_size_1>
-函数式编程
-</a>
-<a href=/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/ class=font_size_1>
-自动化
-</a>
-<a href=/tags/%E9%A9%AC%E5%B0%94%E5%85%8B%E6%96%AF/ class=font_size_1>
-马尔克斯
-</a>
-<a href=/tags/hashset/ class=font_size_1>
-HashSet
-</a>
-<a href=/tags/%E6%B8%B8%E6%88%8F/ class=font_size_13>
-游戏
-</a>
-<a href=/tags/%E9%85%8D%E8%BD%BD/ class=font_size_1>
-配载
-</a>
-<a href=/tags/%E5%88%AB%E7%A6%BB/ class=font_size_1>
-别离
-</a>
 <a href=/tags/disunity/ class=font_size_1>
 disunity
 </a>
-<a href=/tags/%E7%8A%B6%E6%80%81/ class=font_size_1>
-状态
+<a href=/tags/%E5%8F%8C%E5%8D%81%E4%B8%80/ class=font_size_1>
+双十一
 </a>
-<a href=/tags/socket/ class=font_size_2>
-Socket
+<a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
+长安十二时辰
 </a>
-<a href=/tags/%E7%BC%93%E5%AD%98/ class=font_size_5>
-缓存
+<a href=/tags/aop/ class=font_size_6>
+AOP
 </a>
-<a href=/tags/grafana/ class=font_size_1>
-Grafana
-</a>
-<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
-穿搭
-</a>
-<a href=/tags/%E4%BB%B7%E5%80%BC/ class=font_size_1>
-价值
-</a>
-<a href=/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/ class=font_size_1>
-插件化
-</a>
-<a href=/tags/ar/ class=font_size_3>
-AR
-</a>
-<a href=/tags/%E5%BE%AE%E4%BF%A1/ class=font_size_1>
-微信
-</a>
-<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
-面试
+<a href=/tags/%E6%9C%8D%E5%8A%A1/ class=font_size_1>
+服务
 </a>
 <a href=/tags/%E8%A5%BF%E5%AE%89/ class=font_size_3>
 西安
 </a>
-<a href=/tags/trace/ class=font_size_1>
-Trace
+<a href=/tags/%E6%AF%95%E4%B8%9A/ class=font_size_1>
+毕业
 </a>
-<a href=/tags/%E6%9C%8D%E5%8A%A1%E7%BC%96%E6%8E%92/ class=font_size_1>
-服务编排
+<a href=/tags/%E7%AC%94%E8%AE%B0/ class=font_size_8>
+笔记
 </a>
-<a href=/tags/castle/ class=font_size_1>
-Castle
+<a href=/tags/%E6%A1%8C%E9%9D%A2/ class=font_size_1>
+桌面
+</a>
+<a href=/tags/swagger/ class=font_size_2>
+Swagger
+</a>
+<a href=/tags/%E5%B7%A5%E4%BD%9C/ class=font_size_3>
+工作
+</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/ class=font_size_6>
+服务器
+</a>
+<a href=/tags/%E5%B9%B4%E5%8D%8E/ class=font_size_1>
+年华
+</a>
+<a href=/tags/%E9%BB%91%E5%AE%A2/ class=font_size_2>
+黑客
+</a>
+<a href=/tags/%E9%9F%A9%E5%AF%92/ class=font_size_1>
+韩寒
+</a>
+<a href=/tags/%E5%85%B3%E5%8D%A1%E7%B3%BB%E7%BB%9F/ class=font_size_1>
+关卡系统
+</a>
+<a href=/tags/%E8%B4%AA%E5%90%83%E8%9B%87/ class=font_size_1>
+贪吃蛇
+</a>
+<a href=/tags/%E9%98%BF%E9%87%8C/ class=font_size_1>
+阿里
+</a>
+<a href=/tags/%E9%9B%86%E7%BE%A4/ class=font_size_1>
+集群
+</a>
+<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
+面试
+</a>
+<a href=/tags/%E6%96%87%E4%BB%B6/ class=font_size_1>
+文件
+</a>
+<a href=/tags/csharp/ class=font_size_2>
+CSharp
+</a>
+<a href=/tags/%E8%BF%81%E7%A7%BB/ class=font_size_1>
+迁移
+</a>
+<a href=/tags/python/ class=font_size_17>
+Python
+</a>
+<a href=/tags/wechat/ class=font_size_1>
+Wechat
 </a>
 <a href=/tags class=font_size_9999>
 更多

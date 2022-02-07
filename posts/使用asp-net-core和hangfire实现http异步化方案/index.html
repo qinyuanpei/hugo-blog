@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="而**Recurring jobs**和**Continuations**则是周期性任务，任务在入队后可以按照固定的时间间隔去执行，周期性任务都是支持 CRON 表达式的，**Continuations**类似于 Task 中的 ContinueWith()方法，可以对多个任务进行组合，我们现在的项目中开发了大量基于 Quartz 的 Job，可当你试图把这些 Job 相互组合起来的时候，你就会觉得相当尴尬，因为后台任务做所的事情往往都是大同小异的;return new JsonResult (new { Flag = true, Message = $&#34;Job:#{jobId}-{jobDescriptor.JobName}已加入队列&#34; });return new JsonResult (new { Flag = true, Message = $&#34;Job:#{jobId}-{jobDescriptor.JobName}已加入队列&#34; })"><title>使用 ASP.NET Core 和 Hangfire 实现 HTTP 异步化方案</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E4%BD%BF%E7%94%A8asp-net-core%E5%92%8Changfire%E5%AE%9E%E7%8E%B0http%E5%BC%82%E6%AD%A5%E5%8C%96%E6%96%B9%E6%A1%88/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="使用 ASP.NET Core 和 Hangfire 实现 HTTP 异步化方案">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="使用 ASP.NET Core 和 Hangfire 实现 HTTP 异步化方案">
 <meta property="og:description" content="而**Recurring jobs**和**Continuations**则是周期性任务，任务在入队后可以按照固定的时间间隔去执行，周期性任务都是支持 CRON 表达式的，**Continuations**类似于 Task 中的 ContinueWith()方法，可以对多个任务进行组合，我们现在的项目中开发了大量基于 Quartz 的 Job，可当你试图把这些 Job 相互组合起来的时候，你就会觉得相当尴尬，因为后台任务做所的事情往往都是大同小异的;return new JsonResult (new { Flag = true, Message = $&#34;Job:#{jobId}-{jobDescriptor.JobName}已加入队列&#34; });return new JsonResult (new { Flag = true, Message = $&#34;Job:#{jobId}-{jobDescriptor.JobName}已加入队列&#34; })">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E4%BD%BF%E7%94%A8asp-net-core%E5%92%8Changfire%E5%AE%9E%E7%8E%B0http%E5%BC%82%E6%AD%A5%E5%8C%96%E6%96%B9%E6%A1%88/">
 <meta property="og:site_name" content="素履独行">
@@ -566,80 +566,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/oracle/ class=font_size_1>
-Oracle
+<a href=/tags/%E6%97%B6%E9%97%B4/ class=font_size_3>
+时间
 </a>
-<a href=/tags/%E9%80%9A%E4%BF%A1/ class=font_size_2>
-通信
+<a href=/tags/%E7%86%B5%E5%A2%9E%E5%AE%9A%E5%BE%8B/ class=font_size_1>
+熵增定律
 </a>
-<a href=/tags/%E9%9F%A9%E5%AF%92/ class=font_size_1>
-韩寒
+<a href=/tags/mvvm/ class=font_size_1>
+MVVM
 </a>
-<a href=/tags/csharp/ class=font_size_2>
-CSharp
+<a href=/tags/redis/ class=font_size_8>
+Redis
 </a>
-<a href=/tags/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF/ class=font_size_2>
-贝塞尔曲线
+<a href=/tags/%E7%BC%93%E5%AD%98/ class=font_size_5>
+缓存
 </a>
-<a href=/tags/%E6%B8%B8%E6%88%8F/ class=font_size_13>
-游戏
+<a href=/tags/%E6%A8%A1%E5%9E%8B/ class=font_size_1>
+模型
 </a>
-<a href=/tags/%E6%A0%BC%E5%BC%8F/ class=font_size_1>
-格式
+<a href=/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/ class=font_size_8>
+微服务
 </a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5/ class=font_size_1>
-健康检查
+<a href=/tags/visual-studio/ class=font_size_1>
+Visual Studio
 </a>
-<a href=/tags/rabbitmq/ class=font_size_2>
-RabbitMQ
+<a href=/tags/aop/ class=font_size_6>
+AOP
 </a>
-<a href=/tags/%E5%B7%A5%E5%85%B7/ class=font_size_2>
-工具
+<a href=/tags/%E5%81%A5%E5%BA%B7%E7%A0%81/ class=font_size_1>
+健康码
 </a>
-<a href=/tags/%E5%BE%AE%E4%BF%A1/ class=font_size_1>
-微信
+<a href=/tags/%E8%A5%BF%E6%BC%82/ class=font_size_1>
+西漂
 </a>
-<a href=/tags/sonar/ class=font_size_1>
-Sonar
+<a href=/tags/%E6%97%A5%E5%BF%97/ class=font_size_4>
+日志
 </a>
-<a href=/tags/github/ class=font_size_2>
-Github
+<a href=/tags/%E7%8A%B6%E6%80%81/ class=font_size_1>
+状态
 </a>
-<a href=/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/ class=font_size_1>
-响应式
-</a>
-<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
-同步
-</a>
-<a href=/tags/%E9%9A%8F%E7%AC%94/ class=font_size_9>
-随笔
-</a>
-<a href=/tags/liquid/ class=font_size_1>
-Liquid
-</a>
-<a href=/tags/%E5%8A%A8%E7%94%BB/ class=font_size_1>
-动画
+<a href=/tags/ef/ class=font_size_5>
+EF
 </a>
 <a href=/tags/%E5%A4%95%E9%9B%BE%E8%8A%B1%E5%9B%AD/ class=font_size_1>
 夕雾花园
 </a>
-<a href=/tags/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF/ class=font_size_1>
-朴素贝叶斯
+<a href=/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/ class=font_size_1>
+负载均衡
 </a>
-<a href=/tags/%E5%90%8E%E7%AB%AF/ class=font_size_1>
-后端
+<a href=/tags/lambda/ class=font_size_2>
+Lambda
 </a>
-<a href=/tags/%E5%BB%BA%E7%AD%91/ class=font_size_1>
-建筑
+<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
+技巧
 </a>
-<a href=/tags/%E8%AF%BB%E4%B9%A6/ class=font_size_5>
-读书
+<a href=/tags/%E5%AE%9E%E4%BD%93/ class=font_size_2>
+实体
 </a>
-<a href=/tags/%E5%9B%9E%E5%AE%B6/ class=font_size_1>
-回家
+<a href=/tags/%E4%B8%80%E5%87%BA%E5%A5%BD%E6%88%8F/ class=font_size_1>
+一出好戏
 </a>
-<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/ class=font_size_10>
-游戏开发
+<a href=/tags/%E6%88%90%E9%95%BF/ class=font_size_3>
+成长
+</a>
+<a href=/tags/%E4%BD%8E%E4%BB%A3%E7%A0%81/ class=font_size_1>
+低代码
+</a>
+<a href=/tags/%E6%95%B0%E5%AD%A6/ class=font_size_4>
+数学
+</a>
+<a href=/tags/%E6%97%A5%E5%89%A7/ class=font_size_1>
+日剧
+</a>
+<a href=/tags/binlog/ class=font_size_2>
+Binlog
 </a>
 <a href=/tags class=font_size_9999>
 更多

@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="说明：表达是否最好用 0 和 1 来表示，我们用 Y 和 N 时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用 unsigned tinyint 类型，它本身就自带默认值 0，这样就可以避免这种问题的出现;说明：建议全部使用小写，因为主流 SQL 教程的里关键字都采用大写，但在 PLSQL/SQLyog 里编写 SQL 语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写;说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某 SAP 提供的 OA 接口，除了超级难用以外，每次都要花大量时间去对字段"><title>《阿里巴巴 Java 开发手册》读书笔记</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="《阿里巴巴 Java 开发手册》读书笔记">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="《阿里巴巴 Java 开发手册》读书笔记">
 <meta property="og:description" content="说明：表达是否最好用 0 和 1 来表示，我们用 Y 和 N 时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用 unsigned tinyint 类型，它本身就自带默认值 0，这样就可以避免这种问题的出现;说明：建议全部使用小写，因为主流 SQL 教程的里关键字都采用大写，但在 PLSQL/SQLyog 里编写 SQL 语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写;说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某 SAP 提供的 OA 接口，除了超级难用以外，每次都要花大量时间去对字段">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
 <meta property="og:site_name" content="素履独行">
@@ -436,80 +436,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E5%85%A8%E6%99%BA%E8%B4%A4/ class=font_size_1>
-全智贤
+<a href=/tags/%E6%8E%A8%E8%8D%90/ class=font_size_1>
+推荐
 </a>
-<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
-异步
+<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
+展望
 </a>
-<a href=/tags/%E9%AA%8C%E8%AF%81/ class=font_size_1>
-验证
+<a href=/tags/%E6%88%90%E9%95%BF/ class=font_size_3>
+成长
 </a>
-<a href=/tags/%E9%95%BF%E5%AE%89/ class=font_size_1>
-长安
+<a href=/tags/%E9%BB%91%E5%AE%A2/ class=font_size_2>
+黑客
 </a>
-<a href=/tags/json/ class=font_size_1>
-JSON
+<a href=/tags/nginx/ class=font_size_1>
+Nginx
 </a>
-<a href=/tags/.net/ class=font_size_7>
-.NET
+<a href=/tags/di/ class=font_size_2>
+DI
 </a>
-<a href=/tags/protobuf/ class=font_size_1>
-Protobuf
+<a href=/tags/mecanim/ class=font_size_1>
+Mecanim
 </a>
-<a href=/tags/unity3d/ class=font_size_27>
-Unity3D
+<a href=/tags/%E6%AF%95%E4%B8%9A%E5%AD%A3/ class=font_size_1>
+毕业季
 </a>
-<a href=/tags/%E7%94%9F%E6%B4%BB/ class=font_size_7>
-生活
+<a href=/tags/react/ class=font_size_1>
+React
 </a>
-<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
-技巧
+<a href=/tags/rpg/ class=font_size_1>
+RPG
 </a>
-<a href=/tags/sdl/ class=font_size_2>
-SDL
+<a href=/tags/mono/ class=font_size_4>
+Mono
 </a>
-<a href=/tags/assetbundle/ class=font_size_2>
-AssetBundle
+<a href=/tags/%E6%8A%80%E6%9C%AF/ class=font_size_2>
+技术
 </a>
-<a href=/tags/http/ class=font_size_9>
-HTTP
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/ class=font_size_6>
+服务器
 </a>
-<a href=/tags/%E5%BC%82%E5%B8%B8/ class=font_size_3>
-异常
+<a href=/tags/ide/ class=font_size_1>
+IDE
 </a>
-<a href=/tags/.net-core/ class=font_size_14>
-.NET Core
+<a href=/tags/%E8%AF%84%E8%AE%BA/ class=font_size_1>
+评论
 </a>
-<a href=/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/ class=font_size_1>
-图像处理
+<a href=/tags/oracle/ class=font_size_1>
+Oracle
 </a>
-<a href=/tags/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF/ class=font_size_1>
-朴素贝叶斯
+<a href=/tags/c#/ class=font_size_7>
+C#
+</a>
+<a href=/tags/%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/ class=font_size_1>
+夏目漱石
+</a>
+<a href=/tags/dottrace/ class=font_size_1>
+dotTrace
+</a>
+<a href=/tags/dbeaver/ class=font_size_1>
+DBeaver
+</a>
+<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
+装饰器
+</a>
+<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
+脚本
+</a>
+<a href=/tags/obj/ class=font_size_1>
+OBJ
+</a>
+<a href=/tags/%E6%95%99%E7%A8%8B/ class=font_size_7>
+教程
 </a>
 <a href=/tags/%E6%A0%BC%E5%BC%8F/ class=font_size_1>
 格式
-</a>
-<a href=/tags/selenium/ class=font_size_2>
-Selenium
-</a>
-<a href=/tags/grpc/ class=font_size_8>
-gRPC
-</a>
-<a href=/tags/hexo/ class=font_size_8>
-Hexo
-</a>
-<a href=/tags/lua/ class=font_size_2>
-Lua
-</a>
-<a href=/tags/excel/ class=font_size_1>
-Excel
-</a>
-<a href=/tags/c++/ class=font_size_1>
-C++
-</a>
-<a href=/tags/pl/sql/ class=font_size_1>
-PL/SQL
 </a>
 <a href=/tags class=font_size_9999>
 更多

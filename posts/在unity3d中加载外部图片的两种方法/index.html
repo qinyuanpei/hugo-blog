@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="现在我们运行程序可以发现两种方式均可以让图片加载进来，为了对比两种方式在执行效率上的高低，我们在脚本中加入了相关代码，通过对比可以发现使用 IO 方式加载一张 227k 的图片需要的时间为 0s，而使用 WWW 方式加载需要 0.0185s，因此传统的 IO 方式具有更高的效率，建议大家在遇到这类问题时尽可能地使用这种方式;经过博主的研究发现，这种方式加载外部图片相对于使用 WWW 加载外部图片效率更高，所以如果大家遇到类似的需求，博主个人推荐大家使用这种方式进行加载;/// 以 WWW 方式进行加载"><title>在 Unity3D 中加载外部图片的两种方法</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E5%9C%A8unity3d%E4%B8%AD%E5%8A%A0%E8%BD%BD%E5%A4%96%E9%83%A8%E5%9B%BE%E7%89%87%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%B3%95/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="在 Unity3D 中加载外部图片的两种方法">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="在 Unity3D 中加载外部图片的两种方法">
 <meta property="og:description" content="现在我们运行程序可以发现两种方式均可以让图片加载进来，为了对比两种方式在执行效率上的高低，我们在脚本中加入了相关代码，通过对比可以发现使用 IO 方式加载一张 227k 的图片需要的时间为 0s，而使用 WWW 方式加载需要 0.0185s，因此传统的 IO 方式具有更高的效率，建议大家在遇到这类问题时尽可能地使用这种方式;经过博主的研究发现，这种方式加载外部图片相对于使用 WWW 加载外部图片效率更高，所以如果大家遇到类似的需求，博主个人推荐大家使用这种方式进行加载;/// 以 WWW 方式进行加载">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E5%9C%A8unity3d%E4%B8%AD%E5%8A%A0%E8%BD%BD%E5%A4%96%E9%83%A8%E5%9B%BE%E7%89%87%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%B3%95/">
 <meta property="og:site_name" content="素履独行">
@@ -463,80 +463,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
-展望
+<a href=/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/ class=font_size_1>
+模板引擎
 </a>
-<a href=/tags/%E5%9B%9E%E5%AE%B6/ class=font_size_1>
-回家
+<a href=/tags/referrer/ class=font_size_1>
+Referrer
 </a>
-<a href=/tags/mono/ class=font_size_4>
-Mono
+<a href=/tags/%E5%8A%A8%E6%BC%AB/ class=font_size_1>
+动漫
 </a>
-<a href=/tags/ci/ class=font_size_2>
-CI
+<a href=/tags/cg/ class=font_size_1>
+CG
 </a>
 <a href=/tags/%E6%A0%87%E6%B3%A8/ class=font_size_1>
 标注
 </a>
-<a href=/tags/vue/ class=font_size_3>
-Vue
+<a href=/tags/grpc/ class=font_size_8>
+gRPC
 </a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5/ class=font_size_1>
-健康检查
+<a href=/tags/disunity/ class=font_size_1>
+disunity
 </a>
-<a href=/tags/easyar/ class=font_size_2>
-EasyAR
+<a href=/tags/%E4%BC%98%E5%8C%96/ class=font_size_1>
+优化
 </a>
-<a href=/tags/%E4%BA%91%E9%9F%B3%E4%B9%90/ class=font_size_1>
-云音乐
+<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
+部署
 </a>
-<a href=/tags/java/ class=font_size_1>
-Java
+<a href=/tags/%E8%AF%BB%E4%B9%A6/ class=font_size_5>
+读书
 </a>
-<a href=/tags/prometheus/ class=font_size_1>
-Prometheus
+<a href=/tags/%E5%BE%AE%E4%BF%A1/ class=font_size_1>
+微信
 </a>
-<a href=/tags/%E6%B6%88%E6%81%AF/ class=font_size_1>
-消息
+<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
+塔防
 </a>
-<a href=/tags/%E9%85%8D%E8%BD%BD/ class=font_size_1>
-配载
+<a href=/tags/%E7%A9%B9%E4%B9%8B%E6%89%89/ class=font_size_1>
+穹之扉
 </a>
-<a href=/tags/%E9%9C%8D%E9%87%91/ class=font_size_1>
-霍金
+<a href=/tags/redis/ class=font_size_8>
+Redis
 </a>
-<a href=/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/ class=font_size_3>
-跨平台
+<a href=/tags/%E6%B5%AA%E5%AE%A2%E5%89%91%E5%BF%83/ class=font_size_1>
+浪客剑心
 </a>
-<a href=/tags/nlp/ class=font_size_2>
-NLP
+<a href=/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/ class=font_size_1>
+函数式编程
 </a>
-<a href=/tags/%E5%AE%B9%E5%99%A8/ class=font_size_1>
-容器
+<a href=/tags/%E5%88%AB%E7%A6%BB/ class=font_size_1>
+别离
 </a>
-<a href=/tags/%E4%B8%80%E5%87%BA%E5%A5%BD%E6%88%8F/ class=font_size_1>
-一出好戏
+<a href=/tags/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A0%91/ class=font_size_1>
+表达式树
 </a>
-<a href=/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/ class=font_size_8>
-数据库
+<a href=/tags/%E6%9E%B6%E6%9E%84/ class=font_size_2>
+架构
 </a>
-<a href=/tags/es6/ class=font_size_1>
-ES6
+<a href=/tags/%E4%B8%83%E7%89%9B/ class=font_size_1>
+七牛
 </a>
-<a href=/tags/%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95/ class=font_size_1>
-扩展方法
+<a href=/tags/%E6%8A%80%E6%9C%AF/ class=font_size_2>
+技术
 </a>
-<a href=/tags/lambda/ class=font_size_2>
-Lambda
+<a href=/tags/github/ class=font_size_2>
+Github
 </a>
-<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
-技巧
+<a href=/tags/%E7%A8%8B%E5%BA%8F%E5%91%98/ class=font_size_3>
+程序员
 </a>
-<a href=/tags/%E5%8F%8D%E7%BC%96%E8%AF%91/ class=font_size_1>
-反编译
+<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
+同步
 </a>
-<a href=/tags/%E6%8F%92%E4%BB%B6/ class=font_size_3>
-插件
+<a href=/tags/%E5%A4%A7%E6%8A%A4%E6%B3%95/ class=font_size_1>
+大护法
 </a>
 <a href=/tags class=font_size_9999>
 更多

@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="最后，全部的三角面会被读取到 faceVertexNormalUV 列表中，它表示的是每个三角面的顶点、法线和 UV 的索引向量，是一个 List类型的变量;这里可以注意到我们在开始对文本化的.obj 文件的内容有 1 次替换操作，这是因为在 3dsMax 中导出的.obj 文件关键字**v**这一行中 v 后面的第一处空格位置是有 2 个空格，而我们在处理的时候是按照空格来分割每一行的内容的，这样 chars[1]就会变成一个空字符串，显然这不符合我们的初衷，所以这里就需要对字符串进行这样一个操作，希望大家在解析的过程中注意，好吧，我承认我想吐槽 3dsMax 了，我不明白同一家公司的 3dsMax 和 Maya 为什么不能互相转换，我不明白 3dsMax 导出.obj 文件的时候要做这样奇葩的设定，我更不明白为什么有开源、免费、轻巧的 Blender 都不去用非要每次都去安装容量动辄上 G 的盗版软件和不知道会不会变成下一个 GhostXXXX 的注册机，我更加不能容忍的是封闭的 FBX 格式和用起来就如同自虐的 FBX SDK;三角面的读取定义在 GetTriangleList()方法中，因此三角面的读取实际上首先需要将每一行文本按照空格进行分割，然后再将每一个元素按照/分割，这样就可以依次得到顶点索引、法线索引和 UV 索引"><title>解析 OBJ 模型并将其加载到 Unity3D 场景中</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E8%A7%A3%E6%9E%90obj%E6%A8%A1%E5%9E%8B%E5%B9%B6%E5%B0%86%E5%85%B6%E5%8A%A0%E8%BD%BD%E5%88%B0unity3d%E5%9C%BA%E6%99%AF%E4%B8%AD/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="解析 OBJ 模型并将其加载到 Unity3D 场景中">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="解析 OBJ 模型并将其加载到 Unity3D 场景中">
 <meta property="og:description" content="最后，全部的三角面会被读取到 faceVertexNormalUV 列表中，它表示的是每个三角面的顶点、法线和 UV 的索引向量，是一个 List类型的变量;这里可以注意到我们在开始对文本化的.obj 文件的内容有 1 次替换操作，这是因为在 3dsMax 中导出的.obj 文件关键字**v**这一行中 v 后面的第一处空格位置是有 2 个空格，而我们在处理的时候是按照空格来分割每一行的内容的，这样 chars[1]就会变成一个空字符串，显然这不符合我们的初衷，所以这里就需要对字符串进行这样一个操作，希望大家在解析的过程中注意，好吧，我承认我想吐槽 3dsMax 了，我不明白同一家公司的 3dsMax 和 Maya 为什么不能互相转换，我不明白 3dsMax 导出.obj 文件的时候要做这样奇葩的设定，我更不明白为什么有开源、免费、轻巧的 Blender 都不去用非要每次都去安装容量动辄上 G 的盗版软件和不知道会不会变成下一个 GhostXXXX 的注册机，我更加不能容忍的是封闭的 FBX 格式和用起来就如同自虐的 FBX SDK;三角面的读取定义在 GetTriangleList()方法中，因此三角面的读取实际上首先需要将每一行文本按照空格进行分割，然后再将每一个元素按照/分割，这样就可以依次得到顶点索引、法线索引和 UV 索引">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E8%A7%A3%E6%9E%90obj%E6%A8%A1%E5%9E%8B%E5%B9%B6%E5%B0%86%E5%85%B6%E5%8A%A0%E8%BD%BD%E5%88%B0unity3d%E5%9C%BA%E6%99%AF%E4%B8%AD/">
 <meta property="og:site_name" content="素履独行">
@@ -621,80 +621,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E7%94%BB%E5%AE%B6/ class=font_size_1>
-画家
+<a href=/tags/%E7%9B%91%E6%8E%A7/ class=font_size_2>
+监控
 </a>
-<a href=/tags/%E5%BD%B1%E8%AF%84/ class=font_size_10>
-影评
-</a>
-<a href=/tags/github/ class=font_size_2>
-Github
-</a>
-<a href=/tags/di/ class=font_size_2>
-DI
-</a>
-<a href=/tags/%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/ class=font_size_1>
-人脸检测
-</a>
-<a href=/tags/cors/ class=font_size_2>
-CORS
-</a>
-<a href=/tags/%E4%BA%8B%E4%BB%B6/ class=font_size_1>
-事件
-</a>
-<a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
-长安十二时辰
-</a>
-<a href=/tags/svn/ class=font_size_1>
-SVN
-</a>
-<a href=/tags/%E6%83%B3%E6%B3%95/ class=font_size_1>
-想法
-</a>
-<a href=/tags/%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6/ class=font_size_1>
-版本控制
+<a href=/tags/%E5%88%86%E5%B8%83%E5%BC%8F/ class=font_size_2>
+分布式
 </a>
 <a href=/tags/%E6%95%99%E7%A8%8B/ class=font_size_7>
 教程
 </a>
-<a href=/tags/%E5%BC%95%E6%93%8E/ class=font_size_1>
-引擎
+<a href=/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/ class=font_size_8>
+数据库
 </a>
-<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
-面试
+<a href=/tags/%E7%89%B9%E6%80%A7/ class=font_size_1>
+特性
 </a>
-<a href=/tags/%E9%98%B2%E7%96%AB/ class=font_size_1>
-防疫
+<a href=/tags/vue/ class=font_size_3>
+Vue
 </a>
-<a href=/tags/unity3d/ class=font_size_27>
-Unity3D
+<a href=/tags/%E5%A3%81%E7%BA%B8/ class=font_size_1>
+壁纸
+</a>
+<a href=/tags/%E5%9B%BE%E5%BD%A2/ class=font_size_3>
+图形
+</a>
+<a href=/tags/c++/ class=font_size_1>
+C++
+</a>
+<a href=/tags/python/ class=font_size_17>
+Python
+</a>
+<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
+调优
+</a>
+<a href=/tags/jsdelivr/ class=font_size_1>
+jsDelivr
+</a>
+<a href=/tags/%E7%8A%B6%E6%80%81/ class=font_size_1>
+状态
+</a>
+<a href=/tags/%E6%A6%82%E7%8E%87/ class=font_size_2>
+概率
+</a>
+<a href=/tags/rpg/ class=font_size_1>
+RPG
+</a>
+<a href=/tags/mvvm/ class=font_size_1>
+MVVM
 </a>
 <a href=/tags/love2d/ class=font_size_1>
 Love2D
 </a>
-<a href=/tags/%E6%97%A5%E6%9C%AC/ class=font_size_1>
-日本
+<a href=/tags/%E7%AB%A5%E8%AF%9D/ class=font_size_1>
+童话
 </a>
-<a href=/tags/websocket/ class=font_size_3>
-WebSocket
+<a href=/tags/%E9%9A%8F%E7%AC%94/ class=font_size_9>
+随笔
 </a>
-<a href=/tags/disunity/ class=font_size_1>
-disunity
+<a href=/tags/%E6%88%90%E9%95%BF/ class=font_size_3>
+成长
 </a>
-<a href=/tags/%E9%AA%8C%E8%AF%81/ class=font_size_1>
-验证
+<a href=/tags/lambda/ class=font_size_2>
+Lambda
 </a>
-<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
-脚本
+<a href=/tags/%E5%BC%80%E6%BA%90/ class=font_size_1>
+开源
 </a>
-<a href=/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/ class=font_size_1>
-响应式
+<a href=/tags/%E4%BA%BA%E6%96%87/ class=font_size_2>
+人文
 </a>
-<a href=/tags/webassembly/ class=font_size_1>
-WebAssembly
+<a href=/tags/webapi/ class=font_size_4>
+WebApi
 </a>
-<a href=/tags/%E5%9C%B0%E5%9B%BE/ class=font_size_1>
-地图
+<a href=/tags/fp/ class=font_size_1>
+FP
 </a>
 <a href=/tags class=font_size_9999>
 更多

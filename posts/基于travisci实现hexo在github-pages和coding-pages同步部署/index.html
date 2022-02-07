@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="我的想法是以 [Github](https://github.com/qinyuanpei/qinyuanpei.github.io) 作为代码的主仓库，其上面的 **blog** 分支存放博客的源代码， **master** 分支存放博客的静态页面，在此基础上，我们同时推送静态页面到 Github 和 Coding 的代码仓库，这样就可以实现两个平台的同步部署，这里的部署自然是指由 Travis 完成的自动化部署;其原理是 Github 为 [Travis CI](https://www.travis-ci.org/) 分配一个 token，当我们向 Github 推送新的代码以后，Travis 就会从代码仓库中拉取代码，并通过 [npm](https://www.npmjs.com/) 安装依赖生成静态页面，我们将这些静态页面推送到 master 分支，即可完成对 Hexo 的部署操作;各位朋友，大家好，我是 Payne，欢迎大家关注我的博客，我的博客地址是 [https://qinyuanpei.github.io](https://qinyuanpei.github.io) .在曾经的一篇博客：[《持续集成在 Hexo 自动化部署上的实践》](https://qinyuanpei.github.io/posts/3521618732/)中，我为大家分享了在线持续集成服务  [Travis CI](https://www.travis-ci.org/) 的相关内容，在这篇文章中我们通过  [Travis CI](https://www.travis-ci.org/) 为 Hexo 提供了自动部署的支持"><title>基于 Travis CI 实现 Hexo 在 Github 和 Coding 的同步部署</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E5%9F%BA%E4%BA%8Etravisci%E5%AE%9E%E7%8E%B0hexo%E5%9C%A8github-pages%E5%92%8Ccoding-pages%E5%90%8C%E6%AD%A5%E9%83%A8%E7%BD%B2/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="基于 Travis CI 实现 Hexo 在 Github 和 Coding 的同步部署">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="基于 Travis CI 实现 Hexo 在 Github 和 Coding 的同步部署">
 <meta property="og:description" content="我的想法是以 [Github](https://github.com/qinyuanpei/qinyuanpei.github.io) 作为代码的主仓库，其上面的 **blog** 分支存放博客的源代码， **master** 分支存放博客的静态页面，在此基础上，我们同时推送静态页面到 Github 和 Coding 的代码仓库，这样就可以实现两个平台的同步部署，这里的部署自然是指由 Travis 完成的自动化部署;其原理是 Github 为 [Travis CI](https://www.travis-ci.org/) 分配一个 token，当我们向 Github 推送新的代码以后，Travis 就会从代码仓库中拉取代码，并通过 [npm](https://www.npmjs.com/) 安装依赖生成静态页面，我们将这些静态页面推送到 master 分支，即可完成对 Hexo 的部署操作;各位朋友，大家好，我是 Payne，欢迎大家关注我的博客，我的博客地址是 [https://qinyuanpei.github.io](https://qinyuanpei.github.io) .在曾经的一篇博客：[《持续集成在 Hexo 自动化部署上的实践》](https://qinyuanpei.github.io/posts/3521618732/)中，我为大家分享了在线持续集成服务  [Travis CI](https://www.travis-ci.org/) 的相关内容，在这篇文章中我们通过  [Travis CI](https://www.travis-ci.org/) 为 Hexo 提供了自动部署的支持">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E5%9F%BA%E4%BA%8Etravisci%E5%AE%9E%E7%8E%B0hexo%E5%9C%A8github-pages%E5%92%8Ccoding-pages%E5%90%8C%E6%AD%A5%E9%83%A8%E7%BD%B2/">
 <meta property="og:site_name" content="素履独行">
@@ -397,80 +397,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/polly/ class=font_size_1>
-Polly
+<a href=/tags/abp/ class=font_size_2>
+ABP
 </a>
-<a href=/tags/%E6%95%B0%E5%AD%A6/ class=font_size_4>
-数学
+<a href=/tags/%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/ class=font_size_1>
+夏目漱石
 </a>
-<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
-对象池
+<a href=/tags/grafana/ class=font_size_1>
+Grafana
 </a>
-<a href=/tags/dynamic-proxy/ class=font_size_1>
-Dynamic Proxy
+<a href=/tags/%E5%A4%9A%E7%A7%9F%E6%88%B7/ class=font_size_1>
+多租户
 </a>
-<a href=/tags/%E5%91%BD%E4%BB%A4/ class=font_size_1>
-命令
+<a href=/tags/jsonp/ class=font_size_1>
+JSONP
 </a>
-<a href=/tags/webapi/ class=font_size_4>
-WebApi
+<a href=/tags/sonar/ class=font_size_1>
+Sonar
 </a>
-<a href=/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/ class=font_size_1>
-模板引擎
+<a href=/tags/protobuf/ class=font_size_1>
+Protobuf
 </a>
-<a href=/tags/%E8%B5%84%E6%BA%90%E6%8F%90%E5%8F%96/ class=font_size_1>
-资源提取
+<a href=/tags/ugui/ class=font_size_5>
+uGUI
 </a>
-<a href=/tags/jexus/ class=font_size_1>
-Jexus
+<a href=/tags/%E6%8A%80%E6%9C%AF/ class=font_size_2>
+技术
 </a>
-<a href=/tags/sdl/ class=font_size_2>
-SDL
+<a href=/tags/svn/ class=font_size_1>
+SVN
 </a>
-<a href=/tags/linux/ class=font_size_5>
-Linux
+<a href=/tags/%E7%9F%A5%E8%AF%86%E5%85%B1%E4%BA%AB/ class=font_size_1>
+知识共享
 </a>
-<a href=/tags/visual-studio/ class=font_size_1>
-Visual Studio
+<a href=/tags/%E5%B9%B4%E5%BA%A6/ class=font_size_1>
+年度
 </a>
-<a href=/tags/%E6%8E%A8%E8%8D%90/ class=font_size_1>
-推荐
+<a href=/tags/%E5%81%A5%E5%BA%B7%E7%A0%81/ class=font_size_1>
+健康码
 </a>
-<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/ class=font_size_10>
-游戏开发
+<a href=/tags/rpg/ class=font_size_1>
+RPG
 </a>
-<a href=/tags/%E7%94%9F%E6%B4%BB/ class=font_size_7>
-生活
+<a href=/tags/%E5%8F%8D%E7%BC%96%E8%AF%91/ class=font_size_1>
+反编译
 </a>
-<a href=/tags/%E9%9F%A9%E5%AF%92/ class=font_size_1>
-韩寒
+<a href=/tags/msbuild/ class=font_size_1>
+MSBuild
 </a>
-<a href=/tags/%E5%92%8C%E5%B9%B3/ class=font_size_1>
-和平
+<a href=/tags/%E5%9B%BE%E5%BA%8A/ class=font_size_1>
+图床
 </a>
-<a href=/tags/sklearn/ class=font_size_1>
-Sklearn
+<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
+面试
 </a>
-<a href=/tags/ado.net/ class=font_size_1>
-ADO.NET
+<a href=/tags/%E7%BC%96%E8%AF%91/ class=font_size_1>
+编译
 </a>
-<a href=/tags/%E5%9B%9E%E9%A1%BE/ class=font_size_1>
-回顾
+<a href=/tags/%E5%BF%83%E6%83%85/ class=font_size_1>
+心情
 </a>
-<a href=/tags/%E6%AF%95%E4%B8%9A%E5%AD%A3/ class=font_size_1>
-毕业季
+<a href=/tags/%E5%BE%AE%E4%BF%A1/ class=font_size_1>
+微信
 </a>
-<a href=/tags/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/ class=font_size_1>
-读写分离
+<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
+平凡
 </a>
-<a href=/tags/%E4%B8%80%E5%87%BA%E5%A5%BD%E6%88%8F/ class=font_size_1>
-一出好戏
+<a href=/tags/%E4%BA%8B%E4%BB%B6/ class=font_size_1>
+事件
 </a>
-<a href=/tags/%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/ class=font_size_1>
-人脸检测
+<a href=/tags/es6/ class=font_size_1>
+ES6
 </a>
-<a href=/tags/hashset/ class=font_size_1>
-HashSet
+<a href=/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/ class=font_size_1>
+函数式编程
 </a>
 <a href=/tags class=font_size_9999>
 更多

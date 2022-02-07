@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="在这里 Contract 实现了 IRankable 接口，每个 Contract 的权重由 Level 和 Priority 两个属性来计算，示例中我们一次从集合中随机抽取了 10 个 Contract，而我们的算法能够保证它们都是不重复的，这个程序可以满足各种各样的抽取规则，比如按照 Contract 的口语、职位等不同的维度进行概率模型的建立即可，只要它实现了 IRankable 接口就可以使用这篇文章中的方法来随机抽取，这其实是一个业余时间的小项目啦，可我还是想让自己认真地考虑下这个问题，所以我花时间写了这篇文章，我对它的期望并没有太高，我喜欢将这些想法写下来而已;后者在每次抽取完以后需要将抽中的奖品从奖品池中取出，重新计算概率后方能进行下一轮抽取，所以这里我们直接给出这两两种抽取方法的代码实现，这里需要考虑的一个问题是，在抽取指定数目个“奖品”的时候我们通常不希望出现重复的元素，前者需要我们判断已抽取的奖品列表中是否存在指定元素，而后者因为抽取的奖品会被取出，所以不需要考虑这种情况的处理;好了，现在我们就获得了不同权重物品所对应的累积概率，即其概率范围，因此我们可以利用随机生成[0,1)范围内的随机数，然后判断随机数所在哪个概率范围内，我们就可以知道要对哪个权重分组中的奖品进行抽取，而对每个权重分组来说，因为其权重都是一样的，所以这里抽取试验可以认为是符合随机概率的，我们只需要从该分组中随机选取一个奖品返回就可以啦"><title>一个关于概率的问题的思考</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E4%B8%80%E4%B8%AA%E5%85%B3%E4%BA%8E%E6%A6%82%E7%8E%87%E7%9A%84%E9%97%AE%E9%A2%98%E7%9A%84%E6%80%9D%E8%80%83/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="一个关于概率的问题的思考">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="一个关于概率的问题的思考">
 <meta property="og:description" content="在这里 Contract 实现了 IRankable 接口，每个 Contract 的权重由 Level 和 Priority 两个属性来计算，示例中我们一次从集合中随机抽取了 10 个 Contract，而我们的算法能够保证它们都是不重复的，这个程序可以满足各种各样的抽取规则，比如按照 Contract 的口语、职位等不同的维度进行概率模型的建立即可，只要它实现了 IRankable 接口就可以使用这篇文章中的方法来随机抽取，这其实是一个业余时间的小项目啦，可我还是想让自己认真地考虑下这个问题，所以我花时间写了这篇文章，我对它的期望并没有太高，我喜欢将这些想法写下来而已;后者在每次抽取完以后需要将抽中的奖品从奖品池中取出，重新计算概率后方能进行下一轮抽取，所以这里我们直接给出这两两种抽取方法的代码实现，这里需要考虑的一个问题是，在抽取指定数目个“奖品”的时候我们通常不希望出现重复的元素，前者需要我们判断已抽取的奖品列表中是否存在指定元素，而后者因为抽取的奖品会被取出，所以不需要考虑这种情况的处理;好了，现在我们就获得了不同权重物品所对应的累积概率，即其概率范围，因此我们可以利用随机生成[0,1)范围内的随机数，然后判断随机数所在哪个概率范围内，我们就可以知道要对哪个权重分组中的奖品进行抽取，而对每个权重分组来说，因为其权重都是一样的，所以这里抽取试验可以认为是符合随机概率的，我们只需要从该分组中随机选取一个奖品返回就可以啦">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E4%B8%80%E4%B8%AA%E5%85%B3%E4%BA%8E%E6%A6%82%E7%8E%87%E7%9A%84%E9%97%AE%E9%A2%98%E7%9A%84%E6%80%9D%E8%80%83/">
 <meta property="og:site_name" content="素履独行">
@@ -573,80 +573,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E6%8E%A8%E8%8D%90/ class=font_size_1>
-推荐
+<a href=/tags/github/ class=font_size_2>
+Github
 </a>
-<a href=/tags/%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80/ class=font_size_1>
-脚本语言
+<a href=/tags/linux/ class=font_size_5>
+Linux
 </a>
-<a href=/tags/%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/ class=font_size_1>
-动态加载
+<a href=/tags/%E5%85%B3%E5%8D%A1%E7%B3%BB%E7%BB%9F/ class=font_size_1>
+关卡系统
 </a>
-<a href=/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/ class=font_size_1>
-响应式
+<a href=/tags/%E9%A9%AC%E5%B0%94%E5%85%8B%E6%96%AF/ class=font_size_1>
+马尔克斯
 </a>
-<a href=/tags/di/ class=font_size_2>
-DI
+<a href=/tags/%E5%92%8C%E5%B9%B3/ class=font_size_1>
+和平
 </a>
-<a href=/tags/%E7%88%B1%E6%83%85/ class=font_size_2>
-爱情
+<a href=/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/ class=font_size_8>
+微服务
+</a>
+<a href=/tags/referrer/ class=font_size_1>
+Referrer
+</a>
+<a href=/tags/%E5%AE%B9%E5%99%A8/ class=font_size_1>
+容器
+</a>
+<a href=/tags/jwt/ class=font_size_1>
+JWT
+</a>
+<a href=/tags/%E7%94%9F%E6%AD%BB/ class=font_size_1>
+生死
+</a>
+<a href=/tags/%E6%83%85%E6%84%9F/ class=font_size_1>
+情感
+</a>
+<a href=/tags/%E5%A7%94%E6%89%98/ class=font_size_1>
+委托
+</a>
+<a href=/tags/%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/ class=font_size_1>
+夏目漱石
+</a>
+<a href=/tags/consul/ class=font_size_1>
+Consul
+</a>
+<a href=/tags/ar/ class=font_size_3>
+AR
+</a>
+<a href=/tags/websocket/ class=font_size_3>
+WebSocket
+</a>
+<a href=/tags/oracle/ class=font_size_1>
+Oracle
+</a>
+<a href=/tags/%E7%94%9F%E6%B4%BB/ class=font_size_7>
+生活
+</a>
+<a href=/tags/%E7%9F%AB%E6%83%85/ class=font_size_1>
+矫情
+</a>
+<a href=/tags/%E4%BA%8B%E4%BB%B6/ class=font_size_1>
+事件
+</a>
+<a href=/tags/grafana/ class=font_size_1>
+Grafana
 </a>
 <a href=/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/ class=font_size_1>
 函数式编程
 </a>
-<a href=/tags/%E6%8F%92%E4%BB%B6/ class=font_size_3>
-插件
+<a href=/tags/%E7%89%88%E6%9D%83/ class=font_size_1>
+版权
 </a>
-<a href=/tags/%E6%97%B6%E9%97%B4/ class=font_size_3>
-时间
+<a href=/tags/kafka/ class=font_size_1>
+Kafka
 </a>
-<a href=/tags/%E6%83%B3%E6%B3%95/ class=font_size_1>
-想法
-</a>
-<a href=/tags/web/ class=font_size_4>
-Web
-</a>
-<a href=/tags/mmd/ class=font_size_1>
-MMD
-</a>
-<a href=/tags/server-%E9%85%B1/ class=font_size_1>
-Server 酱
-</a>
-<a href=/tags/socket/ class=font_size_2>
-Socket
-</a>
-<a href=/tags/%E9%9A%8F%E7%AC%94/ class=font_size_9>
-随笔
-</a>
-<a href=/tags/%E5%8F%8D%E7%BC%96%E8%AF%91/ class=font_size_1>
-反编译
-</a>
-<a href=/tags/%E5%9B%9E%E5%BF%86/ class=font_size_1>
-回忆
-</a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E7%A0%81/ class=font_size_1>
-健康码
-</a>
-<a href=/tags/docker/ class=font_size_4>
-Docker
-</a>
-<a href=/tags/pwa/ class=font_size_1>
-PWA
-</a>
-<a href=/tags/%E6%95%B0%E6%8D%AE/ class=font_size_1>
-数据
-</a>
-<a href=/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/ class=font_size_6>
-服务器
-</a>
-<a href=/tags/dapper/ class=font_size_3>
-Dapper
-</a>
-<a href=/tags/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF/ class=font_size_1>
-朴素贝叶斯
-</a>
-<a href=/tags/%E8%BD%AF%E4%BB%B6/ class=font_size_1>
-软件
+<a href=/tags/blazor/ class=font_size_1>
+Blazor
 </a>
 <a href=/tags class=font_size_9999>
 更多

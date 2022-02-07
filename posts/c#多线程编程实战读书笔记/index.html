@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="* Tips38：通过 Task 实例的 ConfigureAwait()方法，可以设置使用 await 时同步上下文的行为，默认情况下，await 操作符会尝试捕捉同步上下文，并在其中执行代码，即调度器会向 UI 线程投入成千上百个后续操作任务，这会使用它的消息循环来异步地执行这些任务，当我们不需要在 UI 线程中运行这些代码时，向 ConfigureAwait 方法传入 false 将会是一个更高效的方案;* Tips51：ParallelEnumerable 类含有 PLINQ 的全部逻辑，并且作为 IEnumerable 集合功能的一组扩展方法，默认情况下结果会被合并单个线程中，我们可以通过 ForAll 方法来指定处理逻辑，此时它们使用的是同一个线程，将跳过合并结果的过程，除了 AsParallel()方法，我们同样可以使用 AsSequential()方法，来使得 PLINQ 查询以顺序方式执行(相对于并行);* Tips13：SemaphoreSlim 是 Semaphore 的轻量级版本，用以限制同时访问同一个资源的线程数量，超过该数量的线程需要等待，直到之前的线程中某一个完成工作，并调用 Release()方法发出信号，其使用了混合模式，而 Semaphore 则使用内核模式，可以在跨程序同步的场景下使用"><title>《C#多线程编程实战》读书笔记</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/c#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="《C#多线程编程实战》读书笔记">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="《C#多线程编程实战》读书笔记">
 <meta property="og:description" content="* Tips38：通过 Task 实例的 ConfigureAwait()方法，可以设置使用 await 时同步上下文的行为，默认情况下，await 操作符会尝试捕捉同步上下文，并在其中执行代码，即调度器会向 UI 线程投入成千上百个后续操作任务，这会使用它的消息循环来异步地执行这些任务，当我们不需要在 UI 线程中运行这些代码时，向 ConfigureAwait 方法传入 false 将会是一个更高效的方案;* Tips51：ParallelEnumerable 类含有 PLINQ 的全部逻辑，并且作为 IEnumerable 集合功能的一组扩展方法，默认情况下结果会被合并单个线程中，我们可以通过 ForAll 方法来指定处理逻辑，此时它们使用的是同一个线程，将跳过合并结果的过程，除了 AsParallel()方法，我们同样可以使用 AsSequential()方法，来使得 PLINQ 查询以顺序方式执行(相对于并行);* Tips13：SemaphoreSlim 是 Semaphore 的轻量级版本，用以限制同时访问同一个资源的线程数量，超过该数量的线程需要等待，直到之前的线程中某一个完成工作，并调用 Release()方法发出信号，其使用了混合模式，而 Semaphore 则使用内核模式，可以在跨程序同步的场景下使用">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/c#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
 <meta property="og:site_name" content="素履独行">
@@ -449,80 +449,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E5%A3%81%E7%BA%B8/ class=font_size_1>
-壁纸
+<a href=/tags/%E6%97%A5%E6%9C%AC%E6%96%87%E5%AD%A6/ class=font_size_1>
+日本文学
 </a>
-<a href=/tags/%E5%9C%B0%E5%9B%BE/ class=font_size_1>
-地图
+<a href=/tags/%E6%80%9D%E7%BB%B4/ class=font_size_1>
+思维
 </a>
-<a href=/tags/ar/ class=font_size_3>
-AR
+<a href=/tags/%E5%A4%A7%E6%8A%A4%E6%B3%95/ class=font_size_1>
+大护法
 </a>
-<a href=/tags/%E7%BD%91%E5%85%B3/ class=font_size_1>
-网关
+<a href=/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/ class=font_size_1>
+函数式编程
 </a>
-<a href=/tags/%E7%94%BB%E5%AE%B6/ class=font_size_1>
-画家
+<a href=/tags/%E6%B5%AA%E5%AE%A2%E5%89%91%E5%BF%83/ class=font_size_1>
+浪客剑心
 </a>
-<a href=/tags/nlp/ class=font_size_2>
-NLP
+<a href=/tags/dottrace/ class=font_size_1>
+dotTrace
 </a>
-<a href=/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/ class=font_size_1>
-大数据
+<a href=/tags/%E5%B9%B4%E5%8D%8E/ class=font_size_1>
+年华
 </a>
-<a href=/tags/%E6%97%A0%E9%97%AE%E8%A5%BF%E4%B8%9C/ class=font_size_1>
-无问西东
+<a href=/tags/c#/ class=font_size_7>
+C#
 </a>
-<a href=/tags/%E7%88%AC%E8%99%AB/ class=font_size_2>
-爬虫
+<a href=/tags/mapreduce/ class=font_size_1>
+MapReduce
 </a>
-<a href=/tags/assetbundle/ class=font_size_2>
-AssetBundle
+<a href=/tags/%E4%BA%BA%E7%94%9F/ class=font_size_2>
+人生
 </a>
-<a href=/tags/redis/ class=font_size_8>
-Redis
+<a href=/tags/%E6%A8%A1%E5%9E%8B/ class=font_size_1>
+模型
 </a>
 <a href=/tags/dapper/ class=font_size_3>
 Dapper
 </a>
-<a href=/tags/ztree/ class=font_size_1>
-zTree
+<a href=/tags/%E5%AD%A4%E7%8B%AC/ class=font_size_1>
+孤独
 </a>
-<a href=/tags/dbeaver/ class=font_size_1>
-DBeaver
+<a href=/tags/ci/ class=font_size_2>
+CI
 </a>
-<a href=/tags/fp/ class=font_size_1>
-FP
+<a href=/tags/%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/ class=font_size_1>
+虚拟摇杆
 </a>
-<a href=/tags/%E8%B0%83%E8%AF%95/ class=font_size_1>
-调试
+<a href=/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/ class=font_size_1>
+负载均衡
 </a>
-<a href=/tags/restful/ class=font_size_4>
-RESTful
+<a href=/tags/javascript/ class=font_size_1>
+JavaScript
 </a>
-<a href=/tags/%E8%BF%81%E7%A7%BB/ class=font_size_1>
-迁移
+<a href=/tags/%E8%AF%B7%E8%AE%B0%E4%BD%8F%E6%88%91/ class=font_size_1>
+请记住我
 </a>
-<a href=/tags/%E6%8E%A8%E8%8D%90/ class=font_size_1>
-推荐
+<a href=/tags/2019/ class=font_size_1>
+2019
 </a>
-<a href=/tags/api/ class=font_size_1>
-API
+<a href=/tags/.net-core/ class=font_size_14>
+.NET Core
 </a>
-<a href=/tags/kindle/ class=font_size_3>
-Kindle
+<a href=/tags/web-api/ class=font_size_1>
+Web API
 </a>
-<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
-展望
+<a href=/tags/%E8%B5%84%E6%BA%90%E6%8F%90%E5%8F%96/ class=font_size_1>
+资源提取
 </a>
-<a href=/tags/%E5%93%B2%E5%AD%A6/ class=font_size_3>
-哲学
+<a href=/tags/js/ class=font_size_1>
+JS
 </a>
-<a href=/tags/blazor/ class=font_size_1>
-Blazor
+<a href=/tags/%E5%9B%BE%E5%BD%A2/ class=font_size_3>
+图形
 </a>
-<a href=/tags/eventbus/ class=font_size_1>
-EventBus
+<a href=/tags/%E6%A0%A1%E9%AA%8C/ class=font_size_1>
+校验
 </a>
 <a href=/tags class=font_size_9999>
 更多

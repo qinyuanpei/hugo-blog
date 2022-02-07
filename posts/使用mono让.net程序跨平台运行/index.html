@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="我们可以看到命令行下输出了我们期望的 Hello World，这意味着我们编写的程序现在运行在 Mono 中了，实际上在 Windows 下由 Mono 提供的 C#编译器 mcs.exe 编译的 IL 文件双击是可以直接运行的，因为我们的计算机上安装了 CLR，它作为.NET 的一部分内置在我们的计算机中;所以我们可以这样理解.NET 程序跨平台，因为 IL 文件是一个和平台无关、和 CPU 无关的、跨平台的文件结构，所以我们只需要在不同的平台上实现这样一个公共语言运行时(CLR)就可以实现在不同的平台上运行同一个程序;由此我们会发现一个问题，我们这里的跨平台实际上是编译器、运行时和基础类库这三部分的跨平台，这意味着我们在 Linux 下运行.NET 程序是需要 Mono 提供支持的"><title>使用 Mono 让.NET 程序跨平台运行</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E4%BD%BF%E7%94%A8mono%E8%AE%A9.net%E7%A8%8B%E5%BA%8F%E8%B7%A8%E5%B9%B3%E5%8F%B0%E8%BF%90%E8%A1%8C/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="使用 Mono 让.NET 程序跨平台运行">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="使用 Mono 让.NET 程序跨平台运行">
 <meta property="og:description" content="我们可以看到命令行下输出了我们期望的 Hello World，这意味着我们编写的程序现在运行在 Mono 中了，实际上在 Windows 下由 Mono 提供的 C#编译器 mcs.exe 编译的 IL 文件双击是可以直接运行的，因为我们的计算机上安装了 CLR，它作为.NET 的一部分内置在我们的计算机中;所以我们可以这样理解.NET 程序跨平台，因为 IL 文件是一个和平台无关、和 CPU 无关的、跨平台的文件结构，所以我们只需要在不同的平台上实现这样一个公共语言运行时(CLR)就可以实现在不同的平台上运行同一个程序;由此我们会发现一个问题，我们这里的跨平台实际上是编译器、运行时和基础类库这三部分的跨平台，这意味着我们在 Linux 下运行.NET 程序是需要 Mono 提供支持的">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E4%BD%BF%E7%94%A8mono%E8%AE%A9.net%E7%A8%8B%E5%BA%8F%E8%B7%A8%E5%B9%B3%E5%8F%B0%E8%BF%90%E8%A1%8C/">
 <meta property="og:site_name" content="素履独行">
@@ -397,80 +397,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
-面试
+<a href=/tags/ai/ class=font_size_1>
+AI
 </a>
-<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/ class=font_size_1>
-游戏引擎
+<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
+塔防
 </a>
-<a href=/tags/sse/ class=font_size_1>
-SSE
+<a href=/tags/%E4%BD%90%E8%97%A4%E5%81%A5/ class=font_size_1>
+佐藤健
 </a>
-<a href=/tags/%E7%AC%94%E8%AE%B0/ class=font_size_8>
-笔记
-</a>
-<a href=/tags/fp/ class=font_size_1>
-FP
-</a>
-<a href=/tags/%E7%8E%B0%E5%AE%9E/ class=font_size_1>
-现实
-</a>
-<a href=/tags/%E5%9C%B0%E5%9B%BE/ class=font_size_1>
-地图
-</a>
-<a href=/tags/sublime/ class=font_size_1>
-Sublime
-</a>
-<a href=/tags/%E6%97%B6%E9%97%B4/ class=font_size_3>
-时间
-</a>
-<a href=/tags/httpclient/ class=font_size_2>
-HttpClient
-</a>
-<a href=/tags/%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/ class=font_size_1>
-人脸检测
-</a>
-<a href=/tags/%E5%AE%B9%E5%99%A8/ class=font_size_1>
-容器
-</a>
-<a href=/tags/%E6%88%91%E6%98%AF%E7%8C%AB/ class=font_size_1>
-我是猫
+<a href=/tags/mecanim/ class=font_size_1>
+Mecanim
 </a>
 <a href=/tags/%E4%BA%BA%E7%94%9F/ class=font_size_2>
 人生
 </a>
-<a href=/tags/%E6%97%A0%E9%97%AE%E8%A5%BF%E4%B8%9C/ class=font_size_1>
-无问西东
+<a href=/tags/%E6%95%B0%E5%AD%A6/ class=font_size_4>
+数学
 </a>
-<a href=/tags/retrofit/ class=font_size_1>
-Retrofit
+<a href=/tags/%E5%BE%AE%E5%8D%9A/ class=font_size_3>
+微博
 </a>
-<a href=/tags/2019/ class=font_size_1>
-2019
+<a href=/tags/%E9%87%8D%E8%AF%95/ class=font_size_2>
+重试
 </a>
-<a href=/tags/%E5%B9%B4%E5%8D%8E/ class=font_size_1>
-年华
+<a href=/tags/%E6%84%9F%E6%82%9F/ class=font_size_14>
+感悟
 </a>
-<a href=/tags/http/ class=font_size_9>
-HTTP
+<a href=/tags/rsetful/ class=font_size_1>
+RSETful
 </a>
-<a href=/tags/ai/ class=font_size_1>
-AI
+<a href=/tags/tracing/ class=font_size_1>
+Tracing
 </a>
-<a href=/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/ class=font_size_1>
-自动化
+<a href=/tags/%E5%9B%BE%E5%BD%A2/ class=font_size_3>
+图形
 </a>
-<a href=/tags/%E8%AF%81%E4%B9%A6/ class=font_size_1>
-证书
+<a href=/tags/%E7%89%B9%E6%80%A7/ class=font_size_1>
+特性
 </a>
-<a href=/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/ class=font_size_1>
-响应式
+<a href=/tags/%E6%96%87%E6%A1%A3/ class=font_size_1>
+文档
 </a>
-<a href=/tags/di/ class=font_size_2>
-DI
+<a href=/tags/dottrace/ class=font_size_1>
+dotTrace
 </a>
-<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
-调优
+<a href=/tags/docker/ class=font_size_4>
+Docker
+</a>
+<a href=/tags/any/ class=font_size_1>
+Any
+</a>
+<a href=/tags/jetbrain/ class=font_size_1>
+JetBrain
+</a>
+<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
+异步
+</a>
+<a href=/tags/%E4%B8%83%E7%89%9B/ class=font_size_1>
+七牛
+</a>
+<a href=/tags/thoughtworks/ class=font_size_1>
+ThoughtWorks
+</a>
+<a href=/tags/git/ class=font_size_2>
+Git
+</a>
+<a href=/tags/es6/ class=font_size_1>
+ES6
+</a>
+<a href=/tags/%E6%B8%B8%E6%88%8F/ class=font_size_13>
+游戏
+</a>
+<a href=/tags/%E7%AC%94%E8%AE%B0/ class=font_size_8>
+笔记
 </a>
 <a href=/tags class=font_size_9999>
 更多

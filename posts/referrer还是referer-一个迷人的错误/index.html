@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="既然要使用`Referer`这个错误的拼写，那就一直这样错下去好了，为什么特么又冒出来个`Referrer`，虽然它的拼写的确是对的，可不统一的写法还是会让人抓狂啊;说到这里，大家至少明白了一件事情，这个错误的`Referer`其实是指`Referrer`;有人说，使用 JavaScript 开发同构应用的体验非常好，恐怕从今天这篇博客以后要打个折扣，因为你刚刚在后端写完`referer`，转眼就要在前端写`referrer`，希望像博主这样的`伪全栈工程师`不会因此而精神分裂"><title>Referrer 还是 Referer? 一个迷人的错误</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/referrer%E8%BF%98%E6%98%AFreferer-%E4%B8%80%E4%B8%AA%E8%BF%B7%E4%BA%BA%E7%9A%84%E9%94%99%E8%AF%AF/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="Referrer 还是 Referer? 一个迷人的错误">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="Referrer 还是 Referer? 一个迷人的错误">
 <meta property="og:description" content="既然要使用`Referer`这个错误的拼写，那就一直这样错下去好了，为什么特么又冒出来个`Referrer`，虽然它的拼写的确是对的，可不统一的写法还是会让人抓狂啊;说到这里，大家至少明白了一件事情，这个错误的`Referer`其实是指`Referrer`;有人说，使用 JavaScript 开发同构应用的体验非常好，恐怕从今天这篇博客以后要打个折扣，因为你刚刚在后端写完`referer`，转眼就要在前端写`referrer`，希望像博主这样的`伪全栈工程师`不会因此而精神分裂">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/referrer%E8%BF%98%E6%98%AFreferer-%E4%B8%80%E4%B8%AA%E8%BF%B7%E4%BA%BA%E7%9A%84%E9%94%99%E8%AF%AF/">
 <meta property="og:site_name" content="素履独行">
@@ -371,80 +371,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/webassembly/ class=font_size_1>
-WebAssembly
+<a href=/tags/%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5/ class=font_size_1>
+健康检查
 </a>
-<a href=/tags/html5/ class=font_size_2>
-HTML5
+<a href=/tags/castle/ class=font_size_1>
+Castle
 </a>
-<a href=/tags/rsetful/ class=font_size_1>
-RSETful
+<a href=/tags/%E5%BC%82%E5%B8%B8/ class=font_size_3>
+异常
 </a>
-<a href=/tags/form/ class=font_size_1>
-Form
+<a href=/tags/windows/ class=font_size_1>
+Windows
 </a>
-<a href=/tags/%E9%85%8D%E7%BD%AE/ class=font_size_1>
-配置
+<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
+同步
 </a>
-<a href=/tags/%E5%BB%BA%E7%AD%91/ class=font_size_1>
-建筑
+<a href=/tags/%E6%96%87%E4%BB%B6/ class=font_size_1>
+文件
 </a>
-<a href=/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/ class=font_size_2>
-依赖注入
-</a>
-<a href=/tags/wechat/ class=font_size_1>
-Wechat
-</a>
-<a href=/tags/%E6%84%9F%E6%82%9F/ class=font_size_14>
-感悟
-</a>
-<a href=/tags/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/ class=font_size_1>
-读写分离
+<a href=/tags/excel/ class=font_size_1>
+Excel
 </a>
 <a href=/tags/%E5%AE%B9%E5%99%A8/ class=font_size_1>
 容器
 </a>
-<a href=/tags/rpg/ class=font_size_1>
-RPG
+<a href=/tags/%E8%AF%97%E4%BA%BA/ class=font_size_1>
+诗人
 </a>
-<a href=/tags/%E5%AE%9E%E4%BD%93/ class=font_size_2>
-实体
+<a href=/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class=font_size_3>
+中间件
 </a>
-<a href=/tags/%E6%B6%88%E6%81%AF/ class=font_size_1>
-消息
+<a href=/tags/jaeger/ class=font_size_1>
+Jaeger
 </a>
-<a href=/tags/%E8%B5%84%E6%BA%90%E6%8F%90%E5%8F%96/ class=font_size_1>
-资源提取
-</a>
-<a href=/tags/%E6%95%B0%E5%AD%A6/ class=font_size_4>
-数学
-</a>
-<a href=/tags/%E7%AC%94%E8%AE%B0/ class=font_size_8>
-笔记
-</a>
-<a href=/tags/%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/ class=font_size_1>
-夏目漱石
-</a>
-<a href=/tags/ado.net/ class=font_size_1>
-ADO.NET
-</a>
-<a href=/tags/%E6%95%99%E7%A8%8B/ class=font_size_7>
-教程
-</a>
-<a href=/tags/%E7%BD%91%E5%85%B3/ class=font_size_1>
-网关
+<a href=/tags/webapi/ class=font_size_4>
+WebApi
 </a>
 <a href=/tags/%E8%AE%BF%E9%97%AE%E9%87%8F/ class=font_size_1>
 访问量
 </a>
-<a href=/tags/%E6%A8%A1%E5%9E%8B/ class=font_size_1>
-模型
+<a href=/tags/%E9%87%8D%E8%AF%95/ class=font_size_2>
+重试
 </a>
-<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
-平凡
+<a href=/tags/ado.net/ class=font_size_1>
+ADO.NET
 </a>
-<a href=/tags/%E9%85%8D%E8%BD%BD/ class=font_size_1>
-配载
+<a href=/tags/%E4%B8%80%E5%87%BA%E5%A5%BD%E6%88%8F/ class=font_size_1>
+一出好戏
+</a>
+<a href=/tags/sublime/ class=font_size_1>
+Sublime
+</a>
+<a href=/tags/%E6%B8%B8%E6%88%8F/ class=font_size_13>
+游戏
+</a>
+<a href=/tags/swagger/ class=font_size_2>
+Swagger
+</a>
+<a href=/tags/%E4%B8%83%E7%89%9B/ class=font_size_1>
+七牛
+</a>
+<a href=/tags/%E5%B7%A5%E5%85%B7/ class=font_size_2>
+工具
+</a>
+<a href=/tags/cg/ class=font_size_1>
+CG
+</a>
+<a href=/tags/%E8%A1%8C%E4%B8%9A/ class=font_size_1>
+行业
+</a>
+<a href=/tags/%E7%94%9F%E6%AD%BB/ class=font_size_1>
+生死
+</a>
+<a href=/tags/java/ class=font_size_1>
+Java
 </a>
 <a href=/tags class=font_size_9999>
 更多

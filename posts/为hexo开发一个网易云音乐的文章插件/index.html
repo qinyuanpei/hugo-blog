@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="这段代码博主在本地使用 NodeJS 测试了没有不过什么问题，大家可以在截图中清楚地看到[music:29713754]已经被替换称了网易云音乐的 Flash 组件，这样在网页中就会显示出网易云音乐的播放器，我们就能听到这熟悉而温暖的旋律了;那么，现在我们其实就是在做这样一件事情，我们在文章中插入这样一个[key:value]的结构，然后通过程序将它替换成相应的 HTML 结构，这样就实现了在 Hexo 的文章中使用[key:value]结构来编写简单插件的功能，如果经历过使用 wordpress 建站的朋友一定知道，在 wordpress 中存在许多这样的类似插件，可以帮助写作者简化某些输入内容;相信经过博主的一番介绍，大家已经对这段代码相当熟悉了吧，这里就是先做判断，判断文章内容中是否有[key:vaule]这样的结构，如果没有就直接输出item.content"><title>为 Hexo 开发一个网易云音乐的文章插件</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E4%B8%BAhexo%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%E7%9A%84%E6%96%87%E7%AB%A0%E6%8F%92%E4%BB%B6/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="为 Hexo 开发一个网易云音乐的文章插件">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="为 Hexo 开发一个网易云音乐的文章插件">
 <meta property="og:description" content="这段代码博主在本地使用 NodeJS 测试了没有不过什么问题，大家可以在截图中清楚地看到[music:29713754]已经被替换称了网易云音乐的 Flash 组件，这样在网页中就会显示出网易云音乐的播放器，我们就能听到这熟悉而温暖的旋律了;那么，现在我们其实就是在做这样一件事情，我们在文章中插入这样一个[key:value]的结构，然后通过程序将它替换成相应的 HTML 结构，这样就实现了在 Hexo 的文章中使用[key:value]结构来编写简单插件的功能，如果经历过使用 wordpress 建站的朋友一定知道，在 wordpress 中存在许多这样的类似插件，可以帮助写作者简化某些输入内容;相信经过博主的一番介绍，大家已经对这段代码相当熟悉了吧，这里就是先做判断，判断文章内容中是否有[key:vaule]这样的结构，如果没有就直接输出item.content">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E4%B8%BAhexo%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%E7%9A%84%E6%96%87%E7%AB%A0%E6%8F%92%E4%BB%B6/">
 <meta property="og:site_name" content="素履独行">
@@ -437,80 +437,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E6%97%A5%E5%BF%97/ class=font_size_4>
-日志
+<a href=/tags/%E8%A5%BF%E6%BC%82/ class=font_size_1>
+西漂
 </a>
-<a href=/tags/2014/ class=font_size_1>
-2014
+<a href=/tags/unity/ class=font_size_1>
+Unity
 </a>
-<a href=/tags/%E7%BC%96%E8%AF%91/ class=font_size_1>
-编译
+<a href=/tags/%E6%A6%82%E7%8E%87/ class=font_size_2>
+概率
 </a>
-<a href=/tags/%E6%88%91%E6%98%AF%E7%8C%AB/ class=font_size_1>
-我是猫
+<a href=/tags/%E5%AE%A1%E8%AE%A1/ class=font_size_1>
+审计
 </a>
-<a href=/tags/ztree/ class=font_size_1>
-zTree
-</a>
-<a href=/tags/github/ class=font_size_2>
-Github
-</a>
-<a href=/tags/referrer/ class=font_size_1>
-Referrer
-</a>
-<a href=/tags/%E5%88%AB%E7%A6%BB/ class=font_size_1>
-别离
-</a>
-<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
-同步
-</a>
-<a href=/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/ class=font_size_2>
-依赖注入
-</a>
-<a href=/tags/%E7%94%9F%E6%B4%BB/ class=font_size_7>
-生活
-</a>
-<a href=/tags/ar/ class=font_size_3>
-AR
-</a>
-<a href=/tags/%E8%A5%BF%E5%AE%89/ class=font_size_3>
-西安
-</a>
-<a href=/tags/%E6%88%90%E9%95%BF/ class=font_size_3>
-成长
-</a>
-<a href=/tags/web-api/ class=font_size_1>
-Web API
-</a>
-<a href=/tags/redis/ class=font_size_8>
-Redis
-</a>
-<a href=/tags/c#/ class=font_size_7>
-C#
-</a>
-<a href=/tags/%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/ class=font_size_1>
-数据交换
-</a>
-<a href=/tags/%E5%A4%A7%E6%8A%A4%E6%B3%95/ class=font_size_1>
-大护法
-</a>
-<a href=/tags/%E6%95%B0%E5%AD%97/ class=font_size_1>
-数字
-</a>
-<a href=/tags/json/ class=font_size_1>
-JSON
-</a>
-<a href=/tags/%E9%BB%91%E5%AE%A2/ class=font_size_2>
-黑客
+<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
+塔防
 </a>
 <a href=/tags/%E7%9F%A5%E8%AF%86%E5%85%B1%E4%BA%AB/ class=font_size_1>
 知识共享
 </a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5/ class=font_size_1>
-健康检查
+<a href=/tags/%E7%BC%93%E5%AD%98/ class=font_size_5>
+缓存
 </a>
-<a href=/tags/%E6%95%99%E7%A8%8B/ class=font_size_7>
-教程
+<a href=/tags/%E8%AF%BB%E4%B9%A6/ class=font_size_5>
+读书
+</a>
+<a href=/tags/%E5%BF%83%E6%83%85/ class=font_size_1>
+心情
+</a>
+<a href=/tags/valine/ class=font_size_1>
+Valine
+</a>
+<a href=/tags/gephi/ class=font_size_1>
+Gephi
+</a>
+<a href=/tags/api/ class=font_size_1>
+API
+</a>
+<a href=/tags/travis/ class=font_size_3>
+Travis
+</a>
+<a href=/tags/aop/ class=font_size_6>
+AOP
+</a>
+<a href=/tags/envoy/ class=font_size_6>
+Envoy
+</a>
+<a href=/tags/%E7%8A%B6%E6%80%81/ class=font_size_1>
+状态
+</a>
+<a href=/tags/%E7%94%BB%E5%AE%B6/ class=font_size_1>
+画家
+</a>
+<a href=/tags/blazor/ class=font_size_1>
+Blazor
+</a>
+<a href=/tags/%E8%9B%8B%E7%82%92%E9%A5%AD/ class=font_size_1>
+蛋炒饭
+</a>
+<a href=/tags/%E5%A7%94%E6%89%98/ class=font_size_1>
+委托
+</a>
+<a href=/tags/%E5%91%BD%E4%BB%A4/ class=font_size_1>
+命令
+</a>
+<a href=/tags/2014/ class=font_size_1>
+2014
+</a>
+<a href=/tags/prometheus/ class=font_size_1>
+Prometheus
+</a>
+<a href=/tags/nginx/ class=font_size_1>
+Nginx
+</a>
+<a href=/tags/sonar/ class=font_size_1>
+Sonar
 </a>
 <a href=/tags class=font_size_9999>
 更多

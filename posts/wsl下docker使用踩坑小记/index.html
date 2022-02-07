@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="好了，以上就是在使用 WSL 中的 Docker 搭建 ELK 全家桶过程中遇到的问题的梳理，从体验上来讲，我个人会把 Linux 平台相关的工作渐渐转移到 WSL 上，因为安装双系统总会分散你的精力去处理维护相关的事情，虽然装系统对程序员来说都不算是个事儿，可我内心依旧排斥自己被贴上“修电脑”的标签;curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;装完 WSL 以后，对各种编译环境的使用相当满意，最近在研究日志可视化平台 ELK，其中需要使用 Docker 来搭建环境，一顿 sudo 操作猛如虎，快速安装完 Docker 环境，结果发现熟悉的命令行居然无法正常工作，是可忍孰不可忍"><title>WSL 下 Docker 使用踩坑小记</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/wsl%E4%B8%8Bdocker%E4%BD%BF%E7%94%A8%E8%B8%A9%E5%9D%91%E5%B0%8F%E8%AE%B0/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="WSL 下 Docker 使用踩坑小记">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="WSL 下 Docker 使用踩坑小记">
 <meta property="og:description" content="好了，以上就是在使用 WSL 中的 Docker 搭建 ELK 全家桶过程中遇到的问题的梳理，从体验上来讲，我个人会把 Linux 平台相关的工作渐渐转移到 WSL 上，因为安装双系统总会分散你的精力去处理维护相关的事情，虽然装系统对程序员来说都不算是个事儿，可我内心依旧排斥自己被贴上“修电脑”的标签;curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;装完 WSL 以后，对各种编译环境的使用相当满意，最近在研究日志可视化平台 ELK，其中需要使用 Docker 来搭建环境，一顿 sudo 操作猛如虎，快速安装完 Docker 环境，结果发现熟悉的命令行居然无法正常工作，是可忍孰不可忍">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/wsl%E4%B8%8Bdocker%E4%BD%BF%E7%94%A8%E8%B8%A9%E5%9D%91%E5%B0%8F%E8%AE%B0/">
 <meta property="og:site_name" content="素履独行">
@@ -376,80 +376,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/protobuf/ class=font_size_1>
-Protobuf
+<a href=/tags/%E6%BA%90%E7%A0%81/ class=font_size_5>
+源码
 </a>
-<a href=/tags/%E9%9C%8D%E9%87%91/ class=font_size_1>
-霍金
+<a href=/tags/%E5%8F%8D%E7%BC%96%E8%AF%91/ class=font_size_1>
+反编译
 </a>
-<a href=/tags/%E5%85%AC%E4%BC%97%E5%8F%B7/ class=font_size_1>
-公众号
+<a href=/tags/nginx/ class=font_size_1>
+Nginx
 </a>
-<a href=/tags/rsetful/ class=font_size_1>
-RSETful
+<a href=/tags/%E4%BD%8E%E4%BB%A3%E7%A0%81/ class=font_size_1>
+低代码
 </a>
-<a href=/tags/%E5%8E%86%E5%8F%B2/ class=font_size_3>
-历史
+<a href=/tags/orm/ class=font_size_1>
+ORM
 </a>
-<a href=/tags/abp/ class=font_size_2>
-ABP
+<a href=/tags/%E9%9D%92%E6%98%A5/ class=font_size_1>
+青春
 </a>
-<a href=/tags/%E6%97%A0%E9%97%AE%E8%A5%BF%E4%B8%9C/ class=font_size_1>
-无问西东
+<a href=/tags/sonar/ class=font_size_1>
+Sonar
 </a>
-<a href=/tags/%E8%A1%8C%E4%B8%9A/ class=font_size_1>
-行业
+<a href=/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/ class=font_size_1>
+插件化
 </a>
-<a href=/tags/%E6%88%91%E6%98%AF%E7%8C%AB/ class=font_size_1>
-我是猫
+<a href=/tags/consul/ class=font_size_1>
+Consul
 </a>
-<a href=/tags/webapi/ class=font_size_4>
-WebApi
+<a href=/tags/%E8%AE%BF%E9%97%AE%E9%87%8F/ class=font_size_1>
+访问量
 </a>
-<a href=/tags/kafka/ class=font_size_1>
-Kafka
+<a href=/tags/ef/ class=font_size_5>
+EF
 </a>
-<a href=/tags/%E6%96%87%E4%BB%B6/ class=font_size_1>
-文件
+<a href=/tags/ar/ class=font_size_3>
+AR
 </a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E7%A0%81/ class=font_size_1>
-健康码
+<a href=/tags/%E5%9B%9E%E9%A6%96/ class=font_size_1>
+回首
 </a>
-<a href=/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/ class=font_size_3>
-设计模式
+<a href=/tags/%E6%97%A5%E6%9C%AC/ class=font_size_1>
+日本
 </a>
-<a href=/tags/%E6%97%B6%E9%97%B4/ class=font_size_3>
-时间
+<a href=/tags/%E5%9C%B0%E5%9B%BE/ class=font_size_1>
+地图
 </a>
-<a href=/tags/httpclient/ class=font_size_2>
-HttpClient
+<a href=/tags/%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/ class=font_size_1>
+文本分类
 </a>
-<a href=/tags/%E9%98%85%E8%AF%BB/ class=font_size_2>
-阅读
+<a href=/tags/pl/sql/ class=font_size_1>
+PL/SQL
 </a>
-<a href=/tags/gephi/ class=font_size_1>
-Gephi
+<a href=/tags/%E4%BD%90%E8%97%A4%E5%81%A5/ class=font_size_1>
+佐藤健
+</a>
+<a href=/tags/restful/ class=font_size_4>
+RESTful
+</a>
+<a href=/tags/ci/ class=font_size_2>
+CI
 </a>
 <a href=/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/ class=font_size_1>
 大数据
 </a>
-<a href=/tags/cg/ class=font_size_1>
-CG
+<a href=/tags/%E7%BC%93%E5%AD%98/ class=font_size_5>
+缓存
 </a>
-<a href=/tags/%E6%BA%90%E7%A0%81/ class=font_size_5>
-源码
+<a href=/tags/%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95/ class=font_size_1>
+扩展方法
 </a>
-<a href=/tags/%E6%83%85%E6%84%9F/ class=font_size_1>
-情感
+<a href=/tags/%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/ class=font_size_1>
+夏目漱石
 </a>
-<a href=/tags/%E8%AE%BE%E8%AE%A1/ class=font_size_2>
-设计
-</a>
-<a href=/tags/%E5%8D%B0%E5%BA%A6/ class=font_size_1>
-印度
-</a>
-<a href=/tags/%E8%9B%8B%E7%82%92%E9%A5%AD/ class=font_size_1>
-蛋炒饭
+<a href=/tags/%E5%8D%95%E6%9C%BA%E6%B8%B8%E6%88%8F/ class=font_size_1>
+单机游戏
 </a>
 <a href=/tags class=font_size_9999>
 更多

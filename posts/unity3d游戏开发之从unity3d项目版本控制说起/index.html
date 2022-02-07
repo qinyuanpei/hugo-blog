@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Unity3D 的[Asset Server](http://unity3d.com/unity/team/assetserver/)是一个 Unity3D 内部集成的版本控制软件，它和我们熟知的 SVN 类似，适合在小团队内进行版本控制，这是一个收费软件，尽管在某些方面它甚至比 SVN 还要方便，不过在实际的项目中使用这个的还是比较少的，所以如果大家对这个感兴趣，可以从这里了解它的具体情况，这里我们不打算介绍这个软件的使用;因此为了方便版本控制软件对文件进行比对，常常需要项目变动的这些因素转化为文本形式，如果熟悉 Github 的朋友应该知道，Github 中判断两个文件的差异就是根据文本(代码)来比较的，因此在 Unity3D 中使用版本控制同样需要遵循这个原则，好在 Unity3D 在管理 Unity3D 项目时已经考虑到了这一点，通常在对 Unity3D 项目进行版本控制的时候，我们需要做这样的事情：;使用 Github 进行版本控制时可以在 Git 仓库中添加一个.gitignore 文件来对项目中需要同步的文件进行过滤，在文章开始我们已经知道 Unity3D 项目的版本控制主要针对 Assets 和 ProjectSetting 这两个文件，因此.gitignore 的内容可以这样填写:"><title>Unity3D 游戏开发之从 Unity3D 项目版本控制说起</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E4%BB%8Eunity3d%E9%A1%B9%E7%9B%AE%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E8%AF%B4%E8%B5%B7/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="Unity3D 游戏开发之从 Unity3D 项目版本控制说起">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="Unity3D 游戏开发之从 Unity3D 项目版本控制说起">
 <meta property="og:description" content="Unity3D 的[Asset Server](http://unity3d.com/unity/team/assetserver/)是一个 Unity3D 内部集成的版本控制软件，它和我们熟知的 SVN 类似，适合在小团队内进行版本控制，这是一个收费软件，尽管在某些方面它甚至比 SVN 还要方便，不过在实际的项目中使用这个的还是比较少的，所以如果大家对这个感兴趣，可以从这里了解它的具体情况，这里我们不打算介绍这个软件的使用;因此为了方便版本控制软件对文件进行比对，常常需要项目变动的这些因素转化为文本形式，如果熟悉 Github 的朋友应该知道，Github 中判断两个文件的差异就是根据文本(代码)来比较的，因此在 Unity3D 中使用版本控制同样需要遵循这个原则，好在 Unity3D 在管理 Unity3D 项目时已经考虑到了这一点，通常在对 Unity3D 项目进行版本控制的时候，我们需要做这样的事情：;使用 Github 进行版本控制时可以在 Git 仓库中添加一个.gitignore 文件来对项目中需要同步的文件进行过滤，在文章开始我们已经知道 Unity3D 项目的版本控制主要针对 Assets 和 ProjectSetting 这两个文件，因此.gitignore 的内容可以这样填写:">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E4%BB%8Eunity3d%E9%A1%B9%E7%9B%AE%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E8%AF%B4%E8%B5%B7/">
 <meta property="og:site_name" content="素履独行">
@@ -395,80 +395,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E5%9B%BE%E5%BA%8A/ class=font_size_1>
-图床
+<a href=/tags/%E7%AD%BE%E5%90%8D/ class=font_size_1>
+签名
 </a>
-<a href=/tags/%E7%89%88%E6%9D%83/ class=font_size_1>
-版权
+<a href=/tags/%E6%B1%82%E8%81%8C/ class=font_size_3>
+求职
 </a>
-<a href=/tags/%E5%A4%9A%E7%A7%9F%E6%88%B7/ class=font_size_1>
-多租户
-</a>
-<a href=/tags/redis/ class=font_size_8>
-Redis
-</a>
-<a href=/tags/dbeaver/ class=font_size_1>
-DBeaver
-</a>
-<a href=/tags/%E8%BD%AF%E4%BB%B6/ class=font_size_1>
-软件
-</a>
-<a href=/tags/dapper/ class=font_size_3>
-Dapper
-</a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5/ class=font_size_1>
-健康检查
-</a>
-<a href=/tags/opencv/ class=font_size_3>
-OpenCV
-</a>
-<a href=/tags/%E4%BD%90%E8%97%A4%E5%81%A5/ class=font_size_1>
-佐藤健
+<a href=/tags/trace/ class=font_size_1>
+Trace
 </a>
 <a href=/tags/%E6%88%91%E6%98%AF%E7%8C%AB/ class=font_size_1>
 我是猫
 </a>
-<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
-脚本
+<a href=/tags/%E6%B8%B8%E6%88%8F/ class=font_size_13>
+游戏
 </a>
-<a href=/tags/%E8%AF%84%E8%AE%BA/ class=font_size_1>
-评论
+<a href=/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/ class=font_size_8>
+微服务
 </a>
-<a href=/tags/%E5%8D%B0%E5%BA%A6/ class=font_size_1>
-印度
+<a href=/tags/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/ class=font_size_2>
+主从复制
 </a>
-<a href=/tags/rpg/ class=font_size_1>
-RPG
+<a href=/tags/%E9%9B%86%E7%BE%A4/ class=font_size_1>
+集群
 </a>
-<a href=/tags/.net-core/ class=font_size_14>
-.NET Core
+<a href=/tags/%E5%92%8C%E5%B9%B3/ class=font_size_1>
+和平
 </a>
-<a href=/tags/%E8%AE%AD%E7%BB%83/ class=font_size_1>
-训练
+<a href=/tags/%E7%8A%B6%E6%80%81/ class=font_size_1>
+状态
 </a>
-<a href=/tags/%E5%88%86%E9%A1%B5/ class=font_size_1>
-分页
+<a href=/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2/ class=font_size_2>
+计算机图形
 </a>
-<a href=/tags/websocket/ class=font_size_3>
-WebSocket
+<a href=/tags/%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5/ class=font_size_1>
+健康检查
 </a>
-<a href=/tags/%E8%AE%BE%E8%AE%A1/ class=font_size_2>
-设计
+<a href=/tags/%E5%A4%A7%E6%8A%A4%E6%B3%95/ class=font_size_1>
+大护法
 </a>
-<a href=/tags/api/ class=font_size_1>
-API
+<a href=/tags/easyar/ class=font_size_2>
+EasyAR
 </a>
-<a href=/tags/%E6%AF%95%E4%B8%9A/ class=font_size_1>
-毕业
+<a href=/tags/%E8%B0%83%E8%AF%95/ class=font_size_1>
+调试
+</a>
+<a href=/tags/%E6%80%A7%E8%83%BD/ class=font_size_1>
+性能
 </a>
 <a href=/tags/%E6%97%B6%E9%97%B4/ class=font_size_3>
 时间
 </a>
-<a href=/tags/http/ class=font_size_9>
-HTTP
+<a href=/tags/svn/ class=font_size_1>
+SVN
 </a>
-<a href=/tags/%E9%85%8D%E8%BD%BD/ class=font_size_1>
-配载
+<a href=/tags/cdn/ class=font_size_1>
+CDN
+</a>
+<a href=/tags/webassembly/ class=font_size_1>
+WebAssembly
+</a>
+<a href=/tags/ado.net/ class=font_size_1>
+ADO.NET
+</a>
+<a href=/tags/%E8%9B%8B%E7%82%92%E9%A5%AD/ class=font_size_1>
+蛋炒饭
+</a>
+<a href=/tags/hashset/ class=font_size_1>
+HashSet
+</a>
+<a href=/tags/elk/ class=font_size_1>
+ELK
+</a>
+<a href=/tags/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A0%91/ class=font_size_1>
+表达式树
 </a>
 <a href=/tags class=font_size_9999>
 更多

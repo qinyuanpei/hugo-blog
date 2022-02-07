@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：;其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧;所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦"><title>在 Unity3D 中使用 uGUI 实现 3D 旋转特效</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E5%9C%A8unity3d%E4%B8%AD%E4%BD%BF%E7%94%A8ugui%E5%AE%9E%E7%8E%B03d%E6%97%8B%E8%BD%AC%E7%89%B9%E6%95%88/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="在 Unity3D 中使用 uGUI 实现 3D 旋转特效">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="在 Unity3D 中使用 uGUI 实现 3D 旋转特效">
 <meta property="og:description" content="好了，接下来我们会遇到一个新的问题，这些精灵的层级应该是从中间位置向两边依次递减的，所以为了解决这个问题，我们还需要对每个精灵的层级进行计算，这部分代码的实现细节如下：;其实这篇文章我还想继续再往下写的，可是因为我比较懒一直拖着不写，以及接下来相当多的内容都是和界面相关的东西，所以我决定这篇文章就暂时写到这里，目前这个方案可以实现一个简单的“3D”滚动的效果，按照这个思路，接下来我们要做的事情是让滚动更加平滑以及支持鼠标或者触屏操作，毕竟这个需求的出发点是来自一个游戏，所以我们可以考虑在“滚动”的时候增加插值特性，与此同时，为了让它更加具有“3D”的感觉，可以在设置精灵层级的时候为不同的精灵设置不同的缩放比例，这样会更加符合美术中的透视关系，效果应该会更好吧;所以在这里除了确定每个精灵的放置位置以外，我们还有一个问题，如何对这些精灵进行排序，所幸的是在 uGUI 中我们可以通过 SetSiblingIndex 方法来设置一个精灵的深度，当每次通过按钮切换精灵的时候，我们都需要对所有精灵重新计算坐标和深度，而为了更好的视觉表现力，我们可以在切换的时候做一个简单的位移动画，至此我们就可以开始动手实现功能啦">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E5%9C%A8unity3d%E4%B8%AD%E4%BD%BF%E7%94%A8ugui%E5%AE%9E%E7%8E%B03d%E6%97%8B%E8%BD%AC%E7%89%B9%E6%95%88/">
 <meta property="og:site_name" content="素履独行">
@@ -457,80 +457,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/jetbrain/ class=font_size_1>
-JetBrain
+<a href=/tags/%E5%88%AB%E7%A6%BB/ class=font_size_1>
+别离
 </a>
-<a href=/tags/https/ class=font_size_1>
-HTTPS
+<a href=/tags/%E4%BA%92%E8%81%94%E7%BD%91/ class=font_size_2>
+互联网
 </a>
-<a href=/tags/%E8%9B%8B%E7%82%92%E9%A5%AD/ class=font_size_1>
-蛋炒饭
+<a href=/tags/%E6%80%9D%E7%BB%B4/ class=font_size_1>
+思维
 </a>
-<a href=/tags/kafka/ class=font_size_1>
-Kafka
-</a>
-<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/ class=font_size_10>
-游戏开发
-</a>
-<a href=/tags/ci/ class=font_size_2>
-CI
-</a>
-<a href=/tags/%E7%8E%B0%E5%AE%9E/ class=font_size_1>
-现实
-</a>
-<a href=/tags/%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83/ class=font_size_1>
-鬼滅の刃
-</a>
-<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
-展望
-</a>
-<a href=/tags/git/ class=font_size_2>
-Git
-</a>
-<a href=/tags/eventbus/ class=font_size_1>
-EventBus
-</a>
-<a href=/tags/%E5%B9%B4%E5%BA%A6/ class=font_size_1>
-年度
-</a>
-<a href=/tags/%E6%A0%BC%E5%BC%8F%E5%8C%96/ class=font_size_1>
-格式化
-</a>
-<a href=/tags/%E8%B4%AA%E5%90%83%E8%9B%87/ class=font_size_1>
-贪吃蛇
-</a>
-<a href=/tags/%E4%BC%98%E5%8C%96/ class=font_size_1>
-优化
-</a>
-<a href=/tags/http/ class=font_size_9>
-HTTP
+<a href=/tags/mock/ class=font_size_1>
+Mock
 </a>
 <a href=/tags/%E8%BF%81%E7%A7%BB/ class=font_size_1>
 迁移
 </a>
-<a href=/tags/%E7%89%B9%E6%80%A7/ class=font_size_1>
-特性
+<a href=/tags/c++/ class=font_size_1>
+C++
 </a>
-<a href=/tags/%E8%A5%BF%E6%BC%82/ class=font_size_1>
-西漂
+<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
+异步
 </a>
-<a href=/tags/svn/ class=font_size_1>
-SVN
+<a href=/tags/eventbus/ class=font_size_1>
+EventBus
 </a>
-<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
-平凡
+<a href=/tags/%E6%97%B6%E9%97%B4/ class=font_size_3>
+时间
 </a>
-<a href=/tags/%E6%97%A5%E5%BF%97/ class=font_size_4>
-日志
+<a href=/tags/csharp/ class=font_size_2>
+CSharp
 </a>
-<a href=/tags/%E6%A1%8C%E9%9D%A2/ class=font_size_1>
-桌面
+<a href=/tags/%E5%88%86%E9%A1%B5/ class=font_size_1>
+分页
 </a>
-<a href=/tags/%E8%BD%AC%E7%9B%98/ class=font_size_1>
-转盘
+<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
+部署
 </a>
-<a href=/tags/%E7%AE%97%E6%B3%95/ class=font_size_2>
-算法
+<a href=/tags/%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95/ class=font_size_1>
+扩展方法
+</a>
+<a href=/tags/%E8%AF%8D%E4%BA%91/ class=font_size_1>
+词云
+</a>
+<a href=/tags/%E6%B8%B8%E6%88%8F/ class=font_size_13>
+游戏
+</a>
+<a href=/tags/markdown/ class=font_size_1>
+Markdown
+</a>
+<a href=/tags/github/ class=font_size_2>
+Github
+</a>
+<a href=/tags/%E4%BB%B7%E5%80%BC/ class=font_size_1>
+价值
+</a>
+<a href=/tags/cg/ class=font_size_1>
+CG
+</a>
+<a href=/tags/kafka/ class=font_size_1>
+Kafka
+</a>
+<a href=/tags/grafana/ class=font_size_1>
+Grafana
+</a>
+<a href=/tags/%E6%83%85%E6%84%9F/ class=font_size_1>
+情感
+</a>
+<a href=/tags/%E7%94%B5%E5%BD%B1/ class=font_size_12>
+电影
+</a>
+<a href=/tags/%E7%88%B1%E6%83%85/ class=font_size_2>
+爱情
+</a>
+<a href=/tags/mmd/ class=font_size_1>
+MMD
 </a>
 <a href=/tags class=font_size_9999>
 更多

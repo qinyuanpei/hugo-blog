@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="防火墙设置非常简单，因为关闭防火墙就好啦，这样可以保证其它设备能够正常访问本地服务器，在测试完页面后应该立即开启防火墙，这个世界可谓是充满了诱惑，有诱惑的地方就有危险，所以当我们通过互联网获取知识的同时，更为重要的一点是学会如何去甄别信息的真伪，魏则西事件让我们每一个人都感到痛心，可我们必须认识到，即使百度在你我的口诛笔伐中宣告破产，对这个世界的影响永远都是杯水车薪，所以无论是杀毒软件还是防火墙，任何形式的东西都不能代替你保护自我的意识，就像在地震、火灾这类破坏性灾难中，学会自救互救比等待公共救援更为有效;现在前端技术如火如荼，而前端技术作为最有可能实现跨平台技术的技术形态，相对原生技术有着更为灵活的适应性和扩展性，因此以响应式设计为代表的 Web 技术，能够让 Web 页面在不同尺寸屏幕上都有着相近的体验，因为目前软件开发基本都是在计算机设备上来完成的，这样我们在制作 Web 页面的时候就需要在不同的设备上进行调试，如果每次都将 Web 页面部署到远程服务器上，这样将浪费大量的时间而且容易将测试阶段的问题暴露给用户，因此本文将采用一种扫描二维码的方式来实现在移动设备上浏览响应式页面;在这种情况下，理论上我们可以直接使用运行本地服务器的计算机的 IP 来访问本地服务器，可是因为不同的服务器软件配置不同以及不同的计算机设置不同等等外部性的因素，在实际操作的过程中依然存在各种问题，下面我们就来针对实际操作中需要注意和解决的问题，来说说具体的实现过程"><title>扫描二维码在移动设备上浏览响应式页面</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E6%89%AB%E6%8F%8F%E4%BA%8C%E7%BB%B4%E7%A0%81%E5%9C%A8%E7%A7%BB%E5%8A%A8%E8%AE%BE%E5%A4%87%E4%B8%8A%E6%B5%8F%E8%A7%88%E5%93%8D%E5%BA%94%E5%BC%8F%E9%A1%B5%E9%9D%A2/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="扫描二维码在移动设备上浏览响应式页面">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="扫描二维码在移动设备上浏览响应式页面">
 <meta property="og:description" content="防火墙设置非常简单，因为关闭防火墙就好啦，这样可以保证其它设备能够正常访问本地服务器，在测试完页面后应该立即开启防火墙，这个世界可谓是充满了诱惑，有诱惑的地方就有危险，所以当我们通过互联网获取知识的同时，更为重要的一点是学会如何去甄别信息的真伪，魏则西事件让我们每一个人都感到痛心，可我们必须认识到，即使百度在你我的口诛笔伐中宣告破产，对这个世界的影响永远都是杯水车薪，所以无论是杀毒软件还是防火墙，任何形式的东西都不能代替你保护自我的意识，就像在地震、火灾这类破坏性灾难中，学会自救互救比等待公共救援更为有效;现在前端技术如火如荼，而前端技术作为最有可能实现跨平台技术的技术形态，相对原生技术有着更为灵活的适应性和扩展性，因此以响应式设计为代表的 Web 技术，能够让 Web 页面在不同尺寸屏幕上都有着相近的体验，因为目前软件开发基本都是在计算机设备上来完成的，这样我们在制作 Web 页面的时候就需要在不同的设备上进行调试，如果每次都将 Web 页面部署到远程服务器上，这样将浪费大量的时间而且容易将测试阶段的问题暴露给用户，因此本文将采用一种扫描二维码的方式来实现在移动设备上浏览响应式页面;在这种情况下，理论上我们可以直接使用运行本地服务器的计算机的 IP 来访问本地服务器，可是因为不同的服务器软件配置不同以及不同的计算机设置不同等等外部性的因素，在实际操作的过程中依然存在各种问题，下面我们就来针对实际操作中需要注意和解决的问题，来说说具体的实现过程">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E6%89%AB%E6%8F%8F%E4%BA%8C%E7%BB%B4%E7%A0%81%E5%9C%A8%E7%A7%BB%E5%8A%A8%E8%AE%BE%E5%A4%87%E4%B8%8A%E6%B5%8F%E8%A7%88%E5%93%8D%E5%BA%94%E5%BC%8F%E9%A1%B5%E9%9D%A2/">
 <meta property="og:site_name" content="素履独行">
@@ -405,80 +405,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/vue/ class=font_size_3>
-Vue
+<a href=/tags/swagger/ class=font_size_2>
+Swagger
 </a>
-<a href=/tags/visual-studio/ class=font_size_1>
-Visual Studio
+<a href=/tags/%E7%8E%B0%E5%AE%9E/ class=font_size_1>
+现实
 </a>
-<a href=/tags/%E5%9B%9E%E9%A1%BE/ class=font_size_1>
-回顾
+<a href=/tags/c++/ class=font_size_1>
+C++
 </a>
-<a href=/tags/%E6%95%B0%E5%AD%A6/ class=font_size_4>
-数学
+<a href=/tags/web/ class=font_size_4>
+Web
 </a>
-<a href=/tags/%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/ class=font_size_1>
-人脸检测
+<a href=/tags/unity/ class=font_size_1>
+Unity
+</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/ class=font_size_6>
+服务器
+</a>
+<a href=/tags/%E6%B5%AA%E5%AE%A2%E5%89%91%E5%BF%83/ class=font_size_1>
+浪客剑心
+</a>
+<a href=/tags/git/ class=font_size_2>
+Git
+</a>
+<a href=/tags/%E6%A0%87%E6%B3%A8/ class=font_size_1>
+标注
+</a>
+<a href=/tags/%E6%97%A5%E5%BF%97/ class=font_size_4>
+日志
+</a>
+<a href=/tags/%E6%80%BB%E7%BB%93/ class=font_size_2>
+总结
+</a>
+<a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
+长安十二时辰
+</a>
+<a href=/tags/%E6%80%A7%E8%83%BD/ class=font_size_1>
+性能
+</a>
+<a href=/tags/%E5%8D%B0%E5%BA%A6/ class=font_size_1>
+印度
+</a>
+<a href=/tags/%E4%BA%8C%E7%BB%B4%E7%A0%81/ class=font_size_1>
+二维码
+</a>
+<a href=/tags/%E8%AF%97%E4%BA%BA/ class=font_size_1>
+诗人
+</a>
+<a href=/tags/%E5%89%8D%E4%BB%BB/ class=font_size_1>
+前任
+</a>
+<a href=/tags/%E5%A3%81%E7%BA%B8/ class=font_size_1>
+壁纸
+</a>
+<a href=/tags/%E5%B7%A5%E5%85%B7/ class=font_size_2>
+工具
+</a>
+<a href=/tags/sqlite/ class=font_size_1>
+SQLite
+</a>
+<a href=/tags/%E4%B8%83%E7%89%9B/ class=font_size_1>
+七牛
+</a>
+<a href=/tags/%E9%95%BF%E5%AE%89/ class=font_size_1>
+长安
+</a>
+<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
+塔防
+</a>
+<a href=/tags/%E7%AC%94%E8%AE%B0/ class=font_size_8>
+笔记
 </a>
 <a href=/tags/%E6%A0%A1%E9%AA%8C/ class=font_size_1>
 校验
-</a>
-<a href=/tags/%E7%83%AD%E6%90%9C/ class=font_size_1>
-热搜
-</a>
-<a href=/tags/%E5%B9%B6%E5%8F%91/ class=font_size_1>
-并发
-</a>
-<a href=/tags/%E8%AE%BF%E9%97%AE%E9%87%8F/ class=font_size_1>
-访问量
-</a>
-<a href=/tags/orm/ class=font_size_1>
-ORM
-</a>
-<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
-对象池
-</a>
-<a href=/tags/java/ class=font_size_1>
-Java
-</a>
-<a href=/tags/protobuf/ class=font_size_1>
-Protobuf
-</a>
-<a href=/tags/polly/ class=font_size_1>
-Polly
-</a>
-<a href=/tags/signalr/ class=font_size_2>
-SignalR
-</a>
-<a href=/tags/%E5%A7%94%E6%89%98/ class=font_size_1>
-委托
-</a>
-<a href=/tags/dbeaver/ class=font_size_1>
-DBeaver
-</a>
-<a href=/tags/hashset/ class=font_size_1>
-HashSet
-</a>
-<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
-同步
-</a>
-<a href=/tags/%E7%88%AC%E8%99%AB/ class=font_size_2>
-爬虫
-</a>
-<a href=/tags/javascript/ class=font_size_1>
-JavaScript
-</a>
-<a href=/tags/api/ class=font_size_1>
-API
-</a>
-<a href=/tags/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A0%91/ class=font_size_1>
-表达式树
-</a>
-<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
-装饰器
-</a>
-<a href=/tags/jsdelivr/ class=font_size_1>
-jsDelivr
 </a>
 <a href=/tags class=font_size_9999>
 更多

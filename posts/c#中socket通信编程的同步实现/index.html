@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听"><title>C#中 Socket 通信编程的同步实现</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/c#%E4%B8%ADsocket%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%90%8C%E6%AD%A5%E5%AE%9E%E7%8E%B0/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="C#中 Socket 通信编程的同步实现">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="C#中 Socket 通信编程的同步实现">
 <meta property="og:description" content="服务端的主要职责是处理各个客户端发送来的数据，因此在客户端的 Socket 编程中需要使用两个线程来循环处理客户端的请求，一个线程用于监听客户端的连接情况，一个线程用于监听客户端的消息发送，当服务端接收到客户端的消息后需要将消息处理后再分发给各个客户端;public void SendMessage(string ip,int port,string msg);客户端相对于服务端来说任务要轻许多，因为客户端仅仅需要和服务端通信即可，可是因为在和服务器通信的过程中，需要时刻保持连接通畅，因此同样需要两个线程来分别处理连接情况的监听和消息发送的监听">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/c#%E4%B8%ADsocket%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E7%9A%84%E5%90%8C%E6%AD%A5%E5%AE%9E%E7%8E%B0/">
 <meta property="og:site_name" content="素履独行">
@@ -857,80 +857,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E5%8D%95%E6%9C%BA%E6%B8%B8%E6%88%8F/ class=font_size_1>
-单机游戏
+<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
+穿搭
 </a>
-<a href=/tags/.net-core/ class=font_size_14>
-.NET Core
+<a href=/tags/%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95/ class=font_size_1>
+扩展方法
 </a>
-<a href=/tags/markdown/ class=font_size_1>
-Markdown
+<a href=/tags/nginx/ class=font_size_1>
+Nginx
 </a>
-<a href=/tags/%E8%AF%84%E8%AE%BA/ class=font_size_1>
-评论
+<a href=/tags/%E8%AF%81%E4%B9%A6/ class=font_size_1>
+证书
 </a>
-<a href=/tags/referrer/ class=font_size_1>
-Referrer
-</a>
-<a href=/tags/echarts/ class=font_size_1>
-ECharts
+<a href=/tags/react/ class=font_size_1>
+React
 </a>
 <a href=/tags/envoy/ class=font_size_6>
 Envoy
 </a>
-<a href=/tags/html5/ class=font_size_2>
-HTML5
+<a href=/tags/mvc/ class=font_size_1>
+MVC
 </a>
-<a href=/tags/%E5%B7%A5%E4%BD%9C/ class=font_size_3>
-工作
+<a href=/tags/%E6%A8%A1%E5%9E%8B/ class=font_size_1>
+模型
 </a>
-<a href=/tags/castle/ class=font_size_1>
-Castle
+<a href=/tags/swagger/ class=font_size_2>
+Swagger
 </a>
-<a href=/tags/%E7%BC%96%E8%AF%91/ class=font_size_1>
-编译
+<a href=/tags/sublime/ class=font_size_1>
+Sublime
 </a>
-<a href=/tags/windows/ class=font_size_1>
-Windows
+<a href=/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/ class=font_size_1>
+大数据
+</a>
+<a href=/tags/%E5%85%AC%E4%BC%97%E5%8F%B7/ class=font_size_1>
+公众号
+</a>
+<a href=/tags/%E5%A4%95%E9%9B%BE%E8%8A%B1%E5%9B%AD/ class=font_size_1>
+夕雾花园
+</a>
+<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
+同步
+</a>
+<a href=/tags/%E7%89%88%E6%9D%83/ class=font_size_1>
+版权
 </a>
 <a href=/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/ class=font_size_1>
 模板引擎
 </a>
-<a href=/tags/consul/ class=font_size_1>
-Consul
+<a href=/tags/binlog/ class=font_size_2>
+Binlog
 </a>
-<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/ class=font_size_10>
-游戏开发
+<a href=/tags/cors/ class=font_size_2>
+CORS
 </a>
-<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
-部署
+<a href=/tags/%E6%80%9D%E8%80%83/ class=font_size_1>
+思考
 </a>
-<a href=/tags/%E7%BD%91%E5%85%B3/ class=font_size_1>
-网关
+<a href=/tags/%E5%A7%94%E6%89%98/ class=font_size_1>
+委托
 </a>
-<a href=/tags/%E4%BA%91%E9%9F%B3%E4%B9%90/ class=font_size_1>
-云音乐
+<a href=/tags/websocket/ class=font_size_3>
+WebSocket
 </a>
-<a href=/tags/.net/ class=font_size_7>
-.NET
+<a href=/tags/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/ class=font_size_1>
+读写分离
 </a>
-<a href=/tags/jsonp/ class=font_size_1>
-JSONP
+<a href=/tags/gephi/ class=font_size_1>
+Gephi
 </a>
-<a href=/tags/%E4%B8%80%E5%87%BA%E5%A5%BD%E6%88%8F/ class=font_size_1>
-一出好戏
+<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
+装饰器
 </a>
-<a href=/tags/wsl/ class=font_size_2>
-WSL
-</a>
-<a href=/tags/%E7%94%BB%E5%AE%B6/ class=font_size_1>
-画家
-</a>
-<a href=/tags/%E5%BC%82%E5%B8%B8/ class=font_size_3>
-异常
-</a>
-<a href=/tags/httpclient/ class=font_size_2>
-HttpClient
+<a href=/tags/keycloak/ class=font_size_1>
+Keycloak
 </a>
 <a href=/tags class=font_size_9999>
 更多

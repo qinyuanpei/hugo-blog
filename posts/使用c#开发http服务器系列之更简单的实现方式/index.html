@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型"><title>使用 C#开发 HTTP 服务器系列之更简单的实现方式</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E6%9B%B4%E7%AE%80%E5%8D%95%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="使用 C#开发 HTTP 服务器系列之更简单的实现方式">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="使用 C#开发 HTTP 服务器系列之更简单的实现方式">
 <meta property="og:description" content="其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%B3%BB%E5%88%97%E4%B9%8B%E6%9B%B4%E7%AE%80%E5%8D%95%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">
 <meta property="og:site_name" content="素履独行">
@@ -422,80 +422,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
-对象池
+<a href=/tags/%E6%80%9D%E7%BB%B4/ class=font_size_1>
+思维
 </a>
-<a href=/tags/keycloak/ class=font_size_1>
-Keycloak
-</a>
-<a href=/tags/ugui/ class=font_size_5>
-uGUI
-</a>
-<a href=/tags/%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/ class=font_size_1>
-文本分类
-</a>
-<a href=/tags/%E5%8D%95%E4%BD%8D/ class=font_size_1>
-单位
-</a>
-<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
-部署
-</a>
-<a href=/tags/%E6%97%A5%E5%BF%97/ class=font_size_4>
-日志
-</a>
-<a href=/tags/%E5%9B%9E%E5%BF%86/ class=font_size_1>
-回忆
-</a>
-<a href=/tags/%E7%BC%96%E8%BE%91%E5%99%A8/ class=font_size_4>
-编辑器
-</a>
-<a href=/tags/%E9%95%BF%E6%88%AA%E5%9B%BE/ class=font_size_1>
-长截图
-</a>
-<a href=/tags/%E5%BD%B1%E8%AF%84/ class=font_size_10>
-影评
-</a>
-<a href=/tags/%E5%BE%AE%E5%8D%9A/ class=font_size_3>
-微博
-</a>
-<a href=/tags/websocket/ class=font_size_3>
-WebSocket
-</a>
-<a href=/tags/hashset/ class=font_size_1>
-HashSet
+<a href=/tags/%E7%AD%BE%E5%90%8D/ class=font_size_1>
+签名
 </a>
 <a href=/tags/sse/ class=font_size_1>
 SSE
 </a>
-<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
-同步
-</a>
-<a href=/tags/ef/ class=font_size_5>
-EF
-</a>
-<a href=/tags/%E9%9C%8D%E9%87%91/ class=font_size_1>
-霍金
-</a>
-<a href=/tags/%E6%88%91%E6%98%AF%E7%8C%AB/ class=font_size_1>
-我是猫
-</a>
-<a href=/tags/%E8%B4%AA%E5%90%83%E8%9B%87/ class=font_size_1>
-贪吃蛇
-</a>
-<a href=/tags/%E9%98%B2%E7%96%AB/ class=font_size_1>
-防疫
-</a>
-<a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
-长安十二时辰
+<a href=/tags/hyperlog/ class=font_size_1>
+Hyperlog
 </a>
 <a href=/tags/c#/ class=font_size_7>
 C#
 </a>
-<a href=/tags/%E6%9C%8D%E5%8A%A1%E7%BC%96%E6%8E%92/ class=font_size_1>
-服务编排
+<a href=/tags/polly/ class=font_size_1>
+Polly
 </a>
-<a href=/tags/visual-studio/ class=font_size_1>
-Visual Studio
+<a href=/tags/%E9%95%BF%E5%AE%89/ class=font_size_1>
+长安
+</a>
+<a href=/tags/ef/ class=font_size_5>
+EF
+</a>
+<a href=/tags/mapreduce/ class=font_size_1>
+MapReduce
+</a>
+<a href=/tags/%E5%A3%81%E7%BA%B8/ class=font_size_1>
+壁纸
+</a>
+<a href=/tags/%E8%AF%AD%E6%B3%95/ class=font_size_1>
+语法
+</a>
+<a href=/tags/%E5%8A%A8%E7%94%BB/ class=font_size_1>
+动画
+</a>
+<a href=/tags/grpc/ class=font_size_8>
+gRPC
+</a>
+<a href=/tags/%E5%A4%A7%E6%8A%A4%E6%B3%95/ class=font_size_1>
+大护法
+</a>
+<a href=/tags/matplotlib/ class=font_size_1>
+matplotlib
+</a>
+<a href=/tags/%E4%BA%8B%E4%BB%B6%E8%AE%A2%E9%98%85/ class=font_size_2>
+事件订阅
+</a>
+<a href=/tags/json/ class=font_size_1>
+JSON
+</a>
+<a href=/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class=font_size_3>
+中间件
+</a>
+<a href=/tags/%E5%91%BD%E4%BB%A4/ class=font_size_1>
+命令
+</a>
+<a href=/tags/web-api/ class=font_size_1>
+Web API
+</a>
+<a href=/tags/%E8%A5%BF%E5%AE%89/ class=font_size_3>
+西安
+</a>
+<a href=/tags/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A0%91/ class=font_size_1>
+表达式树
+</a>
+<a href=/tags/redis/ class=font_size_8>
+Redis
+</a>
+<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
+装饰器
+</a>
+<a href=/tags/travis/ class=font_size_3>
+Travis
 </a>
 <a href=/tags class=font_size_9999>
 更多

@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="现在解决了创建资源的问题，我们接下来只要调用 ProjectWindowUtil 的 StartNameEditingIfProjectWindowExists 方法即可，该方法需要传入一个继承自 EndNameEditAction 的类的实例、目标文件路径和模板文件的路径;好了，第二个参数作为一个验证的标志，如果该标志为 true，意味着我们定义的静态方法是一个验证方法在执行静态方法前会首先对方法进行验证，这个我们暂且不管，因为今天我们这个来自星星的黑科技主要和第三个参数有关，第三个参数表示一个优先级，它表示菜单项在菜单栏中的展示顺序，优先级大的菜单项会展示在优先级小的菜单项下面，由此我们就明白了了模板文件名中的类似 81、83 这样的数字的真实含义，注意到模板文件的排列顺序和编辑器中的菜单项顺序是一样的，我们做一个尝试，编写下面的代码：;Unity3D 默认的脚本模版位于/Editor/Data/Resources/ScriptTemplates/目录下，注意该目录相对 Unity3D 的安装目录而言，在这个目录中我们可以找到 Unity3D 中脚本模板的某些蛛丝马迹，首先，脚本模板是一个简单的文本文件，这个文本文件中预先填充了内容，我们在编辑器中创建模脚本或者 Shader 的时候实际上是读取这些文件然后在写入项目中的指定路径的"><title>扩展 Unity3D 编辑器的脚本模板</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E6%89%A9%E5%B1%95unity3d%E7%BC%96%E8%BE%91%E5%99%A8%E7%9A%84%E8%84%9A%E6%9C%AC%E6%A8%A1%E6%9D%BF/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="扩展 Unity3D 编辑器的脚本模板">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="扩展 Unity3D 编辑器的脚本模板">
 <meta property="og:description" content="现在解决了创建资源的问题，我们接下来只要调用 ProjectWindowUtil 的 StartNameEditingIfProjectWindowExists 方法即可，该方法需要传入一个继承自 EndNameEditAction 的类的实例、目标文件路径和模板文件的路径;好了，第二个参数作为一个验证的标志，如果该标志为 true，意味着我们定义的静态方法是一个验证方法在执行静态方法前会首先对方法进行验证，这个我们暂且不管，因为今天我们这个来自星星的黑科技主要和第三个参数有关，第三个参数表示一个优先级，它表示菜单项在菜单栏中的展示顺序，优先级大的菜单项会展示在优先级小的菜单项下面，由此我们就明白了了模板文件名中的类似 81、83 这样的数字的真实含义，注意到模板文件的排列顺序和编辑器中的菜单项顺序是一样的，我们做一个尝试，编写下面的代码：;Unity3D 默认的脚本模版位于/Editor/Data/Resources/ScriptTemplates/目录下，注意该目录相对 Unity3D 的安装目录而言，在这个目录中我们可以找到 Unity3D 中脚本模板的某些蛛丝马迹，首先，脚本模板是一个简单的文本文件，这个文本文件中预先填充了内容，我们在编辑器中创建模脚本或者 Shader 的时候实际上是读取这些文件然后在写入项目中的指定路径的">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E6%89%A9%E5%B1%95unity3d%E7%BC%96%E8%BE%91%E5%99%A8%E7%9A%84%E8%84%9A%E6%9C%AC%E6%A8%A1%E6%9D%BF/">
 <meta property="og:site_name" content="素履独行">
@@ -456,80 +456,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E6%97%A5%E6%9C%AC/ class=font_size_1>
-日本
+<a href=/tags/%E5%BE%AE%E4%BF%A1/ class=font_size_1>
+微信
 </a>
-<a href=/tags/kafka/ class=font_size_1>
-Kafka
+<a href=/tags/%E7%94%9F%E6%B4%BB/ class=font_size_7>
+生活
+</a>
+<a href=/tags/mysql/ class=font_size_2>
+MySQL
+</a>
+<a href=/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/ class=font_size_1>
+模板引擎
+</a>
+<a href=/tags/lambda/ class=font_size_2>
+Lambda
 </a>
 <a href=/tags/cdn/ class=font_size_1>
 CDN
 </a>
-<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
-装饰器
+<a href=/tags/%E6%AF%95%E4%B8%9A%E5%AD%A3/ class=font_size_1>
+毕业季
 </a>
-<a href=/tags/%E6%A0%87%E6%B3%A8/ class=font_size_1>
-标注
+<a href=/tags/%E5%AE%B9%E5%99%A8/ class=font_size_1>
+容器
 </a>
-<a href=/tags/%E5%BD%B1%E8%AF%84/ class=font_size_10>
-影评
+<a href=/tags/html5/ class=font_size_2>
+HTML5
 </a>
-<a href=/tags/api/ class=font_size_1>
-API
+<a href=/tags/jaeger/ class=font_size_1>
+Jaeger
 </a>
-<a href=/tags/rabbitmq/ class=font_size_2>
-RabbitMQ
-</a>
-<a href=/tags/%E8%AF%AD%E8%A8%80/ class=font_size_1>
-语言
-</a>
-<a href=/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/ class=font_size_2>
-依赖注入
-</a>
-<a href=/tags/%E8%B7%A8%E5%9F%9F/ class=font_size_2>
-跨域
-</a>
-<a href=/tags/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A0%91/ class=font_size_1>
-表达式树
-</a>
-<a href=/tags/jwt/ class=font_size_1>
-JWT
-</a>
-<a href=/tags/%E6%97%A5%E6%9C%AC%E6%96%87%E5%AD%A6/ class=font_size_1>
-日本文学
-</a>
-<a href=/tags/prometheus/ class=font_size_1>
-Prometheus
+<a href=/tags/%E5%BB%BA%E7%AD%91/ class=font_size_1>
+建筑
 </a>
 <a href=/tags/protobuf/ class=font_size_1>
 Protobuf
 </a>
-<a href=/tags/%E7%AD%BE%E5%90%8D/ class=font_size_1>
-签名
+<a href=/tags/di/ class=font_size_2>
+DI
 </a>
-<a href=/tags/logger/ class=font_size_1>
-Logger
+<a href=/tags/ar/ class=font_size_3>
+AR
 </a>
-<a href=/tags/%E9%98%B2%E7%96%AB/ class=font_size_1>
-防疫
+<a href=/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/ class=font_size_3>
+多线程
 </a>
-<a href=/tags/eventbus/ class=font_size_1>
-EventBus
+<a href=/tags/ztree/ class=font_size_1>
+zTree
 </a>
-<a href=/tags/%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/ class=font_size_1>
-虚拟摇杆
+<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
+展望
 </a>
-<a href=/tags/cg/ class=font_size_1>
-CG
+<a href=/tags/%E5%9C%B0%E5%9B%BE/ class=font_size_1>
+地图
 </a>
-<a href=/tags/envoy/ class=font_size_6>
-Envoy
+<a href=/tags/%E5%81%A5%E5%BA%B7%E7%A0%81/ class=font_size_1>
+健康码
 </a>
-<a href=/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/ class=font_size_1>
-自动化
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E7%BC%96%E6%8E%92/ class=font_size_1>
+服务编排
 </a>
-<a href=/tags/web/ class=font_size_4>
-Web
+<a href=/tags/kindle/ class=font_size_3>
+Kindle
+</a>
+<a href=/tags/lua/ class=font_size_2>
+Lua
+</a>
+<a href=/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/ class=font_size_2>
+依赖注入
+</a>
+<a href=/tags/binlog/ class=font_size_2>
+Binlog
+</a>
+<a href=/tags/%E9%9B%86%E7%BE%A4/ class=font_size_1>
+集群
 </a>
 <a href=/tags class=font_size_9999>
 更多

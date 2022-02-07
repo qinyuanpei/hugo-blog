@@ -2,7 +2,7 @@
 <head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="其实，你仔细观察七牛图片外链的格式就会发现，除了域名部分以外，剩下的就是该文件在 bucket 里对应的 key 啦，所以，博主的想法开始从 Markdown 文件入手，最终我们的思路是，解析博客对应的 Markdown 文件，通过正则匹配所有的图片链接，截取出图片的文件名并通过 qshell 下载到本地;七牛的测试域名被官方回收了以后，我们有两种思路去导出这些图片，其一，是临时像官方提工单申请一个测试域名，这样在测试域名被回收前，我们可以直接使用官方提供的[qrsctl](https://developer.qiniu.com/kodo/tools/qrsctl)或者[qshell](https://developer.qiniu.com/kodo/tools/qshell)工具进行批量导出，因为此时我们可以直接在配置文件里配置测试域名，具体可以参考这篇文章：[跑路之后七牛图片如何导出备份至本地](https://www.jianshu.com/p/309709f7bfe4)，甚至你可以直接到七牛的管理控制台手动下载，可这样就一点都不极客了对吗;如果你现在访问我的博客，大概就会发现，之前那些无法显示的图片，现在基本上都可以显示啦，而我所做的事情，就是执行这些 Python 脚本，让它帮我完成从图片下载、上传再到替换链接的所有事情"><title>博客图片迁移折腾记</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E8%BF%81%E7%A7%BB%E6%8A%98%E8%85%BE%E8%AE%B0/>
-<link rel=stylesheet href=/scss/style.min.79bf6c51838c03986713f1a5ca32483c49ac2bfff2ec8a604bcc0a0727ba6e99.css><meta property="og:title" content="博客图片迁移折腾记">
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="博客图片迁移折腾记">
 <meta property="og:description" content="其实，你仔细观察七牛图片外链的格式就会发现，除了域名部分以外，剩下的就是该文件在 bucket 里对应的 key 啦，所以，博主的想法开始从 Markdown 文件入手，最终我们的思路是，解析博客对应的 Markdown 文件，通过正则匹配所有的图片链接，截取出图片的文件名并通过 qshell 下载到本地;七牛的测试域名被官方回收了以后，我们有两种思路去导出这些图片，其一，是临时像官方提工单申请一个测试域名，这样在测试域名被回收前，我们可以直接使用官方提供的[qrsctl](https://developer.qiniu.com/kodo/tools/qrsctl)或者[qshell](https://developer.qiniu.com/kodo/tools/qshell)工具进行批量导出，因为此时我们可以直接在配置文件里配置测试域名，具体可以参考这篇文章：[跑路之后七牛图片如何导出备份至本地](https://www.jianshu.com/p/309709f7bfe4)，甚至你可以直接到七牛的管理控制台手动下载，可这样就一点都不极客了对吗;如果你现在访问我的博客，大概就会发现，之前那些无法显示的图片，现在基本上都可以显示啦，而我所做的事情，就是执行这些 Python 脚本，让它帮我完成从图片下载、上传再到替换链接的所有事情">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E8%BF%81%E7%A7%BB%E6%8A%98%E8%85%BE%E8%AE%B0/">
 <meta property="og:site_name" content="素履独行">
@@ -407,80 +407,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/gephi/ class=font_size_1>
-Gephi
+<a href=/tags/blazor/ class=font_size_1>
+Blazor
 </a>
-<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
-异步
+<a href=/tags/%E6%A0%A1%E9%AA%8C/ class=font_size_1>
+校验
 </a>
-<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
-调优
+<a href=/tags/sonar/ class=font_size_1>
+Sonar
 </a>
-<a href=/tags/%E5%BE%AE%E4%BF%A1/ class=font_size_1>
-微信
+<a href=/tags/%E9%AA%8C%E8%AF%81/ class=font_size_1>
+验证
 </a>
-<a href=/tags/%E7%AE%97%E6%B3%95/ class=font_size_2>
-算法
+<a href=/tags/mecanim/ class=font_size_1>
+Mecanim
 </a>
-<a href=/tags/script/ class=font_size_1>
-Script
+<a href=/tags/%E6%80%9D%E7%BB%B4/ class=font_size_1>
+思维
 </a>
-<a href=/tags/disunity/ class=font_size_1>
-disunity
+<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
+加密
 </a>
-<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
-塔防
+<a href=/tags/%E5%8D%8A%E6%B3%BD%E7%9B%B4%E6%A0%91/ class=font_size_1>
+半泽直树
 </a>
-<a href=/tags/grafana/ class=font_size_1>
-Grafana
+<a href=/tags/%E4%BD%8E%E4%BB%A3%E7%A0%81/ class=font_size_1>
+低代码
 </a>
-<a href=/tags/%E4%BC%98%E5%8C%96/ class=font_size_1>
-优化
+<a href=/tags/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF/ class=font_size_2>
+贝塞尔曲线
 </a>
-<a href=/tags/dynamic/ class=font_size_1>
-Dynamic
+<a href=/tags/valine/ class=font_size_1>
+Valine
 </a>
-<a href=/tags/%E5%BC%95%E6%93%8E/ class=font_size_1>
-引擎
+<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
+装饰器
 </a>
-<a href=/tags/%E6%88%90%E9%95%BF/ class=font_size_3>
-成长
+<a href=/tags/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/ class=font_size_2>
+动态代理
 </a>
-<a href=/tags/lambda/ class=font_size_2>
-Lambda
-</a>
-<a href=/tags/%E7%94%9F%E6%B4%BB/ class=font_size_7>
-生活
-</a>
-<a href=/tags/%E7%86%B5%E5%A2%9E%E5%AE%9A%E5%BE%8B/ class=font_size_1>
-熵增定律
-</a>
-<a href=/tags/%E6%97%A5%E6%9C%AC/ class=font_size_1>
-日本
-</a>
-<a href=/tags/%E5%88%AB%E7%A6%BB/ class=font_size_1>
-别离
-</a>
-<a href=/tags/es6/ class=font_size_1>
-ES6
+<a href=/tags/%E6%8F%90%E7%BA%B2/ class=font_size_1>
+提纲
 </a>
 <a href=/tags/.net/ class=font_size_7>
 .NET
 </a>
-<a href=/tags/signalr/ class=font_size_2>
-SignalR
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E7%BC%96%E6%8E%92/ class=font_size_1>
+服务编排
 </a>
-<a href=/tags/%E7%89%B9%E6%80%A7/ class=font_size_1>
-特性
+<a href=/tags/%E8%A1%8C%E4%B8%9A/ class=font_size_1>
+行业
 </a>
-<a href=/tags/js/ class=font_size_1>
-JS
+<a href=/tags/referrer/ class=font_size_1>
+Referrer
 </a>
-<a href=/tags/%E7%BC%93%E5%AD%98/ class=font_size_5>
-缓存
+<a href=/tags/%E8%BD%AF%E4%BB%B6/ class=font_size_1>
+软件
 </a>
-<a href=/tags/selenium/ class=font_size_2>
-Selenium
+<a href=/tags/%E4%BA%92%E8%81%94%E7%BD%91/ class=font_size_2>
+互联网
+</a>
+<a href=/tags/gephi/ class=font_size_1>
+Gephi
+</a>
+<a href=/tags/shader/ class=font_size_1>
+Shader
+</a>
+<a href=/tags/ugui/ class=font_size_5>
+uGUI
+</a>
+<a href=/tags/%E6%95%B0%E5%AD%97/ class=font_size_1>
+数字
+</a>
+<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
+对象池
 </a>
 <a href=/tags class=font_size_9999>
 更多

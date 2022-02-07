@@ -1,4 +1,5 @@
 ﻿---
+slug: 2041685704
 abbrlink: 2041685704
 categories:
   - 编程语言

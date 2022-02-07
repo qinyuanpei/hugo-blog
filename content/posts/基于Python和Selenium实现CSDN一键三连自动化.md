@@ -1,17 +1,19 @@
 ---
-toc: true
-title: 基于 Python 和 Selenium 实现 CSDN 一键三连自动化
-categories:
-  - 数据分析
-tags:
-  - 爬虫
-  - 自动化
-  - Python
-  - Selenium
-copyright: true
 abbrlink: 3148958651
+categories:
+- 数据分析
+copyright: true
 date: 2021-01-19 22:35:47
+slug: 3148958651
+tags:
+- 爬虫
+- 自动化
+- Python
+- Selenium
+title: 基于 Python 和 Selenium 实现 CSDN 一键三连自动化
+toc: true
 ---
+
 最近一段时间，博主感觉到了某种危机感，或者说是每一个不再年轻的人都会面对的问题，即，怎么面对来自更年轻的“后浪”们的压力，自打国内 IT 行业有了 35 岁这个不成文的“门槛”以后，年轻的“后浪”们仿佛有了更多将“前浪”们拍死在岸上的勇气，我辈忍不住要叹一声后生可畏啊！我认识的 [Catcher Wong](https://www.cnblogs.com/catcher1994) 正是这样一位大佬，此君虽然比我小三岁，可在技术的广/深度以及经验的丰富程度上，足以令我这个”老人”汗颜，单单 [EasyCaching](https://github.com/dotnetcore/EasyCaching) 这一项，就令人望尘莫及啦！我看着他的时候，一如当年 Wesley 大哥看着我的时候，可能这就是某种轮回，姑且执浊酒一杯，致我们终将老去的青春。
 
 # 不正经的 Kimol 君
@@ -208,5 +210,3 @@ proxy.iloveyuou(urls)
 [作为技术宅的我，是这样追鬼滅の刃的](https://qinyuanpei.blog.csdn.net/article/details/111351111)
 
 博主最近新开了一个付费专栏：[Python 数据挖掘系列](https://blog.csdn.net/qinyuanpei/category_7444699.html)，主要介绍关于爬虫、PyECharts、结巴分词、Pandas、Matplotlib、SnowNLP、OpenCV 等数据挖掘相关内容，如果大家喜欢或者感兴趣，欢迎订阅。好了，以上就是这篇博客的全部内容啦，欢迎大家在评论区，就你对于这篇博客的想法或者意见进行讨论，再次谢谢大家！如果 [Kimol 君](https://blog.csdn.net/kimol_justdo) 恰好读至此处，最好能一键三连，我权当作为你打广告的广告费啦，哈哈！
-
-

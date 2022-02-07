@@ -3,9 +3,12 @@ abbrlink: 632291273
 categories:
 - Unity3D
 date: 2016-01-15 12:30:41
-description: 注意到在这个“通知中心”中，我们首先实现了单例模式，这样我们可以通过 Get 方法来获取该“通知中心”的唯一实例，其次这里利用一个字典来存储对所有事件的引用，这样保证外部可以通过 AddEventListener 和 RemoveEventListener 这两个方法来进行事件的添加和移除，对于添加的事件引用我们可以通过 DispatchEvent 方法来分发一个事件，事件的回调函数采用委托来实现，注意到这个委托需要一个 Notification 类型，对该类型简单定义如下：;public
-  void DispatchEvent(string eventKey, GameObject sender, object param);public void
-  DispatchEvent(string eventKey,object param)
+description: 注意到在这个“通知中心”中，我们首先实现了单例模式，这样我们可以通过 Get 方法来获取该“通知中心”的唯一实例，其次这里利用一个字典来存储对所有事件的引用，这样保证外部可以通过
+  AddEventListener 和 RemoveEventListener 这两个方法来进行事件的添加和移除，对于添加的事件引用我们可以通过 DispatchEvent
+  方法来分发一个事件，事件的回调函数采用委托来实现，注意到这个委托需要一个 Notification 类型，对该类型简单定义如下：;public void DispatchEvent(string
+  eventKey, GameObject sender, object param);public void DispatchEvent(string eventKey,object
+  param)
+slug: 632291273
 tags:
 - 设计模式
 - 消息

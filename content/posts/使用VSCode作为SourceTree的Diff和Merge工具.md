@@ -3,7 +3,11 @@ abbrlink: 3222622531
 categories:
 - 开发工具
 date: 2018-09-30 08:43:44
-description: 既然，作为 Git 可视化工具的 SourceTree 可以使用 VSCode 作为 Diff 和 Merge 的工具，那么，我们干脆一鼓作气，将 VSCode 作为 Git 默认的 Diff 和 Merge 的工具吧;现在，使用 SourceTree 的时候，周围同事大部分都习惯 GUI 操作，所以，就想能不能把 SourceTree 和 VSCode 结合着来用，因为我发现 SourceTree 可以支持外部的 Diff 和 Merge 工具;然后，我们在 SourceTree 里做如下配置，这里我们直接让 VSCode 作为我们的 Diff 和 Merge 工具，具体参数如图所示：
+description: 既然，作为 Git 可视化工具的 SourceTree 可以使用 VSCode 作为 Diff 和 Merge 的工具，那么，我们干脆一鼓作气，将
+  VSCode 作为 Git 默认的 Diff 和 Merge 的工具吧;现在，使用 SourceTree 的时候，周围同事大部分都习惯 GUI 操作，所以，就想能不能把
+  SourceTree 和 VSCode 结合着来用，因为我发现 SourceTree 可以支持外部的 Diff 和 Merge 工具;然后，我们在 SourceTree
+  里做如下配置，这里我们直接让 VSCode 作为我们的 Diff 和 Merge 工具，具体参数如图所示：
+slug: 3222622531
 tags:
 - Git
 - VSCode

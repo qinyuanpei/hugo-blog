@@ -1,17 +1,19 @@
 ---
-toc: true
-title: 浅议 EF Core 分库分表及多租户架构的实现
-categories:
-  - 数据存储
-tags:
-  - 数据库
-  - 多租户
-  - EF
-  - 架构
-copyright: true
 abbrlink: 2151871792
+categories:
+- 数据存储
+copyright: true
 date: 2021-03-27 17:47:47
+slug: 2151871792
+tags:
+- 数据库
+- 多租户
+- EF
+- 架构
+title: 浅议 EF Core 分库分表及多租户架构的实现
+toc: true
 ---
+
 各位朋友，大家好，我是 Payne，欢迎大家关注我的博客，我的博客地址是：[https://blog.yuanpei.me](https://blog.yuanpei.me)。最近这段时间，我一直在学习 [ABP vNext](https://github.com/abpframework/abp) 框架，在整个学习过程中，我基本就是在“**文档**”和“**源码**”间来回横跳。我个人推荐大家，多去阅读一点优秀的代码，因为阅读 [ABP vNext](https://github.com/abpframework/abp) 的源代码简直就是一种享受，它可以暂时让你摆脱如泥沼一般的业务代码。言归正传，[ABP vNext](https://github.com/abpframework/abp) 是一个支持多租户架构的框架，在了解了其多租户的实现原理以后，从中收获一点微不足道的小技巧。正好前几天，刚刚同一位朋友讨论完分库、分表这类话题。因此，在今天这篇博客中，我想和大家一起探讨下 [EF Core](https://docs.microsoft.com/zh-cn/ef/core/get-started/overview/first-app?tabs=netcore-cli) 关于分库、分表以及多租户架构的实现。此中曲折，可以说是初窥门径，或许我无法提供给你一个开箱即用的方案，至少它可以带给你一点启发。有读者朋友建议我，不要总是写这种“**高深**”、“**复杂**”的话题，适当地迎合读者写点不需要动脑子的东西。对此，我想说，我有我个人技术上的追求，希望大家理解！
 
 # 分库

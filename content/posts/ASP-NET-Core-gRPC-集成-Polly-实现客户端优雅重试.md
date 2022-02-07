@@ -1,17 +1,19 @@
 ---
-toc: true
-title: ASP.NET Core gRPC 集成 Polly 实现优雅重试
-categories:
-  - 编程语言
-tags:
-  - gRPC
-  - Polly
-  - 重试
-  - .NET
-copyright: true
 abbrlink: 2742255459
+categories:
+- 编程语言
+copyright: true
 date: 2021-06-07 15:19:11
+slug: 2742255459
+tags:
+- gRPC
+- Polly
+- 重试
+- .NET
+title: ASP.NET Core gRPC 集成 Polly 实现优雅重试
+toc: true
 ---
+
 在上一篇 [博客](https://blog.yuanpei.me/posts/1657075397/) 中，我们一起探索和实现了`gRPC`的健康检查。从服务治理的角度来看，健康检查保证的是被调用的服务“健康”或者“可用”。可即使如此，我们依然会遇到，因为网络不稳定等原因而造成的服务调用失败的情形，就如同我们赖以生存的这个真实世界，本身就充满了各种不确定的因素一样，“**世间唯一不变的只有变化本身**”。不管是面对不稳定的服务，还是面对不确定的人生，任何时候我们都需要有一个 B 计划，甚至我们人生中的一切努力，本质上都是为了多一份自由，一份选择的自由。在微服务的世界里，我们将这种选择称之为“**降级(Fallback)**”，如果大家有接触过 [Hystrix](https://github.com/Netflix/Hystrix) 或者 [Polly](https://github.com/App-vNext/Polly) 这类框架，就会明白我这里的所说的“**降级**”具体是什么。在众多的“**降级**”策略中，**重试**是一种非常朴素的策略，尤其是当你调用一个不稳定的服务的时候。
 
 ![重试](https://i.loli.net/2021/06/09/GIBVj3sKb5zMeE1.jpg)

@@ -4,7 +4,12 @@ categories:
 - 编程语言
 copyright: true
 date: 2020-04-02 10:26:53
-description: 博主曾经在「[声明式 RESTful 客户端 WebApiClient 在项目中的应用](https://blog.yuanpei.me/posts/380519286/)」这篇博客中，介绍过.NET 平台下的“Retrofit”——[WebApiClient](https://github.com/dotnetcore/WebApiClient)，它是一种声明式的 RESTful 客户端，通过动态代理来生成 Http 调用过程代码，而调用方只需要定义一个接口，并使用相关“注解”对接口进行修饰即可，类似的实现还有[Refit](https://github.com/reactiveui/refit)，是一种比 HttpWebRequest、HttpClient 和 RestSharp 更为优雅的接口调用方式;是的，你猜对了，实际运作过程中，测试环境和正式环境不单单会使用不同的域名，可能还会使用不同的路由，虽然，理论上两个环境的程序应该完全一样，应该使用相同的路由;在今天这篇博客中，我想聊聊 WebApiClient 中动态路由的实现与使用
+description: 博主曾经在「[声明式 RESTful 客户端 WebApiClient 在项目中的应用](https://blog.yuanpei.me/posts/380519286/)」这篇博客中，介绍过.NET
+  平台下的“Retrofit”——[WebApiClient](https://github.com/dotnetcore/WebApiClient)，它是一种声明式的
+  RESTful 客户端，通过动态代理来生成 Http 调用过程代码，而调用方只需要定义一个接口，并使用相关“注解”对接口进行修饰即可，类似的实现还有[Refit](https://github.com/reactiveui/refit)，是一种比
+  HttpWebRequest、HttpClient 和 RestSharp 更为优雅的接口调用方式;是的，你猜对了，实际运作过程中，测试环境和正式环境不单单会使用不同的域名，可能还会使用不同的路由，虽然，理论上两个环境的程序应该完全一样，应该使用相同的路由;在今天这篇博客中，我想聊聊
+  WebApiClient 中动态路由的实现与使用
+slug: 2488769283
 tags:
 - RESTful
 - Retrofit

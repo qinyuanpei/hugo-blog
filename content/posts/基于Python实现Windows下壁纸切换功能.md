@@ -3,7 +3,11 @@ abbrlink: 2822230423
 categories:
 - 编程语言
 date: 2018-02-05 16:48:39
-description: 本文使用 Python 实现了 Windows 下切换壁纸的功能，通过 requests 模块从网络上抓取图片，通过 PIL 模块实现 JPEG 格式到 BMP 格式的转换，通过 win32api 和 win32gui 模块实现壁纸设置，并通过修改注册表的方式，将这一功能整合到系统菜单中，可以非常便捷地更换桌面壁纸;Python 脚本会通过 pyinstaller 模块打包成可执行文件，我们通过修改注册表的方式，在右键菜单内加入切换壁纸的选项，这样我们可以直接通过右键菜单实现壁纸切换功能;如你所见，在这篇文章里，我们将通过 Python 和 Windows 注册表实现壁纸切换功能，主要涉及到的 Python 中的 requests、pyinstaller 这两个模块的使用，希望大家喜欢
+description: 本文使用 Python 实现了 Windows 下切换壁纸的功能，通过 requests 模块从网络上抓取图片，通过 PIL 模块实现 JPEG
+  格式到 BMP 格式的转换，通过 win32api 和 win32gui 模块实现壁纸设置，并通过修改注册表的方式，将这一功能整合到系统菜单中，可以非常便捷地更换桌面壁纸;Python
+  脚本会通过 pyinstaller 模块打包成可执行文件，我们通过修改注册表的方式，在右键菜单内加入切换壁纸的选项，这样我们可以直接通过右键菜单实现壁纸切换功能;如你所见，在这篇文章里，我们将通过
+  Python 和 Windows 注册表实现壁纸切换功能，主要涉及到的 Python 中的 requests、pyinstaller 这两个模块的使用，希望大家喜欢
+slug: 2822230423
 tags:
 - Python
 - 脚本

@@ -1,18 +1,20 @@
 ---
-toc: true
-title: 温故而知新，由 ADO.NET 与 Dapper 所联想到的
-categories:
-  - 编程语言
-tags:
-  - ADO.NET
-  - Dapper
-  - Dynamic
-  - 技巧
-copyright: true
 abbrlink: 2621074915
+categories:
+- 编程语言
+copyright: true
 date: 2020-12-30 12:49:47
+slug: 2621074915
+tags:
+- ADO.NET
+- Dapper
+- Dynamic
+- 技巧
+title: 温故而知新，由 ADO.NET 与 Dapper 所联想到的
+toc: true
 ---
- 这段时间在维护一个“遗产项目”，体验可以说是相当地难受，因为它的数据持久化层完全由 ADO.NET 纯手工打造，所以，你可以在项目中看到无所不在的 DataTable，不论是读操作还是写操作。这个 DataTable 让我这个习惯了 Entity Framework 的人感到非常别扭，我并不排斥写手写 SQL 语句，我只是拥有某种自觉并且清醒地知道，自己写的 SQL 语句未必就比 ORM 生成的 SQL 语句要好。可至少应该是像 Dapper 这种程度的封装啊，因为关系型数据库天生就和面向对象编程存在隔离，所以，频繁地使用 DataTable 无疑意味着你要写很多的转换的代码，当我看到`DbConnection`、`DbCommand`、`DbDataReader`、`DbDataAdapter`这些熟悉的“底层”的时候，我意识到我可以结合着 Dapper 的实现，从中梳理出一点改善的思路，所以，这篇博客想聊一聊**ADO.NET**、**Dapper**和**Dynamic**这三者间交叉的部分，希望能给大家带来新的启发。
+
+这段时间在维护一个“遗产项目”，体验可以说是相当地难受，因为它的数据持久化层完全由 ADO.NET 纯手工打造，所以，你可以在项目中看到无所不在的 DataTable，不论是读操作还是写操作。这个 DataTable 让我这个习惯了 Entity Framework 的人感到非常别扭，我并不排斥写手写 SQL 语句，我只是拥有某种自觉并且清醒地知道，自己写的 SQL 语句未必就比 ORM 生成的 SQL 语句要好。可至少应该是像 Dapper 这种程度的封装啊，因为关系型数据库天生就和面向对象编程存在隔离，所以，频繁地使用 DataTable 无疑意味着你要写很多的转换的代码，当我看到`DbConnection`、`DbCommand`、`DbDataReader`、`DbDataAdapter`这些熟悉的“底层”的时候，我意识到我可以结合着 Dapper 的实现，从中梳理出一点改善的思路，所以，这篇博客想聊一聊**ADO.NET**、**Dapper**和**Dynamic**这三者间交叉的部分，希望能给大家带来新的启发。
 
 # 重温 ADO.NET
 相信大家都知道，我这里提到的`DbConnection`、`DbCommand`、`DbDataReader`、`DbDataAdapte`以及`DataTable`、`DataSet`，实际上就是 ADO.NET 中核心的组成部分，譬如`DbConnection`负责管理数据库连接，`DbCommand`负责 SQL 语句的执行，`DbDataReader`和`DbDataAdapter`负责数据库结果集的读取。需要注意的是，这些类型都是抽象类，而各个数据库的具体实现，则是由对应的厂商来完成，即我们称之为“驱动”的部分，它们都遵循同一套接口规范，而`DataTable`和`DataSet`则是“装”数据库结果集的容器。关于 ADO.NET 的设计理念，可以从下图中得到更清晰的答案：
@@ -232,7 +234,3 @@ private static IDataReader CreateDataReader(this IDbConnection connection, strin
 # 本文小结
 
 本文实则由针对 DataSet/DataTable 的吐槽而引出，在这个过程中，我们重新温习了 ADO.NET 中`DbConnection`、`DbCommand`、`DbDataReader`、`DbDataAdapter`这些关键的组成部分，而为了解决 DataTable 在使用上的种种不变，我们想到了借鉴 Dapper 中的 DapperRow 来实现“动态查询”，由此引出了.NET 中实现 dynamic 最重要的一个接口：`IDynamicMetaObjectProvide`，这使得我们可以在查询数据库的时候返回一个 dynamic 的集合。而为了更接近 Dapper 一点，我们基于扩展方法的形式为`IDbConnection`编写了`Query<T>()`和`Execute()`方法，在数据库读写层面上彻底终结了 DataSet/DataTable 的生命。最后，我们实现了一个简化版本的参数化查询，同样是借鉴 Dapper 的思路。这说明一件什么事情呢？**当你在一个看似合理、结局固定的现状中无法摆脱的时候，“平躺”虽然能让你获得一丝喘息的机会，但与此同时，你永远失去了跳出这个层级去看待事物的机会**，就像我以前吐槽同事天天用`StringBuider`拼接字符串一样，一味地吐槽是没有什么用的，重要的是你会选择怎么做，所以，后来我向大家推荐了[Linquid](https://github.com/dotliquid/dotliquid)，**2021 年已经来了，希望你不只是增长了年龄和皱纹**，晚安！
-
-
-
- 

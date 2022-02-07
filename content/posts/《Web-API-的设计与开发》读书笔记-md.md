@@ -4,6 +4,7 @@ categories:
 - 读书笔记
 date: 2019-05-28 12:00:53
 description: '- 指使用符合 RPC 风格的 XML 或 JSON + HTTP 接口的系统(不使用 SOAP);- 使用 HTTP;# 查询参数和路径的使用区别'
+slug: 3677280829
 tags:
 - Web API
 - RSETful

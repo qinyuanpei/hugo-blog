@@ -4,8 +4,13 @@ categories:
 - 数据存储
 copyright: true
 date: 2020-04-24 08:20:32
-description: 整体来看，后者对代码的侵入性要更小一点，理论上我们可以实现`EF`或`EF Core`的仓储模式，这样两者在实现上会更接近一点，当然，更直接的方案是去拦截`SaveChanges()`方法，这和我们使用继承的目的是一样的，由于 Dapper 本身没有`ChangeTracker`，所以，在处理`Update()`相关的仓储接口时，都需要先查询一次数据库，这一点是这个方案里最大的短板;在此基础上，我们可以编写我们实际的 DbContext，这里以 CustomerContext 为例，当我们向其中添加、修改和删除 Customer 的时候，就会触发审计相关的逻辑，默认情况下，审计产生的数据 AuditLog 和 Customer 在同一个数据库上下文中，当然，我们可以通过注入 IAuditStore 来实现更精细的控制，例如，可以将审计日志输入到文本文件，甚至是 Mongodb 这样的非关系型数据库里，因为有依赖注入的存在，这些实现起来会非常的简单;而对于像 Dapper 这种轻量级的 ORM，它本身没有类似 EF/EF
+description: 整体来看，后者对代码的侵入性要更小一点，理论上我们可以实现`EF`或`EF Core`的仓储模式，这样两者在实现上会更接近一点，当然，更直接的方案是去拦截`SaveChanges()`方法，这和我们使用继承的目的是一样的，由于
+  Dapper 本身没有`ChangeTracker`，所以，在处理`Update()`相关的仓储接口时，都需要先查询一次数据库，这一点是这个方案里最大的短板;在此基础上，我们可以编写我们实际的
+  DbContext，这里以 CustomerContext 为例，当我们向其中添加、修改和删除 Customer 的时候，就会触发审计相关的逻辑，默认情况下，审计产生的数据
+  AuditLog 和 Customer 在同一个数据库上下文中，当然，我们可以通过注入 IAuditStore 来实现更精细的控制，例如，可以将审计日志输入到文本文件，甚至是
+  Mongodb 这样的非关系型数据库里，因为有依赖注入的存在，这些实现起来会非常的简单;而对于像 Dapper 这种轻量级的 ORM，它本身没有类似 EF/EF
   Core 的 ChangeTracker 的设计，如果我们在项目中使用 Dapper，并且希望实现审计的相关功能，直观上看就会有一点困难
+slug: 1289244227
 tags:
 - EF
 - Dapper

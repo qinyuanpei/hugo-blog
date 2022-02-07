@@ -1,17 +1,19 @@
 ---
-toc: true
-title: 使用 HttpMessageHandler 实现 HttpClient 请求管道自定义
-categories:
-  - 编程语言
-tags:
-  - HttpClient
-  - Mock
-  - 管道
-  - 扩展
-copyright: true
 abbrlink: 2070070822
+categories:
+- 编程语言
+copyright: true
 date: 2021-04-28 20:25:47
+slug: 2070070822
+tags:
+- HttpClient
+- Mock
+- 管道
+- 扩展
+title: 使用 HttpMessageHandler 实现 HttpClient 请求管道自定义
+toc: true
 ---
+
 最近，博主偶然间在 [博客园](https://www.cnblogs.com) 看到一篇文章：[ASP.NET Core 扩展库之 Http 请求模拟](https://www.cnblogs.com/xfrog/p/14703251.html)，它里面介绍了一种利用 [HttpMessageHandler](https://docs.microsoft.com/zh-cn/dotnet/api/system.net.http.httpmessagehandler?view=net-5.0) 来实现 Http 请求模拟的方案。在日常工作中，我们总是不可避免地要和第三方的服务或者接口打交道，尤其是当我们需要面对“**联调**”这样一件事情的时候。通常，我们可以通过类似 [YAPI](https://github.com/ymfe/yapi) 这样的工具来对尚在开发中的接口进行模拟。可是，因为这种方式会让我们的测试代码依赖于一个外部工具，所以，从严格意义上讲，它其实应该属于“**集成测试**”的范畴。在接触前端开发的过程中，对于其中的 [Mock.js](http://mockjs.com/) 印象深刻。故而，当看到 .NET 中有类似实现的时候，好奇心驱使我对其中的核心，即 `HttpMessageHandler` 产生了浓厚的兴趣。平时，我们更多的是使用 [Moq](https://github.com/moq/moq4) 这样的库来模拟某一个对象的行为，而对一个 Http 请求进行模拟，可以说是开天辟地头一遭。带着这些问题出发，就有了今天这篇博客，通过 `HttpMessageHandler` 实现 `HttpClient` 请求管道的自定义。
 
 # 什么是 HttpMessageHandler？

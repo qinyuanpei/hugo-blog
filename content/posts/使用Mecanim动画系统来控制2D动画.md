@@ -3,9 +3,10 @@ abbrlink: 2583252123
 categories:
 - 游戏开发
 date: 2015-02-11 13:35:58
-description: 通过前面的学习，我们知道 Unity2D 使用的 Mecanim 动画系统主要是通过改变游戏体的属性来实现某种特定的动画效果的，例如我们这里的动画是通过改变角色精灵附加的 SpriteRenderer 组件的 Sprite 属性来实现的，因此从本质上来说 Unity2D 的动画控制器是一种属性动画;void
-  FlipSrite();<img src="http://img.blog.csdn.net/20150301180533660" alt="为Idle动画添加帧"
-  />
+description: 通过前面的学习，我们知道 Unity2D 使用的 Mecanim 动画系统主要是通过改变游戏体的属性来实现某种特定的动画效果的，例如我们这里的动画是通过改变角色精灵附加的
+  SpriteRenderer 组件的 Sprite 属性来实现的，因此从本质上来说 Unity2D 的动画控制器是一种属性动画;void FlipSrite();<img
+  src="http://img.blog.csdn.net/20150301180533660" alt="为Idle动画添加帧" />
+slug: 2583252123
 tags:
 - Mecanim
 - 动画

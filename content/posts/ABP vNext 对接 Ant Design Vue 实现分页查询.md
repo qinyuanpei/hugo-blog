@@ -1,17 +1,19 @@
 ---
-toc: true
-title: ABP vNext 对接 Ant Design Vue 实现分页查询
-categories:
-  - 编程语言
-tags:
-  - ABP
-  - Vue
-  - 分页
-  - 前端
-copyright: true
 abbrlink: 3670340170
+categories:
+- 编程语言
+copyright: true
 date: 2021-04-07 21:07:47
+slug: 3670340170
+tags:
+- ABP
+- Vue
+- 分页
+- 前端
+title: ABP vNext 对接 Ant Design Vue 实现分页查询
+toc: true
 ---
+
 在 [上一篇](https://blog.yuanpei.me/posts/2151871792/) 博客中，博主和大家分享了如何在 [EF Core](https://docs.microsoft.com/zh-cn/ef/core/get-started/overview/first-app?tabs=netcore-cli) 中实现多租户架构。在这一过程中，博主主要参考了 [ABP vNext](https://github.com/abpframework/abp) 这个框架。从上个月开始，我个人发起了一个项目，基于 [ABP vNext](https://github.com/abpframework/abp) 和 [Ant Design Vue](https://www.antdv.com/docs/vue/introduce-cn/) 来实现一个通用的后台管理系统，希望以此来推进 [DDD](https://www.jdon.com/ddd.html) 和 [Vue](https://cn.vuejs.org/) 的学习，努力打通前端与后端的“**任督二脉**”。因此，接下来的这段时间内，我写作的主题将会围绕 ABP vNext 和 Ant Design Vue。而在今天的这篇博客中，我们来说说 ABP vNext 对接 Ant Design Vue 实现分页查询的问题，希望能让大家在面对类似问题时有所帮助。我不打算写一个系列教程，更多的是从我个人的关注点出发，如果大家有更多想要交流的话题，欢迎大家通过评论或者邮件来留言，谢谢大家！
 
 # ABP vNext中的分页查询

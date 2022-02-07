@@ -3,7 +3,11 @@ abbrlink: 4891372
 categories:
 - 开发工具
 date: 2018-05-12 01:16:52
-description: 经过反复尝试，最终我们实现了：**在 TravisCI 下使用 MSBuild 构建项目**、**使用 Nuget 在线安装 NUnit 并运行单元测试**、**使用 SonarCloud 对代码进行静态检查**;通常使用 Sonar 来构建静态检查工具时，需要我们在本地搭建一套运行环境，而 SonarCloud 是针对 Sonar 推出的一个“云”版本;在编写 TravisCI 脚本的过程中，我们一同验证了 MSBuild、Nuget、NUnit 等.NET 常规工具或者类库在 Linux 平台下使用的可能性，最终在 TravisCI 的帮助下完成了从项目构建、单元测试再到代码的分析的整个流程
+description: 经过反复尝试，最终我们实现了：**在 TravisCI 下使用 MSBuild 构建项目**、**使用 Nuget 在线安装 NUnit
+  并运行单元测试**、**使用 SonarCloud 对代码进行静态检查**;通常使用 Sonar 来构建静态检查工具时，需要我们在本地搭建一套运行环境，而 SonarCloud
+  是针对 Sonar 推出的一个“云”版本;在编写 TravisCI 脚本的过程中，我们一同验证了 MSBuild、Nuget、NUnit 等.NET 常规工具或者类库在
+  Linux 平台下使用的可能性，最终在 TravisCI 的帮助下完成了从项目构建、单元测试再到代码的分析的整个流程
+slug: 4891372
 tags:
 - Mono
 - Sonar

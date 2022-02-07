@@ -3,9 +3,11 @@ abbrlink: 2418566449
 categories:
 - 数据存储
 date: 2018-10-18 08:41:08
-description: 通常来讲，不同的数据库都在数据库层面上实现了主从复制，各自的实现细节上可能会存在差异，譬如 SQLServer 中可以通过“发布订阅”来配置主从复制的策略，而 Oracle 中可以通过 DataGurd 来实现主从复制，甚至你可以直接把主库 Dump 出来再导入到从库;public
-  static void SwitchToSlave(DbCommand command, string serverName = "");public static
-  void SwitchToMaster(DbCommand command, string serverName = "")
+description: 通常来讲，不同的数据库都在数据库层面上实现了主从复制，各自的实现细节上可能会存在差异，譬如 SQLServer 中可以通过“发布订阅”来配置主从复制的策略，而
+  Oracle 中可以通过 DataGurd 来实现主从复制，甚至你可以直接把主库 Dump 出来再导入到从库;public static void SwitchToSlave(DbCommand
+  command, string serverName = "");public static void SwitchToMaster(DbCommand command,
+  string serverName = "")
+slug: 2418566449
 tags:
 - EF
 - 读写分离

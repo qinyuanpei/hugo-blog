@@ -1,17 +1,19 @@
 ---
-toc: true
-title: 使用 dotTrace 对 .NET 应用进行性能分析与优化
-categories:
-  - 编程语言
-tags:
-  - dotTrace
-  - JetBrain
-  - 性能
-  - 调优
-copyright: true
 abbrlink: 3672690776
+categories:
+- 编程语言
+copyright: true
 date: 2020-11-01 12:19:02
+slug: 3672690776
+tags:
+- dotTrace
+- JetBrain
+- 性能
+- 调优
+title: 使用 dotTrace 对 .NET 应用进行性能分析与优化
+toc: true
 ---
+
 前几天，有位朋友问我，你平时都是怎么去排查一个程序的性能问题的啊。不要误会，这位朋友不是我啦，因为我真的有这样一位叫做 Toby 的朋友。说到性能问题，可能大家立马会想到类似**并发数**、**吞吐量**、**响应时间**、**QPS**、**TPS**等等这些指标，这些指标的确可以反映出一个系统性能的好坏。可随着我们的系统结构变得越来越复杂，要找到这样一个性能的“损耗点”，同样会变得越来越困难。在不同的人的眼中，对于性能好坏的评判标准是不一样的，譬如在前端眼中，页面打开速度的快慢代表着性能的好坏；而在后端眼中，并发数、吞吐量和响应时间代表着性能的好坏；而在 DBA 眼中，一条 SQL 语句的执行效率代表着性能的好坏。更不用说，现实世界中的程序要在硬件、网络的世界里来回穿梭了，所以，从 80%的功能堆积到 100%，是件非常容易的事情；而从 80%的性能优化到 85%，则不是件非常轻松的事情。想清楚这一点非常简单，因为我们的系统从来都不是简单的`1 + 1 = 2`。此时，我们需要一个性能分析工具，而今天给大家分享的是 `JetBrains` 出品的 [dotTrace](https://www.jetbrains.com/profiler/) 。
 
 # 快速开始(Quick Start)
@@ -121,4 +123,3 @@ dotnet tool install -g dotnet-gcdump
 * [https://docs.microsoft.com/zh-cn/dotnet/core/diagnostics/debug-linux-dumps](https://docs.microsoft.com/zh-cn/dotnet/core/diagnostics/debug-linux-dumps)
 * [https://docs.microsoft.com/zh-cn/dotnet/core/diagnostics/debug-memory-leak](https://docs.microsoft.com/zh-cn/dotnet/core/diagnostics/debug-memory-leak)
 * [https://docs.microsoft.com/zh-cn/dotnet/core/diagnostics/debug-highcpu?tabs=windows](https://docs.microsoft.com/zh-cn/dotnet/core/diagnostics/debug-highcpu?tabs=windows)
-

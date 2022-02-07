@@ -8,6 +8,7 @@ description: var propertyParam = Expression.Property (parameter, condition.Field
   Condition() { Field = "StringValue", Op = Operation.Contains, Value = "山", OrGroup
   = "StringValue" });searchParameters.Query.Add(new Condition<Foo>() { Field = x =>
   x.StringValue, Op = Operation.Contains, Value = "有朋", OrGroup = "StringValue" })
+slug: 118272597
 tags:
 - Linq
 - Lambda

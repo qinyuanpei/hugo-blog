@@ -5,6 +5,7 @@ categories:
 date: 2019-09-06 14:53:46
 description: 通过 Vue 文档中关于[数据校验](<https://cn.vuejs.org/v2/cookbook/form-validation.html>)这一节的内容，我们了解到官方推荐的两个表单验证插件是[vuelidate](https://github.com/monterail/vuelidate)和[VeeValidate](http://vee-validate.logaretm.com/)，而实际上这篇博客中的第一个例子，就是由文档中的例子演化而来;<div
   class="form-group" name="password" rules="required">;-- script of LoginForm -->
+slug: 169430744
 tags:
 - Vue
 - 表单

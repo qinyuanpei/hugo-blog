@@ -1,16 +1,18 @@
 ---
-toc: true
-title: 记一次从已损坏的 Git 仓库中找回代码的经历
-categories:
-  - 开发工具
-tags:
-  - Git
-  - 工具
-  - 软件
-copyright: true
 abbrlink: 686567367
+categories:
+- 开发工具
+copyright: true
 date: 2020-06-23 17:08:17
+slug: 686567367
+tags:
+- Git
+- 工具
+- 软件
+title: 记一次从已损坏的 Git 仓库中找回代码的经历
+toc: true
 ---
+
 突然发觉，古人其实特别有趣，譬如有古语云：『常在河边走，哪有不湿鞋』，实在是富有生活气息的一句俗语，可古人又有言语：『光脚的不怕穿鞋的』，更是朴实无华的一句话。上周下班适逢天降大雨，我撑伞送一位同事到地铁站，结果走到半路人家来一句，“你快点走吧，我穿着凉鞋”，一时竟无语凝噎。常在河边走，固然会有湿鞋的顾虑，可真正的气度绝不是光着脚满地跑，如何做到湿了鞋子而不慌呢？答案是脚上无凉鞋而心中有凉鞋。今天，我将为大家我在使用`Git`过程中如何“湿鞋”、如何不怕“湿鞋”的一个故事(逃
 
 # 蓝屏重启后 Git 居然坏了
@@ -115,10 +117,3 @@ $ git fsck --lost-found
 * [Git 撤销&回滚操作](https://zhuanlan.zhihu.com/p/72091550?utm_source=cn.wiz.note&utm_medium=social&utm_oi=53182268964864)
 * [Git 撤销合并](http://blog.psjay.com/posts/git-revert-merge-commit/)
 * [How to get the parents of a merge commit in git?](https://stackoverflow.com/questions/9059335/get-parents-of-a-merge-commit-in-git)
-
-
-
-
-
-
-

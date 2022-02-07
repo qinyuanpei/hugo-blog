@@ -1,14 +1,15 @@
 ---
 abbrlink: 1679688265
 categories:
-  - 编程语言
-tags:
-  - .NET
-  - gRPC
-  - AOP
-  - 日志
-title: ASP.NET Core gRPC 拦截器的使用技巧分享
+- 编程语言
 date: 2021-05-26 09:03:35
+slug: 1679688265
+tags:
+- .NET
+- gRPC
+- AOP
+- 日志
+title: ASP.NET Core gRPC 拦截器的使用技巧分享
 ---
 
 `gRPC`是微软在`.NET Core` 及其后续版本中主推的 RPC 框架，它使用 `Google` 的 `Protocol Buffers` 作为序列化协议，使用 **HTTP/2** 作为通信协议，具有**跨语言**、**高性能**、**双向流式调用**等优点。考虑到，接下来要参与的是，一个以`gRPC`为核心而构建的微服务项目。因此，博主准备调研一下`gRPC`的相关内容，而首当其冲的，则是从 .NET Core 3.1 开始就有的拦截器，它类似于`ASP.NET Core`中的过滤器和中间件，体现了一种面向切面编程(**AOP**)的思想，非常适合在 RPC 服务调用的时候做某种统一处理，譬如参数校验、身份验证、日志记录等等。在今天这篇博客中，博主主要和大家分享的是，利用 .NET Core gRPC 中的拦截器实现日志记录的简单技巧，希望能给大家带来一点启发。
@@ -228,5 +229,3 @@ var channel = GrpcChannel.ForAddress(
 # 本文小结
 
 本文主要分享了`gRPC`拦截器的使用技巧，`gRPC`支持一元调用(**UnaryCall**)、流式调用(**StreamingCall**)、阻塞调用(**BlockingCall**)，因为区分客户端和服务器端，所以，实际上会有各种各样的组合方式。`gRPC`的拦截器实际上就是选择对应的场景去重写相应的方法，其中，拦截器的基类为`Interceptor`类，这里我们都是以普通的一元调用为例的，大家可以结合各自的业务场景，去做进一步的调整和优化。这里，我们使用`IMessage`类的`Descriptor`属性来“反射”报文中定义的字段，这样就实现了针对`gRPC`服务请求/响应的日志记录功能。关于`gRPC`中日志和诊断的更进一步的话题，大家可以参考微软的 [官方文档](https://docs.microsoft.com/zh-cn/aspnet/core/grpc/diagnostics?view=aspnetcore-5.0) 。好了，以上就是这篇博客的全部内容啦，谢谢大家！
-
-

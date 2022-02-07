@@ -1,17 +1,19 @@
 ---
-toc: true
-title: 通过 EmbededFileProvider 实现 Blazor 的静态文件访问
-categories:
-  - 编程语言
-tags:
-  - Blazor
-  - .NET Core
-  - 文件
-  - WebAssembly
-copyright: true
 abbrlink: 3789745079
+categories:
+- 编程语言
+copyright: true
 date: 2021-02-23 05:37:47
+slug: 3789745079
+tags:
+- Blazor
+- .NET Core
+- 文件
+- WebAssembly
+title: 通过 EmbededFileProvider 实现 Blazor 的静态文件访问
+toc: true
 ---
+
 重构我的 [独立博客](https://blog.yuanpei.me) ，是博主今年的计划之一，这个基于 [Hexo](https://hexo.io/) 的静态博客，最早搭建于2014年，可以说是比女朋友更亲密的存在，陪伴着博主走过了毕业、求职以及此刻的而立之年。其间虽然尝试过像 [Jekyll](https://jekyllrb.com/) 和 [Hugo](https://www.gohugo.org/) 这样的静态博客生成器，可是考虑到模板、插件等周边生态，这个想法一直被搁置下来。直到最近，突然涌现出通过 [Blazor](https://docs.microsoft.com/zh-cn/aspnet/core/blazor/?view=aspnetcore-3.1) 重写博客的想法，尤其是它对于 [WebAssembly](https://webassembly.org/) 的支持，而类似 [Vue](https://cn.vuejs.org/) 和 [React](https://reactjs.org/)的组件化开发模式，在开发体验上有着同样不错的表现。所以，今天这篇博客就来聊聊在重写博客过程中的一点收获，即如何让 Blazor 访问本地的静态文件。
 
 # 从内嵌资源说起

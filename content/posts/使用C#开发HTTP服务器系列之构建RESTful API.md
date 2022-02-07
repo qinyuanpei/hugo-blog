@@ -7,6 +7,7 @@ description: 在REST中表现形式作为我们对资源请求的一个结果的
   State Transfer，通常被翻译为“表述性状态传输”或者“表述性状态转移”，它最早出自Roy Fielding的《Archltectural Styles
   and the Design of Network-based Software Arcltechures》这篇论文，作者曾经参与HTTP协议和Apache Web
   Server的设计，所以REST实际上是一个和HTTP协议联系非常紧密的一种设计思想
+slug: 3637847962
 tags:
 - HTTP
 - 服务器

@@ -1,16 +1,18 @@
 ---
-toc: true
-title: 利用 MySQL 的 Binlog 实现数据同步与订阅(下)：EventBus 篇
-categories:
-  - 数据存储
-tags:
-  - Binlog
-  - RabbitMQ
-  - MySQL
-copyright: true
 abbrlink: 3424138425
+categories:
+- 数据存储
+copyright: true
 date: 2020-07-31 12:01:14
+slug: 3424138425
+tags:
+- Binlog
+- RabbitMQ
+- MySQL
+title: 利用 MySQL 的 Binlog 实现数据同步与订阅(下)：EventBus 篇
+toc: true
 ---
+
 终于到这个系列的最后一篇，在前两篇博客中，我们分别了介绍了**Binlog**的概念和事件总线(**EventBus**)的实现，在完成前面这将近好几千字的铺垫以后，我们终于可以进入正题，即通过 EventBus 发布 Binlog，再通过编写对应的 EventHandler 来订阅这些 Binlog，这样就实现了我们“最初的梦想”。坦白说，这个过程实在有一点漫长，庆幸的是，它终于还是来了。
 
 # Binlog 读取与解析

@@ -1,18 +1,20 @@
 ---
-toc: true
-title: ASP.NET Core 搭载 Envoy 实现微服务身份认证(JWT)
-categories:
-  - 编程语言
-tags:
-  - 微服务
-  - Envoy
-  - JWT
-  - Keycloak
-  - 认证
-copyright: true
 abbrlink: 731808750
+categories:
+- 编程语言
+copyright: true
 date: 2021-07-25 09:41:24
+slug: 731808750
+tags:
+- 微服务
+- Envoy
+- JWT
+- Keycloak
+- 认证
+title: ASP.NET Core 搭载 Envoy 实现微服务身份认证(JWT)
+toc: true
 ---
+
 在构建以 gRPC 为核心的微服务架构的过程中，得益于 Envoy 对 gRPC 的“**一等公民**”支持，我们可以在过滤器中对 gRPC 服务进行转码，进而可以像调用 Web API 一样去调用一个 gRPC 服务。通常情况下， RPC 会作为微服务间内部通信的信使，例如，Dubbo、Thrift、gRPC、WCF 等等更多是应用在对内通信上。所以，一旦我们通过 Envoy 将这些 gRPC 服务暴露出来，其性质就会从对内通信变为对外通信。我们知道，对内和对外的接口，无论是安全性还是规范性，都有着相当大的区别。博主从前的公司，对内的 WCF 接口，长年处于一种"**裸奔**"的状态，属于没有授权、没有认证、没有文档的“**三无产品**”。那么，当一个 gRPC 服务通过 Envoy 暴露出来以后，我们如何保证接口的安全性呢？这就是今天这篇博客的主题，即 Envoy 作为网关如何提供身份认证功能，在这里，我们特指通过JWT，即 Json Web Token 来对接口调用方进行身份认证。
 
 # 搭建 Keycloak

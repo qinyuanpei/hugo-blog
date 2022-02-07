@@ -3,8 +3,10 @@ abbrlink: 907824546
 categories:
 - 编程语言
 date: 2016-03-25 12:47:58
-description: 我们将编译好的程序命名为 Launcher.exe，放置我们前面定义的 Mono 运行时目录结构的根目录下，这个文件将作为启动文件暴露给用户，当用户点击这个程序后就可以打开主文件 Main.exe;因为 Mono 和.NET 都可以执行 IL 代码，所以我用 Mono 来作为.NET 程序的运行时是一个顺理成章的想法;本文通过 Mono 实现了一个轻量级的.NET 程序运行环境，从某种程度上来说，它间接地实现了.NET 程序脱离.NET
-  Framework 运行
+description: 我们将编译好的程序命名为 Launcher.exe，放置我们前面定义的 Mono 运行时目录结构的根目录下，这个文件将作为启动文件暴露给用户，当用户点击这个程序后就可以打开主文件
+  Main.exe;因为 Mono 和.NET 都可以执行 IL 代码，所以我用 Mono 来作为.NET 程序的运行时是一个顺理成章的想法;本文通过 Mono
+  实现了一个轻量级的.NET 程序运行环境，从某种程度上来说，它间接地实现了.NET 程序脱离.NET Framework 运行
+slug: 907824546
 tags:
 - .NET
 - Mono

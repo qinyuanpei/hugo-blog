@@ -11,6 +11,7 @@ description: 我的想法是以 [Github](https://github.com/qinyuanpei/qinyuanpe
   .在曾经的一篇博客：[《持续集成在 Hexo 自动化部署上的实践》](https://qinyuanpei.github.io/posts/3521618732/)中，我为大家分享了在线持续集成服务  [Travis
   CI](https://www.travis-ci.org/) 的相关内容，在这篇文章中我们通过  [Travis CI](https://www.travis-ci.org/)
   为 Hexo 提供了自动部署的支持
+slug: 1113828794
 tags:
 - CI
 - Hexo

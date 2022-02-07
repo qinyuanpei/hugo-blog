@@ -1,16 +1,18 @@
 ---
-toc: true
-title: 利用 MySQL 的 Binlog 实现数据同步与订阅(中)：RabbitMQ 篇
-categories:
-  - 数据存储
-tags:
-  - RabbitMQ
-  - EventBus
-  - 事件订阅
-copyright: true
 abbrlink: 580694660
+categories:
+- 数据存储
+copyright: true
 date: 2020-07-15 14:39:07
+slug: 580694660
+tags:
+- RabbitMQ
+- EventBus
+- 事件订阅
+title: 利用 MySQL 的 Binlog 实现数据同步与订阅(中)：RabbitMQ 篇
+toc: true
 ---
+
 紧接上一篇博客中的思路，这次我们来说说事件总线(EventBus)，回首向来，关于这个话题，我们可能会联想到发布-订阅模式、观察者模式、IObservable<T>与 IObserver<T>、消息队列等等一系列的概念。所以，当我们尝试着去解释这个概念的时候，它到底是什么呢？是一种设计模式？是一组 API 接口？还是一种新的技术？显而易见，发布-订阅模式和观察者模式都是设计模式，而 IObservable<T>与 IObserver<T>、消息队列则是具体的实现方式，就像你可以用委托或者事件去实现一个观察者模式，而 Redis 里同样内置了发布-订阅模型，换言之，这是抽象与具体的区别，消息队列可以用来实现 EventBus，而 EventBus 主要的用途则是系统间的解耦，说到解耦，你可能会对观察者模式和发布-订阅模式这两种模式感到困惑，因为它们实在是太像了，一个最本质的区别在于发布者(主题)是否与订阅者(观察者)存在强依赖关系，而发布-订阅引入了类似主题/Topic/Channel 的中介者，显然从解耦的角度要更彻底一些，所以，我们今天就来一起实现一个事件总线(EventBus)。
 
 # EventBus 整体设计

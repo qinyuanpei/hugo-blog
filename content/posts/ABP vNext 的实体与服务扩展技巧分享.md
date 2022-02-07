@@ -1,17 +1,19 @@
 ---
-toc: true
-title: ABP vNext 的实体与服务扩展技巧分享
-categories:
-  - 编程语言
-tags:
-  - ABP
-  - 扩展
-  - 实体
-  - 服务
-copyright: true
 abbrlink: 3619320289
+categories:
+- 编程语言
+copyright: true
 date: 2021-04-18 20:42:47
+slug: 3619320289
+tags:
+- ABP
+- 扩展
+- 实体
+- 服务
+title: ABP vNext 的实体与服务扩展技巧分享
+toc: true
 ---
+
 使用 [ABP vNext](https://github.com/abpframework/abp) 有一个月左右啦，这中间最大的一个收获是：ABP vNext 的开发效率真的是非常好，只要你愿意取遵循它模块化、DDD 的设计思想。因为官方默认实现了身份、审计、权限、定时任务等等的模块，所以，ABP vNext 是一个开箱即用的解决方案。通过脚手架创建的项目，基本具备了一个专业项目该有的“**五脏六腑**”，而这可以让我们专注于业务原型的探索。例如，博主是尝试结合 [Ant Design Vue](https://www.antdv.com/docs/vue/introduce-cn/) 来做一个通用的后台管理系统。话虽如此，我们在使用 ABP vNext 的过程中，还是希望可以针对性地对 ABP vNext 进行扩展，毕竟 ABP vNext 无法 100% 满足我们的使用要求。所以，在今天这篇博客中，我们就来说说 ABP vNext 中的扩展技巧，这里主要是指实体扩展和服务扩展这两个方面。我们经常在讲“**开闭原则**”，可扪心自问，我们每次修改代码的时候，是否真正做到了“**对扩展开放，对修改关闭**”呢？ 所以，在面对扩展这个话题时，我们不妨来一起看看 ABP vNext 中是如何实践“**开闭原则**”。
 
 # 扩展实体

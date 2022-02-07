@@ -1,16 +1,17 @@
 ---
-toc: true
-title: EFCore 实体命名约定库：EFCore.NamingConventions
-categories:
-  - 数据存储
-tags:
-  - EF
-  - 实体
-  - .NET
-  - 数据库
-copyright: true
 abbrlink: 3219639636
+categories:
+- 数据存储
+copyright: true
 date: 2021-06-17 16:37:11
+slug: 3219639636
+tags:
+- EF
+- 实体
+- .NET
+- 数据库
+title: EFCore 实体命名约定库：EFCore.NamingConventions
+toc: true
 ---
 
 在软件开发过程中，数据库永远都是绕不开的一个话题。有时候，我们甚至会因此而获得一个名字——“**CURD Boy**”。虽然不过是朴实无华的“**增删查改**”，可隐隐然早已分出了无数的流派。在这些不同的流派中，有的人坚持“**我手写我心**”，认为手写`SQL`才是真正的王道，没有读过/写过成百上千行的存储过程，便不足以谈论程序员的人生。而有的人喜欢`ORM`的清晰、整洁，认为数据库和面向对象存在着天然抗阻，`ORM`更有利于推进`DDD`和微服务的落地。相信大家都听说过`Java`里的`SSH`框架，从`Hibernate`到`Mybatis`再到`Spring Data JPA`，可以说这种争论一直没有停止过。这里我们不打算讨论这个问题，我们平时使用`EF`或者`EFCore`的过程中，作为连接数据库和面向对象两个异世界的桥梁，`ORM`需要我们来告诉它，实体数据与数据库表字段的映射关系，所以，经常需要通过`数据注解`或者`Fulent API`来写各种配置。那么，有没有什么方案可以让我们偷这个懒呢？下面隆重请出本文的主角：[EFCore.NamingConventions](https://github.com/efcore/EFCore.NamingConventions)。

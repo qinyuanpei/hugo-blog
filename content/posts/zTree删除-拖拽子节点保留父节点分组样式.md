@@ -4,6 +4,7 @@ categories:
 - 前端开发
 date: 2019-04-12 12:37:10
 description: var treeNode = zTree[i];= null) {;var parentNode = treeNode.getParentNode()
+slug: 1397717193
 tags:
 - JavaScript
 - zTree

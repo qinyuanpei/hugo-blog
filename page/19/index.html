@@ -101,7 +101,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B9%8B%E5%88%86%E9%A1%B5%E6%95%88%E6%9E%9C%E5%9C%A8ugui%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/>Unity3D 游戏开发之分页效果在 uGUI 中的实现</a>
+<a href=/posts/166983157/>Unity3D 游戏开发之分页效果在 uGUI 中的实现</a>
 </h2>
 <h3 class=article-subtitle>
 经过博客中一位朋友指出，这篇文章中实现 BindPage 这个方法时可以在代码上再精简些，主要是考虑这个代码中有部分功能是重合的，因此这里对这个方法进行重写，分页从本质上来讲是编写这样一个函数：输入数据集合 data、每页显示的元素个数 pageSize 以及当前页数 page，然后返回一个新的数据集合;在这段代码中，m_ItemList 表示我们要展示的元素列表，m_ItemsCount 表示元素列表中元素的个数，m_PageCount 表示这些元素可以分成的总页数，m_PageIndex 表示页数的索引**默认从 1 开始**;return sprite
@@ -182,7 +182,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E6%95%99%E4%BD%A0%E4%B8%80%E6%AD%A5%E6%AD%A5%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/>教你一步步实现一个虚拟摇杆</a>
+<a href=/posts/331752533/>教你一步步实现一个虚拟摇杆</a>
 </h2>
 <h3 class=article-subtitle>
 接下来，我们在场景中添加一个角色模型来测试我们编写的虚拟摇杆，因为在 JoyStick 中我们已经定义了事件委托，所以在这里就是简单的调用啦;关于使用第三方插件来实现虚拟摇杆，请大家参照我以前写的文章[Unity3D 游戏开发之使用 EasyTouch 虚拟摇杆控制人物移动](http://blog.csdn.net/qinyuanpei/article/details/26204177)，在这里就不再赘述了;在这段脚本中，我们实现了 OnPointerDown、OnPointerUp 和 OnDrag 三个 uGUI 事件接口，然后注册了相关的事件委托，这里借鉴了 EasyTouch 的设计，可以使得虚拟摇杆的逻辑和角色控制逻辑相互分离
@@ -236,7 +236,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9C%A8unity3d%E4%B8%AD%E5%8A%A0%E8%BD%BD%E5%A4%96%E9%83%A8%E5%9B%BE%E7%89%87%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%B3%95/>在 Unity3D 中加载外部图片的两种方法</a>
+<a href=/posts/821259985/>在 Unity3D 中加载外部图片的两种方法</a>
 </h2>
 <h3 class=article-subtitle>
 现在我们运行程序可以发现两种方式均可以让图片加载进来，为了对比两种方式在执行效率上的高低，我们在脚本中加入了相关代码，通过对比可以发现使用 IO 方式加载一张 227k 的图片需要的时间为 0s，而使用 WWW 方式加载需要 0.0185s，因此传统的 IO 方式具有更高的效率，建议大家在遇到这类问题时尽可能地使用这种方式;经过博主的研究发现，这种方式加载外部图片相对于使用 WWW 加载外部图片效率更高，所以如果大家遇到类似的需求，博主个人推荐大家使用这种方式进行加载;/// 以 WWW 方式进行加载
@@ -263,7 +263,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%81%9A%E6%9C%80%E5%88%9D%E7%9A%84%E8%87%AA%E5%B7%B1/>做最初的自己</a>
+<a href=/posts/786195243/>做最初的自己</a>
 </h2>
 <h3 class=article-subtitle>
 我是一名程序员，可是我从来没有觉得我的工作低人一等，我每天的付出和老师给学生授课、销售员给顾客售货、银行柜员给消费者办理业务、公务员为人民服务......并没有什么不同，我靠自己掌握的技能去解决工作中的问题，我靠自己掌握的知识去帮助更多的人，我并没有觉得我选择了一条错误的道路，难道在安逸中渐渐迷失了自我会让你从此与众不同;曾经和老师一起做艾依河的毕业设计，当时觉得对整个艾依河了如指掌，然而每天上下班从宝湖经过的时候却突然发现自己的渺小，我是一个普通人，我想做的事情就是努力让自己变得强大去拥有一个温暖的家，能够让因衰老而疲惫的心有个归宿，不至于在满是迷雾的现实中丢失本心，我就想一直这样简单地生活下去，做正直、正确的事情，做一个温暖、善良的人，做最初的自己;我一直认为互联网行业是政治干预较为稀疏的一个行业，所以在这个行业当中我不会遭遇那些让我厌恶的政治因素，虽然有人聚集的地方就会有政治产生，但是作为互联网基础要素之一的技术是一个相对纯粹的领域，它依靠最为简单的 0 和 1 构成了今天丰富多彩的世界，它讲道理、守规矩让我觉得这个领域简单而纯粹
@@ -290,7 +290,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%9C%BA%E6%99%AF%E4%BC%98%E5%8C%96%E7%B3%BB%E5%88%97%E4%B9%8B%E6%89%B9%E5%A4%84%E7%90%86/>Unity3D 游戏场景优化系列之批处理</a>
+<a href=/posts/927393529/>Unity3D 游戏场景优化系列之批处理</a>
 </h2>
 <h3 class=article-subtitle>
 1、三个不同的物体使用同一种材质，不做静态批处理，不做动态批处理：**DrawCall 为 4、面数为 584、顶点数为 641**;2、三个不同的物体使用同一种材质，只做静态批处理，不做动态批处理：**DrawCall 为 2、面数为 584、顶点数为 641**;3、三个不同的物体使用不同的材质，不做静态批处理，不做动态批处理：**DrawCall 为 4、面数为 584、顶点数为 641**
@@ -317,7 +317,7 @@ Unity3D
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/unity3d%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%B8%B8%E6%88%8F%E8%AF%BB%E5%AD%98%E6%A1%A3%E5%9C%A8unity3d%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/>Unity3D 游戏开发游戏读/存档在 Unity3D 中的实现</a>
+<a href=/posts/887585917/>Unity3D 游戏开发游戏读/存档在 Unity3D 中的实现</a>
 </h2>
 <h3 class=article-subtitle>
 因为我们这里要做的是一个游戏存档的方案设计，因为考虑到存档数据的安全性，我们可以考虑采用相关的加密/解密算法来实现对序列化后的明文数据进行加密，这样可以从一定程度上保证游戏存档数据的安全性;public static void SetData(string fileName,object pObject);public static object GetData(string fileName,Type pType)
@@ -478,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E6%AF%95%E4%B8%9A/ class=font_size_1>
-毕业
+<a href=/tags/logger/ class=font_size_1>
+Logger
 </a>
-<a href=/tags/sklearn/ class=font_size_1>
-Sklearn
+<a href=/tags/%E6%B1%82%E8%81%8C/ class=font_size_3>
+求职
 </a>
-<a href=/tags/sse/ class=font_size_1>
-SSE
+<a href=/tags/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF/ class=font_size_1>
+朴素贝叶斯
 </a>
-<a href=/tags/https/ class=font_size_1>
-HTTPS
+<a href=/tags/%E6%A6%82%E7%8E%87/ class=font_size_2>
+概率
 </a>
-<a href=/tags/%E6%A0%A1%E9%AA%8C/ class=font_size_1>
-校验
+<a href=/tags/visual-studio/ class=font_size_1>
+Visual Studio
 </a>
-<a href=/tags/%E6%80%9D%E7%BB%B4/ class=font_size_1>
-思维
+<a href=/tags/%E8%AE%BE%E8%AE%A1/ class=font_size_2>
+设计
 </a>
-<a href=/tags/thoughtworks/ class=font_size_1>
-ThoughtWorks
+<a href=/tags/%E6%97%A5%E6%9C%AC/ class=font_size_1>
+日本
 </a>
-<a href=/tags/nlp/ class=font_size_2>
-NLP
+<a href=/tags/%E7%9B%91%E6%8E%A7/ class=font_size_2>
+监控
 </a>
-<a href=/tags/%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/ class=font_size_1>
-虚拟摇杆
+<a href=/tags/mono/ class=font_size_4>
+Mono
 </a>
-<a href=/tags/%E7%BC%96%E8%AF%91/ class=font_size_1>
-编译
+<a href=/tags/%E5%8F%AF%E8%A7%86%E5%8C%96/ class=font_size_2>
+可视化
 </a>
-<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
-对象池
+<a href=/tags/%E5%AD%A4%E7%8B%AC/ class=font_size_1>
+孤独
 </a>
-<a href=/tags/script/ class=font_size_1>
-Script
+<a href=/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/ class=font_size_1>
+大数据
 </a>
-<a href=/tags/jaeger/ class=font_size_1>
-Jaeger
+<a href=/tags/%E7%AD%BE%E5%90%8D/ class=font_size_1>
+签名
 </a>
-<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
-网易
-</a>
-<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
-技巧
-</a>
-<a href=/tags/cors/ class=font_size_2>
-CORS
-</a>
-<a href=/tags/%E5%A4%A7%E6%8A%A4%E6%B3%95/ class=font_size_1>
-大护法
-</a>
-<a href=/tags/%E6%97%A5%E5%89%A7/ class=font_size_1>
-日剧
+<a href=/tags/websocket/ class=font_size_3>
+WebSocket
 </a>
 <a href=/tags/%E5%AE%9E%E4%BD%93/ class=font_size_2>
 实体
 </a>
-<a href=/tags/sourcetree/ class=font_size_1>
-SourceTree
+<a href=/tags/cors/ class=font_size_2>
+CORS
 </a>
-<a href=/tags/%E7%94%B5%E5%BD%B1/ class=font_size_12>
-电影
+<a href=/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/ class=font_size_3>
+多线程
 </a>
-<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
-装饰器
+<a href=/tags/hexo/ class=font_size_8>
+Hexo
 </a>
-<a href=/tags/ai/ class=font_size_1>
-AI
+<a href=/tags/.net-core/ class=font_size_14>
+.NET Core
 </a>
-<a href=/tags/%E8%B7%A8%E5%9F%9F/ class=font_size_2>
-跨域
+<a href=/tags/%E5%BE%AE%E4%BF%A1/ class=font_size_1>
+微信
 </a>
-<a href=/tags/%E6%97%A5%E6%9C%AC%E6%96%87%E5%AD%A6/ class=font_size_1>
-日本文学
+<a href=/tags/%E6%97%B6%E9%97%B4/ class=font_size_3>
+时间
+</a>
+<a href=/tags/%E6%B6%88%E6%81%AF/ class=font_size_1>
+消息
+</a>
+<a href=/tags/%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/ class=font_size_1>
+数据交换
+</a>
+<a href=/tags/%E7%88%B1%E6%83%85/ class=font_size_2>
+爱情
+</a>
+<a href=/tags/wechat/ class=font_size_1>
+Wechat
 </a>
 <a href=/tags class=font_size_9999>
 更多

@@ -1,0 +1,521 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="在这篇文章里我们讨论了 MVC、MVP、MVVM 各自架构变迁的前因后果，由此我们知道了软件设计中，一个典型的设计目标是让视图和模型分离，可我们同样发现，带着这个目标去设计软件的时候，我们基本鲜有更换视图的时候，虽然从理论上来讲，所有的业务逻辑都是在 ViewModel 中，视图和模型应该是可以进行更换的，可是你告诉我，有谁会为同一个软件制作不同的界面呢;所以，在这里我们纠结的地方，其实是选择让控制器更“重”还是让模型更“重”，我曾经接触过 1 年左右的 Android 开发，我认为 Android 工程是一个相对符合 MVC 架构的设计，可是我们难免会发现，作为控制器的 Activity 中的代码非常臃肿，因为我们在这里需要和视图、模型关联起来，所以综合现有的这些软件架构思想，我们发现模型和视图相对来讲都是可以复用的，可是作为连接这两者的 Controller/Presenter/ViewModel 是非常臃肿而且难以复用的，所以我怀疑我们是否是在真正的使用 MVVM;这里需要说明的是 CanExecuteChanged 这个事件，这个和 INotifyPropertyChanged 接口中的 PropertyChanged 成员类似，是在当 CanExecute 发生变化的时候通知视图的，我对这里的理解是 CanExecute 本身就具备对某一个过程是否应该被执行的支持，可是遗憾的是在，在我参与的项目中，人们更喜欢声明大量的布尔类型变量来处理这里的相关逻辑，因此无论是对 Property 还是 Command 而言，在 ViewModel 里都是看起来非常丑陋的代码实现"><title>浅析 WPF 中 MVVM 模式下命令与委托的关系</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/569337285/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="浅析 WPF 中 MVVM 模式下命令与委托的关系">
+<meta property="og:description" content="在这篇文章里我们讨论了 MVC、MVP、MVVM 各自架构变迁的前因后果，由此我们知道了软件设计中，一个典型的设计目标是让视图和模型分离，可我们同样发现，带着这个目标去设计软件的时候，我们基本鲜有更换视图的时候，虽然从理论上来讲，所有的业务逻辑都是在 ViewModel 中，视图和模型应该是可以进行更换的，可是你告诉我，有谁会为同一个软件制作不同的界面呢;所以，在这里我们纠结的地方，其实是选择让控制器更“重”还是让模型更“重”，我曾经接触过 1 年左右的 Android 开发，我认为 Android 工程是一个相对符合 MVC 架构的设计，可是我们难免会发现，作为控制器的 Activity 中的代码非常臃肿，因为我们在这里需要和视图、模型关联起来，所以综合现有的这些软件架构思想，我们发现模型和视图相对来讲都是可以复用的，可是作为连接这两者的 Controller/Presenter/ViewModel 是非常臃肿而且难以复用的，所以我怀疑我们是否是在真正的使用 MVVM;这里需要说明的是 CanExecuteChanged 这个事件，这个和 INotifyPropertyChanged 接口中的 PropertyChanged 成员类似，是在当 CanExecute 发生变化的时候通知视图的，我对这里的理解是 CanExecute 本身就具备对某一个过程是否应该被执行的支持，可是遗憾的是在，在我参与的项目中，人们更喜欢声明大量的布尔类型变量来处理这里的相关逻辑，因此无论是对 Property 还是 Command 而言，在 ViewModel 里都是看起来非常丑陋的代码实现">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/569337285/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="MVVM"><meta property="article:tag" content="委托"><meta property="article:tag" content="命令"><meta property="article:published_time" content="2016-07-21T14:27:07+00:00"><meta property="article:modified_time" content="2016-07-21T14:27:07+00:00">
+<meta name=twitter:title content="浅析 WPF 中 MVVM 模式下命令与委托的关系">
+<meta name=twitter:description content="在这篇文章里我们讨论了 MVC、MVP、MVVM 各自架构变迁的前因后果，由此我们知道了软件设计中，一个典型的设计目标是让视图和模型分离，可我们同样发现，带着这个目标去设计软件的时候，我们基本鲜有更换视图的时候，虽然从理论上来讲，所有的业务逻辑都是在 ViewModel 中，视图和模型应该是可以进行更换的，可是你告诉我，有谁会为同一个软件制作不同的界面呢;所以，在这里我们纠结的地方，其实是选择让控制器更“重”还是让模型更“重”，我曾经接触过 1 年左右的 Android 开发，我认为 Android 工程是一个相对符合 MVC 架构的设计，可是我们难免会发现，作为控制器的 Activity 中的代码非常臃肿，因为我们在这里需要和视图、模型关联起来，所以综合现有的这些软件架构思想，我们发现模型和视图相对来讲都是可以复用的，可是作为连接这两者的 Controller/Presenter/ViewModel 是非常臃肿而且难以复用的，所以我怀疑我们是否是在真正的使用 MVVM;这里需要说明的是 CanExecuteChanged 这个事件，这个和 INotifyPropertyChanged 接口中的 PropertyChanged 成员类似，是在当 CanExecute 发生变化的时候通知视图的，我对这里的理解是 CanExecute 本身就具备对某一个过程是否应该被执行的支持，可是遗憾的是在，在我参与的项目中，人们更喜欢声明大量的布尔类型变量来处理这里的相关逻辑，因此无论是对 Property 还是 Command 而言，在 ViewModel 里都是看起来非常丑陋的代码实现">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/569337285/>浅析 WPF 中 MVVM 模式下命令与委托的关系</a>
+</h2>
+<h3 class=article-subtitle>
+在这篇文章里我们讨论了 MVC、MVP、MVVM 各自架构变迁的前因后果，由此我们知道了软件设计中，一个典型的设计目标是让视图和模型分离，可我们同样发现，带着这个目标去设计软件的时候，我们基本鲜有更换视图的时候，虽然从理论上来讲，所有的业务逻辑都是在 ViewModel 中，视图和模型应该是可以进行更换的，可是你告诉我，有谁会为同一个软件制作不同的界面呢;所以，在这里我们纠结的地方，其实是选择让控制器更“重”还是让模型更“重”，我曾经接触过 1 年左右的 Android 开发，我认为 Android 工程是一个相对符合 MVC 架构的设计，可是我们难免会发现，作为控制器的 Activity 中的代码非常臃肿，因为我们在这里需要和视图、模型关联起来，所以综合现有的这些软件架构思想，我们发现模型和视图相对来讲都是可以复用的，可是作为连接这两者的 Controller/Presenter/ViewModel 是非常臃肿而且难以复用的，所以我怀疑我们是否是在真正的使用 MVVM;这里需要说明的是 CanExecuteChanged 这个事件，这个和 INotifyPropertyChanged 接口中的 PropertyChanged 成员类似，是在当 CanExecute 发生变化的时候通知视图的，我对这里的理解是 CanExecute 本身就具备对某一个过程是否应该被执行的支持，可是遗憾的是在，在我参与的项目中，人们更喜欢声明大量的布尔类型变量来处理这里的相关逻辑，因此无论是对 Property 还是 Command 而言，在 ViewModel 里都是看起来非常丑陋的代码实现
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2016-07-21</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 11 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>各位朋友大家好，我是 Payne，欢迎大家关注我的博客，我的博客地址是<a class=link href=http://qinyuanpei.com target=_blank rel=noopener>http://qinyuanpei.com</a>。最近因为项目上的原因开始接触 WPF，或许这样一个在现在来讲显得过时的东西，我猜大家不会有兴趣去了解，可是你不会明白对某些保守的项目来讲，安全性比先进性更为重要，所以当你发现银行这类机构还在使用各种“复古”的软件系统的时候，你应该相信这类东西的确有它们存在的意义。与此同时，你会更加深刻地明白一个道理：技术是否先进性和其流行程度本身并无直接联系。由此我们可以推论出：一项不流行的技术不一定是因为它本身技术不先进，或许仅仅是因为它无法满足商业化的需求而已。我这里的确是在说 WPF,MVVM 思想最早由 WPF 提出，然而其发扬光大却是因为前端领域近年来比较热的 AngularJS 和 Vue.js，我们这里表达的一个观点是：很多你以为非常新潮的概念，或许仅仅是被人们重新赋予了新的名字，当你理清这一切的来龙去脉以后，你会发现这一切并没有什么不同。这符合我一贯的主张：去发现问题的实质、不要被框架束缚、通过共性来消除差异，所以在今天这篇文章里，我想说说 WPF 中 MVVM 模式下命令与委托的关系。</p>
+<h1 id=什么是-mvvm>什么是 MVVM</h1>
+<p>既然提及 MVVM，那么我们就无可避免的需要知道什么是 MVVM。我们在本文开篇已经提到，MVVM 这个概念最早由微软提出，具体来讲是由微软架构师 John Gossman 提出的。我个人更喜欢通过将 MVC、MVP 和 MVVM 这三者横向对比的方式来加强理解，因为这从某种意义上来讲，这是一个逐步改进和演化的过程。我们常常谈及软件的三层架构，我们常常对 MVC 耳濡目染以致将其神化，可事实上它们是某种在思想上无限接近的理念而已。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixzarx7ij20ll0bt0sx.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixzarx7ij20ll0bt0sx.jpg loading=lazy alt=MVC模式示意图>
+</a>
+<figcaption>MVC模式示意图</figcaption>
+</figure></p>
+<p>首先，我们从最简单的 MVC 开始说起，作为最常用的软件架构之一，我们可以从上面的图示中看到，MVC 其实是非常简单的一个概念，它由模型(Model)、视图(View)和控制器(Controller)三部分组成，建立在一个单向流动的通信基础上，即 View 通知 Controller 响应用户请求，Controller 在接到 View 的通知后会更新 Model 内的数据，然后 Model 会将新的数据反馈给 View。我们发现这个设计可以使软件工程中的关注点分离，我们注意到通过 MVC 模式，我们实现了视图和模型的分离，通过控制器这个胶水层让两者间接联系起来，所以 MVC 的优点是让各个模块更好的协作。那么，它的缺点是什么呢？显然，视图和控制器是高度耦合的，因为控制器中无可避免地要访问视图内的元素，所以控制器注定无法在这尘世间独善其身。要知道最早的 MVC 架构是基于观察者模式实现的，即当 Model 发生变化时会同时通知 View 和 Controller，所以我们很快就可以认识到：我们从古至今的所有努力，都是为了让视图和模型彼此分离，我们在这条路上越走越远，幸运的是一直都不忘初心。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixbsy01jj20n90bfjrl.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixbsy01jj20n90bfjrl.jpg loading=lazy alt=MVP模式示意图>
+</a>
+<figcaption>MVP模式示意图</figcaption>
+</figure></p>
+<p>接下来，我们为了彻底地让视图和模型分离，我们发明了新的软件架构：MVP。虽然从感性的认识上来讲，它是将 Controller 改名为 Presenter，然而从理性的认识上来讲，它在让视图和模型分离这件事情上做得更为决绝果断。通过图示我们可以发现，视图和模型不再发生直接联系，它们都通过 Presenter 相互联系，而且各个部分间的通信都变成了双向流动。我们可以很快意识到，现在全新的控制器即 Presenter 会变得越来越“重”，因为所有的逻辑都在这里，而视图会变得越来越“轻”，它不再需要主动去获取模型提供的数据，它将被动地接拥抱变化，因为现在在视图里基本上没有任何业务逻辑。现在我们可以预见，人类会在隔绝视图和模型这件事情上乘胜追击，人们会尝试让 Controller/Presenter/ViewModel 变得越来越臃肿，我想说的是，求它们在得知这一切真相时的心理阴影面积，我们试图让每一个模块各司其职、通力协作，结果脏活累活儿都交给了 Controller/Presenter/ViewModel，我想说这件事情做的真是漂亮。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzix99unr9j20on0bvweo.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix99unr9j20on0bvweo.jpg loading=lazy alt=MVVM模式示意图>
+</a>
+<figcaption>MVVM模式示意图</figcaption>
+</figure></p>
+<p>历史总是如此的相似，人类在作死的道路上匍匐前进，继续发扬改名的优良传统，这一次是 Presenter 被改名为 ViewModel，在命名这件事情上，我认为程序员都是有某种强迫症因素在里面的，所以当你发现一个事物以一个新的名字出现在你的视野中的时候，通常它会有两种不同的结局，第一，陈酒换新瓶，我们贩卖的不是酒是情怀；第二，看今天的你我怎样重复昨天的故事，我这张旧船票还能否登上你的客船。幸运的是，MVVM 相对 MVP 的确发生了些许改变，一个重要的特性是双向绑定，View 的变化将自动反映在 ViewModel 中，而显然 ViewModel 是一个为 View 打造的 Model，它可以容纳更多的普通的 Model，因此从某种意义上来说，ViewModel 依然作为连接 View 和 Model 的桥梁而出现，它是对 View 的一种抽象，而抽象有两层含义，即数据(Property)和行为(Command)，一旦你明白了这一点，ViewModel 无非是一个特殊而普通的类而已，特殊是因为它需要实现 INotifyPropertyChanged 接口，普通是因为它继承了面向对象编程(OOP)的基本思想。</p>
+<h1 id=更像-mvc-的-mvvm>更像 MVC 的 MVVM</h1>
+<p>到现在为止，我们基本上理解了 MVC、MVP 和 MVVM 这三者间的联系和区别，可是这样真的就是最好的结果吗？我们首先来思考一个问题，即什么样的代码应该写在控制器里。比如我们在对项目进行分层的时候，到底应该让控制器负责哪些任务？我们可以让 Controller 处理单独的路由，同样可以让 Controller 参与视图逻辑，甚至我们在编写 Model 的时候，我们可以有两种不同的选择，第一，编写一个简单的数据聚合实体，具体逻辑都交给控制器来处理，我们将这种方式称为贫血模型；第二，编写一个持有行为的数据聚合实体，控制器在业务逻辑中调用这些方法，我们将这种方式称为充血模型。所以，在这里我们纠结的地方，其实是选择让控制器更“重”还是让模型更“重”，我曾经接触过 1 年左右的 Android 开发，我认为 Android 工程是一个相对符合 MVC 架构的设计，可是我们难免会发现，作为控制器的 Activity 中的代码非常臃肿，因为我们在这里需要和视图、模型关联起来，所以综合现有的这些软件架构思想，我们发现模型和视图相对来讲都是可以复用的，可是作为连接这两者的 Controller/Presenter/ViewModel 是非常臃肿而且难以复用的，所以我怀疑我们是否是在真正的使用 MVVM。</p>
+<p>我不知道 MVVM 架构正确的使用方法是什么样的，因为这是我第一次接触到这样一个新的概念，就如同很多年前，我在学校图书馆里看到的一本讲 Web 开发的书中描写的那样：当我们不了解 MVC 的时候，我们理所当然地认为通过文件夹将项目划分为 Model、View、Controller，这样好像就是 MVC 啦。可是事实真的是这样吗？以我目前公司项目的情况而已，我认为它更像是使用了双向绑定的 MVC，因为你经常可以在 ViewModel 中看到，某个属性的 Get 访问器中各种被 if-else 折磨的“脏”代码，而在 ViewModel 中我基本上看不到 Model 的身影，并且因为使用了 Binding 的概念严重弱化了 ViewModel 作为类的基本属性，因此它没有构造函数、没有初始化，我们可以在 Get 访问器中看到各种硬编码，因为视图上的需求经常变动，所以当整个项目结束的时候，我本人是非常不愿意去看 ViewModel 这部分的代码的，因为项目上要求避免写 Code-Behind 代码，所以大量的事件被 Command 和 UIEventToCommand 代替，这样让 ViewModel 变得更“重”了。原本我们希望的是让这三者各司其职，结果现在脏活累活儿全部变成了 ViewModel 一个人的。虽然双向绑定可以避免去写大量赋值语句，可是我知道 ViewModel 内心深处会表示：宝宝心里苦。</p>
+<p>如果说 WPF 对技术圈最大的贡献，我认为这个贡献不在双向绑定，而是它真正意义上实现了设计和编程分离，我们必须承认设计和编程都是一项创造性活动，前者趋向感性，而后者趋向理想，在没有实现这两者分离的时候，程序员需要花费大量时间去还原设计师的设计，可是对程序员来讲，一段程序有没有界面设计在某些场合下是完全不重要的，在没有界面设计的情况下，我们可以通过单元测试来测试代码的可靠程度，相反地在有了界面设计以后我们反而不容易做到这一点，所以你问我 WPF 对技术圈最大的贡献是什么，我会回答它解放了程序员，可以让理性思维去做理性思维更适合的事情。我不太喜欢声明式编程，这里是指 WPF 中 XAML 这种继承自 XML 的标记语言，因为 Visual Studio 对 XAML 没有提供调试的支持，所以当你发现视图显示出现问题的时候，你很难分清楚是前台视图绑定出现错误还是后台 ViewModel 出现错误，只要你输入符合 XML 规范的内容程序都会编译通过而非引发异常，因为它是用反射所以性能问题广为人所诟病，其次 ViewModel 中通知前台属性发生变化时需要使用 OnPropertyChanged，该方法需要传入一个字符串类型的值，通常是指属性的名称，可是如果你定义了一个字符串类型的属性，当你在这里传入这个属性的时候，因为它是字符串类型所以不会引发编译错误，可是我觉得这个东西还是比较坑。</p>
+<h1 id=委托与命令>委托与命令</h1>
+<p>好了，现在我想说说 WPF 中的命令和委托，事实上在我计划写这篇文章前，我对这里无比好奇，可当我发现这东西的实质以后，我忽然觉得花费如此大的篇幅来讲解这样一个概念，这是不是会显得特别无聊。我们的项目上使用的是一个叫做 MVVM light 的框架，当然我们没有使用它的全部功能，公司的前辈们非常猥琐地从这个开源项目中挑了些源代码出来，这里我不想提及关于这个框架本身地相关细节，因为我认为理解问题的实质比学会一个框架更加重要。首先，WPF 为每一个控件都提供了一个 Command 的依赖属性，因为任何实现了 ICommand 接口的类都可以通过绑定的方式和前台关联起来，我们这里对比下命令和路由事件的区别可以发现，路由事件必须写在 Code-Behind 代码中，而命令可以写在 ViewModel 里，所以直观上来讲命令更加自由灵活。下面我们以一个简单的例子来剖析这两者间的关系。</p>
+<p>我们知道使用 Command 需要实现 ICommand 接口，所以实现起来是相对容易的，我们这里继续沿用 MVVM light 中的 RelayCommand 这个名字：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=ln> 1</span>public class RelayCommand : ICommand
+<span class=ln> 2</span>{
+<span class=ln> 3</span>    private readonly Action&lt;object&gt; m_execute;
+<span class=ln> 4</span>    private readonly Predicate&lt;object&gt; m_canExecute;
+<span class=ln> 5</span>
+<span class=ln> 6</span>    public RelayCommand(Action&lt;object&gt; execute)
+<span class=ln> 7</span>    {
+<span class=ln> 8</span>        this.m_execute = execute;
+<span class=ln> 9</span>    }
+<span class=ln>10</span>
+<span class=ln>11</span>    public RelayCommand(Action&lt;object&gt; execute, Predicate&lt;object&gt; canExecute)
+<span class=ln>12</span>    {
+<span class=ln>13</span>        this.m_execute = execute;
+<span class=ln>14</span>        this.m_canExecute = canExecute;
+<span class=ln>15</span>    }
+<span class=ln>16</span>
+<span class=ln>17</span>    public bool CanExecute(object parameter)
+<span class=ln>18</span>    {
+<span class=ln>19</span>        if (m_canExecute == null)
+<span class=ln>20</span>            return true;
+<span class=ln>21</span>
+<span class=ln>22</span>        return m_canExecute(parameter);
+<span class=ln>23</span>    }
+<span class=ln>24</span>
+<span class=ln>25</span>    public event EventHandler CanExecuteChanged
+<span class=ln>26</span>    {
+<span class=ln>27</span>        add { CommandManager.RequerySuggested += value; }
+<span class=ln>28</span>        remove { CommandManager.RequerySuggested -= value; }
+<span class=ln>29</span>    }
+<span class=ln>30</span>
+<span class=ln>31</span>    public void Execute(object parameter)
+<span class=ln>32</span>    {
+<span class=ln>33</span>        this.m_execute(parameter);
+<span class=ln>34</span>    }
+<span class=ln>35</span>}
+<span class=ln>36</span>
+</code></pre></div><p>我们可以看到这里有两个重要的方法，Execute 和 CanExecute，前者是一个 void 类型的方法，后者是一个 bool 类型的方法。当我们需要判断控件是否应该执行某一个过程的时候，CanExecute 这个方法就可以帮助我们完成判断，而 Execute 方法显然是执行某一个过程的方法，可以注意到通过委托我们让调用者更加自由和灵活地传入一个方法，这是我喜欢这种设计的一个地方，因为我的一位同事就对普通的路由事件表示无法理解。</p>
+<p>这里需要说明的是 CanExecuteChanged 这个事件，这个和 INotifyPropertyChanged 接口中的 PropertyChanged 成员类似，是在当 CanExecute 发生变化的时候通知视图的，我对这里的理解是 CanExecute 本身就具备对某一个过程是否应该被执行的支持，可是遗憾的是在，在我参与的项目中，人们更喜欢声明大量的布尔类型变量来处理这里的相关逻辑，因此无论是对 Property 还是 Command 而言，在 ViewModel 里都是看起来非常丑陋的代码实现。</p>
+<p>好了，现在对我们而言，这是一个非常愉快的旅程，因为在完成对 RelayCommand 的定义以后，我们绑定命令和定义命令的过程是非常简单的。除此以外，WPF 提供了一个 RoutedCommand 类，该类实现了 ICommand 接口，我怀疑 MVVM light 中的 EventToCommand 正是通过这种思路实现了路由事件到命令的转换，因为只有 RoutedCommand 具备访问 UI 事件的能力，这里我们仅仅提出问题，进一步的思考和验证我们可以留到以后去做。下面我们来看看如何声明和绑定命令：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=ln> 1</span>public RelayCommand ClickCommand
+<span class=ln> 2</span>{
+<span class=ln> 3</span>    get
+<span class=ln> 4</span>    {
+<span class=ln> 5</span>        return new RelayCommand((arg)=&gt;
+<span class=ln> 6</span>        {
+<span class=ln> 7</span>            MessageBox.Show(&#34;Click&#34;);
+<span class=ln> 8</span>        });
+<span class=ln> 9</span>    }
+<span class=ln>10</span>}
+</code></pre></div><p>显然这个 ClickCommand 将作为一个属性出现在 ViewModel 中，我选择了一个我最喜欢用的方法，或许这样看起来非常低端。可是在调试界面的过程中，它要比断点调试更为直接和直观。当我们的 ViewModel 中出现这样的只读属性的时候，直接在 Get 访问器中定义它的返回值似乎是最直接有效的方案，可问题是 Get 访问器应该是非常“轻”的，因为大量业务逻辑的渗透，现在连这里都不能保留其纯粹性了吗？这让我表示非常郁闷啊。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=ln> 1</span>&lt;Window x:Class=&#34;WPFLearning.Window1&#34;
+<span class=ln> 2</span>        xmlns=&#34;http://schemas.microsoft.com/winfx/2006/xaml/presentation&#34;
+<span class=ln> 3</span>        xmlns:x=&#34;http://schemas.microsoft.com/winfx/2006/xaml&#34;
+<span class=ln> 4</span>        Title=&#34;Window&#34; Height=&#34;300&#34; Width=&#34;300&#34;&gt;
+<span class=ln> 5</span>    &lt;Grid&gt;
+<span class=ln> 6</span>        &lt;Button Content=&#34;Button&#34; HorizontalAlignment=&#34;Center&#34; 
+<span class=ln> 7</span>        	VerticalAlignment=&#34;Center&#34; Command=&#34;{Binding ClickCommand }&#34;/&gt;  
+<span class=ln> 8</span>    &lt;/Grid&gt;
+<span class=ln> 9</span>&lt;/Window&gt;
+<span class=ln>10</span>
+</code></pre></div><p>现在你可以发现，委托和命令结合得非常好，当你发现这一切如此美妙的时候，回归本质或许是我们最喜欢的事情，就像纯粹的你我一样，在这个世界上，我们彼此装点着各自生命里美好的风景，执著而勇敢、温暖而明媚，那些周而复始的日子里，总能听到梦想开花的声音。</p>
+<h1 id=小结>小结</h1>
+<p>在这篇文章里我们讨论了 MVC、MVP、MVVM 各自架构变迁的前因后果，由此我们知道了软件设计中，一个典型的设计目标是让视图和模型分离，可我们同样发现，带着这个目标去设计软件的时候，我们基本鲜有更换视图的时候，虽然从理论上来讲，所有的业务逻辑都是在 ViewModel 中，视图和模型应该是可以进行更换的，可是你告诉我，有谁会为同一个软件制作不同的界面呢？难道我们还能期望通过一个静态工厂，来为不同的平台返回不同的视图，然后理论上只要适配正确的控制器就可以实现软件对不同平台的“自适应”，可是软件开发领域发展至今，最有可能提供完整跨平台方案的 Web 技术目前都无法满足这个需求，所以我们是否应该去怀疑这个设计的正确性呢？同样的，以 Java 的 SSH 三大框架为代表的“配置文件”流派，认为应该将数据库的相关信息写在配置文件里，这样可以满足我们随时切换到不同数据库产品上的需要，可是你告诉我，这样的应用场景多吗？所以，技术本身的设计并没有问题，我们需要思考的是，是否应该被框架和架构束缚，说到底我们是为了设计出更棒的软件产品，以此为目标，其实框架和架构更应该衍生为一种哲学意义上的思想，我们想让每一行代码都充满智慧的光芒，它骄傲却不孤独，因为总有人理解它、懂它。</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/mvvm/>MVVM</a>
+<a href=/tags/%E5%A7%94%E6%89%98/>委托</a>
+<a href=/tags/%E5%91%BD%E4%BB%A4/>命令</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/768684858/>
+<div class=article-details>
+<h2 class=article-title>Envoy 集成 Jaeger 实现分布式链路跟踪</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/2478147871/>
+<div class=article-details>
+<h2 class=article-title>浅议非典型 Web 应用场景下的身份认证</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/2617947988/>
+<div class=article-details>
+<h2 class=article-title>gRPC 借助 Any 类型实现接口的泛化调用</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/1213387651/>
+<div class=article-details>
+<h2 class=article-title>分布式丛林探险系列之 Redis 集群模式</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/1748863652/>
+<div class=article-details>
+<h2 class=article-title>分布式丛林探险系列之 Redis 主从复制模式</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/569337285/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#什么是-mvvm>什么是 MVVM</a></li>
+<li><a href=#更像-mvc-的-mvvm>更像 MVC 的 MVVM</a></li>
+<li><a href=#委托与命令>委托与命令</a></li>
+<li><a href=#小结>小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/polly/ class=font_size_1>
+Polly
+</a>
+<a href=/tags/excel/ class=font_size_1>
+Excel
+</a>
+<a href=/tags/dynamic/ class=font_size_1>
+Dynamic
+</a>
+<a href=/tags/hexo/ class=font_size_8>
+Hexo
+</a>
+<a href=/tags/%E7%A9%B9%E4%B9%8B%E6%89%89/ class=font_size_1>
+穹之扉
+</a>
+<a href=/tags/2014/ class=font_size_1>
+2014
+</a>
+<a href=/tags/%E6%8F%92%E4%BB%B6/ class=font_size_3>
+插件
+</a>
+<a href=/tags/hyperlog/ class=font_size_1>
+Hyperlog
+</a>
+<a href=/tags/rfc/ class=font_size_1>
+RFC
+</a>
+<a href=/tags/ar/ class=font_size_3>
+AR
+</a>
+<a href=/tags/%E7%8E%B0%E5%AE%9E/ class=font_size_1>
+现实
+</a>
+<a href=/tags/web-api/ class=font_size_1>
+Web API
+</a>
+<a href=/tags/%E7%89%B9%E6%80%A7/ class=font_size_1>
+特性
+</a>
+<a href=/tags/c#/ class=font_size_7>
+C#
+</a>
+<a href=/tags/%E9%99%90%E6%B5%81/ class=font_size_1>
+限流
+</a>
+<a href=/tags/%E9%9F%A9%E5%AF%92/ class=font_size_1>
+韩寒
+</a>
+<a href=/tags/msbuild/ class=font_size_1>
+MSBuild
+</a>
+<a href=/tags/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/ class=font_size_2>
+主从复制
+</a>
+<a href=/tags/%E9%87%8D%E8%AF%95/ class=font_size_2>
+重试
+</a>
+<a href=/tags/any/ class=font_size_1>
+Any
+</a>
+<a href=/tags/https/ class=font_size_1>
+HTTPS
+</a>
+<a href=/tags/github/ class=font_size_2>
+Github
+</a>
+<a href=/tags/jexus/ class=font_size_1>
+Jexus
+</a>
+<a href=/tags/2019/ class=font_size_1>
+2019
+</a>
+<a href=/tags/%E5%85%A8%E6%99%BA%E8%B4%A4/ class=font_size_1>
+全智贤
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

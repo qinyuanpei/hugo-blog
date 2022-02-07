@@ -128,7 +128,7 @@ POCOController 是 ASP.NET Core 中提供的一个新特性，按照约定大于
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E9%95%BF%E5%AE%89%E9%9A%8F%E6%83%B3/>长安十二时辰随想</a>
+<a href=/posts/1540537013/>长安十二时辰随想</a>
 </h2>
 <h3 class=article-subtitle>
 我们更无从得知，那一年的白居易到底怀着什么样的抱负来到长安，当他从已为陈迹的花萼相辉楼里捡起李白用过的笔的时候，是否真的如他想说想要开创一个新的时代，谱写一曲荡气回肠的长恨歌;据说马亲王这本书的灵感来自“刺客信条”，我本人同样是这部游戏的忠实粉丝，可当你真正想在长安寻找鸟瞰点并进行同步的时候，你会发现小雁塔顶端早已残损，攀爬这样的建筑物简直就是在碰瓷儿，而大雁塔的高度早已被周遭的大悦城超越，按照书中的设定，只要在大悦城的天台上增设武侯，不要说同步鸟瞰点，分分钟就会被弓弩手射中失去同步，因为据说大雁塔下面只有音乐喷泉，并没有安置干草堆;《妖猫传》里绮丽璀璨的幻术表演，极力展现长安奢华的一面，虽然这一切都是活在两位主角的想象中，因为它想表达的是一种美的消逝和幻灭，此时的长安，其伟大和无与伦比体现在这三个符号上——空海代表的真理密法、李白代表的艺术创作、杨贵妃代表的绝对的美
@@ -155,7 +155,7 @@ POCOController 是 ASP.NET Core 中提供的一个新特性，按照约定大于
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BD%BF%E7%94%A8asp-net-core%E5%92%8Changfire%E5%AE%9E%E7%8E%B0http%E5%BC%82%E6%AD%A5%E5%8C%96%E6%96%B9%E6%A1%88/>使用 ASP.NET Core 和 Hangfire 实现 HTTP 异步化方案</a>
+<a href=/posts/1071063696/>使用 ASP.NET Core 和 Hangfire 实现 HTTP 异步化方案</a>
 </h2>
 <h3 class=article-subtitle>
 而**Recurring jobs**和**Continuations**则是周期性任务，任务在入队后可以按照固定的时间间隔去执行，周期性任务都是支持 CRON 表达式的，**Continuations**类似于 Task 中的 ContinueWith()方法，可以对多个任务进行组合，我们现在的项目中开发了大量基于 Quartz 的 Job，可当你试图把这些 Job 相互组合起来的时候，你就会觉得相当尴尬，因为后台任务做所的事情往往都是大同小异的;return new JsonResult (new { Flag = true, Message = $"Job:#{jobId}-{jobDescriptor.JobName}已加入队列" });return new JsonResult (new { Flag = true, Message = $"Job:#{jobId}-{jobDescriptor.JobName}已加入队列" })
@@ -182,7 +182,7 @@ POCOController 是 ASP.NET Core 中提供的一个新特性，按照约定大于
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E9%80%9A%E8%BF%87%E5%8A%A8%E6%80%81controller%E5%AE%9E%E7%8E%B0%E4%BB%8Ewcf%E5%88%B0web-api%E7%9A%84%E8%BF%81%E7%A7%BB/>通过动态 Controller 实现从 WCF 到 Web API 的迁移.</a>
+<a href=/posts/4236649/>通过动态 Controller 实现从 WCF 到 Web API 的迁移.</a>
 </h2>
 <h3 class=article-subtitle>
 DynamicControllerActivator 实现了 IHttpControllerActivator 接口，这里我们通过单例模式获得了 DynamicHttpControllerManager 对象的一个实例，其内部封装了 Castle 的容器接口 IWindsorContainer，所以，在这里我们直接通过 controllerType 从容器中 Resolve 对应的 Controller 即可，而默认情况下，所有的 Controller 都实现了 IHttpController 接口，所以，这一步我们需要做一个显示的类型转换，后面我们会通过它替换微软默认的实现，这样，当一个请求被发送过来的时候，我们实际上是从这个自定义容器中获取对应 Controller 的实例;老实说，通过自定义 IHttpControllerActivator 的方式实现依赖注入的方式并不常见，因为更一般的情况是，大家在 Global.asax 里初始化像 Unity、Autofac 等等类似的容器，然后在 Controller 里通过容器去 Resolve 一个服务出来，对于 IHttpControllerActivator 接口而言，它只有一个 Create()方法，在这篇文章中，我们是通过 Castle 这个容器来实现依赖注入的，所以，你大概可以想象出它的过程，首先把所有动态生成的 Controller 全部注入到 Ioc 容器中，然后再根据传入的类型获取对应 Controller 的实例;在这个过程中，我们回顾了 ASP.NET MVC 的基本原理，了解了 MVC 是如何根据路由筛选 Controller、激活 Controller 和筛选 Action，在此基础上，我们对微软的 MVC 进行了一次 Hack，使用我们自定义的组件替换了微软的默认实现，从而可以让原来托管在 ServiceHost 上的接口，通过 Web API 来访问和调用
@@ -209,7 +209,7 @@ DynamicControllerActivator 实现了 IHttpControllerActivator 接口，这里我
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/web-api-%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-md/>《Web API 的设计与开发》读书笔记</a>
+<a href=/posts/3677280829/>《Web API 的设计与开发》读书笔记</a>
 </h2>
 <h3 class=article-subtitle>
 - 指使用符合 RPC 风格的 XML 或 JSON + HTTP 接口的系统(不使用 SOAP);- 使用 HTTP;# 查询参数和路径的使用区别
@@ -236,7 +236,7 @@ DynamicControllerActivator 实现了 IHttpControllerActivator 接口，这里我
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%8F%88%E8%A7%81aop%E4%B9%8B%E5%9F%BA%E4%BA%8Erealproxy%E5%AE%9E%E7%8E%B0wcf%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/>又见 AOP 之基于 RealProxy 实现 WCF 动态代理</a>
+<a href=/posts/2954591764/>又见 AOP 之基于 RealProxy 实现 WCF 动态代理</a>
 </h2>
 <h3 class=article-subtitle>
 顺着这样的思路，如果我们可以把 ChannelFactory 注入到 RealProxy 中，就可以在接口调用过程中记录相关信息，这样我们就可以关注调用本身，因为所有的我们不想写的代码，现在全部都由代理类接管了，更重要的是，所有通过这种方式调用的 WCF 服务，都可以以一种统一而简洁的方式去处理，永远不用担心因为某个人忘记写代理方法而出现问题，下面给出整个实现的关键代码：;现在，我们来考虑 WCF，WCF 需要通过 ChannelFactory 来创建和释放，而这恰恰是代理类所做的事情，就像下面的代码一样，我们通常会把所有的 WCF 集中配置在一个地方，并通过构造 Binding 和终结点地址来创建一个 WCF 服务，在调用服务的过程中，会对调用时间、异常信息等进行记录，这其实和我举的第一个例子完全一致，那么我们能不能用 RealProxy 来实现这些功能呢;首先，我们定义一个简单的接口 ICalculator，它含有加、减、乘、除四种基本运算，我们希望记录每个方法调用的参数、结果和执行时间，因此通过 RealProxy 对现有类型 CalculatorService 进行代理，并动态地创建代理对象来供调用方使用，下面给出关键代码：
@@ -263,7 +263,7 @@ DynamicControllerActivator 实现了 IHttpControllerActivator 接口，这里我
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/wsl%E4%B8%8Bdocker%E4%BD%BF%E7%94%A8%E8%B8%A9%E5%9D%91%E5%B0%8F%E8%AE%B0/>WSL 下 Docker 使用踩坑小记</a>
+<a href=/posts/4159187524/>WSL 下 Docker 使用踩坑小记</a>
 </h2>
 <h3 class=article-subtitle>
 好了，以上就是在使用 WSL 中的 Docker 搭建 ELK 全家桶过程中遇到的问题的梳理，从体验上来讲，我个人会把 Linux 平台相关的工作渐渐转移到 WSL 上，因为安装双系统总会分散你的精力去处理维护相关的事情，虽然装系统对程序员来说都不算是个事儿，可我内心依旧排斥自己被贴上“修电脑”的标签;curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;装完 WSL 以后，对各种编译环境的使用相当满意，最近在研究日志可视化平台 ELK，其中需要使用 Docker 来搭建环境，一顿 sudo 操作猛如虎，快速安装完 Docker 环境，结果发现熟悉的命令行居然无法正常工作，是可忍孰不可忍
@@ -290,7 +290,7 @@ DynamicControllerActivator 实现了 IHttpControllerActivator 接口，这里我
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E7%94%B1dbeaver%E4%B8%8Epl-sql%E5%BC%95%E5%8F%91%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%90%E6%A7%BD/>由 DBeaver 与 PL/SQL 引发的数据库吐槽</a>
+<a href=/posts/337943766/>由 DBeaver 与 PL/SQL 引发的数据库吐槽</a>
 </h2>
 <h3 class=article-subtitle>
 也许这些东西写多了就可以记住，就像我现在可以分清 SYSDATE、NOW()和 GETDATE()，可它带来的问题是什么呢，大多数的触发器、存储过程、函数都是没有移植性可言的，很多年前，我们讲设计模式，最喜欢觉的例子就是，如果项目发生变动，需要更换数据库，我们要怎么设计能不改动代码，现在看起来，当时还是太天真了，真要换了数据库，估计就是重新做了，敢把全部业务写到数据库里，Web 就做一个展示层的项目，有生之年应该是不会换数据库啦;可最近在写 Oracle 环境的触发器(**存储过程和触发器都是万恶之源**)时，我发现 DBeaver 和 PL/SQL 在面对同一段 SQL 脚本时，居然因为一点点语法上的差异而不兼容，这让我内心深处不由得想对 Oracle 吐槽一番;你甚至连分页、排序、分组这种事情，都无法在不同的数据库上获得一致的书写体验，读取指定数目的数据库记录，居然要纠结用到底用 Limit 还是 Top，像 Select Into 这样把指定列存储到指定变量中的操作，居然要求使用者来限制结果集的数目，从函数的角度来看，返回的必然是结果集中的一个元素，只有这样才可以赋值给指定的变量，可问题是存在多条记录的时候，你必须用游标去循环读取，而不能像大多数编程语言一样，直接 Map()到一个类型上然后 ToList()，可能是我对 SQL 的要求太高了吧，毕竟它就是个面向过程的语言，OO 不 OO 的没那么重要，可明明你可以抛出异常啊，可以对字符串做截取啊正则啊，可以在控制台里输出日志啊，可以调用各种有的没的的内部函数啊，elsif 可能是因为 e 不发音，就像 usr 绝对不是拼写错误
@@ -317,7 +317,7 @@ DynamicControllerActivator 实现了 IHttpControllerActivator 接口，这里我
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/ztree%E5%88%A0%E9%99%A4-%E6%8B%96%E6%8B%BD%E5%AD%90%E8%8A%82%E7%82%B9%E4%BF%9D%E7%95%99%E7%88%B6%E8%8A%82%E7%82%B9%E5%88%86%E7%BB%84%E6%A0%B7%E5%BC%8F/>zTree 删除/拖拽子节点保留父节点分组样式</a>
+<a href=/posts/1397717193/>zTree 删除/拖拽子节点保留父节点分组样式</a>
 </h2>
 <h3 class=article-subtitle>
 var treeNode = zTree[i];= null) {;var parentNode = treeNode.getParentNode()
@@ -344,7 +344,7 @@ var treeNode = zTree[i];= null) {;var parentNode = treeNode.getParentNode()
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%88%86%E4%BA%AB%E4%B8%A4%E7%A7%8D%E5%AE%9E%E7%8E%B0%E5%89%8D%E7%AB%AF%E6%8B%96%E6%8B%BD%E6%8E%92%E5%BA%8F%E7%9A%84%E6%96%B9%E6%A1%88/>分享两种实现前端拖拽排序的方案</a>
+<a href=/posts/2436573863/>分享两种实现前端拖拽排序的方案</a>
 </h2>
 <h3 class=article-subtitle>
 这篇文章主要分享了三种实现列表拖拽排序的方案，在技术选型阶段，主要选择 Nestable 和 Sortable 这两种方案，前者对层级节点提供的序列化支持非常好，但经过一番折腾后，发现要想像作者一样用好这个插件，着实是件困难的事情，而且貌似作者已经不再维护这个项目了，最近的代码提交历史大概是 6 年前，**毕竟属于 jQuery 的辉煌时代已经过去，何况是一个基于 jQuery 的插件呢;[Sortable](https://sortablejs.github.io/Sortable/)相比 Nestable 好的一点就是，它对自己的定位是“一个用于可重新排序的拖放列表的 JavaScript 库”;最终的结果是我们打算为用户提供自定义的功能，考虑到操作的便利性问题，我们放弃了那种通过上下箭头按钮进行排序的方案，这样就回到了本文的主题，如何在前端中对一组列表进行拖拽排序，最终我们选定了两组方案，它们分别是[Nestable](https://github.com/dbushell/Nestable)和[Sortable](http://sortablejs.github.io/Sortable/)
@@ -478,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
+<a href=/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/ class=font_size_1>
+负载均衡
+</a>
+<a href=/tags/%E7%A8%8B%E5%BA%8F%E5%91%98/ class=font_size_3>
+程序员
+</a>
+<a href=/tags/swagger/ class=font_size_2>
+Swagger
+</a>
+<a href=/tags/%E9%98%BF%E9%87%8C/ class=font_size_1>
+阿里
+</a>
+<a href=/tags/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/ class=font_size_2>
+主从复制
+</a>
+<a href=/tags/wsl/ class=font_size_2>
+WSL
+</a>
 <a href=/tags/%E6%95%B0%E5%AD%97/ class=font_size_1>
 数字
 </a>
-<a href=/tags/%E6%A6%82%E7%8E%87/ class=font_size_2>
-概率
+<a href=/tags/svn/ class=font_size_1>
+SVN
 </a>
-<a href=/tags/%E5%9B%9E%E5%AE%B6/ class=font_size_1>
-回家
+<a href=/tags/%E6%A8%A1%E5%9E%8B/ class=font_size_1>
+模型
 </a>
-<a href=/tags/csharp/ class=font_size_2>
-CSharp
-</a>
-<a href=/tags/%E5%90%8E%E7%AB%AF/ class=font_size_1>
-后端
-</a>
-<a href=/tags/%E6%97%A5%E5%BF%97/ class=font_size_4>
-日志
-</a>
-<a href=/tags/%E9%95%BF%E6%88%AA%E5%9B%BE/ class=font_size_1>
-长截图
-</a>
-<a href=/tags/%E7%AD%BE%E5%90%8D/ class=font_size_1>
-签名
-</a>
-<a href=/tags/%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83/ class=font_size_1>
-鬼滅の刃
-</a>
-<a href=/tags/mvvm/ class=font_size_1>
-MVVM
-</a>
-<a href=/tags/%E6%97%A0%E9%97%AE%E8%A5%BF%E4%B8%9C/ class=font_size_1>
-无问西东
-</a>
-<a href=/tags/grafana/ class=font_size_1>
-Grafana
-</a>
-<a href=/tags/%E6%80%9D%E7%BB%B4/ class=font_size_1>
-思维
-</a>
-<a href=/tags/es6/ class=font_size_1>
-ES6
-</a>
-<a href=/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/ class=font_size_2>
-依赖注入
-</a>
-<a href=/tags/2014/ class=font_size_1>
-2014
-</a>
-<a href=/tags/%E6%A8%A1%E6%9D%BF/ class=font_size_1>
-模板
+<a href=/tags/.net/ class=font_size_7>
+.NET
 </a>
 <a href=/tags/%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/ class=font_size_1>
 数据交换
 </a>
-<a href=/tags/script/ class=font_size_1>
-Script
+<a href=/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/ class=font_size_1>
+图像处理
 </a>
-<a href=/tags/%E4%BA%B2%E6%83%85/ class=font_size_1>
-亲情
+<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
+部署
 </a>
-<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
-网易
+<a href=/tags/ado.net/ class=font_size_1>
+ADO.NET
 </a>
-<a href=/tags/%E5%A2%9E%E5%BC%BA%E7%8E%B0%E5%AE%9E/ class=font_size_4>
-增强现实
+<a href=/tags/lambda/ class=font_size_2>
+Lambda
 </a>
-<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
-加密
+<a href=/tags/%E8%AF%B7%E8%AE%B0%E4%BD%8F%E6%88%91/ class=font_size_1>
+请记住我
 </a>
-<a href=/tags/%E5%B7%A5%E4%BD%9C/ class=font_size_3>
-工作
+<a href=/tags/%E6%8B%96%E6%8B%BD/ class=font_size_1>
+拖拽
 </a>
-<a href=/tags/%E7%83%AD%E6%90%9C/ class=font_size_1>
-热搜
+<a href=/tags/%E5%BD%B1%E8%AF%84/ class=font_size_10>
+影评
+</a>
+<a href=/tags/%E6%80%9D%E7%BB%B4/ class=font_size_1>
+思维
+</a>
+<a href=/tags/%E7%AE%97%E6%B3%95/ class=font_size_2>
+算法
+</a>
+<a href=/tags/%E8%B0%83%E8%AF%95/ class=font_size_1>
+调试
+</a>
+<a href=/tags/%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95/ class=font_size_1>
+扩展方法
+</a>
+<a href=/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class=font_size_3>
+中间件
+</a>
+<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
+调优
+</a>
+<a href=/tags/vue/ class=font_size_3>
+Vue
 </a>
 <a href=/tags class=font_size_9999>
 更多

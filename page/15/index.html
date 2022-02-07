@@ -101,7 +101,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%A4%A7%E6%8A%A4%E6%B3%95-%E8%8A%B1%E7%94%9F%E9%95%87%E9%87%8C%E7%9A%84%E6%88%90%E4%BA%BA%E7%AB%A5%E8%AF%9D/>《大护法》—— 花生镇里的成人童话</a>
+<a href=/posts/1684318907/>《大护法》—— 花生镇里的成人童话</a>
 </h2>
 <h3 class=article-subtitle>
 可是大护法很快就发现，在花生镇这样一个奇怪的地方，随时随地都会有人杀戮村民和外来者，这些人被称为刑法者，负责帮助老神仙欧阳吉安杀死“该死”地村民，所以在故事一开始大护法在村子里就遭到了袭击，可是说起大护法来，这是一个战斗力爆表的反差萌系设定，而通过故事我们知道，这些刑法者由一个称为罗单的人管理，他不属于花生镇，和欧阳吉安这些人类不一样，他对彩这个神秘女子有种强烈的占有欲，他偷看她洗澡被发现便转身离开，可当他发现下属产生感情的时候，他毫不留情地杀死了他们，所以大概到现在为止，我们所认识的世界存在着严格的等级区分，整个故事从此定性，罗单压抑着自己的情欲，却不允许下属产生情欲，所以当他杀死欧阳吉安的时候，我们不会感到太意外，因为他心里隐藏了太多东西;欧阳吉安，即花生镇村名眼中的老神仙，他说鬼蘑菇是一种可怕的传染病，一旦花生人长了鬼蘑菇就必须被立即处死，花生人不能开口说话，即使他们都贴着假眼睛和假嘴巴，花生人不能拥有意识和思考，一旦说出事实就会被认为染了疯病必须被立即处死，所有的村民都循规蹈矩地听着老神仙的话，可事实上鬼蘑菇根本就不是传染病，它是花生人成熟的标志，老神仙这样一个统治者，从来不会将花生人视为人，它们活着的唯一意义就是等死后，由庖卯从脑袋里取出黑石头;在整个故事设定中，大护法的爷爷的爷爷起就一直是弈卫国的大护法，所以大护法的职责就是要保护太子，在故事安排上这部电影相对枯燥，因为后期基本上一直在找太子，所以太子有这样的机会，去选择做自己想做的事情，其实是因为有大护法在一直保护他，相反普通人可能不会有这样的机会，这一点我们稍后会提到
@@ -128,7 +128,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9F%BA%E4%BA%8E%E8%BF%87%E6%BB%A4%E5%99%A8%E5%AE%9E%E7%8E%B0%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E7%9A%84%E6%8E%A2%E7%B4%A2/>基于过滤器实现异常处理的探索</a>
+<a href=/posts/570888918/>基于过滤器实现异常处理的探索</a>
 </h2>
 <h3 class=article-subtitle>
 垠神这篇文章其实在说一个问题，Checked Exception 鼓励开发者主动告知调用者来捕获特定异常，这种思路完全是没有问题的，问题是调用者如何能够知道它需要捕获哪些异常，我们不可能每次都通过"转到定义”功能去看一个方法会引发哪些异常，垠神从 PL 的角度出发，想到了通过代码静态分析的方法来处理异常，垠神吐槽的其实是不分青红皂白滥用 try-catch 的做法，实际上 Java 标准库里对异常处理相当混乱，虽然官方鼓励使用 Checked Exception，但是标准库实现和工程实践上不乏将异常包装为 RuntimeException 来规避 Check 的做法，我认为 Checked Exception 在工程学意义上最大贡献是，在开发阶段该抛出什么异常就应该抛出异常，因为这样可以方便我们快读定位问题，而到了发布阶段则应该将这些异常都 catch 住即可，这样用户就不会看到这些奇葩的异常;我们可以注意到 Java 强制让 Foo()方法实现了 throws 声明，原因是在该方法内部可能会引发 FileNotFoundException，如果我们不遵从这一"霸王条款"，那么我们的代码将无法通过编译，而在调用者层面上，Java 的霸道则体现在要求调用者使用 try-catch 结构处理这种异常，或者继续使用 throws 声明来使异常继续向上传递，我更喜欢将这种设计称之为一种理想状态下的异常处理机制，比如我们读写一个文件的时候，除了 FileNotFoundException 以外，可能还会遇到 FileLoadException、PathTooLongException、EndOfStreamException 等等的异常，如果这些异常在业务层面上是无差别的，那么我认为将异常细分到如此精细的程度是没有意义的，因为对用户而言这个时候它关心的是否成功读写了这个文件，具体的异常原因用户并不想真的知道，可是 Java 的 Checked Exception 在面对这种处境的时候，整体而言是显得力不从心的，因为我们不得不在方法从声明该方法会引出哪些异常，这对方法的编写者和方法的调用者来说都很痛苦;可以注意到 C#采用的是一种相对温和的策略，即文档会明确告诉你，某个方法是否会引发异常以及引发哪些异常，但是是否要捕获这些异常则完全由调用者决定，我认为这是 C#之父 Hejlsberg 在权衡后在工程实践上选择的一种妥协，因为 Java 的 Checked Exception 理想主义色彩稍重，并不是在所有场景下我们都需要去处理所有的异常，所以 Checked Exception 带来的问题是，即使在只需要捕获基类异常的情况下，我们依然不得不去捕获各种子类异常，这难道不有点矫枉过正的感觉吗
@@ -155,7 +155,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%BC%82%E6%AD%A5lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E9%97%AE%E9%A2%98%E7%9A%84%E6%8E%A2%E7%B4%A2/>异步 Lambda 表达式问题的探索</a>
+<a href=/posts/187480982/>异步 Lambda 表达式问题的探索</a>
 </h2>
 <h3 class=article-subtitle>
 async void 方法引发异常时，因为它没有 Task 对象来放置异常，因此它的异常 SynchronizationContext 上引发，而且因为[AsyncVoidMethodBuilder](http://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.asyncvoidmethodbuilder.aspx)内部并没有使用 TaskScheduler，因此对于 async void 方法来说，线程池中未捕获的异常将会一直向上抛并最终导致程序异常终止，虽然我们可以在 AppDomain.UnhandledException 这个事件中捕捉到这些"未处理的异常"，但这并不能阻止程序异常终止，通过我们可以通过注册这个事件来记录异常日志，以帮助我们快速定位问题;好了，现在我们回到这篇文章开始的问题，我们现在知道 async Task 和 async Task&lt;T>引发的异常，都不会是程序立即终止，除非我们显式地去 await 一个 Task 对象会引发异常，可是对 async void 来讲，一旦它引发异常，常规的 try-catch 时无法捕捉到异常的，这种"未处理的异常"会一直向上抛并最终导致程序异常终止;我们注意到这里声明了两个 Action，即两个没有返回值的委托类型，它们的不同点在于前者使用了 async/await 这两个关键字，而后者则是一个普通的同步方法，那么这两者生成的 IL 代码是否有区别呢
@@ -236,7 +236,7 @@ async void 方法引发异常时，因为它没有 Task 对象来放置异常，
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E6%97%B6%E9%97%B4%E5%A6%82%E7%81%B0%E7%83%AC%E8%88%AC%E9%81%A5%E8%BF%9C/>时间如灰烬般遥远</a>
+<a href=/posts/1357715684/>时间如灰烬般遥远</a>
 </h2>
 <h3 class=article-subtitle>
 或许 Kent 说得是对的，这个世界上并没有那么多，真正看重技术的公司，这个世界上普通如你我的人，无一不在做着普通的事情;天地间万事万物更迭交替，本来是自然界中最普通的规则，可是如果每年的这个时候，你都是一个人去看这山山水水，相比时空上的孤寂感，人的孤寂感会更为强烈，“良辰美景奈何天，赏心乐事谁家院”，外面的世界再纷繁多变，对你而言不过是活着的时间;Kent 是坐周五晚上的火车离开，晚上两个人一块儿吃饭，聊到了家里的琐事，聊到了工作的想法，唯独没有提到离别，大概是我不愿意说起
@@ -290,7 +290,7 @@ async void 方法引发异常时，因为它没有 Task 对象来放置异常，
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BD%BF%E7%94%A8c#%E5%BC%80%E5%8F%91http%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E6%94%AF%E6%8C%81https/>使用 C#开发 HTTP 服务器之支持 HTTPS</a>
+<a href=/posts/2734896333/>使用 C#开发 HTTP 服务器之支持 HTTPS</a>
 </h2>
 <h3 class=article-subtitle>
 这恰恰印证了我们最初的观点，即 HTTPS 协议依然采用 HTTP 协议(三次握手)进行通讯，不同的地方在于中间环节增加了加密处理，例如在客户端和服务器端相互验证的环节采用的是非对称加密，在客户端验证通过以后双方采用随机数作为密钥是对称加密，而三次握手以后验证消息是否被篡改则是采用 HASH 算法;我们可以将其理解为在 HTTP 协议的基础上增加了安全机制，这里的安全机制是指 SSL,简单来讲 HTTPS 协议依然采用 HTTP 协议，不过它在 HTTP 和 TCP 间增加了加密/身份验证层，因此在保证数据传输安全的同时，为服务器提供了身份校验机制;好了，现在我们对 HTTPS 协议有了一个基本的认识：HTTPS 协议相比 HTTP 协议增加了身份验证和消息加密的机制，因此 HTTPS 协议能够保证通讯过程中的数据传输安全
@@ -317,7 +317,7 @@ async void 方法引发异常时，因为它没有 Task 对象来放置异常，
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E6%84%BF%E6%B5%AE%E8%90%8D%E4%B9%98%E9%A3%8E%E7%A0%B4%E6%B5%AA/>愿浮萍乘风破浪</a>
+<a href=/posts/2314414875/>愿浮萍乘风破浪</a>
 </h2>
 <h3 class=article-subtitle>
 虽然前期在微博上经常看到韩寒在为这部电影做宣传，但我一直想知道它会一种什么样的方式来讲述这个故事，我隐隐约约觉得徐太浪(邓超饰)、徐正太(彭于晏饰)、小花(赵丽颖饰)三个人之间的关系非同寻常，我甚至臆想这是一部俗套的三角恋的故事;顶风作案的罗力，承诺要给松子一方天地，然而等他从狱中出来，见到的却是坐在黄志强车上神色复杂的那个人，你说这个世界是会变的，可它会变成什么样我们永远无从得知，小马希望的是那个拨号上网频频掉线的时代诞生一款 OICQ 的软件，徐正太希望的是像杜月笙那样收“物业费”......我们期望着什么，我们等待着什么，其实都不重要，世界一直都在变化，而我们如浮萍，或随风漂泊，或乘风破浪，一切都在我们的选择;整个故事其实是一个解惑的过程，所有的线索都是为了让徐太浪明白，自己的父亲为什么会变成这个样子，而围绕这些线索，整理的冲突发生在以徐正太、六一、阿浪、小马为代表的“正太帮”和黄志强、罗力为代表的“黑社会”，双方的利益冲突交织在一间歌舞厅
@@ -344,7 +344,7 @@ async void 方法引发异常时，因为它没有 Task 对象来放置异常，
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E5%B8%B8%E7%94%A8%E6%9C%AF%E8%AF%AD/>函数式编程常用术语</a>
+<a href=/posts/2171683728/>函数式编程常用术语</a>
 </h2>
 <h3 class=article-subtitle>
 本文对函数式编程中的常见术语如高阶函数、局部套用/柯里化、惰性求值等结合 C#语言进行了简单分析;举一个基本的例子，.NET 中 IEnumerable&lt;T>接口提供了大量的如 Select、Where 等扩展方法，而这些扩展方法同样会返回 IEnumerable&lt;T>类型，并且这些扩展方法不会改变原来的集合，所有的修改都是作用在一个新的集合上，这就是函数式编程的不可变性;常用的函数式编程术语有高阶函数、柯里化/局部调用、惰性求值，递归等
@@ -478,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/shader/ class=font_size_1>
-Shader
+<a href=/tags/%E8%B0%83%E8%AF%95/ class=font_size_1>
+调试
 </a>
-<a href=/tags/%E9%98%85%E8%AF%BB/ class=font_size_2>
-阅读
+<a href=/tags/vue/ class=font_size_3>
+Vue
 </a>
-<a href=/tags/%E7%88%B1%E6%83%85/ class=font_size_2>
-爱情
+<a href=/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class=font_size_3>
+中间件
 </a>
-<a href=/tags/%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80/ class=font_size_1>
-脚本语言
+<a href=/tags/grafana/ class=font_size_1>
+Grafana
 </a>
-<a href=/tags/%E6%88%91%E6%98%AF%E7%8C%AB/ class=font_size_1>
-我是猫
+<a href=/tags/tracing/ class=font_size_1>
+Tracing
 </a>
-<a href=/tags/ef/ class=font_size_5>
-EF
+<a href=/tags/%E6%A0%87%E6%B3%A8/ class=font_size_1>
+标注
 </a>
-<a href=/tags/%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3/ class=font_size_1>
-夏目漱石
+<a href=/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/ class=font_size_1>
+函数式编程
 </a>
-<a href=/tags/script/ class=font_size_1>
-Script
+<a href=/tags/%E6%84%9F%E6%82%9F/ class=font_size_14>
+感悟
 </a>
-<a href=/tags/%E5%9B%9E%E9%A6%96/ class=font_size_1>
-回首
+<a href=/tags/web/ class=font_size_4>
+Web
 </a>
-<a href=/tags/%E4%BA%BA%E6%96%87/ class=font_size_2>
-人文
+<a href=/tags/%E8%AE%AD%E7%BB%83/ class=font_size_1>
+训练
 </a>
-<a href=/tags/%E5%8F%8D%E7%BC%96%E8%AF%91/ class=font_size_1>
-反编译
+<a href=/tags/%E5%85%B3%E5%8D%A1%E7%B3%BB%E7%BB%9F/ class=font_size_1>
+关卡系统
 </a>
-<a href=/tags/javascript/ class=font_size_1>
-JavaScript
+<a href=/tags/dottrace/ class=font_size_1>
+dotTrace
 </a>
-<a href=/tags/%E4%B8%80%E5%87%BA%E5%A5%BD%E6%88%8F/ class=font_size_1>
-一出好戏
+<a href=/tags/%E5%B9%B6%E5%8F%91/ class=font_size_1>
+并发
 </a>
-<a href=/tags/%E5%9B%9E%E5%BF%86/ class=font_size_1>
-回忆
+<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
+脚本
 </a>
-<a href=/tags/jetbrain/ class=font_size_1>
-JetBrain
+<a href=/tags/jsdelivr/ class=font_size_1>
+jsDelivr
 </a>
-<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
-对象池
+<a href=/tags/%E6%9E%B6%E6%9E%84/ class=font_size_2>
+架构
 </a>
-<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
-穿搭
+<a href=/tags/hashset/ class=font_size_1>
+HashSet
 </a>
-<a href=/tags/%E7%94%9F%E6%AD%BB/ class=font_size_1>
-生死
+<a href=/tags/%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/ class=font_size_1>
+虚拟摇杆
 </a>
-<a href=/tags/%E6%A8%A1%E5%9E%8B/ class=font_size_1>
-模型
+<a href=/tags/%E6%A6%82%E7%8E%87/ class=font_size_2>
+概率
 </a>
-<a href=/tags/rpg/ class=font_size_1>
-RPG
+<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
+调优
 </a>
-<a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
-长安十二时辰
+<a href=/tags/%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/ class=font_size_1>
+动态加载
 </a>
-<a href=/tags/%E6%B1%82%E8%81%8C/ class=font_size_3>
-求职
+<a href=/tags/%E9%9C%8D%E9%87%91/ class=font_size_1>
+霍金
 </a>
-<a href=/tags/envoy/ class=font_size_6>
-Envoy
+<a href=/tags/%E9%87%8D%E8%AF%95/ class=font_size_2>
+重试
 </a>
-<a href=/tags/%E8%AE%A4%E8%AF%81/ class=font_size_1>
-认证
+<a href=/tags/%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95/ class=font_size_1>
+扩展方法
 </a>
-<a href=/tags/%E8%A5%BF%E5%AE%89/ class=font_size_3>
-西安
+<a href=/tags/%E8%A1%A8%E5%8D%95/ class=font_size_1>
+表单
 </a>
 <a href=/tags class=font_size_9999>
 更多

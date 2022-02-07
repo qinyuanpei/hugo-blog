@@ -149,7 +149,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%8E%9F%E7%94%9Fjavascript%E5%AE%9E%E7%8E%B0hexo%E5%8D%9A%E5%AE%A2%E6%8E%A8%E8%8D%90%E5%8A%9F%E8%83%BD/>原生 JavaScript 实现 Hexo 博客推荐功能</a>
+<a href=/posts/478946932/>原生 JavaScript 实现 Hexo 博客推荐功能</a>
 </h2>
 <footer class=article-time>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
@@ -173,7 +173,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BD%BF%E7%94%A8dynamic_linq%E6%9E%84%E5%BB%BA%E5%8A%A8%E6%80%81lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/>使用 Dynamic Linq 构建动态 Lambda 表达式</a>
+<a href=/posts/118272597/>使用 Dynamic Linq 构建动态 Lambda 表达式</a>
 </h2>
 <h3 class=article-subtitle>
 var propertyParam = Expression.Property (parameter, condition.Field);searchParameters.Query.Add(new Condition() { Field = "StringValue", Op = Operation.Contains, Value = "山", OrGroup = "StringValue" });searchParameters.Query.Add(new Condition&lt;Foo>() { Field = x => x.StringValue, Op = Operation.Contains, Value = "有朋", OrGroup = "StringValue" })
@@ -200,7 +200,7 @@ var propertyParam = Expression.Property (parameter, condition.Field);searchParam
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E9%80%9A%E8%BF%87ef-dapper%E6%89%A9%E5%B1%95%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%A1%E8%AE%A1%E5%8A%9F%E8%83%BD/>通过 EF/Dapper 扩展实现数据库审计功能</a>
+<a href=/posts/1289244227/>通过 EF/Dapper 扩展实现数据库审计功能</a>
 </h2>
 <h3 class=article-subtitle>
 整体来看，后者对代码的侵入性要更小一点，理论上我们可以实现`EF`或`EF Core`的仓储模式，这样两者在实现上会更接近一点，当然，更直接的方案是去拦截`SaveChanges()`方法，这和我们使用继承的目的是一样的，由于 Dapper 本身没有`ChangeTracker`，所以，在处理`Update()`相关的仓储接口时，都需要先查询一次数据库，这一点是这个方案里最大的短板;在此基础上，我们可以编写我们实际的 DbContext，这里以 CustomerContext 为例，当我们向其中添加、修改和删除 Customer 的时候，就会触发审计相关的逻辑，默认情况下，审计产生的数据 AuditLog 和 Customer 在同一个数据库上下文中，当然，我们可以通过注入 IAuditStore 来实现更精细的控制，例如，可以将审计日志输入到文本文件，甚至是 Mongodb 这样的非关系型数据库里，因为有依赖注入的存在，这些实现起来会非常的简单;而对于像 Dapper 这种轻量级的 ORM，它本身没有类似 EF/EF Core 的 ChangeTracker 的设计，如果我们在项目中使用 Dapper，并且希望实现审计的相关功能，直观上看就会有一点困难
@@ -227,7 +227,7 @@ var propertyParam = Expression.Property (parameter, condition.Field);searchParam
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/webapiclient%E4%B8%AD%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%8E%E4%BD%BF%E7%94%A8/>WebApiClient 中动态路由的实现与使用</a>
+<a href=/posts/2488769283/>WebApiClient 中动态路由的实现与使用</a>
 </h2>
 <h3 class=article-subtitle>
 博主曾经在「[声明式 RESTful 客户端 WebApiClient 在项目中的应用](https://blog.yuanpei.me/posts/380519286/)」这篇博客中，介绍过.NET 平台下的“Retrofit”——[WebApiClient](https://github.com/dotnetcore/WebApiClient)，它是一种声明式的 RESTful 客户端，通过动态代理来生成 Http 调用过程代码，而调用方只需要定义一个接口，并使用相关“注解”对接口进行修饰即可，类似的实现还有[Refit](https://github.com/reactiveui/refit)，是一种比 HttpWebRequest、HttpClient 和 RestSharp 更为优雅的接口调用方式;是的，你猜对了，实际运作过程中，测试环境和正式环境不单单会使用不同的域名，可能还会使用不同的路由，虽然，理论上两个环境的程序应该完全一样，应该使用相同的路由;在今天这篇博客中，我想聊聊 WebApiClient 中动态路由的实现与使用
@@ -281,7 +281,7 @@ var propertyParam = Expression.Property (parameter, condition.Field);searchParam
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BD%BF%E7%94%A8-jsdelivr-%E4%B8%BA-hexo-%E5%8D%9A%E5%AE%A2%E6%8F%90%E4%BE%9B%E9%AB%98%E6%95%88%E5%85%8D%E8%B4%B9%E7%9A%84cdn%E5%8A%A0%E9%80%9F/>使用 jsDelivr 为 Hexo 博客提供高效免费的CDN加速</a>
+<a href=/posts/1417719502/>使用 jsDelivr 为 Hexo 博客提供高效免费的CDN加速</a>
 </h2>
 <h3 class=article-subtitle>
 > https://cdn.jsdelivr.net/gh/user/repo@version/file;[jsDelivr提供的CDN加速资源](https://i.loli.net/2020/02/05/HtmhUdsSRLW4Q9A.png);https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js
@@ -308,7 +308,7 @@ var propertyParam = Expression.Property (parameter, condition.Field);searchParam
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BB%8E-.net-core-2.2-%E5%8D%87%E7%BA%A7%E5%88%B0-3.1-%E7%9A%84%E8%B8%A9%E5%9D%91%E4%B9%8B%E6%97%85/>从 .NET Core 2.2 升级到 3.1 的踩坑之旅</a>
+<a href=/posts/3099575458/>从 .NET Core 2.2 升级到 3.1 的踩坑之旅</a>
 </h2>
 <h3 class=article-subtitle>
 升级2.2的时候，调整项目文件中的`Microsoft.NET.Sdk.Web`为`Microsoft.NET.Sdk`可以解决，而这个方法在3.x以后失效;- 安装完 `.NET Core 3.x`，使用`dotnet build`编译项目提示找不到`Microsoft.NET.Sdk.Web`;- 升级后提示无法加载类型：`Microsoft.AspNetCore.Mvc.MvcJsonOptions`，解决方案是：
@@ -335,7 +335,7 @@ var propertyParam = Expression.Property (parameter, condition.Field);searchParam
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%B8%8D%E7%9F%A5%E8%80%81%E4%B9%8B%E5%B0%86%E8%87%B3/>不知老之将至</a>
+<a href=/posts/888549816/>不知老之将至</a>
 </h2>
 <h3 class=article-subtitle>
 人有时候会刻意拉大时空的疏离感，就像我第一次看《叶问》还是在同学的 MP4 上，我甚至都没有看过《叶问 1》里“我要打 10 个”的名场面，因为第一次看《叶问》的时候，叶师傅已经在大圆桌上同洪师傅切磋武艺了;我说，这个问题根本不需要多想，因为逝者已逝，让更多的人活下来，九泉之下有知的逝者或许会感到欣慰吧;翻过年以后，我就 28 岁啦，如果回头看我的 10 年，时间大概一样会变得空泛，因为有的人来来回回地从你生命里来了又去，而有的人甚至从未真正进入过你生命里
@@ -469,80 +469,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E5%89%91%E6%8C%87offer/ class=font_size_1>
-剑指Offer
+<a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
+长安十二时辰
+</a>
+<a href=/tags/dottrace/ class=font_size_1>
+dotTrace
+</a>
+<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
+同步
+</a>
+<a href=/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/ class=font_size_1>
+自动化
+</a>
+<a href=/tags/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A0%91/ class=font_size_1>
+表达式树
+</a>
+<a href=/tags/%E5%81%A5%E5%BA%B7%E7%A0%81/ class=font_size_1>
+健康码
+</a>
+<a href=/tags/hexo/ class=font_size_8>
+Hexo
+</a>
+<a href=/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/ class=font_size_1>
+图像处理
+</a>
+<a href=/tags/es6/ class=font_size_1>
+ES6
+</a>
+<a href=/tags/windows/ class=font_size_1>
+Windows
+</a>
+<a href=/tags/%E5%89%8D%E7%AB%AF/ class=font_size_5>
+前端
+</a>
+<a href=/tags/%E8%AF%97%E4%BA%BA/ class=font_size_1>
+诗人
 </a>
 <a href=/tags/%E5%85%AC%E4%BC%97%E5%8F%B7/ class=font_size_1>
 公众号
 </a>
-<a href=/tags/%E7%AD%BE%E5%90%8D/ class=font_size_1>
-签名
+<a href=/tags/%E5%89%91%E6%8C%87offer/ class=font_size_1>
+剑指Offer
 </a>
-<a href=/tags/%E5%93%B2%E5%AD%A6/ class=font_size_3>
-哲学
+<a href=/tags/%E8%AF%B7%E8%AE%B0%E4%BD%8F%E6%88%91/ class=font_size_1>
+请记住我
 </a>
-<a href=/tags/%E5%B7%A5%E4%BD%9C/ class=font_size_3>
-工作
+<a href=/tags/hyperlog/ class=font_size_1>
+Hyperlog
 </a>
-<a href=/tags/%E7%BC%96%E7%A8%8B/ class=font_size_6>
-编程
+<a href=/tags/%E5%92%8C%E5%B9%B3/ class=font_size_1>
+和平
 </a>
-<a href=/tags/sse/ class=font_size_1>
-SSE
+<a href=/tags/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/ class=font_size_2>
+动态代理
 </a>
-<a href=/tags/%E8%9B%8B%E7%82%92%E9%A5%AD/ class=font_size_1>
-蛋炒饭
+<a href=/tags/%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/ class=font_size_1>
+数据交换
 </a>
-<a href=/tags/%E4%BC%98%E5%8C%96/ class=font_size_1>
-优化
+<a href=/tags/%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/ class=font_size_1>
+虚拟摇杆
 </a>
-<a href=/tags/consul/ class=font_size_1>
-Consul
+<a href=/tags/%E7%B1%B3%E8%8A%B1%E4%B9%8B%E5%91%B3/ class=font_size_1>
+米花之味
 </a>
-<a href=/tags/httpclient/ class=font_size_2>
-HttpClient
+<a href=/tags/%E8%BF%81%E7%A7%BB/ class=font_size_1>
+迁移
 </a>
-<a href=/tags/%E5%9B%BE%E5%BA%8A/ class=font_size_1>
-图床
+<a href=/tags/%E7%AE%97%E6%B3%95/ class=font_size_2>
+算法
 </a>
-<a href=/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/ class=font_size_1>
-模板引擎
-</a>
-<a href=/tags/jsdelivr/ class=font_size_1>
-jsDelivr
-</a>
-<a href=/tags/%E6%B8%B8%E6%88%8F/ class=font_size_13>
-游戏
-</a>
-<a href=/tags/%E7%A9%B9%E4%B9%8B%E6%89%89/ class=font_size_1>
-穹之扉
-</a>
-<a href=/tags/%E7%BD%91%E5%85%B3/ class=font_size_1>
-网关
+<a href=/tags/%E4%BA%8C%E7%BB%B4%E7%A0%81/ class=font_size_1>
+二维码
 </a>
 <a href=/tags/nlp/ class=font_size_2>
 NLP
-</a>
-<a href=/tags/trace/ class=font_size_1>
-Trace
-</a>
-<a href=/tags/jwt/ class=font_size_1>
-JWT
-</a>
-<a href=/tags/echarts/ class=font_size_1>
-ECharts
-</a>
-<a href=/tags/%E9%9A%8F%E7%AC%94/ class=font_size_9>
-随笔
-</a>
-<a href=/tags/ai/ class=font_size_1>
-AI
-</a>
-<a href=/tags/sublime/ class=font_size_1>
-Sublime
-</a>
-<a href=/tags/webapi/ class=font_size_4>
-WebApi
 </a>
 <a href=/tags class=font_size_9999>
 更多

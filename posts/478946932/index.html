@@ -1,0 +1,462 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="有时候，我不禁在想，我们到底处在一个什么样的时代呢？而之所以会有这样的疑问，则是因为我们的习惯在不断地被这个时代向前推进，就像我用了两年多的"><title>原生 JavaScript 实现 Hexo 博客推荐功能</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/478946932/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="原生 JavaScript 实现 Hexo 博客推荐功能">
+<meta property="og:description" content="有时候，我不禁在想，我们到底处在一个什么样的时代呢？而之所以会有这样的疑问，则是因为我们的习惯在不断地被这个时代向前推进，就像我用了两年多的">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/478946932/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="Hexo"><meta property="article:tag" content="推荐"><meta property="article:tag" content="插件"><meta property="article:published_time" content="2020-06-08T12:30:54+00:00"><meta property="article:modified_time" content="2020-06-08T12:30:54+00:00">
+<meta name=twitter:title content="原生 JavaScript 实现 Hexo 博客推荐功能">
+<meta name=twitter:description content="有时候，我不禁在想，我们到底处在一个什么样的时代呢？而之所以会有这样的疑问，则是因为我们的习惯在不断地被这个时代向前推进，就像我用了两年多的">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2/>
+独立博客
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/478946932/>原生 JavaScript 实现 Hexo 博客推荐功能</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2020-06-08</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 5 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>有时候，我不禁在想，我们到底处在一个什么样的时代呢？而之所以会有这样的疑问，则是因为我们的习惯在不断地被这个时代向前推进，就像我用了两年多的魅蓝 Note6 屏幕出现了问题，扫视了一圈新手机，居然再找不出一款带实体键的手机，刘海屏、水滴屏、破孔屏、异形屏、曲面屏等等简直令人眼花缭乱，唯独没有一款让我感到熟悉的非全面屏手机。做软件的时候，会不明白那些似是而非的定制需求的差异，可为什么偏偏到了硬件的时候，大家就能被迫适应这些越来越同质化的东西呢？也许有和我一样怀念非全面屏的人，可对于这个时代而言，一切都好像无足轻重，喜欢魅族对产品的设计，喜欢小而美的不妥协，可当大家都越来越相似的时候，<code>也许，是因为我们终于都长大了吧，而怀念则是一种可有可无、甚至有一点多余的东西</code>。在被告知一切向前看的路上，我们能拥有、用留住的东西本就不多，可偏偏我们就在给世间一切东西，努力地刻上时间的温度，经历着花繁叶茂，经历着落叶归根。</p>
+<p>写博客，曾经是件很有意思的事情，透过网页去读每条留言背后的人，常常令你产生神交已久的感觉，即便网络如此发达的今天，让一个人失散，无非是动动手指拉黑、删除。<code>陈星汉</code>先生有一款游戏作品叫做<code>《风之旅人》</code>，游戏里的玩家依靠某种微弱的信号相互联系，而一旦失散彼此，将永远迷失在浩瀚无际的沙海里，你说，这是不是有人生本身的意味在里面呢？再后来 140 个字符的微博开始流行，而这些沉迷在博客时代里的人们，或固执地继续在博客这一方天地里挥洒，或搭乘移动互联网的“高铁”通往新的彼岸。有人这样比喻朋友圈和微博，说朋友圈装饰别人梦境的月亮，而微博则是装饰自己梦境的镜子。其实呢，在隐私问题基本荡然无存的今天，我们都只是在装饰资本的“窗户”吧！</p>
+<p>曾经运营过一段时间的微信公众号，最后发觉还是博客的载体更适合自己，虽然这些年没少为博客投入“钱财”，在博客时代一去不复返的时间禁锢里，通过博客来盈利的想法堪堪聊以自慰，更不必说后来流行起来的“在线教育”和 Vlog。有人说，靠工资是没有办法挣到钱的，挣钱要靠这些“睡后收入”，可当一件事物风头正盛的时候，彼时的你不足以追逐这一切的时候，这种感觉该如何言明呢？大概就像你在最落魄的时候，遇到一生中最想要保护的那个人一样，这听起来多少有点讽刺，人在不成熟的时候，总是后知后觉，可有一天真成熟了，再难有那时的运气或是豪气。所以呢，继续写下去吧，也许有一天，当你看着从前写的幼稚的文字，或哭或笑皆可入题，这不就是“嬉笑怒骂，皆成文章”了吗？</p>
+<p>果然，一不小心又扯远了。虽然说博客平时没什么流量，可像搜索引擎优化(<code>SEO</code>)、前端构建(<code>CI/CD</code>)、<code>PWA</code>等等这些东西倒是有所钻研，提高博客访问量的方式除了增加搜索引擎里的权重和曝光率以外，其实，还有一种方式就是减少跳出时间。换句话说，访客在你博客里停留的时间越长，这意味着你有更多的内容可以被对方访问到，所以，增加内链是一个不错的思路。最直接的方式，就是在每篇博客结束以后推荐相关的博客供访客继续阅读。之前曾经尝试过像 <a class=link href=https://github.com/huiwang/hexo-recommended-posts target=_blank rel=noopener>hexo-recommended-posts</a> 这样的插件，坦白说效果不是特别好，因为有时候加载这些站外的内容，导致博客页面打开的时候异常卡顿，所以，我们今天将采用原生的 JavaScript 来为 Hexo 实现博客推理功能，希望对大家有所启发。</p>
+<p>首先，我们来说说原理，推荐系统一般是需要一部分量化的指标来表征不同内容的相关性的。譬如通过<code>TF-IDF</code>来计算文本的相似度，通过公共词袋中的词频构造向量再配合余弦公式来计算，通过<code>TextRank</code>这类借鉴<code>PageRank</code>思想的方法来计算等等。这里呢，我们不采用这些方法来实现，主要是考虑到 200 篇左右的博客，两两计算相似度特别耗费时间，对于 Hexo 这种静态博客而言，我们还是应该节省生成静态页面的时间，虽然这部分时间都是<code>Travis CI</code>去跑的(逃……。我们采用的方案是基于标签和日期的推荐方式，即根据当前文章的标签筛选相同标签的文章，根据当前文章的日期筛选相同日期的文章。有了这两种策略，配合 Hexo 中提供的全局变量，我们可以很容易地编写出下面的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-JavaScript data-lang=JavaScript><span class=ln> 1</span><span class=o>&lt;%</span>
+<span class=ln> 2</span>    <span class=kd>function</span> <span class=nx>shuffle</span><span class=p>(</span><span class=nx>a</span><span class=p>)</span> <span class=p>{</span>
+<span class=ln> 3</span>        <span class=k>for</span> <span class=p>(</span><span class=kd>let</span> <span class=nx>i</span> <span class=o>=</span> <span class=nx>a</span><span class=p>.</span><span class=nx>length</span><span class=p>;</span> <span class=nx>i</span><span class=p>;</span> <span class=nx>i</span><span class=o>--</span><span class=p>)</span> <span class=p>{</span>
+<span class=ln> 4</span>            <span class=kd>let</span> <span class=nx>j</span> <span class=o>=</span> <span class=nb>Math</span><span class=p>.</span><span class=nx>floor</span><span class=p>(</span><span class=nb>Math</span><span class=p>.</span><span class=nx>random</span><span class=p>()</span> <span class=o>*</span> <span class=nx>i</span><span class=p>);</span>
+<span class=ln> 5</span>            <span class=p>[</span><span class=nx>a</span><span class=p>[</span><span class=nx>i</span> <span class=o>-</span> <span class=mi>1</span><span class=p>],</span> <span class=nx>a</span><span class=p>[</span><span class=nx>j</span><span class=p>]]</span> <span class=o>=</span> <span class=p>[</span><span class=nx>a</span><span class=p>[</span><span class=nx>j</span><span class=p>],</span> <span class=nx>a</span><span class=p>[</span><span class=nx>i</span> <span class=o>-</span> <span class=mi>1</span><span class=p>]];</span>
+<span class=ln> 6</span>        <span class=p>}</span>
+<span class=ln> 7</span>        <span class=k>return</span> <span class=nx>a</span><span class=p>;</span>
+<span class=ln> 8</span>    <span class=p>}</span>
+<span class=ln> 9</span>
+<span class=ln>10</span>    <span class=kd>function</span> <span class=nx>recommended_posts</span><span class=p>(</span><span class=nx>page</span><span class=p>,</span> <span class=nx>site</span><span class=p>,</span> <span class=nx>limit</span> <span class=o>=</span> <span class=mi>5</span><span class=p>)</span> <span class=p>{</span>
+<span class=ln>11</span>        <span class=nx>page</span><span class=p>.</span><span class=nx>tags</span> <span class=o>=</span> <span class=nx>page</span><span class=p>.</span><span class=nx>tags</span> <span class=o>||</span> <span class=p>[]</span>
+<span class=ln>12</span>        <span class=k>if</span> <span class=p>(</span><span class=nx>page</span><span class=p>.</span><span class=nx>tags</span><span class=p>.</span><span class=nx>length</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span> <span class=k>return</span> <span class=p>[];</span>
+<span class=ln>13</span>        <span class=kd>let</span> <span class=nx>pageTags</span> <span class=o>=</span> <span class=nx>page</span><span class=p>.</span><span class=nx>tags</span><span class=p>.</span><span class=nx>map</span><span class=p>(</span><span class=nx>x</span><span class=p>=&gt;</span><span class=nx>x</span><span class=p>.</span><span class=nx>name</span><span class=p>);</span>
+<span class=ln>14</span>        <span class=kd>let</span> <span class=nx>sitePosts</span> <span class=o>=</span> <span class=nx>site</span><span class=p>.</span><span class=nx>posts</span><span class=p>.</span><span class=nx>toArray</span><span class=p>().</span><span class=nx>map</span><span class=p>(</span><span class=nx>x</span><span class=p>=&gt;</span> <span class=p>{</span>
+<span class=ln>15</span>            <span class=k>return</span> <span class=p>{</span><span class=nx>tags</span><span class=o>:</span><span class=nx>x</span><span class=p>.</span><span class=nx>tags</span><span class=p>.</span><span class=nx>toArray</span><span class=p>().</span><span class=nx>map</span><span class=p>(</span><span class=nx>y</span><span class=p>=&gt;</span><span class=nx>y</span><span class=p>.</span><span class=nx>name</span><span class=p>),</span> <span class=nx>title</span><span class=o>:</span><span class=nx>x</span><span class=p>.</span><span class=nx>title</span><span class=p>,</span> <span class=nx>permalink</span><span class=o>:</span><span class=nx>x</span><span class=p>.</span><span class=nx>permalink</span><span class=p>,</span> <span class=nx>date</span><span class=o>:</span><span class=nx>x</span><span class=p>.</span><span class=nx>date</span><span class=p>}</span>
+<span class=ln>16</span>        <span class=p>});</span>
+<span class=ln>17</span>        <span class=kd>let</span> <span class=nx>relatedPosts</span> <span class=o>=</span> <span class=nx>pageTags</span><span class=p>.</span><span class=nx>map</span><span class=p>(</span><span class=nx>x</span><span class=p>=&gt;</span><span class=nx>sitePosts</span><span class=p>.</span><span class=nx>filter</span><span class=p>(</span><span class=nx>y</span><span class=p>=&gt;</span><span class=nx>y</span><span class=p>.</span><span class=nx>title</span> <span class=o>!=</span> <span class=nx>page</span><span class=p>.</span><span class=nx>title</span>  <span class=o>&amp;&amp;</span> <span class=p>(</span><span class=nx>y</span><span class=p>.</span><span class=nx>tags</span><span class=p>.</span><span class=nx>indexOf</span><span class=p>(</span><span class=nx>x</span><span class=p>)</span> <span class=o>!=</span> <span class=o>-</span><span class=mi>1</span> <span class=o>||</span> <span class=nx>y</span><span class=p>.</span><span class=nx>date</span><span class=p>.</span><span class=nx>format</span><span class=p>(</span><span class=s1>&#39;MM/DD&#39;</span><span class=p>)</span> <span class=o>==</span> <span class=nx>page</span><span class=p>.</span><span class=nx>date</span><span class=p>.</span><span class=nx>format</span><span class=p>(</span><span class=s1>&#39;MM/DD&#39;</span><span class=p>)))).</span><span class=nx>reduce</span><span class=p>((</span><span class=nx>prev</span><span class=p>,</span><span class=nx>next</span><span class=p>)=&gt;{</span>
+<span class=ln>18</span>            <span class=k>return</span> <span class=nx>prev</span><span class=p>.</span><span class=nx>concat</span><span class=p>(</span><span class=nx>next</span><span class=p>);</span>
+<span class=ln>19</span>        <span class=p>},[]);</span>
+<span class=ln>20</span>        <span class=k>return</span> <span class=nx>shuffle</span><span class=p>(</span><span class=nb>Array</span><span class=p>.</span><span class=nx>from</span><span class=p>(</span><span class=k>new</span> <span class=nx>Set</span><span class=p>(</span><span class=nx>relatedPosts</span><span class=p>))).</span><span class=nx>slice</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=nx>limit</span><span class=p>);</span>
+<span class=ln>21</span>    <span class=p>}</span>
+<span class=ln>22</span><span class=o>%&gt;</span>
+<span class=ln>23</span><span class=o>&lt;%</span> <span class=kd>var</span> <span class=nx>post_list</span> <span class=o>=</span> <span class=nx>recommended_posts</span><span class=p>(</span><span class=nx>page</span><span class=p>,</span> <span class=nx>site</span><span class=p>,</span> <span class=nx>config</span><span class=p>.</span><span class=nx>recommended_posts</span><span class=p>.</span><span class=nx>limit</span><span class=p>)</span> <span class=o>%&gt;</span>
+<span class=ln>24</span><span class=o>&lt;%</span> <span class=k>if</span><span class=p>(</span><span class=nx>post_list</span><span class=p>.</span><span class=nx>length</span> <span class=o>&gt;</span> <span class=mi>0</span> <span class=o>&amp;&amp;</span> <span class=nx>config</span><span class=p>.</span><span class=nx>recommended_posts</span><span class=p>.</span><span class=nx>enable</span><span class=p>)</span> <span class=p>{</span> <span class=o>%&gt;</span>
+<span class=ln>25</span><span class=o>&lt;</span><span class=nx>div</span> <span class=kr>class</span><span class=o>=</span><span class=s2>&#34;recommended_posts&#34;</span><span class=o>&gt;</span>
+<span class=ln>26</span>    <span class=o>&lt;</span><span class=nx>h1</span><span class=o>&gt;&lt;%=</span> <span class=nx>config</span><span class=p>.</span><span class=nx>recommended_posts</span><span class=p>.</span><span class=nx>title</span> <span class=o>%&gt;&lt;</span><span class=err>/h1&gt;</span>
+<span class=ln>27</span>    <span class=o>&lt;</span><span class=nx>ul</span><span class=o>&gt;</span>
+<span class=ln>28</span>        <span class=o>&lt;%</span> <span class=nx>post_list</span><span class=p>.</span><span class=nx>forEach</span><span class=p>(</span><span class=kd>function</span><span class=p>(</span><span class=nx>link</span><span class=p>)</span> <span class=p>{</span> <span class=o>%&gt;</span>
+<span class=ln>29</span>        <span class=o>&lt;</span><span class=nx>li</span><span class=o>&gt;&lt;</span><span class=nx>a</span> <span class=nx>href</span><span class=o>=</span><span class=s2>&#34;&lt;%= link.permalink %&gt;&#34;</span><span class=o>&gt;&lt;%=</span> <span class=nx>link</span><span class=p>.</span><span class=nx>title</span> <span class=o>%&gt;&lt;</span><span class=err>/a&gt;&lt;/li&gt;</span>
+<span class=ln>30</span>        <span class=o>&lt;%</span> <span class=p>})</span> <span class=o>%&gt;</span>
+<span class=ln>31</span>    <span class=o>&lt;</span><span class=err>/ul&gt;</span>
+<span class=ln>32</span><span class=o>&lt;</span><span class=err>/div&gt;</span>
+<span class=ln>33</span><span class=o>&lt;%</span> <span class=p>}</span> <span class=o>%&gt;</span>
+</code></pre></div><p>代码非常直白，按照标签和日期两种策略筛选出文章，打乱顺序后从中提取出若干个返回，而剩下的工作，就是将其渲染到页面中。在这里，博主单独定义了一个模板文件，所以，我们在博客的适当位置引入即可，博主是放在博客结束以后的位置：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-HTML data-lang=HTML><span class=ln>1</span><span class=p>&lt;</span><span class=nt>div</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;post-content&#34;</span> <span class=na>id</span><span class=o>=</span><span class=s>&#34;post-content&#34;</span> <span class=na>itemprop</span><span class=o>=</span><span class=s>&#34;postContent&#34;</span><span class=p>&gt;</span>
+<span class=ln>2</span>    <span class=err>&lt;</span>%- post.content %&gt;
+<span class=ln>3</span>    <span class=err>&lt;</span>%- partial(&#39;post/recommended_posts&#39;) %&gt;
+<span class=ln>4</span><span class=p>&lt;/</span><span class=nt>div</span><span class=p>&gt;</span>
+</code></pre></div><p>最终实现的效果如下图所示：</p>
+<p><figure>
+<a href=https://s1.ax1x.com/2020/06/16/NibBjJ.png>
+<img src=https://s1.ax1x.com/2020/06/16/NibBjJ.png loading=lazy alt=本文实现的相关文章推荐功能>
+</a>
+<figcaption>本文实现的相关文章推荐功能</figcaption>
+</figure></p>
+<p>当然，当你看到这篇博客的时候，你已经看到博主为你推荐的内容了，是否有兴趣继续读下去呢？如果这样的话，就说明这两个内容是相关的。而基于日期的推荐，即所谓的“去年今日”，它本身的相关性可能并不强，但可以让你产生一种强烈的对比感，原来，这一天我是这样度过的啊。好了，这就是这篇博客的内容啦，晚安～</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/hexo/>Hexo</a>
+<a href=/tags/%E6%8E%A8%E8%8D%90/>推荐</a>
+<a href=/tags/%E6%8F%92%E4%BB%B6/>插件</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/828223375/>
+<div class=article-details>
+<h2 class=article-title>为 Hexo 开发一个网易云音乐的文章插件</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/1417719502/>
+<div class=article-details>
+<h2 class=article-title>使用 jsDelivr 为 Hexo 博客提供高效免费的CDN加速</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/1113828794/>
+<div class=article-details>
+<h2 class=article-title>基于 Travis CI 实现 Hexo 在 Github 和 Coding 的同步部署</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/450254281/>
+<div class=article-details>
+<h2 class=article-title>迁移Hexo博客到Google渐进式Web应用(PWA)</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E5%9C%A8hexo%E4%B8%AD%E4%B8%BA%E6%96%87%E7%AB%A0%E8%87%AA%E5%8A%A8%E6%B7%BB%E5%8A%A0%E7%89%88%E6%9D%83%E4%BF%A1%E6%81%AF%E5%A3%B0%E6%98%8E%E6%A8%A1%E5%9D%97/>
+<div class=article-details>
+<h2 class=article-title>在 Hexo 中为文章自动添加版权信息声明模块</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/478946932/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/%E8%AF%AD%E6%B3%95/ class=font_size_1>
+语法
+</a>
+<a href=/tags/%E5%8D%95%E6%9C%BA%E6%B8%B8%E6%88%8F/ class=font_size_1>
+单机游戏
+</a>
+<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
+部署
+</a>
+<a href=/tags/dynamic-proxy/ class=font_size_1>
+Dynamic Proxy
+</a>
+<a href=/tags/%E8%AE%AD%E7%BB%83/ class=font_size_1>
+训练
+</a>
+<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
+异步
+</a>
+<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
+对象池
+</a>
+<a href=/tags/%E5%B9%B6%E5%8F%91/ class=font_size_1>
+并发
+</a>
+<a href=/tags/%E7%88%B1%E6%83%85/ class=font_size_2>
+爱情
+</a>
+<a href=/tags/%E4%BD%90%E8%97%A4%E5%81%A5/ class=font_size_1>
+佐藤健
+</a>
+<a href=/tags/cg/ class=font_size_1>
+CG
+</a>
+<a href=/tags/%E6%96%87%E4%BB%B6/ class=font_size_1>
+文件
+</a>
+<a href=/tags/rpg/ class=font_size_1>
+RPG
+</a>
+<a href=/tags/%E7%9F%AB%E6%83%85/ class=font_size_1>
+矫情
+</a>
+<a href=/tags/hangfire/ class=font_size_1>
+Hangfire
+</a>
+<a href=/tags/%E6%97%B6%E5%8C%BA/ class=font_size_1>
+时区
+</a>
+<a href=/tags/retrofit/ class=font_size_1>
+Retrofit
+</a>
+<a href=/tags/excel/ class=font_size_1>
+Excel
+</a>
+<a href=/tags/html5/ class=font_size_2>
+HTML5
+</a>
+<a href=/tags/%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/ class=font_size_1>
+虚拟摇杆
+</a>
+<a href=/tags/2014/ class=font_size_1>
+2014
+</a>
+<a href=/tags/%E6%89%A9%E5%B1%95/ class=font_size_4>
+扩展
+</a>
+<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/ class=font_size_1>
+游戏引擎
+</a>
+<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
+装饰器
+</a>
+<a href=/tags/%E5%8D%95%E4%BD%8D/ class=font_size_1>
+单位
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

@@ -1,0 +1,537 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="* Tips38：通过 Task 实例的 ConfigureAwait()方法，可以设置使用 await 时同步上下文的行为，默认情况下，await 操作符会尝试捕捉同步上下文，并在其中执行代码，即调度器会向 UI 线程投入成千上百个后续操作任务，这会使用它的消息循环来异步地执行这些任务，当我们不需要在 UI 线程中运行这些代码时，向 ConfigureAwait 方法传入 false 将会是一个更高效的方案;* Tips51：ParallelEnumerable 类含有 PLINQ 的全部逻辑，并且作为 IEnumerable 集合功能的一组扩展方法，默认情况下结果会被合并单个线程中，我们可以通过 ForAll 方法来指定处理逻辑，此时它们使用的是同一个线程，将跳过合并结果的过程，除了 AsParallel()方法，我们同样可以使用 AsSequential()方法，来使得 PLINQ 查询以顺序方式执行(相对于并行);* Tips13：SemaphoreSlim 是 Semaphore 的轻量级版本，用以限制同时访问同一个资源的线程数量，超过该数量的线程需要等待，直到之前的线程中某一个完成工作，并调用 Release()方法发出信号，其使用了混合模式，而 Semaphore 则使用内核模式，可以在跨程序同步的场景下使用"><title>《C#多线程编程实战》读书笔记</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/345410188/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="《C#多线程编程实战》读书笔记">
+<meta property="og:description" content="* Tips38：通过 Task 实例的 ConfigureAwait()方法，可以设置使用 await 时同步上下文的行为，默认情况下，await 操作符会尝试捕捉同步上下文，并在其中执行代码，即调度器会向 UI 线程投入成千上百个后续操作任务，这会使用它的消息循环来异步地执行这些任务，当我们不需要在 UI 线程中运行这些代码时，向 ConfigureAwait 方法传入 false 将会是一个更高效的方案;* Tips51：ParallelEnumerable 类含有 PLINQ 的全部逻辑，并且作为 IEnumerable 集合功能的一组扩展方法，默认情况下结果会被合并单个线程中，我们可以通过 ForAll 方法来指定处理逻辑，此时它们使用的是同一个线程，将跳过合并结果的过程，除了 AsParallel()方法，我们同样可以使用 AsSequential()方法，来使得 PLINQ 查询以顺序方式执行(相对于并行);* Tips13：SemaphoreSlim 是 Semaphore 的轻量级版本，用以限制同时访问同一个资源的线程数量，超过该数量的线程需要等待，直到之前的线程中某一个完成工作，并调用 Release()方法发出信号，其使用了混合模式，而 Semaphore 则使用内核模式，可以在跨程序同步的场景下使用">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/345410188/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="读书"><meta property="article:tag" content="多线程"><meta property="article:tag" content="笔记"><meta property="article:tag" content="编程"><meta property="article:published_time" content="2018-01-07T21:34:36+00:00"><meta property="article:modified_time" content="2018-01-07T21:34:36+00:00">
+<meta name=twitter:title content="《C#多线程编程实战》读书笔记">
+<meta name=twitter:description content="* Tips38：通过 Task 实例的 ConfigureAwait()方法，可以设置使用 await 时同步上下文的行为，默认情况下，await 操作符会尝试捕捉同步上下文，并在其中执行代码，即调度器会向 UI 线程投入成千上百个后续操作任务，这会使用它的消息循环来异步地执行这些任务，当我们不需要在 UI 线程中运行这些代码时，向 ConfigureAwait 方法传入 false 将会是一个更高效的方案;* Tips51：ParallelEnumerable 类含有 PLINQ 的全部逻辑，并且作为 IEnumerable 集合功能的一组扩展方法，默认情况下结果会被合并单个线程中，我们可以通过 ForAll 方法来指定处理逻辑，此时它们使用的是同一个线程，将跳过合并结果的过程，除了 AsParallel()方法，我们同样可以使用 AsSequential()方法，来使得 PLINQ 查询以顺序方式执行(相对于并行);* Tips13：SemaphoreSlim 是 Semaphore 的轻量级版本，用以限制同时访问同一个资源的线程数量，超过该数量的线程需要等待，直到之前的线程中某一个完成工作，并调用 Release()方法发出信号，其使用了混合模式，而 Semaphore 则使用内核模式，可以在跨程序同步的场景下使用">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+读书笔记
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/345410188/>《C#多线程编程实战》读书笔记</a>
+</h2>
+<h3 class=article-subtitle>
+* Tips38：通过 Task 实例的 ConfigureAwait()方法，可以设置使用 await 时同步上下文的行为，默认情况下，await 操作符会尝试捕捉同步上下文，并在其中执行代码，即调度器会向 UI 线程投入成千上百个后续操作任务，这会使用它的消息循环来异步地执行这些任务，当我们不需要在 UI 线程中运行这些代码时，向 ConfigureAwait 方法传入 false 将会是一个更高效的方案;* Tips51：ParallelEnumerable 类含有 PLINQ 的全部逻辑，并且作为 IEnumerable 集合功能的一组扩展方法，默认情况下结果会被合并单个线程中，我们可以通过 ForAll 方法来指定处理逻辑，此时它们使用的是同一个线程，将跳过合并结果的过程，除了 AsParallel()方法，我们同样可以使用 AsSequential()方法，来使得 PLINQ 查询以顺序方式执行(相对于并行);* Tips13：SemaphoreSlim 是 Semaphore 的轻量级版本，用以限制同时访问同一个资源的线程数量，超过该数量的线程需要等待，直到之前的线程中某一个完成工作，并调用 Release()方法发出信号，其使用了混合模式，而 Semaphore 则使用内核模式，可以在跨程序同步的场景下使用
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2018-01-07</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 15 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>本文是一篇读书笔记，由<a class=link href=https://book.douban.com/subject/26574917/ target=_blank rel=noopener>《C#多线程编程实战》</a>一书中的内容整理而来，主要梳理了.NET 中多线程编程相关的知识脉络，从 Thread、ThreadPool、Task、async/await、并发集合、Parallel、PLINQ 到 Rx 及异步 I/O 等内容，均有所覆盖。为了帮助大家理解本文内容，首先给出博主在阅读该书过程中绘制的思维导图，大家可以根据个人需要针对性的查漏补缺。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz68k7w2o1j20m714q3zh.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz68k7w2o1j20m714q3zh.jpg loading=lazy alt=《多线程编程实战》思维导图>
+</a>
+<figcaption>《多线程编程实战》思维导图</figcaption>
+</figure></p>
+<h1 id=线程基础>线程基础</h1>
+<ul>
+<li>Tips1：暂停线程，即通过 Thread.Sleep()方法让线程等待一段时间而不用消耗操作系统资源。当线程处于休眠状态时，它会占用尽可能少的 CPU 时间。</li>
+<li>Tips2：线程等待，即通过 Join()方法等待另一个线程结束，因为不知道执行所需要花费的时间，此时 Thread.Sleep()方法无效，并且第一个线程等待时是处于阻塞状态的。</li>
+<li>Tips3：终止线程，调用 Abort()方法会给线程注入 ThreadAbortException 异常，该异常会导致程序崩溃，且该方法不一定总是能终止线程，目标线程可以通过处理该异常并调用 Thread.ResetAbort()方法来拒绝被终止，因此不推荐使用 Abort()方法来终止线程，理想的方式是通过 CancellationToken 来实现线程终止。</li>
+<li>Tips4：线程优先级，线程优先级决定了该线程可占用多少 CPU 时间，通过设置 IsBackground 属性可以指定一个线程是否为后台线程，默认情况下，显式创建的线程都是前台线程。其主要区别是：进程会等待所有的前台线程完成后再结束工作，但是如果只剩下后台线程，则会直接结束工作。需要注意的是，如果程序定义了一个不会赞成的前台线程，主程序并不会正常结束。</li>
+<li>Tips5：向线程传递参数，可以通过 ThreadStart 或者 lambda 表达式来向一个线程传递参数，需要注意的是，由 lambda 表达式带来的闭包问题</li>
+<li>Tips6：竞争条件是多线程环境中非常常见的导致错误的原因，通过 lock 关键字锁定一个静态对象(static&readonly)时，需要访问该对象的所有其它线程都会处于阻塞状态，并等待直到该对象解除锁定，这可能会导致严重的性能问题，</li>
+<li>Tips7：发生死锁的原因是锁定的静态对象永远无法解除锁定，通常 Monitor 类用以解除死锁，而 lock 关键字用以创建死锁，Monitor 类的 TryEnter()方法可以用以检测静态对象是否可以解锁，lock 关键字本质上是 Monitor 类的语法糖。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=kt>bool</span> <span class=n>acquiredLock</span> <span class=p>=</span> <span class=k>false</span><span class=p>;</span>
+<span class=ln> 2</span><span class=k>try</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>  <span class=n>Monitor</span><span class=p>.</span><span class=n>Enter</span><span class=p>(</span><span class=n>lockObject</span><span class=p>,</span> <span class=k>ref</span> <span class=n>acquiredLock</span><span class=p>)</span>
+<span class=ln> 5</span><span class=p>}</span>
+<span class=ln> 6</span><span class=k>finally</span>
+<span class=ln> 7</span><span class=p>{</span>
+<span class=ln> 8</span>  <span class=k>if</span><span class=p>(</span><span class=n>acquiredLock</span><span class=p>)</span>
+<span class=ln> 9</span>  <span class=p>{</span>
+<span class=ln>10</span>    <span class=n>Monitor</span><span class=p>.</span><span class=n>Exit</span><span class=p>(</span><span class=n>lockObject</span><span class=p>)</span>
+<span class=ln>11</span>  <span class=p>}</span>
+<span class=ln>12</span><span class=p>}</span>
+</code></pre></div><ul>
+<li>Tips8：不要在线程中抛出异常，而是在线程代码中使用 try……catch 代码块。</li>
+</ul>
+<h1 id=线程同步>线程同步</h1>
+<ul>
+<li>Tips9：无须共享对象，则无须进行线程同步，通过重新设计程序来移除共享状态，从而避免复杂的同步构造；使用原子操作，这意味着一个操作只占用一个量子的时间，一次就可以完成，并且只有当前操作完成后，其它线程方可执行其它操作，因此，无须实现其它线程等待当前操作完成，进而避免了使用锁，排除了死锁。</li>
+<li>Tips10：为了实现线程同步，我们不得不使用不同的方式来协调线程，方式之一是将等待的线程设为阻塞，当线程处于阻塞状态时，会占用尽可能少的 CPU 时间，然而这意味着会引入至少一次的上下文切换。上下文切换，是指操作系统的线程调度器，该调度器会保存等待的线程状态，并切换到另一个线程，依次恢复等待的线程状态，而这需要消耗更多的资源。</li>
+<li>Tips11：线程调度模式，当线程挂起很长时间时，需要操作系统内核来阻止线程使用 CPU 时间，这种模式被称为内核模式；当线程只需要等待一小段时间，而不需要将线程切换到阻塞状态，这种模式被称为用户模式；先尝试按照用户模式进行等待，如线程等待足够长时间，则切换到阻塞状态以节省 CPU 资源，这种模式被称为混合模式。</li>
+<li>Tips12：Mutex 是一种原始的同步方法，其只对一个线程授予对共享资源的独占访问，Mutex 可以在不同的程序中同步线程。</li>
+<li>Tips13：SemaphoreSlim 是 Semaphore 的轻量级版本，用以限制同时访问同一个资源的线程数量，超过该数量的线程需要等待，直到之前的线程中某一个完成工作，并调用 Release()方法发出信号，其使用了混合模式，而 Semaphore 则使用内核模式，可以在跨程序同步的场景下使用。</li>
+<li>Tips14：AutoResetEvent 类用以从一个线程向另一个线程发送通知，该类可以通知等待的线程有某个事件发生，其实例在默认情况下初始状态为 unsignaled，调用 WaitOne()方法时将会被阻塞，直到我们调用了 Set 方法；相反地，如果初始状态为 signaled，调用 WaitOne()方法时将会被立即处理，需要我们再调用一次 Set 方法，以便向其它线程发出信号。</li>
+<li>Tips15：ManualResetEventSlim 类是使用混合模式的线程信号量，相比使用内核模式的 AutoResetEvent 类更好(因为等待时间不能太长)，AutoResetEvent 像一个旋转门，一次仅允许一个人通过，而 ManualResetEventSlim 是 ManualResetEvent 的混合版本，一直保持大门开启直到手动屌用 Reset 方法。</li>
+<li>Tips16：EventWaitHandle 类是 AutoResetEvent 和 ManualResetEvent 的基类，可以通过调用其 WaitOne()方法来阻塞线程，直到 Set()方法被调用，它有两种状态，即终止态和非终止态，这两种状态可以相互转换，调用 Set()方法可将其实例设为终止态，调用 Reset()方法可以将其实例设为非终止态。</li>
+<li>Tips17：CountdownEvent 类可以用以等到直到一定数量的操作完成，需要注意的是，如果其实例方法 Signal()没有达到指定的次数，则其实例方法 Wait()将一直等待。所以，请确保使用 CountdownEvent 时，所有线程完成后都要调用 Signal()方法。</li>
+<li>Tips18：ReaderWriterLockSlim 用以创建一个线程安全的机制，在多线程中对一个集合进行读写操作，ReaderWriterLockSlim 代表了一个管理资源访问的锁，允许多个线程同时读取，以及独占写。其中，读锁允许多线程读取数据，写锁在被释放前会阻塞其它线程的所有操作。</li>
+<li>Tips19：SpinWait 类是一个混合同步构造，被设计为使用用户模式等待一段时间，然后切换到内核模式以节省 CPU 时间。</li>
+</ul>
+<h1 id=使用线程池>使用线程池</h1>
+<ul>
+<li>Tips20：volatile 关键字指出一个字段可能会被同时执行的多个线程修改，声明为 volatile 的字段不会被编译器和处理器优化为只能被单线程访问。</li>
+<li>Tips21：创建线程是昂贵的操作，所以为每个短暂的异步操作创建线程会产生显著的开销。线程池的用途是执行运行时间短的操作，使用线程池可以减少并行度耗费及节省操作系统资源。在 ASP.NET 应用程序中使用线程池时要相当小心，ASP.NET 基础切实使用自己的线程池，如果在线程池中浪费所有的工作者线程，Web 服务器将不能够服务新的请求，在 ASP.NET 中只推荐使用 I/O 密集型的异步操作，因为其使用了一个不同的方式，叫做 I/O 线程。</li>
+<li>Tips22：APM，即异步编程模型，是指使用 BeginXXX/EndXXX 和 IAsyncResult 对象等方式，其通过调用 BeginInvoke 方法返回 IAsyncResult 对象，然后通过调用 EndInvoke 方法返回结果，我们可通过轮询 IAsyncResult 对象的 IsCompleted 或者调用 IAsyncResult 对象的 AsyncWaitHandle 属性的 WaitOne()方法来等待直到操作完成。</li>
+<li>Tips23：ThreadPool.RegisterWaitForSingleObject()方法允许我们将回调函数放入线程池中的队列中，当提供的等待事件处理器收到信号或发生超时时，该回调函数将被调用，这做鱼我们为线程池中的操作实现超时功能。具体思路是：ManualResetEvent + CancellationToken，当接收到 ManualResetEvent 对象的信号时处理超时，或者是使用 CancellationToken 来处理超时。</li>
+<li>Tips24：CancellationToken 是.NET4.0 中被引入的实现异步操作的取消操作的事实标准，我们可以使用三种方式来实现取消过程，即轮询 IsCancellationRequested 属性、抛出 OperationCanceledException 异常、为 CancellationToken 注册一个回调函数。</li>
+<li>Tips25：Timer 对象用以在线程池中创建周期性调用的异步操作。</li>
+<li>Tips26：BackgroundWorker 组件，是典型的基于事件的异步模式，即 EAP，当通过 RunWorkerAsync 启动一个异步操作时，DoWork 事件所订阅的事件处理器，将会运行在线程池中，如果需要需要取消异步操作，则可以调用 CancelAsync()方法。</li>
+</ul>
+<h1 id=使用任务并行库>使用任务并行库</h1>
+<ul>
+<li>Tips27：TPL 即任务并行库，在.NET 4.0 中被引入，目的是解决 APM 和 EAP 中获取结果和传播异常的问题，TPL 在.NET4.5 中进行了调整，使其在使用上更简单，它可以理解为线程池之上的又一个抽象层，对程序员隐藏了与线程池交互的底层代码，并提供了更方便的细粒度的 API。TPL 的核心概念是任务，一个任务代表了一个异步操作，该操作可以通过多种方式运行，可以使用或者不使用独立线程运行。TPL 相比之前的模式，一个关键优势是其具有用于组合任务的便利的 API。</li>
+<li>Tips28：Task.Run 是 Task.Factory.StartNew 的一个快捷方式，后者有附加的选项，在无特殊需求的情况下，可以直接使用 Task.Run，通过 TaskScheduler，我们可以控制任务的运行方式。</li>
+<li>Tips29：使用 Task 实例的 Start 方法启动任务并等待结果，该任务会被放置在线程池中并且主线程会等待，直到任务返回前一直处于阻塞状态；使用 Task 实例的 RunSynchronously 方法启动任务，该任务是运行在主线程中，这是一个非常好的优化，可以避免使用线程池来执行非常短暂的操作；我们可以通过轮询 Task 实例的状态信息来判断一个任务是否执行结束。</li>
+<li>Tips30：通过 Task 实例的 ContinueWith 方法可以为任务设置一个后续操作，通过 TaskContinuationOptions 选项来指定后续任务以什么样的方式执行。</li>
+<li>Tips31：通过 Task 实例的 FromAsync 可以实现 APM 到 Task 的转换</li>
+<li>Tips32：通过 TaskCompletionSource 可以实现 EAP 到 Task 的转换</li>
+<li>Tips33：TaskScheduler 是一个非常重要的抽象，该组件实际上负责如何执行任务，默认的任务调度程序将任务放置在线程池的工作线程中。为了避免死锁，绝对不要通过任务调度程序在 UI 线程中使用同步操作，请使用 ContinueWith 或 async/await 方法。</li>
+</ul>
+<h1 id=使用-c-60>使用 C# 6.0</h1>
+<ul>
+<li>Tips34：异步函数是 C# 5.0 引入的语言特性，它是基于 TPL 之上的更高级别抽象，真正简化了异步编程。要创建一个异步函数，首先需要使用 async 关键字标注一个方法，其次异步函数必须返回 Task 或 Task 类型，可以使用 async void 的方法，但是更推荐 async Task 的方法，使用 async void 的方法的唯一合理的地方就是在程序中使用顶层 UI 控制器事件处理器的时候，在使用 async 关键字标注的方法内部，可以使用 await 操作符，该操作符可与 TPL 任务一起工作，并获取该任务中异步操作的结果，在 async 方法外部不能使用 await 关键字，否则会有编译错误，异步函数代码中至少要拥有一个 await 关键字。</li>
+<li>Tips35：在 Windows GUI 或 ASP.NET 等环境中不推荐使用 Task.Wait 和 Task.Result，因为非常有可能会造成死锁。
+async 可以和 lambda 表达式联用，在表达式体中应该至少含有一个 await 关键字标示，因为 lambda 表达式的类型无法通过自身推断，所以必须显式地向 C#编译器指定类型。</li>
+<li>Tips36：异步并不总是意味着并行执行</li>
+<li>Tips37：单个异步操作可以使用 try……catch 来捕获异常，而对于一个以上的异步操作，使用 try…catch 仅仅可以从底层的 AggregateException 对象中获得第一个异常，为了获得所有的异常，可以使用 AggregateException 的 Flatten()方法将层级异常放入一个列表，并从中提取出所有的底层异常。</li>
+<li>Tips38：通过 Task 实例的 ConfigureAwait()方法，可以设置使用 await 时同步上下文的行为，默认情况下，await 操作符会尝试捕捉同步上下文，并在其中执行代码，即调度器会向 UI 线程投入成千上百个后续操作任务，这会使用它的消息循环来异步地执行这些任务，当我们不需要在 UI 线程中运行这些代码时，向 ConfigureAwait 方法传入 false 将会是一个更高效的方案。</li>
+<li>Tips39：async void 方法会导致异常处理方法，会放置到当前的同步上下文中，因此线程池中未被处理的异常会终结整个进程，使用 AppDomain.UnhandledException 事件可以拦截未处理的异常，但不能从拦截的地方恢复进程，async void 的 lambda 表达式，同 Action 类型是兼容的，强烈建议仅仅在 UI 事件处理器中使用 async void 方法，在其他情况下，请使用返回 Task 或者 Task 的方法。</li>
+</ul>
+<h1 id=使用并行集合>使用并行集合</h1>
+<ul>
+<li>Tips40：ConcurrentQueue 使用了原子的比较和交换(CAS)，以及 SpinWait 来保证线程安全，它实现了一个先进先出(FIFO)的集合，这意味着元素出队列的顺序与加速队列的顺序是一致的，可以调用 Enqueue 方法向对接中加入元素，调用 TryDequeue 方法试图取出队列中第一个元素，调用 TryPeek 方法试图得到第一个元素但并不从队列中删除该元素。</li>
+<li>Tips41：ConcurrentStack 的实现同样没有使用锁，仅采用了 CAS 操作，它是一个后进先出(LIFO)的集合，这意味着最后添加的元素会先返回，可以调用 Push 和 PushRange 方法添加元素，使用 TryPop 和 TryPopRange 方法获取元素，使用 TryPeek 方法检查元素。</li>
+<li>Tips42：ConcurrentBag 是一个支持重复元素的无序集合，它针对以下情况进行了优化，即多个线程以这样的方式工作：每个线程产生和消费其自身的任务，极少发生线程间的交互(因为要交互就要使用锁)。可以调用 Add 方法添加元素，调用 TryPeek 方法检查元素，调用 TryTake 方法获取元素。</li>
+<li>Tips43：ConcurrentDictionary 是一个线程安全的字典集合的实现，对于读操作无需使用锁，对于写操作则需要使用锁，该并发字典使用多个锁，在字典桶之上实现了一个细粒度的锁模型(使用锁的常规字典称为粗粒度锁)，参数 concurrentLevel 可以在构造函数中定义锁的数量。这意味着预估的线程数量将并发地更新该字典。由于并发字典使用锁，如无必要请避免使用以下操作：Count、IsEmpty、Keys、Values、CopyTo 及 ToArray，因为需要获取该字典中的所有锁。</li>
+<li>Tips44：BlockingCollection 是一个针对 IProducerConsumerCollection 泛型接口实现的高级封装，它有很多先进的功能来实现管道场景，即当你有一些步骤需要使用之前步骤运行的结果时。BlockingCollection 类支持分块、调整内部集合容量、取消集合操作、从多个块集合中获取元素等。</li>
+<li>Tips45：对 BlockingCollection 进行迭代时，需要注意的是，使用 GetConsumingEnumerable()进行迭代，因为虽然 BlockingCollection 实现了 IEnumerable 接口，但是它默认的行为是表示集合的“快照”，这不是我们期望的行为。</li>
+</ul>
+<h1 id=使用-plinq>使用 PLINQ</h1>
+<ul>
+<li>Tips46：将程序分割成一组任务并使用不同的线程来运行不同的任务，这种方式被称为任务并行
+将数据分割成较小的数据块，对这些数据进行并行计算，然后聚合这些计算结果，这种编程模型称为数据并行</li>
+<li>Tips47：结构并行确实更易维护，应该尽可能地使用，但它并不是万能的。通常有很多情况我们是不能简单地使用结构并行，那么以非结构化的方式使用 TPL 任务并行也是完全可以的。
+Parallel 类中的 Invoke 方法是最简单的实现多任务并行的方法，Invoke 方法会阻塞其它线程直到所有线程都完成。</li>
+<li>Tips48：Parallel 类中的 For 和 ForEach 方法可以定义并行循环，通过传入一个委托来定义每个循环项的行为，并得到一个结果来说明循环是否成功完成，ParallelOptions 类可以为并行循环定义最大并行数，使用 CollectionToken 取消任务，使用 TaskScheduler 类调度任务。</li>
+<li>Tips49：ParallelLoopState 可以用于从循环中跳出或者检查循环状态，它有两种方式：Break 和 Stop，Stop 是指循环停止处理任何工作，而 Break 是指停止其之后的迭代，继续保持其之前的迭代工作。</li>
+<li>Tips50：同 Task 类似，当使用 AsParallel()方法并行查询时，我们将得到 AggregateException，它将包含运行 PLINQ 期间发生的所有异常，我们可以使用 Flatten()方法和 Handle()方法来处理这些异常。</li>
+<li>Tips51：ParallelEnumerable 类含有 PLINQ 的全部逻辑，并且作为 IEnumerable 集合功能的一组扩展方法，默认情况下结果会被合并单个线程中，我们可以通过 ForAll 方法来指定处理逻辑，此时它们使用的是同一个线程，将跳过合并结果的过程，除了 AsParallel()方法，我们同样可以使用 AsSequential()方法，来使得 PLINQ 查询以顺序方式执行(相对于并行)</li>
+<li>Tips52：PLINQ 中提供了丰富用以 PLINQ 查询的选项，例如 WithCancellation()方法用以取消查询，这将导致引发 OperationCanceledException 异常，并取消剩余的工作；例如 WithDegreeOfParallelism()方法用以指定执行查询时实际并行分割数，可以决定并行执行会占用多少资源及其性能如何；例如 WithExecutionMode()可以重载查询执行的模式，即我们可以决定选择以顺序执行还是并行执行的方式去执行查询；例如 WithMergeOptions()方法可以用以调整对查询结果的处理，默认 PLINQ 会将结果合并到单个线程中，因此在查询结果返回前，会缓存一定数量的结果，当发现查询花费大量时间时，更合理的方式是关闭结果缓存从而尽可能快地得到结果；例如 AsOrdered()方法，用以告诉 PLINQ 我们希望按照集合中的顺序进行处理(并行条件下，集合中的项有可能不是按顺序被处理的)</li>
+</ul>
+<h1 id=使用异步-io>使用异步 I/O</h1>
+<ul>
+<li>Tips53：异步 I/O，对服务器而言，可伸缩性是最高优先级，这意味着单个用户消耗的资源越少越好，如果为每个用户创建多个线程，则可伸缩性并不好，在 I/O 密集型的场景中需要使用异步，因为不需要 CPU 工作，其瓶颈在磁盘上，这种执行 I/O 任务的方式成为 I/O 线程。
+在异步文件读写中，FileOptions.Asynchronous 是一个非常重要的选项，无论有无此参数都可以，以异步的方式使用该文件，区别是前者仅仅是在线程池中异步委托调用，而后者可以对 FileStream 垒使用异步 I/O。</li>
+<li>Tips54：对 HttpListener 类，我们可以通过 GetContextasync()方法来异步地获取上下文。</li>
+<li>Tips55：对数据库而言，我们可以通过 OpenAsync()、ExecuteNonQueryAsync()等方法异步地执行 SQL 语句。</li>
+</ul>
+<p>好了，以上就是这篇读书笔记的主要内容啦，听说掌握了这 55 条 Tips 的人，都敢在简历上写”精通多线程编程“，哈哈，晚安啦，各位！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E8%AF%BB%E4%B9%A6/>读书</a>
+<a href=/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/>多线程</a>
+<a href=/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
+<a href=/tags/%E7%BC%96%E7%A8%8B/>编程</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/2171683728/>
+<div class=article-details>
+<h2 class=article-title>函数式编程常用术语</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3677280829/>
+<div class=article-details>
+<h2 class=article-title>《Web API 的设计与开发》读书笔记</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3657008967/>
+<div class=article-details>
+<h2 class=article-title>生命的朝圣者</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/2275646954/>
+<div class=article-details>
+<h2 class=article-title>你了解爱的艺术吗？</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/html5%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E6%95%B4%E7%90%86/>
+<div class=article-details>
+<h2 class=article-title>HTML5 游戏开发技术基础整理</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/345410188/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#线程基础>线程基础</a></li>
+<li><a href=#线程同步>线程同步</a></li>
+<li><a href=#使用线程池>使用线程池</a></li>
+<li><a href=#使用任务并行库>使用任务并行库</a></li>
+<li><a href=#使用-c-60>使用 C# 6.0</a></li>
+<li><a href=#使用并行集合>使用并行集合</a></li>
+<li><a href=#使用-plinq>使用 PLINQ</a></li>
+<li><a href=#使用异步-io>使用异步 I/O</a></li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/dynamic/ class=font_size_1>
+Dynamic
+</a>
+<a href=/tags/%E5%BE%AE%E5%8D%9A/ class=font_size_3>
+微博
+</a>
+<a href=/tags/polly/ class=font_size_1>
+Polly
+</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1/ class=font_size_1>
+服务
+</a>
+<a href=/tags/wsl/ class=font_size_2>
+WSL
+</a>
+<a href=/tags/hashset/ class=font_size_1>
+HashSet
+</a>
+<a href=/tags/%E7%BC%93%E5%AD%98/ class=font_size_5>
+缓存
+</a>
+<a href=/tags/%E5%8A%A8%E6%BC%AB/ class=font_size_1>
+动漫
+</a>
+<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
+加密
+</a>
+<a href=/tags/%E5%9B%9E%E5%BF%86/ class=font_size_1>
+回忆
+</a>
+<a href=/tags/json/ class=font_size_1>
+JSON
+</a>
+<a href=/tags/%E4%BA%B2%E6%83%85/ class=font_size_1>
+亲情
+</a>
+<a href=/tags/%E5%AD%A4%E7%8B%AC/ class=font_size_1>
+孤独
+</a>
+<a href=/tags/visual-studio/ class=font_size_1>
+Visual Studio
+</a>
+<a href=/tags/web-api/ class=font_size_1>
+Web API
+</a>
+<a href=/tags/%E9%80%9A%E4%BF%A1/ class=font_size_2>
+通信
+</a>
+<a href=/tags/%E6%A2%A6%E6%83%B3/ class=font_size_3>
+梦想
+</a>
+<a href=/tags/%E7%A9%B9%E4%B9%8B%E6%89%89/ class=font_size_1>
+穹之扉
+</a>
+<a href=/tags/%E5%BE%AE%E4%BF%A1/ class=font_size_1>
+微信
+</a>
+<a href=/tags/%E5%8F%AF%E8%A7%86%E5%8C%96/ class=font_size_2>
+可视化
+</a>
+<a href=/tags/%E9%85%8D%E7%BD%AE/ class=font_size_1>
+配置
+</a>
+<a href=/tags/%E5%92%8C%E5%B9%B3/ class=font_size_1>
+和平
+</a>
+<a href=/tags/%E5%BD%B1%E8%AF%84/ class=font_size_10>
+影评
+</a>
+<a href=/tags/%E6%84%9F%E6%82%9F/ class=font_size_14>
+感悟
+</a>
+<a href=/tags/%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83/ class=font_size_1>
+鬼滅の刃
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

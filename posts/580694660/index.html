@@ -1,0 +1,663 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="紧接上一篇博客中的思路，这次我们来说说事件总线(EventBus)，回首向来，关于这个话题，我们可能会联想到发布-订阅模式、观察者模式、IO"><title>利用 MySQL 的 Binlog 实现数据同步与订阅(中)：RabbitMQ 篇</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/580694660/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="利用 MySQL 的 Binlog 实现数据同步与订阅(中)：RabbitMQ 篇">
+<meta property="og:description" content="紧接上一篇博客中的思路，这次我们来说说事件总线(EventBus)，回首向来，关于这个话题，我们可能会联想到发布-订阅模式、观察者模式、IO">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/580694660/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="RabbitMQ"><meta property="article:tag" content="EventBus"><meta property="article:tag" content="事件订阅"><meta property="article:published_time" content="2020-07-15T14:39:07+00:00"><meta property="article:modified_time" content="2020-07-15T14:39:07+00:00">
+<meta name=twitter:title content="利用 MySQL 的 Binlog 实现数据同步与订阅(中)：RabbitMQ 篇">
+<meta name=twitter:description content="紧接上一篇博客中的思路，这次我们来说说事件总线(EventBus)，回首向来，关于这个话题，我们可能会联想到发布-订阅模式、观察者模式、IO">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+数据存储
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/580694660/>利用 MySQL 的 Binlog 实现数据同步与订阅(中)：RabbitMQ 篇</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2020-07-15</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 13 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>紧接上一篇博客中的思路，这次我们来说说事件总线(EventBus)，回首向来，关于这个话题，我们可能会联想到发布-订阅模式、观察者模式、IObservable与 IObserver、消息队列等等一系列的概念。所以，当我们尝试着去解释这个概念的时候，它到底是什么呢？是一种设计模式？是一组 API 接口？还是一种新的技术？显而易见，发布-订阅模式和观察者模式都是设计模式，而 IObservable与 IObserver、消息队列则是具体的实现方式，就像你可以用委托或者事件去实现一个观察者模式，而 Redis 里同样内置了发布-订阅模型，换言之，这是抽象与具体的区别，消息队列可以用来实现 EventBus，而 EventBus 主要的用途则是系统间的解耦，说到解耦，你可能会对观察者模式和发布-订阅模式这两种模式感到困惑，因为它们实在是太像了，一个最本质的区别在于发布者(主题)是否与订阅者(观察者)存在强依赖关系，而发布-订阅引入了类似主题/Topic/Channel 的中介者，显然从解耦的角度要更彻底一些，所以，我们今天就来一起实现一个事件总线(EventBus)。</p>
+<h1 id=eventbus-整体设计>EventBus 整体设计</h1>
+<p>通过前面的探讨，我们可以知道，EventBus 其实是针对事件的<code>发布-订阅</code>模式的实现，所以，在设计 EventBus 的时候，我们可以结合<code>发布-定阅</code>模式来作为对照，而一个典型的<code>发布-订阅</code>模式至少需要三个角色，即<code>发布者</code>、<code>订阅者</code>和<code>消息</code>，所以，一般在设计 EventBus 的时候，基本都会从这三个方面入手，提供<strong>发布消息</strong>、<strong>订阅消息</strong>、<strong>退订消息</strong>的接口。由于 EventBus 本身并不负责消费消息，所以，还需要借助<code>IEventHandler&lt;T></code>来编写对应的事件处理器，这是 EventBus 可以实现业务解耦的重要原因。而为了维护事件和事件处理器的关系，通常需要借助 IoC 容器来注册这些 EventHandler，提供类似<code>Castle</code>或者<code>Autofac</code>从程序集中批量注册的机制，下面是博主借鉴 <a class=link href=https://github.com/dotnet-architecture/eShopOnContainers target=_blank rel=noopener>eShopOnContainers</a> 设计的 EventBus，首先是 IEventBus 接口，其定义如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>interface</span> <span class=n>IEventBus</span> 
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>void</span> <span class=n>Publish</span><span class=p>&lt;</span><span class=n>TEvent</span><span class=p>&gt;</span> <span class=p>(</span><span class=n>TEvent</span> <span class=n>@event</span><span class=p>)</span> <span class=k>where</span> <span class=n>TEvent</span> <span class=p>:</span> <span class=n>EventBase</span><span class=p>;</span>
+<span class=ln> 4</span>    <span class=k>void</span> <span class=n>Subscribe</span><span class=p>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TH</span><span class=p>&gt;</span> <span class=p>()</span>
+<span class=ln> 5</span>        <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=n>EventBase</span>
+<span class=ln> 6</span>        <span class=k>where</span> <span class=n>TH</span> <span class=p>:</span> <span class=n>IEventHandler</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;;</span>
+<span class=ln> 7</span>    <span class=k>void</span> <span class=n>Unsubscribe</span><span class=p>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TH</span><span class=p>&gt;</span> <span class=p>()</span>
+<span class=ln> 8</span>        <span class=k>where</span> <span class=n>TH</span> <span class=p>:</span> <span class=n>IEventHandler</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span>
+<span class=ln> 9</span>        <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=n>EventBase</span><span class=p>;</span>
+<span class=ln>10</span><span class=p>}</span>
+</code></pre></div><p>注意到，这里对事件(<strong>EventBase</strong>)和事件处理器(<strong>EventHandler</strong>)均有一定约束，这是为了整个 EventBus 的实现，在某些 EventBus 的实现中，可能会支持非泛型的<code>EventHandler</code>，以及<code>Func</code>这样的委托类型，这里不考虑这种情形，因为从 Binlog 中获取的数据，基本上都是格式固定的 JSON。关于这部分，下面给出对应的定义：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>interface</span> <span class=n>IEventHandlerBase</span> <span class=p>{</span> <span class=p>}</span>
+<span class=ln> 2</span><span class=k>public</span> <span class=k>interface</span> <span class=n>IEventHandler</span><span class=p>&lt;</span><span class=n>TEvent</span><span class=p>&gt;</span> <span class=p>:</span> <span class=n>IEventHandlerBase</span> <span class=k>where</span> <span class=n>TEvent</span> <span class=p>:</span> <span class=n>EventBase</span> 
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=n>Task</span> <span class=n>Handle</span> <span class=p>(</span><span class=n>TEvent</span> <span class=n>@ebent</span><span class=p>);</span>
+<span class=ln> 5</span><span class=p>}</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span><span class=k>public</span> <span class=k>class</span> <span class=nc>EventBase</span> 
+<span class=ln> 8</span><span class=p>{</span>
+<span class=ln> 9</span>    <span class=k>public</span> <span class=n>Guid</span> <span class=n>EventId</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span> <span class=p>=</span> <span class=n>Guid</span><span class=p>.</span><span class=n>NewGuid</span> <span class=p>();</span>
+<span class=ln>10</span>    <span class=k>public</span> <span class=n>DateTime</span> <span class=n>CreatedAt</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span> <span class=p>=</span> <span class=n>DateTime</span><span class=p>.</span><span class=n>UtcNow</span><span class=p>;</span>
+<span class=ln>11</span><span class=p>}</span>
+</code></pre></div><p>而为了维护事件(<strong>EventBase</strong>)和事件处理器(<strong>EventHandler</strong>)间的订阅关系，博主这里定义了<code>IEventBusSubscriptionManager</code>接口，相信以你对<code>发布-订阅</code>模式的理解，你可以非常容易地想到，这里应该会用到一个字典来存储每一个事件以及该事件对应的事件处理器的类型信息。你猜对了，事实上大多数的<code>EventBus</code>都是这样实现的，尤其当你在实现一个基于内存或者进程内通信的<code>EventBus</code>的时候, 到这一步其实已经完成了大多数的功能。理论上你还应该定义一个<code>IEventStore</code>接口，显而易见，这是针对事件的持久化接口，不过当我们选择<code>RabbitMQ</code>的时候，它无形中就自动帮我们实现了这个接口。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>interface</span> <span class=n>IEventBusSubscriptionManager</span> 
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=n>EventHandler</span><span class=p>&lt;</span><span class=n>EventBusSubscriptionEventArgs</span><span class=p>&gt;</span> <span class=n>OnSubscribe</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln> 4</span>    <span class=n>EventHandler</span><span class=p>&lt;</span><span class=n>EventBusSubscriptionEventArgs</span><span class=p>&gt;</span> <span class=n>OnUnsubscribe</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=ln> 5</span>    <span class=k>void</span> <span class=n>Subscribe</span><span class=p>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TH</span><span class=p>&gt;</span> <span class=p>()</span>
+<span class=ln> 6</span>        <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=n>EventBase</span>
+<span class=ln> 7</span>        <span class=k>where</span> <span class=n>TH</span> <span class=p>:</span> <span class=n>IEventHandler</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;;</span>
+<span class=ln> 8</span>    <span class=k>void</span> <span class=n>Unsubscribe</span><span class=p>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TH</span><span class=p>&gt;</span> <span class=p>()</span>
+<span class=ln> 9</span>        <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=n>EventBase</span>
+<span class=ln>10</span>        <span class=k>where</span> <span class=n>TH</span> <span class=p>:</span> <span class=n>IEventHandler</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;;</span>
+<span class=ln>11</span>    <span class=kt>bool</span> <span class=n>IsEventSubscribed</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=p>()</span> <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=n>EventBase</span><span class=p>;</span>
+<span class=ln>12</span>    <span class=kt>bool</span> <span class=n>IsEventSubscribed</span> <span class=p>(</span><span class=kt>string</span> <span class=n>eventName</span><span class=p>);</span>
+<span class=ln>13</span>    <span class=n>Type</span> <span class=n>GetEventTypeByName</span> <span class=p>(</span><span class=kt>string</span> <span class=n>eventName</span><span class=p>);</span>
+<span class=ln>14</span>    <span class=k>void</span> <span class=n>Clear</span> <span class=p>();</span>
+<span class=ln>15</span>    <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>Type</span><span class=p>&gt;</span> <span class=n>GetHandlersForEvent</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=p>()</span> <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=n>EventBase</span><span class=p>;</span>
+<span class=ln>16</span>    <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>Type</span><span class=p>&gt;</span> <span class=n>GetHandlersForEvent</span> <span class=p>(</span><span class=kt>string</span> <span class=n>eventName</span><span class=p>);</span>
+<span class=ln>17</span>    <span class=kt>string</span> <span class=n>GetEventKey</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=p>()</span> <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=n>EventBase</span><span class=p>;;</span>
+<span class=ln>18</span><span class=p>}</span>
+</code></pre></div><p><code>IEventBusSubscriptionManager</code>接口主要提供了维护事件(Event)和事件处理器(EventHnadler)两者关系的一系列方法，我个人认为理解起来相对容易一点，实际上看 <a class=link href=https://github.com/dotnet-architecture/eShopOnContainers target=_blank rel=noopener>eShopOnContainers</a> 的时候，我每次都是从其中的一个微服务开始研究的，因为这样你才能发现其中的神秘之处，不得不说，平时看那种流水账代码看惯了，看到这样清晰、优雅的代码，内心还是觉得幸福啊，对技术的热爱再度被燃起。</p>
+<h1 id=基于-rabbitmq-的实现>基于 RabbitMQ 的实现</h1>
+<h2 id=publish>Publish</h2>
+<p>好了，下面我们来看如何基于<code>RabbitMQ</code>实现上面定义的<code>IEventBus</code>接口，首当其冲的是<code>Publish()</code>方法的实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>void</span> <span class=n>Publish</span><span class=p>&lt;</span><span class=n>TEvent</span><span class=p>&gt;</span> <span class=p>(</span><span class=n>TEvent</span> <span class=n>@event</span><span class=p>)</span>
+<span class=ln> 2</span>    <span class=k>where</span> <span class=n>TEvent</span> <span class=p>:</span> <span class=n>EventBase</span> 
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=k>if</span> <span class=p>(!</span><span class=m>_</span><span class=n>persistentConnection</span><span class=p>.</span><span class=n>IsConnected</span><span class=p>)</span> <span class=m>_</span><span class=n>persistentConnection</span><span class=p>.</span><span class=n>TryConnect</span> <span class=p>();</span>
+<span class=ln> 5</span>    <span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>channel</span> <span class=p>=</span> <span class=m>_</span><span class=n>persistentConnection</span><span class=p>.</span><span class=n>CreateModel</span> <span class=p>())</span> 
+<span class=ln> 6</span>    <span class=p>{</span>
+<span class=ln> 7</span>        <span class=n>channel</span><span class=p>.</span><span class=n>ExchangeDeclare</span> <span class=p>(</span><span class=m>_</span><span class=n>exchangeName</span><span class=p>,</span> <span class=s>&#34;direct&#34;</span><span class=p>,</span> <span class=k>true</span><span class=p>,</span> <span class=k>false</span><span class=p>,</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span>        <span class=kt>var</span> <span class=n>eventName</span> <span class=p>=</span> <span class=n>@event</span><span class=p>.</span><span class=n>GetType</span> <span class=p>().</span><span class=n>FullName</span><span class=p>;</span>
+<span class=ln>10</span>        <span class=kt>var</span> <span class=n>message</span> <span class=p>=</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>SerializeObject</span> <span class=p>(</span><span class=n>@event</span><span class=p>);</span>
+<span class=ln>11</span>        <span class=kt>var</span> <span class=n>body</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetBytes</span> <span class=p>(</span><span class=n>message</span><span class=p>);</span>
+<span class=ln>12</span>
+<span class=ln>13</span>        <span class=kt>var</span> <span class=n>properties</span> <span class=p>=</span> <span class=n>channel</span><span class=p>.</span><span class=n>CreateBasicProperties</span> <span class=p>();</span>
+<span class=ln>14</span>        <span class=n>properties</span><span class=p>.</span><span class=n>DeliveryMode</span> <span class=p>=</span> <span class=m>2</span><span class=p>;</span>
+<span class=ln>15</span>        <span class=n>channel</span><span class=p>.</span><span class=n>BasicPublish</span> <span class=p>(</span><span class=n>exchange</span><span class=p>:</span> <span class=m>_</span><span class=n>exchangeName</span><span class=p>,</span> <span class=n>routingKey</span><span class=p>:</span> <span class=n>eventName</span><span class=p>,</span> <span class=n>mandatory</span><span class=p>:</span> <span class=k>true</span><span class=p>,</span> <span class=n>basicProperties</span><span class=p>:</span> <span class=n>properties</span><span class=p>,</span> <span class=n>body</span><span class=p>:</span> <span class=n>body</span><span class=p>);</span>
+<span class=ln>16</span>        <span class=m>_l</span><span class=n>ogger</span><span class=p>.</span><span class=n>LogDebug</span> <span class=p>(</span><span class=s>$&#34;Publish message with RabbmitMQ BasicPublish: {message}&#34;</span><span class=p>);</span>
+<span class=ln>17</span>    <span class=p>}</span>
+<span class=ln>18</span><span class=p>}</span>
+</code></pre></div><p>这里首先介绍下<code>RabbitMQ</code>中的两个概念，即<code>Connection</code>和<code>Channel</code>。其中，<code>Connection</code>是操作<code>RabbitMQ</code>的基础，就像我们操作数据库的时候，需要首先建立数据库连接一样。那么，<code>Channel</code>又是什么东西呢？它是真正去操作<code>RabbitMQ</code>的东西。继续以数据库作为例子，那么<code>Channel</code>可以理解为<code>ADO.NET</code>中的<code>Command</code>，即，那个真正负责执行 SQL 语句的家伙。一个典型的使用<code>RabbitMQ</code>的过程，大概是下面这个样子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln>1</span><span class=kt>var</span> <span class=n>connectionFactory</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ConnectionFactory</span><span class=p>()</span> <span class=p>{</span> <span class=n>HostName</span> <span class=p>=</span> <span class=s>&#34;Your IP&#34;</span><span class=p>,</span> <span class=n>UserName</span> <span class=p>=</span> <span class=s>&#34;You User&#34;</span><span class=p>,</span> <span class=n>Password</span> <span class=p>=</span> <span class=s>&#34;Your Pass&#34;</span> <span class=p>};</span>
+<span class=ln>2</span><span class=kt>var</span> <span class=n>connection</span> <span class=p>=</span> <span class=n>connectionFactory</span><span class=p>.</span><span class=n>CreateConnection</span><span class=p>();</span>
+<span class=ln>3</span><span class=kt>var</span> <span class=n>channel</span> <span class=p>=</span> <span class=n>connection</span><span class=p>..</span><span class=n>CreateModel</span><span class=p>();</span>
+</code></pre></div><p>回到我们的 EventBus 中，因为<code>RabbitMQ</code>的链接可能会在一段时间后自动关闭，所以，在微软的 <a class=link href=https://github.com/dotnet-architecture/eShopOnContainers target=_blank rel=noopener>eShopOnContainers</a> 项目，它设计了一个支持自动重连的链接持久化类，我们这里同样有这个机制，当发现链接断开的时候，自动尝试重连，而接下来就由我们熟悉的<code>Channel</code>登场啦！这个时候，我们发现又出现了一个新面孔——交换器(<strong>Exchange</strong>)，好吧，这又要引出 RabbitMQ 中消息投递的原理，即 RabbitMQ 中消息并非由发布者直接发送给消费者，而是需要经过交换器这个中介者，虽然你可以直接去读写队列，但是实际应用中通常都不会这么做。其实，在某种意义上，我们的 EventBus 一样承担着中介者的角色，我们只需要关注怎么发布消息，这个消息将由哪一个订阅者来消费完全不需要我来关心，一个典型的消息投递过程如下图所示：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/07/31/geWGI6M39fcw2S1.png>
+<img src=https://i.loli.net/2020/07/31/geWGI6M39fcw2S1.png loading=lazy alt=RabbitMQ消息投递示意图>
+</a>
+<figcaption>RabbitMQ消息投递示意图</figcaption>
+</figure></p>
+<p>在这里，我们对消息进行序列化以后，按照事件的类型信息生成<code>routingKey</code>，并指定交换器的类型为<code>direct</code>，这是一个 RabbitMQ 中自带的<code>发布-订阅</code>实现，因为交换器会根据<code>routingKey</code>投递消息到对应的队列中，关于 RabbitMQ 中四种交换器的说明，可以在下一节找到答案。注意到在声明交换器的时候，第二个参数被设为 true，这是在 RabbitMQ 需要对这个交换器进行持久化；而第三个参数被设为 false，这是在告诉 RabbitMQ 这个交换器内的消息不允许自动删除；DeliveryMode 设为 2 则表示消息需要持久化到磁盘上，这样即使 RabbitMQ 发生意外宕机，依然可以从磁盘上恢复消息。最终，我们调用<code>BasicPublish()</code>将消息投递到指定的交换机中，这样就完成了事件的发布功能。</p>
+<h2 id=subscribeunsubscribe>Subscribe/Unsubscribe</h2>
+<p>接下来，我们来看<code>Subscribe()</code>和<code>Unsubscribe()</code>两个方法的实现过程。这里实际上需要实现两部分的功能，一个是管理事件(<strong>EventBase</strong>)与事件处理器(<strong>EventHandler</strong>)间的关系，一个是管理消费者、消费者队列与交换器间的关系。因为考虑到后续可能需要实现类似<code>MediatR</code>的进程内通信的功能，所以，我们考虑将这两部分剥离开来，这样方便对<code>EventBus</code>进行扩展。为此，我们定义了<code>IEventSubscriptionManager</code>这个接口，它的定义我们在前面已经见过，最终我们会在<code>EventBus</code>里引用这个中间层，这样可以让<code>EventBus</code>显得更加清爽一点，一起来看它的具体实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>void</span> <span class=n>Subscribe</span><span class=p>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TH</span><span class=p>&gt;</span> <span class=p>()</span>
+<span class=ln> 2</span>    <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=n>EventBase</span>
+<span class=ln> 3</span>    <span class=k>where</span> <span class=n>TH</span> <span class=p>:</span> <span class=n>IEventHandler</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> 
+<span class=ln> 4</span><span class=p>{</span>
+<span class=ln> 5</span>    <span class=kt>var</span> <span class=n>eventName</span> <span class=p>=</span> <span class=n>GetEventKey</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=p>();</span>
+<span class=ln> 6</span>    <span class=k>if</span> <span class=p>(</span><span class=m>_</span><span class=n>eventHandlers</span><span class=p>.</span><span class=n>ContainsKey</span> <span class=p>(</span><span class=n>eventName</span><span class=p>)</span> <span class=p>&amp;&amp;</span> <span class=p>!</span><span class=m>_</span><span class=n>eventHandlers</span><span class=p>[</span><span class=n>eventName</span><span class=p>].</span><span class=n>Any</span> <span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span> <span class=p>==</span> <span class=k>typeof</span> <span class=p>(</span><span class=n>TH</span><span class=p>)))</span> <span class=p>{</span>
+<span class=ln> 7</span>        <span class=m>_</span><span class=n>eventHandlers</span><span class=p>[</span><span class=n>eventName</span><span class=p>].</span><span class=n>Add</span> <span class=p>(</span><span class=k>typeof</span> <span class=p>(</span><span class=n>TH</span><span class=p>));</span>
+<span class=ln> 8</span>    <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+<span class=ln> 9</span>        <span class=m>_</span><span class=n>eventHandlers</span><span class=p>[</span><span class=n>eventName</span><span class=p>]</span> <span class=p>=</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Type</span><span class=p>&gt;</span> <span class=p>()</span> <span class=p>{</span> <span class=k>typeof</span> <span class=p>(</span><span class=n>TH</span><span class=p>)</span> <span class=p>};</span>
+<span class=ln>10</span>        <span class=m>_</span><span class=n>eventTypes</span><span class=p>.</span><span class=n>Add</span> <span class=p>(</span><span class=k>typeof</span> <span class=p>(</span><span class=n>T</span><span class=p>));</span>
+<span class=ln>11</span>    <span class=p>}</span>
+<span class=ln>12</span>    <span class=k>if</span> <span class=p>(</span><span class=n>OnSubscribe</span> <span class=p>!=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln>13</span>        <span class=n>OnSubscribe</span> <span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=k>new</span> <span class=n>EventBusSubscriptionEventArgs</span> <span class=p>()</span> <span class=p>{</span> <span class=n>EvenType</span> <span class=p>=</span> <span class=k>typeof</span> <span class=p>(</span><span class=n>T</span><span class=p>),</span> <span class=n>HandlerType</span> <span class=p>=</span> <span class=k>typeof</span> <span class=p>(</span><span class=n>TH</span><span class=p>)</span> <span class=p>});</span>
+<span class=ln>14</span><span class=p>}</span>
+<span class=ln>15</span><span class=k>public</span> <span class=k>void</span> <span class=n>Unsubscribe</span><span class=p>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TH</span><span class=p>&gt;</span> <span class=p>()</span>
+<span class=ln>16</span>    <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=n>EventBase</span>
+<span class=ln>17</span>    <span class=k>where</span> <span class=n>TH</span> <span class=p>:</span> <span class=n>IEventHandler</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span>
+<span class=ln>18</span><span class=p>{</span>
+<span class=ln>19</span>        <span class=kt>var</span> <span class=n>eventName</span> <span class=p>=</span> <span class=n>GetEventKey</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=p>();</span>
+<span class=ln>20</span>        <span class=k>if</span> <span class=p>(</span><span class=m>_</span><span class=n>eventHandlers</span><span class=p>.</span><span class=n>ContainsKey</span> <span class=p>(</span><span class=n>eventName</span><span class=p>)</span> <span class=p>&amp;&amp;</span> <span class=m>_</span><span class=n>eventHandlers</span><span class=p>[</span><span class=n>eventName</span><span class=p>].</span><span class=n>Any</span> <span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span> <span class=p>==</span> <span class=k>typeof</span> <span class=p>(</span><span class=n>TH</span><span class=p>)))</span> <span class=p>{</span>
+<span class=ln>21</span>            <span class=m>_</span><span class=n>eventHandlers</span><span class=p>[</span><span class=n>eventName</span><span class=p>].</span><span class=n>Remove</span> <span class=p>(</span><span class=k>typeof</span> <span class=p>(</span><span class=n>TH</span><span class=p>));</span>
+<span class=ln>22</span>        <span class=p>}</span>
+<span class=ln>23</span>        <span class=k>if</span> <span class=p>(</span><span class=m>_</span><span class=n>eventHandlers</span><span class=p>.</span><span class=n>ContainsKey</span> <span class=p>(</span><span class=n>eventName</span><span class=p>)</span> <span class=p>&amp;&amp;</span> <span class=p>!</span><span class=m>_</span><span class=n>eventHandlers</span><span class=p>[</span><span class=n>eventName</span><span class=p>].</span><span class=n>Any</span> <span class=p>())</span> <span class=p>{</span>
+<span class=ln>24</span>            <span class=m>_</span><span class=n>eventHandlers</span><span class=p>.</span><span class=n>Remove</span> <span class=p>(</span><span class=n>eventName</span><span class=p>);</span>
+<span class=ln>25</span>            <span class=m>_</span><span class=n>eventTypes</span><span class=p>.</span><span class=n>RemoveAll</span> <span class=p>(</span><span class=n>x</span> <span class=p>=&gt;</span> <span class=n>x</span><span class=p>.</span><span class=n>FullName</span> <span class=p>==</span> <span class=n>eventName</span><span class=p>);</span>
+<span class=ln>26</span>        <span class=p>}</span>
+<span class=ln>27</span>        <span class=k>if</span> <span class=p>(</span><span class=n>OnUnsubscribe</span> <span class=p>!=</span> <span class=k>null</span> <span class=p>&amp;&amp;</span> <span class=p>!</span><span class=n>GetHandlersForEvent</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=p>().</span><span class=n>Any</span> <span class=p>())</span>
+<span class=ln>28</span>            <span class=n>OnSubscribe</span> <span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=k>new</span> <span class=n>EventBusSubscriptionEventArgs</span> <span class=p>()</span> <span class=p>{</span> <span class=n>EvenType</span> <span class=p>=</span> <span class=k>typeof</span> <span class=p>(</span><span class=n>T</span><span class=p>),</span> <span class=n>HandlerType</span> <span class=p>=</span> <span class=k>typeof</span> <span class=p>(</span><span class=n>TH</span><span class=p>)</span> <span class=p>});</span>
+<span class=ln>29</span><span class=p>}</span>
+</code></pre></div><p>可以注意到，<strong>订阅就是注册 EventHandler 到对应的键的过程，而取消订阅就是从对应的键里移除 EventHandler 的过程</strong>。为了确保在订阅或者退订的时候，可以通知到具体的 EventBus 实现者，譬如 RabbitMQ、Kafka 等，我们定义了<code>OnSubscribe</code>和<code>OnUnsubscribe</code>两个委托，实际设计中，我们会在 EventBus 初始化的时候，将这两个委托指向 EventBus 内部订阅和退订的方法。对于订阅，我们需要用到 RabbitMQ 的<code>BasicConsume()</code>方法；而对于取消订阅，我们需要用到 RabbitMQ 的<code>UnbindQueue()</code>方法。下面给出关键部分的代码实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=c1>//RabbitMQ中订阅指定的routingKey
+</span><span class=ln> 2</span><span class=c1></span><span class=k>private</span> <span class=k>void</span> <span class=n>StartBasicConsume</span> <span class=p>(</span><span class=kt>string</span> <span class=n>routingKey</span><span class=p>)</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=m>_l</span><span class=n>ogger</span><span class=p>.</span><span class=n>LogTrace</span> <span class=p>(</span><span class=s>&#34;Starting RabbitMQ BasicConsume...&#34;</span><span class=p>);</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span>    <span class=k>if</span> <span class=p>(!</span><span class=m>_</span><span class=n>persistentConnection</span><span class=p>.</span><span class=n>IsConnected</span><span class=p>)</span> <span class=m>_</span><span class=n>persistentConnection</span><span class=p>.</span><span class=n>TryConnect</span> <span class=p>();</span>
+<span class=ln> 7</span>
+<span class=ln> 8</span>    <span class=kt>var</span> <span class=n>queueName</span> <span class=p>=</span> <span class=n>GetQueueName</span> <span class=p>(</span><span class=n>routingKey</span><span class=p>);</span>
+<span class=ln> 9</span>
+<span class=ln>10</span>    <span class=kt>var</span> <span class=n>channel</span> <span class=p>=</span> <span class=m>_</span><span class=n>persistentConnection</span><span class=p>.</span><span class=n>CreateModel</span> <span class=p>();</span>
+<span class=ln>11</span>    <span class=n>channel</span><span class=p>.</span><span class=n>ExchangeDeclare</span> <span class=p>(</span><span class=m>_</span><span class=n>exchangeName</span><span class=p>,</span> <span class=s>&#34;direct&#34;</span><span class=p>,</span> <span class=k>true</span><span class=p>,</span> <span class=k>false</span><span class=p>,</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln>12</span>    <span class=n>channel</span><span class=p>.</span><span class=n>QueueDeclare</span> <span class=p>(</span><span class=n>queueName</span><span class=p>,</span> <span class=k>true</span><span class=p>,</span> <span class=k>false</span><span class=p>,</span> <span class=k>false</span><span class=p>,</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln>13</span>    <span class=n>channel</span><span class=p>.</span><span class=n>QueueBind</span> <span class=p>(</span><span class=n>queueName</span><span class=p>,</span> <span class=m>_</span><span class=n>exchangeName</span><span class=p>,</span> <span class=n>routingKey</span><span class=p>,</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln>14</span>
+<span class=ln>15</span>    <span class=kt>var</span> <span class=n>consumer</span> <span class=p>=</span> <span class=k>new</span> <span class=n>EventingBasicConsumer</span> <span class=p>(</span><span class=n>channel</span><span class=p>);</span>
+<span class=ln>16</span>    <span class=n>consumer</span><span class=p>.</span><span class=n>Received</span> <span class=p>+=</span> <span class=k>async</span> <span class=p>(</span><span class=n>s</span><span class=p>,</span> <span class=n>e</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+<span class=ln>17</span>        <span class=kt>var</span> <span class=n>routingKey</span> <span class=p>=</span> <span class=n>e</span><span class=p>.</span><span class=n>RoutingKey</span><span class=p>;</span>
+<span class=ln>18</span>        <span class=kt>var</span> <span class=n>message</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span> <span class=p>(</span><span class=n>e</span><span class=p>.</span><span class=n>Body</span><span class=p>.</span><span class=n>ToArray</span> <span class=p>());</span>
+<span class=ln>19</span>        <span class=kt>var</span> <span class=n>tasks</span> <span class=p>=</span> <span class=n>ProcessEvent</span> <span class=p>(</span><span class=n>routingKey</span><span class=p>,</span> <span class=n>message</span><span class=p>);</span>
+<span class=ln>20</span>        <span class=k>await</span> <span class=n>Task</span><span class=p>.</span><span class=n>WhenAll</span> <span class=p>(</span><span class=n>tasks</span><span class=p>);</span>
+<span class=ln>21</span>        <span class=n>channel</span><span class=p>.</span><span class=n>BasicAck</span> <span class=p>(</span><span class=n>e</span><span class=p>.</span><span class=n>DeliveryTag</span><span class=p>,</span> <span class=k>false</span><span class=p>);</span>
+<span class=ln>22</span>    <span class=p>};</span>
+<span class=ln>23</span>
+<span class=ln>24</span>    <span class=n>channel</span><span class=p>.</span><span class=n>BasicConsume</span> <span class=p>(</span><span class=n>queue</span><span class=p>:</span> <span class=s>$&#34;Q:{routingKey}&#34;</span><span class=p>,</span> <span class=n>autoAck</span> <span class=p>:</span> <span class=k>false</span><span class=p>,</span> <span class=n>consumer</span> <span class=p>:</span> <span class=n>consumer</span><span class=p>);</span>
+<span class=ln>25</span><span class=p>}</span>
+<span class=ln>26</span>
+<span class=ln>27</span><span class=c1>//调用EventHandler处理事件
+</span><span class=ln>28</span><span class=c1></span><span class=k>private</span> <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>Task</span><span class=p>&gt;</span> <span class=n>ProcessEvent</span> <span class=p>(</span><span class=kt>string</span> <span class=n>eventName</span><span class=p>,</span> <span class=kt>string</span> <span class=n>message</span><span class=p>)</span> 
+<span class=ln>29</span><span class=p>{</span>
+<span class=ln>30</span>    <span class=k>if</span> <span class=p>(</span><span class=m>_</span><span class=n>subscriptionManager</span><span class=p>.</span><span class=n>IsEventSubscribed</span> <span class=p>(</span><span class=n>eventName</span><span class=p>))</span> <span class=p>{</span>
+<span class=ln>31</span>       <span class=c1>//基于Polly构建超时合重试策略
+</span><span class=ln>32</span><span class=c1></span>        <span class=kt>var</span> <span class=n>policy</span> <span class=p>=</span> <span class=n>BuildProcessEventPolicy</span> <span class=p>();</span>
+<span class=ln>33</span>        <span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>serviceScope</span> <span class=p>=</span> <span class=m>_</span><span class=n>serviceProvider</span><span class=p>.</span><span class=n>CreateScope</span> <span class=p>())</span> 
+<span class=ln>34</span>        <span class=p>{</span>
+<span class=ln>35</span>            <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>handlerType</span> <span class=k>in</span> <span class=m>_</span><span class=n>subscriptionManager</span><span class=p>.</span><span class=n>GetHandlersForEvent</span> <span class=p>(</span><span class=n>eventName</span><span class=p>))</span> 
+<span class=ln>36</span>            <span class=p>{</span>
+<span class=ln>37</span>                <span class=kt>var</span> <span class=n>handler</span> <span class=p>=</span> <span class=n>serviceScope</span><span class=p>.</span><span class=n>ServiceProvider</span><span class=p>.</span><span class=n>GetRequiredService</span> <span class=p>(</span><span class=n>handlerType</span><span class=p>);</span>
+<span class=ln>38</span>                <span class=k>if</span> <span class=p>(</span><span class=n>handler</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span> <span class=k>continue</span><span class=p>;</span>
+<span class=ln>39</span>
+<span class=ln>40</span>                <span class=kt>var</span> <span class=n>eventType</span> <span class=p>=</span> <span class=m>_</span><span class=n>subscriptionManager</span><span class=p>.</span><span class=n>GetEventTypeByName</span> <span class=p>(</span><span class=n>eventName</span><span class=p>);</span>
+<span class=ln>41</span>                <span class=kt>var</span> <span class=n>integrationEvent</span> <span class=p>=</span> <span class=n>JsonConvert</span><span class=p>.</span><span class=n>DeserializeObject</span> <span class=p>(</span><span class=n>message</span><span class=p>,</span> <span class=n>eventType</span><span class=p>);</span>
+<span class=ln>42</span>                <span class=kt>var</span> <span class=n>concreteType</span> <span class=p>=</span> <span class=k>typeof</span><span class=p>(</span><span class=n>IEventHandler</span><span class=p>&lt;&gt;).</span><span class=n>MakeGenericType</span> <span class=p>(</span><span class=n>eventType</span><span class=p>);</span>
+<span class=ln>43</span>
+<span class=ln>44</span>                <span class=m>_l</span><span class=n>ogger</span><span class=p>.</span><span class=n>LogInformation</span> <span class=p>(</span><span class=s>$&#34;Process event \&#34;</span><span class=p>{</span><span class=n>eventName</span><span class=p>}</span><span class=err>\</span><span class=s>&#34; with \&#34;{handler.GetType().Name}\&#34;...&#34;</span><span class=p>);</span>
+<span class=ln>45</span>                <span class=k>yield</span> <span class=k>return</span> <span class=p>(</span><span class=n>Task</span><span class=p>)</span><span class=n>policy</span><span class=p>.</span><span class=n>Execute</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=n>concreteType</span><span class=p>.</span><span class=n>GetMethod</span> <span class=p>(</span><span class=s>&#34;Handle&#34;</span><span class=p>).</span><span class=n>Invoke</span> <span class=p>(</span><span class=n>handler</span><span class=p>,</span> <span class=k>new</span> <span class=kt>object</span><span class=p>[]</span> <span class=p>{</span> <span class=n>integrationEvent</span> <span class=p>}));</span>
+<span class=ln>46</span>            <span class=p>}</span>
+<span class=ln>47</span>        <span class=p>}</span>
+<span class=ln>48</span>    <span class=p>}</span>
+<span class=ln>49</span><span class=p>}</span>
+<span class=ln>50</span><span class=c1>//RabbitMQ中退订某个事件
+</span><span class=ln>51</span><span class=c1></span><span class=k>private</span> <span class=k>void</span> <span class=n>UnbindQueue</span> <span class=p>(</span><span class=kt>string</span> <span class=n>routingKey</span><span class=p>)</span> <span class=p>{</span>
+<span class=ln>52</span>    <span class=k>if</span> <span class=p>(!</span><span class=m>_</span><span class=n>persistentConnection</span><span class=p>.</span><span class=n>IsConnected</span><span class=p>)</span> <span class=m>_</span><span class=n>persistentConnection</span><span class=p>.</span><span class=n>TryConnect</span> <span class=p>();</span>
+<span class=ln>53</span>    <span class=kt>var</span> <span class=n>channel</span> <span class=p>=</span> <span class=m>_</span><span class=n>persistentConnection</span><span class=p>.</span><span class=n>CreateModel</span> <span class=p>();</span>
+<span class=ln>54</span>    <span class=kt>var</span> <span class=n>queueName</span> <span class=p>=</span> <span class=n>GetQueueName</span> <span class=p>(</span><span class=n>routingKey</span><span class=p>);</span>
+<span class=ln>55</span>    <span class=n>channel</span><span class=p>.</span><span class=n>QueueUnbind</span> <span class=p>(</span><span class=n>queueName</span><span class=p>,</span> <span class=m>_</span><span class=n>exchangeName</span><span class=p>,</span> <span class=n>routingKey</span><span class=p>,</span> <span class=k>null</span><span class=p>);</span>
+<span class=ln>56</span><span class=p>}</span>
+</code></pre></div><p>其中，<code>ProcessEvent()</code>方法是 EventBus 通过一个或多个 EventHandler 处理业务的核心方法。当从 RabbitMQ 中接收到消息时，首先检查当前事件是否已注册。如果已注册，则获取当前事件对应的 EventHandler 集合，然后通过 IoC 容器逐个地取得对应实例，因为在定义 EventHandler 的时候，我们让<code>Handle()</code>方法返回了一个 Task，所以，我们可以顺利成章地使用<code>Task.WhenAll()</code>，而当所有的 EventHandler 都处理完成的时候，我们就可以认为这条消息被处理完了，此时，我们可以手动进行 ACK，这样这条消息就会从队列中移除，至此，我们已经实现了一个完整的 EventBus。</p>
+<h1 id=rabbitmq-进阶与释疑>RabbitMQ 进阶与释疑</h1>
+<p>我在写这篇博客的时候，周围有很多人都劝我不要用 RabbitMQ，而主要的理由则是 RabbitMQ 的吞吐量不如 Kafka。我怀疑我们有时候会严重地高估自己，“面试造火箭，入职拧螺丝”，这种事情难道还少吗？与其一张嘴就是高并发、高可用，不如诚实一点结合实际来选择，我相信 RabbitMQ 里遇到的问题，可能有一些同样会在 Kafka 里遇到，因为这个世界上就没有最完美的解决方案，对于我写这篇博客的初心而言，我是为了把 Binlog 发布到 RabbitMQ 上，方便第三方来订阅这些数据的“变化”，所以，可靠性是不是要比吞吐量更重要一点呢？好了，下面，我们来看一些“杞人忧天”式的 RabbitMQ 的进阶话题，就是当你熟悉了 RabbitMQ 的 API 以后，需要去着重考虑的东西。</p>
+<h2 id=rabbitmq-丢消息怎么办>RabbitMQ 丢消息怎么办</h2>
+<p>第一个问题是最普遍的一个问题，按照“<strong>生产者 -> 交换器 -> 队列 -> 消费者</strong>”的模式，一旦发生丢消息的情况，无非有三种情况：<strong>生产者丢消息</strong>、<strong>消息队列丢消息</strong>、<strong>消费者丢消息</strong>。下面我们逐个进行分析：</p>
+<p>1、对于生产者丢消息，RabbitMQ提供的<code>transaction</code>和<code>confirm</code>机制可以保证生产者不丢消息，<code>transaction</code>机制类似数据库的事务，只有当消息发送成功，事物才会被提交，否则事务被被回滚。因为每次发消息都必须开启事物，所以<code>transaction</code>机制会导致 RabbitMQ 吞吐量降低，一般建议使用<code>confirm</code>机制，即消息被正确投递则发送 ACK 给生产者，否则发送 NACK 给生产者。</p>
+<p>2、对于消息队列丢消息，解决方案我们在前面有提到过，主要有两点，<strong>第一，声明队列的时候设置 durable 为 true，这表示这是一个支持持久化的队列。第二，发送消息的时候，设置 DeliveryMode 为 2</strong>，这表示消息支持持久化的磁盘，如果有一天 RabbitMQ 遭遇不幸，消息会被持久化到磁盘上，所以说，习惯性保存是个好习惯啊……</p>
+<p>3、对于消费者丢消息，解决方案是手动 ACK，因为只有队列收到 ACK 时，它才会从队列中删除这条消息，否则，这条消息会重新回到队列中，只要它能重新回到队列、重新处理，它怎么会丢呢？你说对吧？</p>
+<h2 id=rabbitmq-重试与超时>RabbitMQ 重试与超时</h2>
+<p>先说结论，关于重试与超时这个话题，我们有两种实现思路，一种是像博主这样，采用 Polly 定义超时+重试的组合策略，然后将这个策略附加到每一个 Handle()方法上，通过程序来实现重试与超时。而第二种思路，则是利用消息/队列的 TTL 实现超时，利用死信实现重试，消息 TTL 和队列 TTL 的不同在于，一个队列超时则队列内的消息会被全部清空，而一个消息超时则可以在清空前决定是否要清空。</p>
+<p>重试与超时最大的问题其实在于幂等性，因为在以往的实践中，当我们的消费者变成一个第三方的 API 接口的时候，我们很难知道，一个消息到底需要处理多久，我一直不明白，为什么宝洁这样的公司，它一个 API 接口居然能等将近 30 分钟，而更加令人难以忍受的，是大量只能调用一次的接口，这类接口既无法保证能 100%调用成功，同样无法保证，第二次调和第一次调效果完全一样，所以，关于重试与超时这部分，其实应该结合实际业务去设计，因为每个人的诉求可能都不一样。</p>
+<h2 id=rabbitmq-的四种模式>RabbitMQ 的四种模式</h2>
+<p>在实现 EventBus 的过程中，博主用到了<code>direct</code>类型的交换器，并说这是 RabbitMQ 内置的发布-订阅实现，实际上，这里应该有<code>direct</code>、<code>fanout</code>、<code>topic</code>和<code>head</code>四种类型的交换器，下面我们来逐个地进行说明。</p>
+<p>1、<code>fanout</code>相当于广播，所有绑定了该交换器的队列都会收到消息。如下图所示：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/07/30/I6Ape3W5C1nOvxV.gif>
+<img src=https://i.loli.net/2020/07/30/I6Ape3W5C1nOvxV.gif loading=lazy alt=RabbitMQ-fanout模式>
+</a>
+<figcaption>RabbitMQ-fanout模式</figcaption>
+</figure></p>
+<p>2、<code>direct</code>相当于发布订阅，只有绑定了该交换器且 routingKey 完全匹配的队列会收到消息。如下图所示：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/07/31/xcNezCmHov3UL5D.gif>
+<img src=https://i.loli.net/2020/07/31/xcNezCmHov3UL5D.gif loading=lazy alt=RabbitMQ-driect模式>
+</a>
+<figcaption>RabbitMQ-driect模式</figcaption>
+</figure></p>
+<p>3、<code>topic</code>相当于<code>direct</code> + 模糊匹配，所有绑定了该交换器的队列，且 routingKey 符合给定的模式，就会收到消息。如下图所示：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/07/31/j6H5dOX4FsJPgxC.gif>
+<img src=https://i.loli.net/2020/07/31/j6H5dOX4FsJPgxC.gif loading=lazy alt=RabbitMQ-topic模式>
+</a>
+<figcaption>RabbitMQ-topic模式</figcaption>
+</figure></p>
+<p>4、<code>header</code>相当于给每条消息定义了一个“头”，只有当头中的一个键值对(Any)或者全部键值对(All)匹配的时候，才会收到消息，这种实际应用中非常少，如下图所示：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/07/31/Q7CkMVsL4jFRtNT.png>
+<img src=https://i.loli.net/2020/07/31/Q7CkMVsL4jFRtNT.png loading=lazy alt=RabbitMQ-header模式>
+</a>
+<figcaption>RabbitMQ-header模式</figcaption>
+</figure></p>
+<h2 id=raabitmq-的死信机制>RaabitMQ 的死信机制</h2>
+<p>RabbitMQ 中的死信(Dead Letter)机制，我认为是一个非常有意思的东西，因为从实用性的角度来讲，它可以帮助我们实现“延时队列"，虽然在更多的场景下，我们希望消息能被立即处理，因为这样看起来更像一个“实时”的行为。可在实际应用过程中，我们难免会遇到这样一种情况，一条消息经过手动 ACK 以后从队列中移除，结果消费者端问你能不能再消费一次这条消息，所以，Kafka 里就提供了两种策略，即最多一次和至少一次，最多一次保证的是消息不会被重复消费，而至少一次保证的是消息 100%被成功消费。所以，简单来说，在为 RabbitMQ 配置了死信的情况下，可以让部分消息有机会重新进入队列、重新被消费。那么，什么情况下会产生死信呢？主要有下面三种情况：</p>
+<ul>
+<li>消息被否定确认，使用<code>channel.basicNack</code>或<code>channel.basicReject</code>，并且此时<code>requeue</code>属性被设置为 false。</li>
+<li>消息在队列的存活时间超过设置的 TTL 时间。</li>
+<li>消息队列的消息数量已经超过最大队列长度。</li>
+</ul>
+<p>接下来，为了配合死信机制，我们必须要声明死信队列，建议为每一个需要配置死信的事件单独定义一个死信队列，声明方法如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=c1>//声明死信交换器
+</span><span class=ln> 2</span><span class=c1></span><span class=n>channel</span><span class=p>.</span><span class=n>ExchangeDeclare</span><span class=p>(</span><span class=s>&#34;exchange.with.dlx&#34;</span><span class=p>,</span> <span class=s>&#34;direct&#34;</span><span class=p>,</span> <span class=k>true</span><span class=p>,</span> <span class=k>false</span><span class=p>);</span>
+<span class=ln> 3</span>
+<span class=ln> 4</span><span class=c1>//声明死信队列
+</span><span class=ln> 5</span><span class=c1></span><span class=kt>var</span> <span class=n>args</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;();</span>
+<span class=ln> 6</span><span class=c1>//该队列中所有消息都进入死信交换器
+</span><span class=ln> 7</span><span class=c1></span><span class=n>args</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=s>&#34;x-dead-letter-exchange&#34;</span><span class=p>,</span> <span class=s>&#34;exchange.with.dlx&#34;</span><span class=p>);</span>
+<span class=ln> 8</span><span class=c1>//该队列中指定routingKey的消息进入死信交换器
+</span><span class=ln> 9</span><span class=c1></span><span class=n>args</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=s>&#34;x-dead-letter-routing-key&#34;</span><span class=p>,</span> <span class=s>&#34;foo.bar&#34;</span><span class=p>);</span>
+<span class=ln>10</span><span class=n>channel</span><span class=p>.</span><span class=n>QueueDeclare</span><span class=p>(</span><span class=s>&#34;queue.with.dlx&#34;</span><span class=p>,</span> <span class=k>true</span><span class=p>,</span> <span class=k>false</span><span class=p>,</span> <span class=k>false</span><span class=p>,</span> <span class=n>args</span><span class=p>);</span>
+</code></pre></div><h1 id=本文小结>本文小结</h1>
+<p>本文参考微软的 <a class=link href=https://github.com/dotnet-architecture/eShopOnContainers target=_blank rel=noopener>eShopOnContainers</a> 项目，实现一个基于 RabbitMQ 的事件总线，事件总线是发布-订阅模式的一种延伸，可以在分布式的环境中令消息的发布者、订阅者完美地解耦，是领域驱动设计(DDD)中重要的基础设施之一，对于实现业务上的“事件驱动”非常有帮助。而实现 EventBus 最关键的三个方法，即 Publish()、Subscribe()和 Unsubscribe()，这其中需要了解一部分 RabbitMQ 的知识，所以，在这篇博客中，你可以了解到 RabbitMQ 的四种交换器、死信机制、重试超时机制等等，在此基础上，我们将在下一篇博客中，通过 <a class=link href=https://github.com/noplay/python-mysql-replication target=_blank rel=noopener>Python-Mysql-Replication</a> 实现 Binlog 的发布，而一旦我们将 Binlog 发布到消息队列中，本文实现的 EventBus 就可以作为消息的中介者而登场啦，欢迎大家继续关注我的博客，我们下一篇见！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/rabbitmq/>RabbitMQ</a>
+<a href=/tags/eventbus/>EventBus</a>
+<a href=/tags/%E4%BA%8B%E4%BB%B6%E8%AE%A2%E9%98%85/>事件订阅</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/3424138425/>
+<div class=article-details>
+<h2 class=article-title>利用 MySQL 的 Binlog 实现数据同步与订阅(下)：EventBus 篇</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/1333693167/>
+<div class=article-details>
+<h2 class=article-title>利用 MySQL 的 Binlog 实现数据同步与订阅(上)：基础篇</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3219639636/>
+<div class=article-details>
+<h2 class=article-title>EFCore 实体命名约定库：EFCore.NamingConventions</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/2151871792/>
+<div class=article-details>
+<h2 class=article-title>浅议 EF Core 分库分表及多租户架构的实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/835719605/>
+<div class=article-details>
+<h2 class=article-title>基于选项模式实现.NET Core 的配置热更新</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/580694660/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#eventbus-整体设计>EventBus 整体设计</a></li>
+<li><a href=#基于-rabbitmq-的实现>基于 RabbitMQ 的实现</a>
+<ol>
+<li><a href=#publish>Publish</a></li>
+<li><a href=#subscribeunsubscribe>Subscribe/Unsubscribe</a></li>
+</ol>
+</li>
+<li><a href=#rabbitmq-进阶与释疑>RabbitMQ 进阶与释疑</a>
+<ol>
+<li><a href=#rabbitmq-丢消息怎么办>RabbitMQ 丢消息怎么办</a></li>
+<li><a href=#rabbitmq-重试与超时>RabbitMQ 重试与超时</a></li>
+<li><a href=#rabbitmq-的四种模式>RabbitMQ 的四种模式</a></li>
+<li><a href=#raabitmq-的死信机制>RaabitMQ 的死信机制</a></li>
+</ol>
+</li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/liquid/ class=font_size_1>
+Liquid
+</a>
+<a href=/tags/sklearn/ class=font_size_1>
+Sklearn
+</a>
+<a href=/tags/consul/ class=font_size_1>
+Consul
+</a>
+<a href=/tags/love2d/ class=font_size_1>
+Love2D
+</a>
+<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
+展望
+</a>
+<a href=/tags/rpg/ class=font_size_1>
+RPG
+</a>
+<a href=/tags/%E6%A2%A6%E6%83%B3/ class=font_size_3>
+梦想
+</a>
+<a href=/tags/%E9%98%BF%E9%87%8C/ class=font_size_1>
+阿里
+</a>
+<a href=/tags/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/ class=font_size_2>
+动态代理
+</a>
+<a href=/tags/%E9%9B%86%E7%BE%A4/ class=font_size_1>
+集群
+</a>
+<a href=/tags/unity3d/ class=font_size_27>
+Unity3D
+</a>
+<a href=/tags/aop/ class=font_size_6>
+AOP
+</a>
+<a href=/tags/%E6%89%A9%E5%B1%95/ class=font_size_4>
+扩展
+</a>
+<a href=/tags/cors/ class=font_size_2>
+CORS
+</a>
+<a href=/tags/%E4%BA%BA%E6%96%87/ class=font_size_2>
+人文
+</a>
+<a href=/tags/%E5%B9%B4%E5%8D%8E/ class=font_size_1>
+年华
+</a>
+<a href=/tags/%E6%A0%A1%E9%AA%8C/ class=font_size_1>
+校验
+</a>
+<a href=/tags/mvc/ class=font_size_1>
+MVC
+</a>
+<a href=/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/ class=font_size_1>
+反向代理
+</a>
+<a href=/tags/%E7%88%B1%E6%83%85/ class=font_size_2>
+爱情
+</a>
+<a href=/tags/%E5%B9%B6%E5%8F%91/ class=font_size_1>
+并发
+</a>
+<a href=/tags/%E6%9E%B6%E6%9E%84/ class=font_size_2>
+架构
+</a>
+<a href=/tags/%E5%B7%A5%E4%BD%9C/ class=font_size_3>
+工作
+</a>
+<a href=/tags/%E8%9B%8B%E7%82%92%E9%A5%AD/ class=font_size_1>
+蛋炒饭
+</a>
+<a href=/tags/%E6%A0%BC%E5%BC%8F%E5%8C%96/ class=font_size_1>
+格式化
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

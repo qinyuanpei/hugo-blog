@@ -1,0 +1,663 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="今天这篇文章会基于 Python 对微信好友进行数据分析，这里选择的维度主要有：性别、头像、签名、位置，主要采用图表和词云两种形式来呈现结果，其中，对文本类信息会采用词频分析和情感分析两种方法;这里我们会在当前目录新建一个 HeadImages 目录，用以存储所有好友的头像，然后我们这里会用到一个名为 FaceApi 类，这个类由腾讯优图的 SDK 封装而来，这里分别调用了[人脸检测](http://youtu.qq.com/#/develop/api-face-analysis-detect)和[图像标签识别](http://youtu.qq.com/#/develop/api-image-tag)两个 API 接口，前者会统计&#34;使用人脸头像&#34;和&#34;不使用人脸头像&#34;的好友各自的数目，后者会累加每个头像中提取出来的标签;plt.title(u'%s 的微信好友签名信息情感分析' % friends[0]['NickName'])"><title>基于 Python 实现的微信好友数据分析</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/2805694118/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="基于 Python 实现的微信好友数据分析">
+<meta property="og:description" content="今天这篇文章会基于 Python 对微信好友进行数据分析，这里选择的维度主要有：性别、头像、签名、位置，主要采用图表和词云两种形式来呈现结果，其中，对文本类信息会采用词频分析和情感分析两种方法;这里我们会在当前目录新建一个 HeadImages 目录，用以存储所有好友的头像，然后我们这里会用到一个名为 FaceApi 类，这个类由腾讯优图的 SDK 封装而来，这里分别调用了[人脸检测](http://youtu.qq.com/#/develop/api-face-analysis-detect)和[图像标签识别](http://youtu.qq.com/#/develop/api-image-tag)两个 API 接口，前者会统计&#34;使用人脸头像&#34;和&#34;不使用人脸头像&#34;的好友各自的数目，后者会累加每个头像中提取出来的标签;plt.title(u'%s 的微信好友签名信息情感分析' % friends[0]['NickName'])">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/2805694118/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="Python"><meta property="article:tag" content="Wechat"><meta property="article:tag" content="matplotlib"><meta property="article:published_time" content="2018-02-24T12:50:52+00:00"><meta property="article:modified_time" content="2018-02-24T12:50:52+00:00">
+<meta name=twitter:title content="基于 Python 实现的微信好友数据分析">
+<meta name=twitter:description content="今天这篇文章会基于 Python 对微信好友进行数据分析，这里选择的维度主要有：性别、头像、签名、位置，主要采用图表和词云两种形式来呈现结果，其中，对文本类信息会采用词频分析和情感分析两种方法;这里我们会在当前目录新建一个 HeadImages 目录，用以存储所有好友的头像，然后我们这里会用到一个名为 FaceApi 类，这个类由腾讯优图的 SDK 封装而来，这里分别调用了[人脸检测](http://youtu.qq.com/#/develop/api-face-analysis-detect)和[图像标签识别](http://youtu.qq.com/#/develop/api-image-tag)两个 API 接口，前者会统计&#34;使用人脸头像&#34;和&#34;不使用人脸头像&#34;的好友各自的数目，后者会累加每个头像中提取出来的标签;plt.title(u'%s 的微信好友签名信息情感分析' % friends[0]['NickName'])">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/>
+数据分析
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/2805694118/>基于 Python 实现的微信好友数据分析</a>
+</h2>
+<h3 class=article-subtitle>
+今天这篇文章会基于 Python 对微信好友进行数据分析，这里选择的维度主要有：性别、头像、签名、位置，主要采用图表和词云两种形式来呈现结果，其中，对文本类信息会采用词频分析和情感分析两种方法;这里我们会在当前目录新建一个 HeadImages 目录，用以存储所有好友的头像，然后我们这里会用到一个名为 FaceApi 类，这个类由腾讯优图的 SDK 封装而来，这里分别调用了[人脸检测](http://youtu.qq.com/#/develop/api-face-analysis-detect)和[图像标签识别](http://youtu.qq.com/#/develop/api-image-tag)两个 API 接口，前者会统计"使用人脸头像"和"不使用人脸头像"的好友各自的数目，后者会累加每个头像中提取出来的标签;plt.title(u'%s 的微信好友签名信息情感分析' % friends[0]['NickName'])
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2018-02-24</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 14 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>最近微信迎来了一次重要的更新，允许用户对"发现"页面进行定制。不知道从什么时候开始，微信朋友圈变得越来越复杂，当越来越多的人选择"仅展示最近三天的朋友圈"，大概连微信官方都是一脸的无可奈何。逐步泛化的好友关系，让微信从熟人社交逐渐过渡到陌生人社交，而朋友圈里亦真亦幻的状态更新，仿佛在努力证明每一个个体的"有趣"。有人选择在朋友圈里记录生活的点滴，有人选择在朋友圈里展示观点的异同，可归根到底，人们无时无刻不在窥探着别人的生活，唯独怕别人过多地了解自己的生活。人性中交织着的光明与黑暗，像一只浑身长满刺的刺猬，离得太远会感觉到寒冷，而靠得太近则害怕被刺扎到。朋友圈就像过年走亲戚，即便你心中有一万个不痛快，总是不愿意撕破脸，或屏蔽对方，或不给对方看，或仅展示最后三天，于是通讯录里的联系人越来越多，朋友圈越来越大，可再不会有能真正触动你内心的"小红点"出现，人类让一个产品变得越来越复杂，然后说它无法满足人类的需求，这大概是一开始就始料不及的吧！</p>
+<h1 id=引言>引言</h1>
+<p>有人说，人性远比计算机编程更复杂，因为即使是人类迄今为止最伟大的发明——计算机，在面对人类的自然语言时同样会张惶失措 。人类有多少语言存在着模棱两可的含义，我认为语言是人类最大的误解，人类时常喜欢揣测语言背后隐藏的含义，好像在沟通时表达清晰的含义会让人类没有面子，更不用说网络上流行的猜测女朋友真实意图的案例。金庸先生的武侠小说《射雕英雄传》里，在信息闭塞的南宋时期，江湖上裘千丈的一句鬼话，就搅得整个武林天翻地覆。其实，一两句话说清楚不好吗？黄药师、全真七子、江南六怪间的种种纠葛，哪一场不是误会？一众儿武功震古烁今的武林高手，怎么没有丝毫的去伪存真的能力，语言造成了多少误会。</p>
+<p>可即便人类的语言复杂得像一本无字天书，可人类还是从这些语言中寻觅到蛛丝马迹。古人有文王"拘而演周易"、东方朔测字卜卦，这种带有"迷信"色彩的原始崇拜，就如同今天人们迷信星座运势一般，都是人类在上千年的演变中不断对经验进行总结和训练的结果。如此说起来，我们的人工智能未尝不是一种更加科学化的"迷信"，因为数据和算法让我们在不断地相信，这一切都是真实地。生活在数字时代的我们，无疑是悲哀的，一面努力地在别人面前隐藏真实地自己，一面不无遗憾地感慨自己无处遁逃，每一根数字神经都紧紧地联系着你和我，你不能渴望任何一部数字设备具备真正的智能，可你生命里的每个瞬间，都在悄然间被数据地折射出来。</p>
+<p>今天这篇文章会基于 Python 对微信好友进行数据分析，这里选择的维度主要有：性别、头像、签名、位置，主要采用图表和词云两种形式来呈现结果，其中，对文本类信息会采用词频分析和情感分析两种方法。常言道：工欲善其事，必先利其器也。在正式开始这篇文章前，简单介绍下本文中使用到的第三方模块：</p>
+<ul>
+<li><a class=link href=https://github.com/littlecodersh/itchat target=_blank rel=noopener>itchat</a>：微信网页版接口封装 Python 版本，在本文中用以获取微信好友信息。</li>
+<li><a class=link href=https://github.com/fxsjy/jieba target=_blank rel=noopener>jieba</a>：结巴分词的 Python 版本，在本文中用以对文本信息进行分词处理。</li>
+<li><a class=link href=https://matplotlib.org/ target=_blank rel=noopener>matplotlib</a>： Python 中图表绘制模块，在本文中用以绘制柱形图和饼图</li>
+<li><a class=link href=https://github.com/isnowfy/snownlp target=_blank rel=noopener>snownlp</a>：一个 Python 中的中文分词模块，在本文中用以对文本信息进行情感判断。</li>
+<li><a class=link href=http://www.pythonware.com/products/pil/ target=_blank rel=noopener>PIL</a>： Python 中的图像处理模块，在本文中用以对图片进行处理。</li>
+<li><a class=link href=http://www.numpy.org/ target=_blank rel=noopener>numpy</a>： Python 中 的数值计算模块，在本文中配合 <a class=link href=https://amueller.github.io/word_cloud/ target=_blank rel=noopener>wordcloud</a> 模块使用。</li>
+<li><a class=link href=https://amueller.github.io/word_cloud/ target=_blank rel=noopener>wordcloud</a>： Python 中的词云模块，在本文中用以绘制词云图片。</li>
+<li><a class=link href=https://github.com/Tencent-YouTu/Python_sdk target=_blank rel=noopener>TencentYoutuyun</a>：腾讯优图提供的 Python 版本 SDK ，在本文中用以识别人脸及提取图片标签信息。
+以上模块均可通过 pip 安装，关于各个模块使用的详细说明，请自行查阅各自文档。</li>
+</ul>
+<h1 id=数据分析>数据分析</h1>
+<p>分析微信好友数据的前提是获得好友信息，通过使用 itchat 这个模块，这一切会变得非常简单，我们通过下面两行代码就可以实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln>1</span><span class=n>itchat</span><span class=o>.</span><span class=n>auto_login</span><span class=p>(</span><span class=n>hotReload</span> <span class=o>=</span> <span class=kc>True</span><span class=p>)</span>
+<span class=ln>2</span><span class=n>friends</span> <span class=o>=</span> <span class=n>itchat</span><span class=o>.</span><span class=n>get_friends</span><span class=p>(</span><span class=n>update</span> <span class=o>=</span> <span class=kc>True</span><span class=p>)</span>
+</code></pre></div><p>同平时登录网页版微信一样，我们使用手机扫描二维码就可以登录，这里返回的 friends 对象是一个集合，第一个元素是当前用户。所以，在下面的数据分析流程中，我们始终取 friends[1:]作为原始输入数据，集合中的每一个元素都是一个字典结构，以我本人为例，可以注意到这里有 Sex、City、Province、HeadImgUrl、Signature 这四个字段，我们下面的分析就从这四个字段入手：</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziyue7akej217904zabg.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziyue7akej217904zabg.jpg loading=lazy alt=好友信息结构展示>
+</a>
+<figcaption>好友信息结构展示</figcaption>
+</figure></p>
+<h2 id=好友性别>好友性别</h2>
+<p>分析好友性别，我们首先要获得所有好友的性别信息，这里我们将每一个好友信息的 Sex 字段提取出来，然后分别统计出 Male、Female 和 Unkonw 的数目，我们将这三个数值组装到一个列表中，即可使用 matplotlib 模块绘制出饼图来，其代码实现如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>def</span> <span class=nf>analyseSex</span><span class=p>(</span><span class=n>firends</span><span class=p>):</span>
+<span class=ln> 2</span>    <span class=n>sexs</span> <span class=o>=</span> <span class=nb>list</span><span class=p>(</span><span class=nb>map</span><span class=p>(</span><span class=k>lambda</span> <span class=n>x</span><span class=p>:</span><span class=n>x</span><span class=p>[</span><span class=s1>&#39;Sex&#39;</span><span class=p>],</span><span class=n>friends</span><span class=p>[</span><span class=mi>1</span><span class=p>:]))</span>
+<span class=ln> 3</span>    <span class=n>counts</span> <span class=o>=</span> <span class=nb>list</span><span class=p>(</span><span class=nb>map</span><span class=p>(</span><span class=k>lambda</span> <span class=n>x</span><span class=p>:</span><span class=n>x</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span><span class=n>Counter</span><span class=p>(</span><span class=n>sexs</span><span class=p>)</span><span class=o>.</span><span class=n>items</span><span class=p>()))</span>
+<span class=ln> 4</span>    <span class=n>labels</span> <span class=o>=</span> <span class=p>[</span><span class=s1>&#39;Unknow&#39;</span><span class=p>,</span><span class=s1>&#39;Male&#39;</span><span class=p>,</span><span class=s1>&#39;Female&#39;</span><span class=p>]</span>
+<span class=ln> 5</span>    <span class=n>colors</span> <span class=o>=</span> <span class=p>[</span><span class=s1>&#39;red&#39;</span><span class=p>,</span><span class=s1>&#39;yellowgreen&#39;</span><span class=p>,</span><span class=s1>&#39;lightskyblue&#39;</span><span class=p>]</span>
+<span class=ln> 6</span>    <span class=n>plt</span><span class=o>.</span><span class=n>figure</span><span class=p>(</span><span class=n>figsize</span><span class=o>=</span><span class=p>(</span><span class=mi>8</span><span class=p>,</span><span class=mi>5</span><span class=p>),</span> <span class=n>dpi</span><span class=o>=</span><span class=mi>80</span><span class=p>)</span>
+<span class=ln> 7</span>    <span class=n>plt</span><span class=o>.</span><span class=n>axes</span><span class=p>(</span><span class=n>aspect</span><span class=o>=</span><span class=mi>1</span><span class=p>)</span> 
+<span class=ln> 8</span>    <span class=n>plt</span><span class=o>.</span><span class=n>pie</span><span class=p>(</span><span class=n>counts</span><span class=p>,</span> <span class=c1>#性别统计结果</span>
+<span class=ln> 9</span>            <span class=n>labels</span><span class=o>=</span><span class=n>labels</span><span class=p>,</span> <span class=c1>#性别展示标签</span>
+<span class=ln>10</span>            <span class=n>colors</span><span class=o>=</span><span class=n>colors</span><span class=p>,</span> <span class=c1>#饼图区域配色</span>
+<span class=ln>11</span>            <span class=n>labeldistance</span> <span class=o>=</span> <span class=mf>1.1</span><span class=p>,</span> <span class=c1>#标签距离圆点距离</span>
+<span class=ln>12</span>            <span class=n>autopct</span> <span class=o>=</span> <span class=s1>&#39;</span><span class=si>%3.1f%%</span><span class=s1>&#39;</span><span class=p>,</span> <span class=c1>#饼图区域文本格式</span>
+<span class=ln>13</span>            <span class=n>shadow</span> <span class=o>=</span> <span class=kc>False</span><span class=p>,</span> <span class=c1>#饼图是否显示阴影</span>
+<span class=ln>14</span>            <span class=n>startangle</span> <span class=o>=</span> <span class=mi>90</span><span class=p>,</span> <span class=c1>#饼图起始角度</span>
+<span class=ln>15</span>            <span class=n>pctdistance</span> <span class=o>=</span> <span class=mf>0.6</span> <span class=c1>#饼图区域文本距离圆点距离</span>
+<span class=ln>16</span>    <span class=p>)</span>
+<span class=ln>17</span>    <span class=n>plt</span><span class=o>.</span><span class=n>legend</span><span class=p>(</span><span class=n>loc</span><span class=o>=</span><span class=s1>&#39;upper right&#39;</span><span class=p>,)</span>
+<span class=ln>18</span>    <span class=n>plt</span><span class=o>.</span><span class=n>title</span><span class=p>(</span><span class=sa>u</span><span class=s1>&#39;</span><span class=si>%s</span><span class=s1>的微信好友性别组成&#39;</span> <span class=o>%</span> <span class=n>friends</span><span class=p>[</span><span class=mi>0</span><span class=p>][</span><span class=s1>&#39;NickName&#39;</span><span class=p>])</span>
+<span class=ln>19</span>    <span class=n>plt</span><span class=o>.</span><span class=n>show</span><span class=p>()</span>
+</code></pre></div><p>这里简单解释下这段代码，微信中性别字段的取值有 Unkonw、Male 和 Female 三种，其对应的数值分别为 0、1、2。通过 Collection 模块中的 Counter()对这三种不同的取值进行统计，其 items()方法返回的是一个元组的集合，该元组的第一维元素表示键，即 0、1、2，该元组的第二维元素表示数目，且该元组的集合是排序过的，即其键按照 0、1、2 的顺序排列，所以通过 map()方法就可以得到这三种不同取值的数目，我们将其传递给 matplotlib 绘制即可，这三种不同取值各自所占的百分比由 matplotlib 计算得出。下图是 matplotlib 绘制的好友性别分布图：
+<figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziyb6mxjqj20hs0b40ss.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziyb6mxjqj20hs0b40ss.jpg loading=lazy alt=微信好友性别分析>
+</a>
+<figcaption>微信好友性别分析</figcaption>
+</figure></p>
+<p>看到这个结果，我一点都不觉得意外，男女比例严重失衡，这虽然可以解释我单身的原因，可我不觉得通过调整男女比例就能解决问题，好多人认为自己单身是因为社交圈子狭小，那么是不是扩展了社交圈子就能摆脱单身呢？我觉得或许这样会增加脱单的概率，可幸运之神应该不会眷顾我，因为我的好运气早在我 24 岁以前就消耗完啦。在知乎上有一个热门的话题：<a class=link href=https://www.zhihu.com/question/55744630 target=_blank rel=noopener>现在的男性是否普遍不再对女性展开追求了？</a>，其实哪里会有人喜欢孤独呢？无非是怕一次又一次的失望罢了。有的人并不是我的花儿，我只是恰好途径了她的绽放。曾经有人说我是一个多情的人，可她永远不会知道，我做出的每一个决定都炽热而悲壮。所谓"慧极必伤，情深不寿；谦谦君子，温润如玉"，世人苦五毒者大抵如此。</p>
+<h2 id=好友头像>好友头像</h2>
+<p>分析好友头像，从两个方面来分析，第一，在这些好友头像中，使用人脸头像的好友比重有多大；第二，从这些好友头像中，可以提取出哪些有价值的关键字。这里需要根据 HeadImgUrl 字段下载头像到本地，然后通过<a class=link href=http://youtu.qq.com/#/home target=_blank rel=noopener>腾讯优图</a>提供的人脸识别相关的 API 接口，检测头像图片中是否存在人脸以及提取图片中的标签。其中，前者是分类汇总，我们使用饼图来呈现结果；后者是对文本进行分析，我们使用词云来呈现结果。关键代码如下 所示：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>def</span> <span class=nf>analyseHeadImage</span><span class=p>(</span><span class=n>frineds</span><span class=p>):</span>
+<span class=ln> 2</span>    <span class=c1># Init Path</span>
+<span class=ln> 3</span>    <span class=n>basePath</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>abspath</span><span class=p>(</span><span class=s1>&#39;.&#39;</span><span class=p>)</span>
+<span class=ln> 4</span>    <span class=n>baseFolder</span> <span class=o>=</span> <span class=n>basePath</span> <span class=o>+</span> <span class=s1>&#39;</span><span class=se>\\</span><span class=s1>HeadImages</span><span class=se>\\</span><span class=s1>&#39;</span>
+<span class=ln> 5</span>    <span class=k>if</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>exists</span><span class=p>(</span><span class=n>baseFolder</span><span class=p>)</span> <span class=o>==</span> <span class=kc>False</span><span class=p>):</span>
+<span class=ln> 6</span>        <span class=n>os</span><span class=o>.</span><span class=n>makedirs</span><span class=p>(</span><span class=n>baseFolder</span><span class=p>)</span>
+<span class=ln> 7</span>
+<span class=ln> 8</span>    <span class=c1># Analyse Images</span>
+<span class=ln> 9</span>    <span class=n>faceApi</span> <span class=o>=</span> <span class=n>FaceAPI</span><span class=p>()</span>
+<span class=ln>10</span>    <span class=n>use_face</span> <span class=o>=</span> <span class=mi>0</span>
+<span class=ln>11</span>    <span class=n>not_use_face</span> <span class=o>=</span> <span class=mi>0</span>
+<span class=ln>12</span>    <span class=n>image_tags</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span>
+<span class=ln>13</span>    <span class=k>for</span> <span class=n>index</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span><span class=nb>len</span><span class=p>(</span><span class=n>friends</span><span class=p>)):</span>
+<span class=ln>14</span>        <span class=n>friend</span> <span class=o>=</span> <span class=n>friends</span><span class=p>[</span><span class=n>index</span><span class=p>]</span>
+<span class=ln>15</span>        <span class=c1># Save HeadImages</span>
+<span class=ln>16</span>        <span class=n>imgFile</span> <span class=o>=</span> <span class=n>baseFolder</span> <span class=o>+</span> <span class=s1>&#39;</span><span class=se>\\</span><span class=s1>Image</span><span class=si>%s</span><span class=s1>.jpg&#39;</span> <span class=o>%</span> <span class=nb>str</span><span class=p>(</span><span class=n>index</span><span class=p>)</span>
+<span class=ln>17</span>        <span class=n>imgData</span> <span class=o>=</span> <span class=n>itchat</span><span class=o>.</span><span class=n>get_head_img</span><span class=p>(</span><span class=n>userName</span> <span class=o>=</span> <span class=n>friend</span><span class=p>[</span><span class=s1>&#39;UserName&#39;</span><span class=p>])</span>
+<span class=ln>18</span>        <span class=k>if</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>exists</span><span class=p>(</span><span class=n>imgFile</span><span class=p>)</span> <span class=o>==</span> <span class=kc>False</span><span class=p>):</span>
+<span class=ln>19</span>            <span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=n>imgFile</span><span class=p>,</span><span class=s1>&#39;wb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>file</span><span class=p>:</span>
+<span class=ln>20</span>                <span class=n>file</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>imgData</span><span class=p>)</span>
+<span class=ln>21</span>
+<span class=ln>22</span>        <span class=c1># Detect Faces</span>
+<span class=ln>23</span>        <span class=n>time</span><span class=o>.</span><span class=n>sleep</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span>
+<span class=ln>24</span>        <span class=n>result</span> <span class=o>=</span> <span class=n>faceApi</span><span class=o>.</span><span class=n>detectFace</span><span class=p>(</span><span class=n>imgFile</span><span class=p>)</span>
+<span class=ln>25</span>        <span class=k>if</span> <span class=n>result</span> <span class=o>==</span> <span class=kc>True</span><span class=p>:</span>
+<span class=ln>26</span>            <span class=n>use_face</span> <span class=o>+=</span> <span class=mi>1</span>
+<span class=ln>27</span>        <span class=k>else</span><span class=p>:</span>
+<span class=ln>28</span>            <span class=n>not_use_face</span> <span class=o>+=</span> <span class=mi>1</span> 
+<span class=ln>29</span>
+<span class=ln>30</span>        <span class=c1># Extract Tags</span>
+<span class=ln>31</span>        <span class=n>result</span> <span class=o>=</span> <span class=n>faceApi</span><span class=o>.</span><span class=n>extractTags</span><span class=p>(</span><span class=n>imgFile</span><span class=p>)</span>
+<span class=ln>32</span>        <span class=n>image_tags</span> <span class=o>+=</span> <span class=s1>&#39;,&#39;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=nb>list</span><span class=p>(</span><span class=nb>map</span><span class=p>(</span><span class=k>lambda</span> <span class=n>x</span><span class=p>:</span><span class=n>x</span><span class=p>[</span><span class=s1>&#39;tag_name&#39;</span><span class=p>],</span><span class=n>result</span><span class=p>)))</span>
+<span class=ln>33</span>    
+<span class=ln>34</span>    <span class=n>labels</span> <span class=o>=</span> <span class=p>[</span><span class=sa>u</span><span class=s1>&#39;使用人脸头像&#39;</span><span class=p>,</span><span class=sa>u</span><span class=s1>&#39;不使用人脸头像&#39;</span><span class=p>]</span>
+<span class=ln>35</span>    <span class=n>counts</span> <span class=o>=</span> <span class=p>[</span><span class=n>use_face</span><span class=p>,</span><span class=n>not_use_face</span><span class=p>]</span>
+<span class=ln>36</span>    <span class=n>colors</span> <span class=o>=</span> <span class=p>[</span><span class=s1>&#39;red&#39;</span><span class=p>,</span><span class=s1>&#39;yellowgreen&#39;</span><span class=p>,</span><span class=s1>&#39;lightskyblue&#39;</span><span class=p>]</span>
+<span class=ln>37</span>    <span class=n>plt</span><span class=o>.</span><span class=n>figure</span><span class=p>(</span><span class=n>figsize</span><span class=o>=</span><span class=p>(</span><span class=mi>8</span><span class=p>,</span><span class=mi>5</span><span class=p>),</span> <span class=n>dpi</span><span class=o>=</span><span class=mi>80</span><span class=p>)</span>
+<span class=ln>38</span>    <span class=n>plt</span><span class=o>.</span><span class=n>axes</span><span class=p>(</span><span class=n>aspect</span><span class=o>=</span><span class=mi>1</span><span class=p>)</span> 
+<span class=ln>39</span>    <span class=n>plt</span><span class=o>.</span><span class=n>pie</span><span class=p>(</span><span class=n>counts</span><span class=p>,</span> <span class=c1>#性别统计结果</span>
+<span class=ln>40</span>            <span class=n>labels</span><span class=o>=</span><span class=n>labels</span><span class=p>,</span> <span class=c1>#性别展示标签</span>
+<span class=ln>41</span>            <span class=n>colors</span><span class=o>=</span><span class=n>colors</span><span class=p>,</span> <span class=c1>#饼图区域配色</span>
+<span class=ln>42</span>            <span class=n>labeldistance</span> <span class=o>=</span> <span class=mf>1.1</span><span class=p>,</span> <span class=c1>#标签距离圆点距离</span>
+<span class=ln>43</span>            <span class=n>autopct</span> <span class=o>=</span> <span class=s1>&#39;</span><span class=si>%3.1f%%</span><span class=s1>&#39;</span><span class=p>,</span> <span class=c1>#饼图区域文本格式</span>
+<span class=ln>44</span>            <span class=n>shadow</span> <span class=o>=</span> <span class=kc>False</span><span class=p>,</span> <span class=c1>#饼图是否显示阴影</span>
+<span class=ln>45</span>            <span class=n>startangle</span> <span class=o>=</span> <span class=mi>90</span><span class=p>,</span> <span class=c1>#饼图起始角度</span>
+<span class=ln>46</span>            <span class=n>pctdistance</span> <span class=o>=</span> <span class=mf>0.6</span> <span class=c1>#饼图区域文本距离圆点距离</span>
+<span class=ln>47</span>    <span class=p>)</span>
+<span class=ln>48</span>    <span class=n>plt</span><span class=o>.</span><span class=n>legend</span><span class=p>(</span><span class=n>loc</span><span class=o>=</span><span class=s1>&#39;upper right&#39;</span><span class=p>,)</span>
+<span class=ln>49</span>    <span class=n>plt</span><span class=o>.</span><span class=n>title</span><span class=p>(</span><span class=sa>u</span><span class=s1>&#39;</span><span class=si>%s</span><span class=s1>的微信好友使用人脸头像情况&#39;</span> <span class=o>%</span> <span class=n>friends</span><span class=p>[</span><span class=mi>0</span><span class=p>][</span><span class=s1>&#39;NickName&#39;</span><span class=p>])</span>
+<span class=ln>50</span>    <span class=n>plt</span><span class=o>.</span><span class=n>show</span><span class=p>()</span> 
+<span class=ln>51</span>
+<span class=ln>52</span>    <span class=n>image_tags</span> <span class=o>=</span> <span class=n>image_tags</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=s1>&#39;iso8859-1&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span>
+<span class=ln>53</span>    <span class=n>back_coloring</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>(</span><span class=n>Image</span><span class=o>.</span><span class=n>open</span><span class=p>(</span><span class=s1>&#39;face.jpg&#39;</span><span class=p>))</span>
+<span class=ln>54</span>    <span class=n>wordcloud</span> <span class=o>=</span> <span class=n>WordCloud</span><span class=p>(</span>
+<span class=ln>55</span>        <span class=n>font_path</span><span class=o>=</span><span class=s1>&#39;simfang.ttf&#39;</span><span class=p>,</span>
+<span class=ln>56</span>        <span class=n>background_color</span><span class=o>=</span><span class=s2>&#34;white&#34;</span><span class=p>,</span>
+<span class=ln>57</span>        <span class=n>max_words</span><span class=o>=</span><span class=mi>1200</span><span class=p>,</span>
+<span class=ln>58</span>        <span class=n>mask</span><span class=o>=</span><span class=n>back_coloring</span><span class=p>,</span> 
+<span class=ln>59</span>        <span class=n>max_font_size</span><span class=o>=</span><span class=mi>75</span><span class=p>,</span>
+<span class=ln>60</span>        <span class=n>random_state</span><span class=o>=</span><span class=mi>45</span><span class=p>,</span>
+<span class=ln>61</span>        <span class=n>width</span><span class=o>=</span><span class=mi>800</span><span class=p>,</span> 
+<span class=ln>62</span>        <span class=n>height</span><span class=o>=</span><span class=mi>480</span><span class=p>,</span> 
+<span class=ln>63</span>        <span class=n>margin</span><span class=o>=</span><span class=mi>15</span>
+<span class=ln>64</span>    <span class=p>)</span>
+<span class=ln>65</span>
+<span class=ln>66</span>    <span class=n>wordcloud</span><span class=o>.</span><span class=n>generate</span><span class=p>(</span><span class=n>image_tags</span><span class=p>)</span>
+<span class=ln>67</span>    <span class=n>plt</span><span class=o>.</span><span class=n>imshow</span><span class=p>(</span><span class=n>wordcloud</span><span class=p>)</span>
+<span class=ln>68</span>    <span class=n>plt</span><span class=o>.</span><span class=n>axis</span><span class=p>(</span><span class=s2>&#34;off&#34;</span><span class=p>)</span>
+<span class=ln>69</span>    <span class=n>plt</span><span class=o>.</span><span class=n>show</span><span class=p>()</span>
+</code></pre></div><p>这里我们会在当前目录新建一个 HeadImages 目录，用以存储所有好友的头像，然后我们这里会用到一个名为 FaceApi 类，这个类由腾讯优图的 SDK 封装而来，这里分别调用了<a class=link href=http://youtu.qq.com/#/develop/api-face-analysis-detect target=_blank rel=noopener>人脸检测</a>和<a class=link href=http://youtu.qq.com/#/develop/api-image-tag target=_blank rel=noopener>图像标签识别</a>两个 API 接口，前者会统计"使用人脸头像"和"不使用人脸头像"的好友各自的数目，后者会累加每个头像中提取出来的标签。其分析结果如下图所示：
+<figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziy7pojhzj20zk0hb0ta.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy7pojhzj20zk0hb0ta.jpg loading=lazy>
+</a>
+</figure></p>
+<p>可以注意到，在所有微信好友中，约有接近 1/4 的微信好友使用了人脸头像， 而有接近 3/4 的微信好友没有人脸头像，这说明在所有微信好友中对"颜值 &ldquo;有自信的人，仅仅占到好友总数的 25%，或者说 75%的微信好友行事风格偏低调为主，不喜欢用人脸头像做微信头像。这是否说明"好看的皮囊"并非是千篇一律，长得好看的人实在是少数中的少数。所以，当女生的妆容越来越向着"韩式半永久粗平眉&rdquo;、&ldquo;瓜子脸"和"大红唇"靠拢的时候，当男生的服饰越来越向着"大背头&rdquo;、&ldquo;高领毛衣"和"长款大衣"靠拢的时候，我们能不能真正得个性一次。生命中有太多被世俗绑架着的事情，既要和别人不一样 ，同时还要和大多数人一样，这是人生在世的无可奈何。考虑到腾讯优图并不能真正得识别"人脸&rdquo;，我们这里对好友头像中的标签再次进行提取，来帮助我们了解微信好友的头像中有哪些 关键词，其分析结果如图所示：
+<figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziy4ztxq6j20zk0hbgnv.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy4ztxq6j20zk0hbgnv.jpg loading=lazy alt=微信好友头像标签词云展示>
+</a>
+<figcaption>微信好友头像标签词云展示</figcaption>
+</figure></p>
+<p>通过词云，我们可以发现：在微信好友中的签名词云中，出现频率相对较高的关键字有：女孩、树木、房屋、文本、截图、卡通、合影、天空、大海。这说明在我的微信好友中，好友选择的微信头像主要有日常、旅游、风景、截图四个来源，好友选择的微信头像中风格以卡通为主，好友选择的微信头像中常见的要素有天空、大海、房屋、树木。通过观察所有好友头像，我发现在我的微信好友中，使用个人照片作为微信头像的有 15 人，使用网络图片作为微信头像的有 53 人，使用动漫图片作为微信头像的有 25 人，使用合照图片作为微信头像的有 3 人，使用孩童照片作为微信头像的有 5 人，使用风景图片作为微信头像的有 13 人，使用女孩照片作为微信头像的有 18 人，基本符合图像标签提取的分析结果。</p>
+<h2 id=好友签名>好友签名</h2>
+<p>分析好友签名，签名是好友信息中最为丰富的文本信息，按照人类惯用的"贴标签"的方法论，签名可以分析出某一个人在某一段时间里状态，就像人开心了会笑、哀伤了会哭，哭和笑两种标签，分别表明了人开心和哀伤的状态。这里我们对签名做两种处理，第一种是使用用结巴分词进行分词后生成词云，目的是了解好友签名中的关键字有哪些，哪一个关键字出现的频率相对较高；第二种是使用 SnowNLP 分析好友签名中的感情倾向，即好友签名整体上是表现为正面的、负面的还是中立的，各自的比重是多少。这里提取 Signature 字段即可，其核心代码如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>def</span> <span class=nf>analyseSignature</span><span class=p>(</span><span class=n>friends</span><span class=p>):</span>
+<span class=ln> 2</span>    <span class=n>signatures</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span>
+<span class=ln> 3</span>    <span class=n>emotions</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=ln> 4</span>    <span class=n>pattern</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>compile</span><span class=p>(</span><span class=s2>&#34;1f\d.+&#34;</span><span class=p>)</span>
+<span class=ln> 5</span>    <span class=k>for</span> <span class=n>friend</span> <span class=ow>in</span> <span class=n>friends</span><span class=p>:</span>
+<span class=ln> 6</span>        <span class=n>signature</span> <span class=o>=</span> <span class=n>friend</span><span class=p>[</span><span class=s1>&#39;Signature&#39;</span><span class=p>]</span>
+<span class=ln> 7</span>        <span class=k>if</span><span class=p>(</span><span class=n>signature</span> <span class=o>!=</span> <span class=kc>None</span><span class=p>):</span>
+<span class=ln> 8</span>            <span class=n>signature</span> <span class=o>=</span> <span class=n>signature</span><span class=o>.</span><span class=n>strip</span><span class=p>()</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;span&#39;</span><span class=p>,</span> <span class=s1>&#39;&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;class&#39;</span><span class=p>,</span> <span class=s1>&#39;&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;emoji&#39;</span><span class=p>,</span> <span class=s1>&#39;&#39;</span><span class=p>)</span>
+<span class=ln> 9</span>            <span class=n>signature</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>sub</span><span class=p>(</span><span class=sa>r</span><span class=s1>&#39;1f(\d.+)&#39;</span><span class=p>,</span><span class=s1>&#39;&#39;</span><span class=p>,</span><span class=n>signature</span><span class=p>)</span>
+<span class=ln>10</span>            <span class=k>if</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>signature</span><span class=p>)</span><span class=o>&gt;</span><span class=mi>0</span><span class=p>):</span>
+<span class=ln>11</span>                <span class=n>nlp</span> <span class=o>=</span> <span class=n>SnowNLP</span><span class=p>(</span><span class=n>signature</span><span class=p>)</span>
+<span class=ln>12</span>                <span class=n>emotions</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>nlp</span><span class=o>.</span><span class=n>sentiments</span><span class=p>)</span>
+<span class=ln>13</span>                <span class=n>signatures</span> <span class=o>+=</span> <span class=s1>&#39; &#39;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>jieba</span><span class=o>.</span><span class=n>analyse</span><span class=o>.</span><span class=n>extract_tags</span><span class=p>(</span><span class=n>signature</span><span class=p>,</span><span class=mi>5</span><span class=p>))</span>
+<span class=ln>14</span>    <span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;signatures.txt&#39;</span><span class=p>,</span><span class=s1>&#39;wt&#39;</span><span class=p>,</span><span class=n>encoding</span><span class=o>=</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>file</span><span class=p>:</span>
+<span class=ln>15</span>         <span class=n>file</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>signatures</span><span class=p>)</span>
+<span class=ln>16</span>
+<span class=ln>17</span>    <span class=c1># Sinature WordCloud</span>
+<span class=ln>18</span>    <span class=n>back_coloring</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>(</span><span class=n>Image</span><span class=o>.</span><span class=n>open</span><span class=p>(</span><span class=s1>&#39;flower.jpg&#39;</span><span class=p>))</span>
+<span class=ln>19</span>    <span class=n>wordcloud</span> <span class=o>=</span> <span class=n>WordCloud</span><span class=p>(</span>
+<span class=ln>20</span>        <span class=n>font_path</span><span class=o>=</span><span class=s1>&#39;simfang.ttf&#39;</span><span class=p>,</span>
+<span class=ln>21</span>        <span class=n>background_color</span><span class=o>=</span><span class=s2>&#34;white&#34;</span><span class=p>,</span>
+<span class=ln>22</span>        <span class=n>max_words</span><span class=o>=</span><span class=mi>1200</span><span class=p>,</span>
+<span class=ln>23</span>        <span class=n>mask</span><span class=o>=</span><span class=n>back_coloring</span><span class=p>,</span> 
+<span class=ln>24</span>        <span class=n>max_font_size</span><span class=o>=</span><span class=mi>75</span><span class=p>,</span>
+<span class=ln>25</span>        <span class=n>random_state</span><span class=o>=</span><span class=mi>45</span><span class=p>,</span>
+<span class=ln>26</span>        <span class=n>width</span><span class=o>=</span><span class=mi>960</span><span class=p>,</span> 
+<span class=ln>27</span>        <span class=n>height</span><span class=o>=</span><span class=mi>720</span><span class=p>,</span> 
+<span class=ln>28</span>        <span class=n>margin</span><span class=o>=</span><span class=mi>15</span>
+<span class=ln>29</span>    <span class=p>)</span>
+<span class=ln>30</span>
+<span class=ln>31</span>    <span class=n>wordcloud</span><span class=o>.</span><span class=n>generate</span><span class=p>(</span><span class=n>signatures</span><span class=p>)</span>
+<span class=ln>32</span>    <span class=n>plt</span><span class=o>.</span><span class=n>imshow</span><span class=p>(</span><span class=n>wordcloud</span><span class=p>)</span>
+<span class=ln>33</span>    <span class=n>plt</span><span class=o>.</span><span class=n>axis</span><span class=p>(</span><span class=s2>&#34;off&#34;</span><span class=p>)</span>
+<span class=ln>34</span>    <span class=n>plt</span><span class=o>.</span><span class=n>show</span><span class=p>()</span>
+<span class=ln>35</span>    <span class=n>wordcloud</span><span class=o>.</span><span class=n>to_file</span><span class=p>(</span><span class=s1>&#39;signatures.jpg&#39;</span><span class=p>)</span>
+<span class=ln>36</span>    
+<span class=ln>37</span>    <span class=c1># Signature Emotional Judgment</span>
+<span class=ln>38</span>    <span class=n>count_good</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=nb>list</span><span class=p>(</span><span class=nb>filter</span><span class=p>(</span><span class=k>lambda</span> <span class=n>x</span><span class=p>:</span><span class=n>x</span><span class=o>&gt;</span><span class=mf>0.66</span><span class=p>,</span><span class=n>emotions</span><span class=p>)))</span>
+<span class=ln>39</span>    <span class=n>count_normal</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=nb>list</span><span class=p>(</span><span class=nb>filter</span><span class=p>(</span><span class=k>lambda</span> <span class=n>x</span><span class=p>:</span><span class=n>x</span><span class=o>&gt;=</span><span class=mf>0.33</span> <span class=ow>and</span> <span class=n>x</span><span class=o>&lt;=</span><span class=mf>0.66</span><span class=p>,</span><span class=n>emotions</span><span class=p>)))</span>
+<span class=ln>40</span>    <span class=n>count_bad</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=nb>list</span><span class=p>(</span><span class=nb>filter</span><span class=p>(</span><span class=k>lambda</span> <span class=n>x</span><span class=p>:</span><span class=n>x</span><span class=o>&lt;</span><span class=mf>0.33</span><span class=p>,</span><span class=n>emotions</span><span class=p>)))</span>
+<span class=ln>41</span>    <span class=n>labels</span> <span class=o>=</span> <span class=p>[</span><span class=sa>u</span><span class=s1>&#39;负面消极&#39;</span><span class=p>,</span><span class=sa>u</span><span class=s1>&#39;中性&#39;</span><span class=p>,</span><span class=sa>u</span><span class=s1>&#39;正面积极&#39;</span><span class=p>]</span>
+<span class=ln>42</span>    <span class=n>values</span> <span class=o>=</span> <span class=p>(</span><span class=n>count_bad</span><span class=p>,</span><span class=n>count_normal</span><span class=p>,</span><span class=n>count_good</span><span class=p>)</span>
+<span class=ln>43</span>    <span class=n>plt</span><span class=o>.</span><span class=n>rcParams</span><span class=p>[</span><span class=s1>&#39;font.sans-serif&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=p>[</span><span class=s1>&#39;simHei&#39;</span><span class=p>]</span> 
+<span class=ln>44</span>    <span class=n>plt</span><span class=o>.</span><span class=n>rcParams</span><span class=p>[</span><span class=s1>&#39;axes.unicode_minus&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=kc>False</span>
+<span class=ln>45</span>    <span class=n>plt</span><span class=o>.</span><span class=n>xlabel</span><span class=p>(</span><span class=sa>u</span><span class=s1>&#39;情感判断&#39;</span><span class=p>)</span>
+<span class=ln>46</span>    <span class=n>plt</span><span class=o>.</span><span class=n>ylabel</span><span class=p>(</span><span class=sa>u</span><span class=s1>&#39;频数&#39;</span><span class=p>)</span>
+<span class=ln>47</span>    <span class=n>plt</span><span class=o>.</span><span class=n>xticks</span><span class=p>(</span><span class=nb>range</span><span class=p>(</span><span class=mi>3</span><span class=p>),</span><span class=n>labels</span><span class=p>)</span>
+<span class=ln>48</span>    <span class=n>plt</span><span class=o>.</span><span class=n>legend</span><span class=p>(</span><span class=n>loc</span><span class=o>=</span><span class=s1>&#39;upper right&#39;</span><span class=p>,)</span>
+<span class=ln>49</span>    <span class=n>plt</span><span class=o>.</span><span class=n>bar</span><span class=p>(</span><span class=nb>range</span><span class=p>(</span><span class=mi>3</span><span class=p>),</span> <span class=n>values</span><span class=p>,</span> <span class=n>color</span> <span class=o>=</span> <span class=s1>&#39;rgb&#39;</span><span class=p>)</span>
+<span class=ln>50</span>    <span class=n>plt</span><span class=o>.</span><span class=n>title</span><span class=p>(</span><span class=sa>u</span><span class=s1>&#39;</span><span class=si>%s</span><span class=s1>的微信好友签名信息情感分析&#39;</span> <span class=o>%</span> <span class=n>friends</span><span class=p>[</span><span class=mi>0</span><span class=p>][</span><span class=s1>&#39;NickName&#39;</span><span class=p>])</span>
+<span class=ln>51</span>    <span class=n>plt</span><span class=o>.</span><span class=n>show</span><span class=p>()</span>
+</code></pre></div><p>通过词云，我们可以发现：在微信好友的签名信息中，出现频率相对较高的关键词有：努力、长大、美好、快乐、生活、幸福、人生、远方、时光、散步。果然我的微信好友都是温暖、正直的好青年啊！ :smile:其实，签名这个设定，从某种程度上是在反映人的一种心态，人在年轻时不免"为赋新词强说愁"，等到你真正到了这个精神境界，突然发现年轻时图样图森破，或许这就是我们不愿意让别人了解过去的原因，因为伴随着人的成长，某一种瞬间的状态简直不忍直视，QQ 空间陪伴了我们这代人的整个青春，令人印象深刻的"那年今日"功能，有时让我们感到回忆的温暖，有时让我们感到岁月的萧杀，&ldquo;当时只道是寻常"的物是人非，&ldquo;回首向来萧瑟处"的淡定从容，&ldquo;今夕复何夕"的失落惆怅……都在这一行行签名里留下深深浅浅的印记。在知乎上有关于<a class=link href=https://www.zhihu.com/topic/19665970/hot target=_blank rel=noopener>签名</a>的话题讨论，对此感兴趣的朋友不妨找时间看看。:smile:</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixyiqv1lj20zk0hbgpc.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixyiqv1lj20zk0hbgpc.jpg loading=lazy alt=微信好友签名信息词云展示>
+</a>
+<figcaption>微信好友签名信息词云展示</figcaption>
+</figure></p>
+<p>通过柱状图，我们可以发现：在微信好友的签名信息中，正面积极的情感判断约占到 55.56%，中立的情感判断约占到 32.10%，负面消极的情感判断约占到 12.35%。这个结果和我们通过词云展示的结果基本吻合，这说明在微信好友的签名信息中，约有 87.66%的签名信息，传达出来都是一种积极向上的态度。朋友圈中基本上有两类用户，第一类用户使用朋友圈记录自己的生活，第二类用户使用朋友圈输出自己的观点。显然，对于第二类用户，它并不介意别人了解它的过去，它更在乎它从始至终输出的观点是否一致。所以，不管朋友圈里别人在或晒美食、或晒旅游、或秀恩爱、或晒宝宝、或煲鸡汤等等，在我看来这都是一种生活方式，精神层次和物质层次比你高的人群，觉得你朋友圈里的内容"无趣&rdquo;，这是符合人类一贯的认知方式的，在大多数情况下，反而是那些和你层次差不多的人群，对不熟悉的人或者事物妄加判断，如果你不喜欢我朋友圈里的内容，请直接屏蔽我就好，因为这样我们还可以做朋友；如果你因为喜欢 A 而在我这里和我说 B 不好，这就真的是三观不合啦。我相信没有完全兴趣匹配的两个人，即使是男女朋友或者情侣之间，总之人与人相处嘛，真诚和互相尊重是基本要求。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzixbgepihj20hs0dcjrn.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzixbgepihj20hs0dcjrn.jpg loading=lazy alt=微信好友签名信息情感分析展示>
+</a>
+<figcaption>微信好友签名信息情感分析展示</figcaption>
+</figure></p>
+<h2 id=好友位置>好友位置</h2>
+<p>分析好友位置，主要通过提取 Province 和 City 这两个字段。Python 中的地图可视化主要通过 Basemap 模块，这个模块需要从国外网站下载地图信息，使用起来非常的不便。百度的<a class=link href=http://echarts.baidu.com/ target=_blank rel=noopener>ECharts</a>在前端使用的比较多，虽然社区里提供了<a class=link href=http://pyecharts.org/ target=_blank rel=noopener>pyecharts</a>项目，可我注意到因为政策的改变，目前 Echarts 不再支持导出地图的功能，所以地图的定制方面目前依然是一个问题，主流的技术方案是配置全国各省市的 JSON 数据，这里博主使用的是<a class=link href=https://me.bdp.cn/home.html target=_blank rel=noopener>BDP 个人版</a>，这是一个零编程的方案，我们通过 Python 导出一个 CSV 文件，然后将其上传到 BDP 中，通过简单拖拽就可以制作可视化地图，简直不能再简单，这里我们仅仅展示生成 CSV 部分的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>def</span> <span class=nf>analyseLocation</span><span class=p>(</span><span class=n>friends</span><span class=p>):</span>
+<span class=ln> 2</span>    <span class=n>headers</span> <span class=o>=</span> <span class=p>[</span><span class=s1>&#39;NickName&#39;</span><span class=p>,</span><span class=s1>&#39;Province&#39;</span><span class=p>,</span><span class=s1>&#39;City&#39;</span><span class=p>]</span>
+<span class=ln> 3</span>    <span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;location.csv&#39;</span><span class=p>,</span><span class=s1>&#39;w&#39;</span><span class=p>,</span><span class=n>encoding</span><span class=o>=</span><span class=s1>&#39;utf-8&#39;</span><span class=p>,</span><span class=n>newline</span><span class=o>=</span><span class=s1>&#39;&#39;</span><span class=p>,)</span> <span class=k>as</span> <span class=n>csvFile</span><span class=p>:</span>
+<span class=ln> 4</span>        <span class=n>writer</span> <span class=o>=</span> <span class=n>csv</span><span class=o>.</span><span class=n>DictWriter</span><span class=p>(</span><span class=n>csvFile</span><span class=p>,</span> <span class=n>headers</span><span class=p>)</span>
+<span class=ln> 5</span>        <span class=n>writer</span><span class=o>.</span><span class=n>writeheader</span><span class=p>()</span>
+<span class=ln> 6</span>        <span class=k>for</span> <span class=n>friend</span> <span class=ow>in</span> <span class=n>friends</span><span class=p>[</span><span class=mi>1</span><span class=p>:]:</span>
+<span class=ln> 7</span>           <span class=n>row</span> <span class=o>=</span> <span class=p>{}</span>
+<span class=ln> 8</span>           <span class=n>row</span><span class=p>[</span><span class=s1>&#39;NickName&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>friend</span><span class=p>[</span><span class=s1>&#39;NickName&#39;</span><span class=p>]</span>
+<span class=ln> 9</span>           <span class=n>row</span><span class=p>[</span><span class=s1>&#39;Province&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>friend</span><span class=p>[</span><span class=s1>&#39;Province&#39;</span><span class=p>]</span>
+<span class=ln>10</span>           <span class=n>row</span><span class=p>[</span><span class=s1>&#39;City&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>friend</span><span class=p>[</span><span class=s1>&#39;City&#39;</span><span class=p>]</span>
+<span class=ln>11</span>           <span class=n>writer</span><span class=o>.</span><span class=n>writerow</span><span class=p>(</span><span class=n>row</span><span class=p>)</span>
+</code></pre></div><p>下图是 BDP 中生成的微信好友地理分布图，可以发现：我的微信好友主要集中在宁夏和陕西两个省份。数字时代的神经牵动着每一个社交关系链的人，我们想要竭力去保护的那点隐私，在这些数据中一点点地折射出来。人类或许可以不断地伪装自己，可这些从数据背后抽离出来的规律和联系不会欺骗人类。数学曾经被人称为最没有用的学科，因为生活中并不需要神圣而纯粹的计算，在不同的学科知识里，经验公式永远比理论公式更为常用。可是此时此刻，你看，这世界就像一只滴滴答答转动着的时钟，每一分每一秒都是严丝合缝的。
+<figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fzix8lyfsuj20m80jw74u.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fzix8lyfsuj20m80jw74u.jpg loading=lazy alt=微信好友地理分布图>
+</a>
+<figcaption>微信好友地理分布图</figcaption>
+</figure></p>
+<h1 id=本文小结>本文小结</h1>
+<p>写这篇文章的时候，我一直不知道该如何下笔，因为微信是一个神奇的存在，它是一个国民级别的全民 APP，所以，微信的产品设计一直都是一个有趣的现象，从最初底部 Tab 的数目、每个 Tab 的名称、&ldquo;发现"页面的定制、小程序入口、朋友圈入口到朋友圈评论等等一系列的设计细节，都是值得我们透过人性和心理去研究的。即使是被人们封神的"张小龙&rdquo;，在面对结构最为复杂的中国用户群体的时候，他的潇洒中依旧不免充满无奈，从对朋友圈的置之不理就可以看出，这是一个怎么做都不会让人满意的功能，任何一个生态在面对巨大的用户群体的时候，功能的增减就会变成一个难题，所谓"林子大了什么鸟都有&rdquo;，知乎面对的是同样的问题，营销类公众号在不断消费社会话题的同时，引导着一批又一批粉丝的价值取向，人类总渴望着别人了解自己，可人类真的了解自己吗？这篇博客是我对数据分析的又一次尝试，主要从性别、头像、签名、位置四个维度，对微信好友进行了一次简单的数据分析，主要采用图表和词云两种形式来呈现结果。总而言之一句话，&ldquo;数据可视化是手段而并非目的&rdquo;，重要的不是我们在这里做了这些图出来，而是从这些图里反映出来的现象，我们能够得到什么本质上的启示，我一位朋友问我怎么什么都想抓取，为什么啊，因为我不懂人类啊！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/python/>Python</a>
+<a href=/tags/wechat/>Wechat</a>
+<a href=/tags/matplotlib/>matplotlib</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/735074641/>
+<div class=article-details>
+<h2 class=article-title>通过 Python 预测 2021 年双十一交易额</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E9%80%9A%E8%BF%87python%E5%88%86%E6%9E%902020%E5%B9%B4%E5%85%A8%E5%B9%B4%E5%BE%AE%E5%8D%9A%E7%83%AD%E6%90%9C%E6%95%B0%E6%8D%AE/>
+<div class=article-details>
+<h2 class=article-title>通过 Python 分析 2020 年全年微博热搜数据</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3148958651/>
+<div class=article-details>
+<h2 class=article-title>基于 Python 和 Selenium 实现 CSDN 一键三连自动化</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3247093203/>
+<div class=article-details>
+<h2 class=article-title>使用多线程为你的 Python 爬虫提速的 N 种姿势，你会几种？</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/1427872047/>
+<div class=article-details>
+<h2 class=article-title>使用 Python 抽取《半泽直树》原著小说人物关系</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/2805694118/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#引言>引言</a></li>
+<li><a href=#数据分析>数据分析</a>
+<ol>
+<li><a href=#好友性别>好友性别</a></li>
+<li><a href=#好友头像>好友头像</a></li>
+<li><a href=#好友签名>好友签名</a></li>
+<li><a href=#好友位置>好友位置</a></li>
+</ol>
+</li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
+加密
+</a>
+<a href=/tags/c++/ class=font_size_1>
+C++
+</a>
+<a href=/tags/consul/ class=font_size_1>
+Consul
+</a>
+<a href=/tags/mock/ class=font_size_1>
+Mock
+</a>
+<a href=/tags/mysql/ class=font_size_2>
+MySQL
+</a>
+<a href=/tags/shader/ class=font_size_1>
+Shader
+</a>
+<a href=/tags/%E6%84%9F%E6%82%9F/ class=font_size_14>
+感悟
+</a>
+<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
+异步
+</a>
+<a href=/tags/thoughtworks/ class=font_size_1>
+ThoughtWorks
+</a>
+<a href=/tags/%E8%AE%AD%E7%BB%83/ class=font_size_1>
+训练
+</a>
+<a href=/tags/cg/ class=font_size_1>
+CG
+</a>
+<a href=/tags/%E9%85%8D%E8%BD%BD/ class=font_size_1>
+配载
+</a>
+<a href=/tags/%E9%AC%BC%E6%BB%85%E3%81%AE%E5%88%83/ class=font_size_1>
+鬼滅の刃
+</a>
+<a href=/tags/ide/ class=font_size_1>
+IDE
+</a>
+<a href=/tags/polly/ class=font_size_1>
+Polly
+</a>
+<a href=/tags/%E9%9C%8D%E9%87%91/ class=font_size_1>
+霍金
+</a>
+<a href=/tags/%E6%8E%A8%E8%8D%90/ class=font_size_1>
+推荐
+</a>
+<a href=/tags/jetbrain/ class=font_size_1>
+JetBrain
+</a>
+<a href=/tags/pl/sql/ class=font_size_1>
+PL/SQL
+</a>
+<a href=/tags/valine/ class=font_size_1>
+Valine
+</a>
+<a href=/tags/%E5%81%A5%E5%BA%B7%E7%A0%81/ class=font_size_1>
+健康码
+</a>
+<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
+同步
+</a>
+<a href=/tags/castle/ class=font_size_1>
+Castle
+</a>
+<a href=/tags/webapi/ class=font_size_4>
+WebApi
+</a>
+<a href=/tags/%E4%BA%BA%E6%96%87/ class=font_size_2>
+人文
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

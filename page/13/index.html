@@ -101,7 +101,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9F%BA%E4%BA%8Etravisci%E5%AE%9E%E7%8E%B0hexo%E5%9C%A8github-pages%E5%92%8Ccoding-pages%E5%90%8C%E6%AD%A5%E9%83%A8%E7%BD%B2/>基于 Travis CI 实现 Hexo 在 Github 和 Coding 的同步部署</a>
+<a href=/posts/1113828794/>基于 Travis CI 实现 Hexo 在 Github 和 Coding 的同步部署</a>
 </h2>
 <h3 class=article-subtitle>
 我的想法是以 [Github](https://github.com/qinyuanpei/qinyuanpei.github.io) 作为代码的主仓库，其上面的 **blog** 分支存放博客的源代码， **master** 分支存放博客的静态页面，在此基础上，我们同时推送静态页面到 Github 和 Coding 的代码仓库，这样就可以实现两个平台的同步部署，这里的部署自然是指由 Travis 完成的自动化部署;其原理是 Github 为 [Travis CI](https://www.travis-ci.org/) 分配一个 token，当我们向 Github 推送新的代码以后，Travis 就会从代码仓库中拉取代码，并通过 [npm](https://www.npmjs.com/) 安装依赖生成静态页面，我们将这些静态页面推送到 master 分支，即可完成对 Hexo 的部署操作;各位朋友，大家好，我是 Payne，欢迎大家关注我的博客，我的博客地址是 [https://qinyuanpei.github.io](https://qinyuanpei.github.io) .在曾经的一篇博客：[《持续集成在 Hexo 自动化部署上的实践》](https://qinyuanpei.github.io/posts/3521618732/)中，我为大家分享了在线持续集成服务 [Travis CI](https://www.travis-ci.org/) 的相关内容，在这篇文章中我们通过 [Travis CI](https://www.travis-ci.org/) 为 Hexo 提供了自动部署的支持
@@ -128,7 +128,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9F%BA%E4%BA%8Epython%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%BE%AE%E4%BF%A1%E5%A5%BD%E5%8F%8B%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/>基于 Python 实现的微信好友数据分析</a>
+<a href=/posts/2805694118/>基于 Python 实现的微信好友数据分析</a>
 </h2>
 <h3 class=article-subtitle>
 今天这篇文章会基于 Python 对微信好友进行数据分析，这里选择的维度主要有：性别、头像、签名、位置，主要采用图表和词云两种形式来呈现结果，其中，对文本类信息会采用词频分析和情感分析两种方法;这里我们会在当前目录新建一个 HeadImages 目录，用以存储所有好友的头像，然后我们这里会用到一个名为 FaceApi 类，这个类由腾讯优图的 SDK 封装而来，这里分别调用了[人脸检测](http://youtu.qq.com/#/develop/api-face-analysis-detect)和[图像标签识别](http://youtu.qq.com/#/develop/api-image-tag)两个 API 接口，前者会统计"使用人脸头像"和"不使用人脸头像"的好友各自的数目，后者会累加每个头像中提取出来的标签;plt.title(u'%s 的微信好友签名信息情感分析' % friends[0]['NickName'])
@@ -155,7 +155,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BD%BF%E7%94%A8python%E7%94%9F%E6%88%90%E5%8D%9A%E5%AE%A2%E7%9B%AE%E5%BD%95%E5%B9%B6%E6%9B%B4%E6%96%B0readme/>使用 Python 生成博客目录并自动更新 README</a>
+<a href=/posts/1329254441/>使用 Python 生成博客目录并自动更新 README</a>
 </h2>
 <h3 class=article-subtitle>
 我意识到我的博客配置了 [hexo-generator-json-content](https://github.com/alexbruno/hexo-generator-json-content) 插件，这个插件最初的目的是为博客提供离线的搜索能力，该插件会在博客的根目录里生成一个**content.json**文件，而这个文件中含有我们想要的一切信息，因此我们的思路转变为解析这个文件，人生苦短啊，我果断选择了我最喜欢的 Python，这里我们会提取出所有的文章信息，按照日期由近到远排序后生成列表;现在我们更新博客时的流程将发生变化，首先通过 **hexo generate 或 hexo g**命令生成博客，这样 Hexo 会为我们生成 **content.json**，然后我们执行这段 Python 脚本，就可以生成 REAMD.md 文件，这里我们将这个文件推送到 blog 分支;关于博客采用 [TravisCI](https://www.travis-ci.org/) 提供持续集成(CI)服务相关内容，可以参考 [持续集成在 Hexo 自动化部署上的实践](https://qinyuanpei.github.io/posts/3521618732/) 这篇文章
@@ -182,7 +182,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E6%84%BF%E4%BD%A0%E5%92%8C%E6%88%91%E4%B8%80%E6%A0%B7%E5%96%9C%E6%AC%A2%E8%9B%8B%E7%82%92%E9%A5%AD/>愿你和我一样喜欢蛋炒饭</a>
+<a href=/posts/1933583281/>愿你和我一样喜欢蛋炒饭</a>
 </h2>
 <h3 class=article-subtitle>
 我们说，这是一部乌托邦式的电影，因为现实中像李红兵这样的人，绝对不会陡然间良心发现，把饭店归还王大卫，甚至王大卫拉开窗帘阳光照射进来，阳光下苏茉莉牵着女儿的手对他微笑，大卫的蛋炒饭得到溥仪认可，入选国际非遗名录;[大卫做蛋炒饭](https://ww1.sinaimg.cn/large/4c36074fly1fziy5c2n8jj21960u0kjl.jpg);可我还是想说，无条件的善良是懦弱，我们选择善良，是因为我们不想伤害别人，可在今天这样一个时代，善良常常被当做是懦弱的表现，一个人努力让心变狠变硬，或许会达到通常意义上的成功，可成功的定义从来都是被人绑架着的，电影中“好兄弟”登上了“胡弄排行榜”，我不知道这是不是导演的一种讽刺，一个人靠着骗取好兄弟的产业而发家，即使收获了声名和利益，当他一个人在高速公路上疾驶，打算远走他乡的时候，内心是不是会有一点羞愧和遗憾呢
@@ -209,7 +209,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9F%BA%E4%BA%8Epython%E5%AE%9E%E7%8E%B0windows%E4%B8%8B%E5%A3%81%E7%BA%B8%E5%88%87%E6%8D%A2%E5%8A%9F%E8%83%BD/>基于 Python 实现 Windows 下壁纸切换功能</a>
+<a href=/posts/2822230423/>基于 Python 实现 Windows 下壁纸切换功能</a>
 </h2>
 <h3 class=article-subtitle>
 本文使用 Python 实现了 Windows 下切换壁纸的功能，通过 requests 模块从网络上抓取图片，通过 PIL 模块实现 JPEG 格式到 BMP 格式的转换，通过 win32api 和 win32gui 模块实现壁纸设置，并通过修改注册表的方式，将这一功能整合到系统菜单中，可以非常便捷地更换桌面壁纸;Python 脚本会通过 pyinstaller 模块打包成可执行文件，我们通过修改注册表的方式，在右键菜单内加入切换壁纸的选项，这样我们可以直接通过右键菜单实现壁纸切换功能;如你所见，在这篇文章里，我们将通过 Python 和 Windows 注册表实现壁纸切换功能，主要涉及到的 Python 中的 requests、pyinstaller 这两个模块的使用，希望大家喜欢
@@ -236,7 +236,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%90%86%E8%A7%A3python%E8%A3%85%E9%A5%B0%E5%99%A8/>深入浅出理解 Python 装饰器</a>
+<a href=/posts/2829333122/>深入浅出理解 Python 装饰器</a>
 </h2>
 <h3 class=article-subtitle>
 Java 是典型的面向对象编程的语言，所以不存在任何游离于 Class 以外的函数，代理模式对类型的要求更为强烈些，因为我必须限制或者说要求 Proxy 实现里面的方法，而装饰器模式相对更为宽松些，遇到 Python 这样的动态类型语言，自然会显得事半功倍;在这个示例中，我们定义了一个 decorator_print 的装饰器函数，它负责对一个函数 func 进行修饰，在调用函数 func 以前执行 print 语句，进而可以帮助我们调试函数中的参数，通过@语法可以让我们使用一个名称去绑定一个函数对象;然后我们讨论了两种和装饰器有关的设计模式，即代理模式和装饰器模式，选择这两种模式来讨论，是因为我们在 Java/C#和 Python 中看到了两种截然不同的实现 AOP 的思路，这部分需要花功夫去精心雕琢
@@ -290,7 +290,7 @@ Java 是典型的面向对象编程的语言，所以不存在任何游离于 Cl
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E6%97%A0%E9%97%AE%E4%B8%9C%E8%A5%BF%E4%BD%A0%E6%9B%BE%E6%98%AF%E5%B0%91%E5%B9%B4/>无问东西：你曾是少年</a>
+<a href=/posts/1983298072/>无问东西：你曾是少年</a>
 </h2>
 <h3 class=article-subtitle>
 1962 年，北京，清华毕业生陈鹏，在面对国家的大爱与恋人的小爱的选择时，饱含着对恋人王敏佳的爱远赴沙漠投身科研，他质问为支边而蒙蔽内心的李想什么是真实，他用爱托着恋人鼓励她努力活下去，为爱而奉献一生;2010 年，北京，广告总监张果果，在明争暗斗的职场上遭人排挤，在面对职场中的名利诱惑时，在面对四胞胎永无止境的救助要求时，李想用生命拯救了张果果的父母，完成自我救赎，而张果果则在迷茫中找会初心，让爱传承下去;[聆听泰戈尔演讲的吴岭澜](https://ww1.sinaimg.cn/large/4c36074fly1fzix9228b7j20k008jglz.jpg)
@@ -317,7 +317,7 @@ Java 是典型的面向对象编程的语言，所以不存在任何游离于 Cl
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E8%87%B4%E5%89%8D%E4%BB%BB%E6%84%BF%E4%BD%99%E7%94%9F%E5%90%84%E8%87%AA%E5%AE%89%E5%A5%BD/>致前任：愿余生各自安好</a>
+<a href=/posts/1358971951/>致前任：愿余生各自安好</a>
 </h2>
 <h3 class=article-subtitle>
 可或许是我们想多了，有时候两个人分开以后，难过的只有自己，对对方而言或许是种解脱，于是我们在电影里看到了一幕幕单身男女嗨翻天的景象，我们常常听到这样一句话，两个人不合适就分手呗，讽刺的是，我们一边渴望着美好的爱情，一边对待感情弃若敝履，我们谈恋爱的时间越来越短，对彼此越来越没有耐心，有人说，这是因为我们长大了，知道 20 多岁的年龄，不能再像 10 多岁一样挥霍，像孟云和林佳这样的情侣，现实中举不胜举，为了彼此一点可怜的自尊，谁都不肯先放下身段同对方和解，等到矛盾积累得越来越多，任何一件事情都有可能成为，压死骆驼的最后一根稻草;这一切都是需要去不断磨合的，我们看待感情的角度是功利的，如果两个人走到一起甚至结婚，我们觉得这就是合适的，那么像孟云和林佳这种相爱五年的情侣，我觉得我们很难用一句合适或者不合适来说说清楚，两个人在一起一定要多沟通，有问题不要想着第二天再解决;这个时候，还要试图用扮演至尊宝说“我爱你”和疯狂吃芒果吃到过敏，这样幼稚可笑的事情来满足各自的虚荣心，好像我们每个人都实现了对彼此的承诺，真正爱你的人，怎么会舍得离开你呢，明明是自私得只懂得爱自己，非要坚持说是对方不够爱自己，真正爱你的人，爱一直都在心里
@@ -344,7 +344,7 @@ Java 是典型的面向对象编程的语言，所以不存在任何游离于 Cl
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/c#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>《C#多线程编程实战》读书笔记</a>
+<a href=/posts/345410188/>《C#多线程编程实战》读书笔记</a>
 </h2>
 <h3 class=article-subtitle>
 * Tips38：通过 Task 实例的 ConfigureAwait()方法，可以设置使用 await 时同步上下文的行为，默认情况下，await 操作符会尝试捕捉同步上下文，并在其中执行代码，即调度器会向 UI 线程投入成千上百个后续操作任务，这会使用它的消息循环来异步地执行这些任务，当我们不需要在 UI 线程中运行这些代码时，向 ConfigureAwait 方法传入 false 将会是一个更高效的方案;* Tips51：ParallelEnumerable 类含有 PLINQ 的全部逻辑，并且作为 IEnumerable 集合功能的一组扩展方法，默认情况下结果会被合并单个线程中，我们可以通过 ForAll 方法来指定处理逻辑，此时它们使用的是同一个线程，将跳过合并结果的过程，除了 AsParallel()方法，我们同样可以使用 AsSequential()方法，来使得 PLINQ 查询以顺序方式执行(相对于并行);* Tips13：SemaphoreSlim 是 Semaphore 的轻量级版本，用以限制同时访问同一个资源的线程数量，超过该数量的线程需要等待，直到之前的线程中某一个完成工作，并调用 Release()方法发出信号，其使用了混合模式，而 Semaphore 则使用内核模式，可以在跨程序同步的场景下使用
@@ -478,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E4%BA%8B%E4%BB%B6/ class=font_size_1>
-事件
+<a href=/tags/mock/ class=font_size_1>
+Mock
 </a>
-<a href=/tags/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF/ class=font_size_1>
-朴素贝叶斯
+<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
+平凡
 </a>
-<a href=/tags/%E6%97%A5%E6%9C%AC/ class=font_size_1>
-日本
+<a href=/tags/%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/ class=font_size_1>
+人脸检测
 </a>
-<a href=/tags/opencv/ class=font_size_3>
-OpenCV
+<a href=/tags/%E7%83%AD%E6%90%9C/ class=font_size_1>
+热搜
 </a>
-<a href=/tags/prometheus/ class=font_size_1>
-Prometheus
+<a href=/tags/%E6%8F%90%E7%BA%B2/ class=font_size_1>
+提纲
 </a>
-<a href=/tags/%E8%A1%A8%E5%8D%95/ class=font_size_1>
-表单
+<a href=/tags/castle/ class=font_size_1>
+Castle
 </a>
-<a href=/tags/rfc/ class=font_size_1>
-RFC
+<a href=/tags/%E4%BB%99%E5%89%91%E5%A5%87%E4%BE%A0%E4%BC%A0/ class=font_size_1>
+仙剑奇侠传
 </a>
-<a href=/tags/%E5%91%BD%E4%BB%A4/ class=font_size_1>
-命令
+<a href=/tags/webassembly/ class=font_size_1>
+WebAssembly
 </a>
-<a href=/tags/%E5%88%86%E9%A1%B5/ class=font_size_1>
-分页
+<a href=/tags/%E5%8D%B0%E5%BA%A6/ class=font_size_1>
+印度
 </a>
-<a href=/tags/%E7%8E%B0%E5%AE%9E/ class=font_size_1>
-现实
+<a href=/tags/%E5%AE%A1%E8%AE%A1/ class=font_size_1>
+审计
 </a>
-<a href=/tags/server-%E9%85%B1/ class=font_size_1>
-Server 酱
+<a href=/tags/%E6%9E%B6%E6%9E%84/ class=font_size_2>
+架构
 </a>
-<a href=/tags/ar/ class=font_size_3>
-AR
+<a href=/tags/%E6%B6%88%E6%81%AF/ class=font_size_1>
+消息
 </a>
-<a href=/tags/%E4%BA%91%E9%9F%B3%E4%B9%90/ class=font_size_1>
-云音乐
+<a href=/tags/di/ class=font_size_2>
+DI
 </a>
-<a href=/tags/sdl/ class=font_size_2>
-SDL
+<a href=/tags/msbuild/ class=font_size_1>
+MSBuild
 </a>
-<a href=/tags/sqlite/ class=font_size_1>
-SQLite
-</a>
-<a href=/tags/%E6%80%9D%E7%BB%B4/ class=font_size_1>
-思维
+<a href=/tags/%E7%BC%96%E7%A8%8B/ class=font_size_6>
+编程
 </a>
 <a href=/tags/%E9%9C%8D%E9%87%91/ class=font_size_1>
 霍金
 </a>
-<a href=/tags/mock/ class=font_size_1>
-Mock
+<a href=/tags/cg/ class=font_size_1>
+CG
 </a>
-<a href=/tags/linux/ class=font_size_5>
-Linux
+<a href=/tags/%E5%8A%A8%E7%94%BB/ class=font_size_1>
+动画
 </a>
-<a href=/tags/%E6%80%A7%E8%83%BD/ class=font_size_1>
-性能
+<a href=/tags/ai/ class=font_size_1>
+AI
 </a>
-<a href=/tags/%E6%96%87%E6%A1%A3/ class=font_size_1>
-文档
+<a href=/tags/%E7%BC%96%E8%BE%91%E5%99%A8/ class=font_size_4>
+编辑器
 </a>
-<a href=/tags/vue/ class=font_size_3>
-Vue
+<a href=/tags/%E9%9F%A9%E5%AF%92/ class=font_size_1>
+韩寒
 </a>
-<a href=/tags/restful/ class=font_size_4>
-RESTful
+<a href=/tags/%E6%83%B3%E6%B3%95/ class=font_size_1>
+想法
 </a>
-<a href=/tags/%E6%A8%A1%E6%9D%BF/ class=font_size_1>
-模板
+<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
+网易
 </a>
-<a href=/tags/%E4%B8%83%E7%89%9B/ class=font_size_1>
-七牛
+<a href=/tags/%E6%9C%9D%E5%9C%A3/ class=font_size_1>
+朝圣
+</a>
+<a href=/tags/eventbus/ class=font_size_1>
+EventBus
 </a>
 <a href=/tags class=font_size_9999>
 更多

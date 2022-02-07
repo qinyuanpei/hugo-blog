@@ -1,0 +1,601 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="此时此刻，2020 年的最后一个月，不管过去这一年给我们留下了怎样的记忆，时间终究自顾自地往前走，留给我们的怀念已时日无多。如果要说 2020 年的年度"><title>使用 Python 抽取《半泽直树》原著小说人物关系</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/1427872047/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="使用 Python 抽取《半泽直树》原著小说人物关系">
+<meta property="og:description" content="此时此刻，2020 年的最后一个月，不管过去这一年给我们留下了怎样的记忆，时间终究自顾自地往前走，留给我们的怀念已时日无多。如果要说 2020 年的年度">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/1427872047/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="Python"><meta property="article:tag" content="NLP"><meta property="article:tag" content="半泽直树"><meta property="article:tag" content="Gephi"><meta property="article:tag" content="ECharts"><meta property="article:published_time" content="2020-12-08T22:49:47+00:00"><meta property="article:modified_time" content="2020-12-08T22:49:47+00:00">
+<meta name=twitter:title content="使用 Python 抽取《半泽直树》原著小说人物关系">
+<meta name=twitter:description content="此时此刻，2020 年的最后一个月，不管过去这一年给我们留下了怎样的记忆，时间终究自顾自地往前走，留给我们的怀念已时日无多。如果要说 2020 年的年度">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/>
+数据分析
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/1427872047/>使用 Python 抽取《半泽直树》原著小说人物关系</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2020-12-08</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 7 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>此时此刻，2020 年的最后一个月，不管过去这一年给我们留下了怎样的记忆，时间终究自顾自地往前走，留给我们的怀念已时日无多。如果要说 2020 年的年度日剧，我想《半泽直树》实至名归，这部在时隔七年后上映的续集，豆瓣评分高达 9.4 分，一度超越 2013 年第一部的 9.3 分，是当之无愧的现象级电视剧，期间甚至因为疫情原因而推迟播出，这不能不感谢为此付出辛勤努力的演职人员们。身为一个“打工人”，主角半泽直树那种百折不挠、恩怨分明的性格，难免会引起你我这种“社畜”们的共鸣，即使做不到“以牙还牙，加倍奉还”，至少可以活得像一个活生生的人。电视剧或许大家都看过了，那么，电视剧相对于原著小说有哪些改动呢？今天，就让我们使用 Python 来抽取半泽直树原著小说中的人物关系吧！</p>
+<h1 id=准备工作>准备工作</h1>
+<p>在开始今天的博客内容前，我们有一点准备工作要完成。考虑到小说人物关系抽取，属于自然语言处理(<strong>NLP</strong>)领域的内容，所以，除了准备好 Python 环境以外，我们需要提前准备相关的中文语料，在这里主要有：<a class=link href=https://github.com/qinyuanpei/graph-relation/blob/master/input/%e5%8d%8a%e6%b3%bd%e7%9b%b4%e6%a0%91.txt target=_blank rel=noopener>半泽直树原著小说</a>、 <a class=link href=https://github.com/qinyuanpei/graph-relation/blob/master/input/%e4%ba%ba%e5%90%8d%e8%af%8d%e5%85%b8.txt target=_blank rel=noopener>半泽直树人名词典</a>、<a class=link href=https://github.com/qinyuanpei/graph-relation/blob/master/input/%e5%88%ab%e5%90%8d%e8%af%8d%e5%85%b8.txt target=_blank rel=noopener>半泽直树别名词典</a>、<a class=link href=https://github.com/qinyuanpei/graph-relation/blob/master/input/%e5%81%9c%e7%94%a8%e8%af%8d%e8%af%8d%e5%85%b8.txt target=_blank rel=noopener>中文分词停用词表</a>。除此之外，我们需要安装<code>结巴分词</code>、<code>PyECharts</code>两个第三方库(<strong>注，可以通过 pip 直接安装</strong>)，以及用于展示人物关系的软件<code>Gephi</code>(<strong>注，这个软件依赖 Java 环境</strong>)。所以，你基本可以想到，我们会使用结巴分词对小说文本进行分词处理，而半泽直树人名列表则作为用户词典供结巴分词使用，经过一系列处理后，我们最终通过<code>Gephi</code>和<code>PyECharts</code>对结果进行可视化，通过分析人物间的关系，结合我们对电视剧剧情的掌握情况，我们就可以对本文所采用方法的效果进行评估，也许你认为两个人毫无联系，可最终他们以某种特殊的形式建立了联系，这就是我们要做这件事情的意义所在。本项目已托管在 <a class=link href=https://github.com/qinyuanpei/graph-relation target=_blank rel=noopener>Github</a>上，供大家自由查阅。</p>
+<h1 id=原理说明>原理说明</h1>
+<p>这篇博客主要参考了 <a class=link href=https://www.shiyanlou.com/courses/677 target=_blank rel=noopener>Python 基于共现提取《釜山行》人物关系</a> 这个课程，该项目已在 Github 上开源，可以参考：<a class=link href=https://github.com/Forec/text-cooccurrence target=_blank rel=noopener>https://github.com/Forec/text-cooccurrence</a>。这篇文章中提到了一种称之为“共现网络”的方法，它本质上是一种基于统计的信息提取方法。其基本原理是，当我们在阅读书籍或者观看影视作品时，在同一时间段内同时出现的人物，通常都会存在某种联系。所以，如果我们将小说中的每个人物都看作一个节点，将人物间的关系都看作一条连线，最终我们将会得到一个图(指数据结构中的<strong>Graph</strong>)。因为<code>Gephi</code>和<code>PyECharts</code>以及<code>NetworkX</code>都提供了针对<code>Graph</code>的可视化功能，因此，我们可以使用这种方法，对《半泽直树》原著小说中的人物关系进行抽取。当然，这种方法本身会存在一点局限性，这些我们会放在总结思考这部分来进行说明，而我们之所以需要准备人名词典，主要还是为了排除单纯的分词产生的干扰词汇的影响；准备别名词典，则是考虑到同一个人物，在不同的语境下会有不同的称谓。</p>
+<h1 id=过程实现>过程实现</h1>
+<p>这里，我们定义一个<code>RelationExtractor</code>类来实现小说人物关系的抽取。其中，<code>extract()</code>方法用于抽取制定小说文本中的人物关系，<code>exportGephi()</code>方法用于输出 Gephi 格式的节点和边信息， <code>exportECharts()</code>方法则可以使用<code>ECharts</code>对人物关系进行渲染和输出：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln>  1</span><span class=kn>import</span> <span class=nn>os</span><span class=o>,</span> <span class=nn>sys</span>
+<span class=ln>  2</span><span class=kn>import</span> <span class=nn>jieba</span><span class=o>,</span> <span class=nn>codecs</span><span class=o>,</span> <span class=nn>math</span>
+<span class=ln>  3</span><span class=kn>import</span> <span class=nn>jieba.posseg</span> <span class=k>as</span> <span class=nn>pseg</span>
+<span class=ln>  4</span><span class=kn>from</span> <span class=nn>pyecharts</span> <span class=kn>import</span> <span class=n>options</span> <span class=k>as</span> <span class=n>opts</span>
+<span class=ln>  5</span><span class=kn>from</span> <span class=nn>pyecharts.charts</span> <span class=kn>import</span> <span class=n>Graph</span>
+<span class=ln>  6</span>
+<span class=ln>  7</span><span class=k>class</span> <span class=nc>RelationExtractor</span><span class=p>:</span>
+<span class=ln>  8</span>
+<span class=ln>  9</span>    <span class=k>def</span> <span class=fm>__init__</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>fpStopWords</span><span class=p>,</span> <span class=n>fpNameDicts</span><span class=p>,</span> <span class=n>fpAliasNames</span><span class=p>):</span>
+<span class=ln> 10</span>        <span class=c1># 人名词典</span>
+<span class=ln> 11</span>        <span class=bp>self</span><span class=o>.</span><span class=n>name_dicts</span> <span class=o>=</span> <span class=p>[</span><span class=n>line</span><span class=o>.</span><span class=n>strip</span><span class=p>()</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s1>&#39; &#39;</span><span class=p>)[</span><span class=mi>0</span><span class=p>]</span> <span class=k>for</span> <span class=n>line</span> <span class=ow>in</span> <span class=nb>open</span><span class=p>(</span><span class=n>fpNameDicts</span><span class=p>,</span><span class=s1>&#39;rt&#39;</span><span class=p>,</span><span class=n>encoding</span><span class=o>=</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>readlines</span><span class=p>()]</span>
+<span class=ln> 12</span>        <span class=c1># 停止词表</span>
+<span class=ln> 13</span>        <span class=bp>self</span><span class=o>.</span><span class=n>stop_words</span> <span class=o>=</span> <span class=p>[</span><span class=n>line</span><span class=o>.</span><span class=n>strip</span><span class=p>()</span> <span class=k>for</span> <span class=n>line</span> <span class=ow>in</span> <span class=nb>open</span><span class=p>(</span><span class=n>fpStopWords</span><span class=p>,</span><span class=s1>&#39;rt&#39;</span><span class=p>,</span><span class=n>encoding</span><span class=o>=</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>readlines</span><span class=p>()]</span>
+<span class=ln> 14</span>        <span class=c1># 别名词典</span>
+<span class=ln> 15</span>        <span class=bp>self</span><span class=o>.</span><span class=n>alias_names</span> <span class=o>=</span> <span class=nb>dict</span><span class=p>([(</span><span class=n>line</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s1>&#39;,&#39;</span><span class=p>)[</span><span class=mi>0</span><span class=p>]</span><span class=o>.</span><span class=n>strip</span><span class=p>(),</span> <span class=n>line</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s1>&#39;,&#39;</span><span class=p>)[</span><span class=mi>1</span><span class=p>]</span><span class=o>.</span><span class=n>strip</span><span class=p>())</span> <span class=k>for</span> <span class=n>line</span> <span class=ow>in</span> <span class=nb>open</span><span class=p>(</span><span class=n>fpAliasNames</span><span class=p>,</span><span class=s1>&#39;rt&#39;</span><span class=p>,</span><span class=n>encoding</span><span class=o>=</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>readlines</span><span class=p>()])</span>
+<span class=ln> 16</span>        <span class=c1># 加载词典</span>
+<span class=ln> 17</span>        <span class=n>jieba</span><span class=o>.</span><span class=n>load_userdict</span><span class=p>(</span><span class=n>fpNameDicts</span><span class=p>)</span>
+<span class=ln> 18</span>
+<span class=ln> 19</span>    <span class=c1># 提取指定小说文本中的人物关系</span>
+<span class=ln> 20</span>    <span class=k>def</span> <span class=nf>extract</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>fpText</span><span class=p>):</span>
+<span class=ln> 21</span>        <span class=c1># 人物关系</span>
+<span class=ln> 22</span>        <span class=n>relationships</span> <span class=o>=</span> <span class=p>{}</span>
+<span class=ln> 23</span>        <span class=c1># 人名频次</span>
+<span class=ln> 24</span>        <span class=n>name_frequency</span> <span class=o>=</span> <span class=p>{}</span>
+<span class=ln> 25</span>        <span class=c1># 每个段落中的人名</span>
+<span class=ln> 26</span>        <span class=n>name_in_paragraph</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=ln> 27</span>
+<span class=ln> 28</span>        <span class=c1># 读取小说文本，统计人名出现的频次，以及每个段落中出现的人名</span>
+<span class=ln> 29</span>        <span class=k>with</span> <span class=n>codecs</span><span class=o>.</span><span class=n>open</span><span class=p>(</span><span class=n>fpText</span><span class=p>,</span> <span class=s2>&#34;r&#34;</span><span class=p>,</span> <span class=s2>&#34;utf8&#34;</span><span class=p>)</span> <span class=k>as</span> <span class=n>f</span><span class=p>:</span>
+<span class=ln> 30</span>            <span class=k>for</span> <span class=n>line</span> <span class=ow>in</span> <span class=n>f</span><span class=o>.</span><span class=n>readlines</span><span class=p>():</span>
+<span class=ln> 31</span>                <span class=n>poss</span> <span class=o>=</span> <span class=n>pseg</span><span class=o>.</span><span class=n>cut</span><span class=p>(</span><span class=n>line</span><span class=p>)</span>
+<span class=ln> 32</span>                <span class=n>name_in_paragraph</span><span class=o>.</span><span class=n>append</span><span class=p>([])</span>
+<span class=ln> 33</span>                <span class=k>for</span> <span class=n>w</span> <span class=ow>in</span> <span class=n>poss</span><span class=p>:</span>
+<span class=ln> 34</span>                    <span class=k>if</span> <span class=n>w</span><span class=o>.</span><span class=n>flag</span> <span class=o>!=</span> <span class=s2>&#34;nr&#34;</span> <span class=ow>or</span> <span class=nb>len</span><span class=p>(</span><span class=n>w</span><span class=o>.</span><span class=n>word</span><span class=p>)</span> <span class=o>&lt;</span> <span class=mi>2</span><span class=p>:</span>
+<span class=ln> 35</span>                        <span class=k>continue</span>
+<span class=ln> 36</span>                    <span class=k>if</span> <span class=p>(</span><span class=n>w</span><span class=o>.</span><span class=n>word</span> <span class=ow>in</span> <span class=bp>self</span><span class=o>.</span><span class=n>stop_words</span><span class=p>):</span>
+<span class=ln> 37</span>                        <span class=k>continue</span>
+<span class=ln> 38</span>                    <span class=k>if</span> <span class=p>(</span><span class=ow>not</span> <span class=n>w</span><span class=o>.</span><span class=n>word</span> <span class=ow>in</span> <span class=bp>self</span><span class=o>.</span><span class=n>name_dicts</span> <span class=ow>and</span> <span class=n>w</span><span class=o>.</span><span class=n>word</span> <span class=o>!=</span> <span class=s1>&#39;半泽&#39;</span><span class=p>):</span>
+<span class=ln> 39</span>                        <span class=k>continue</span>
+<span class=ln> 40</span>                    <span class=c1># 规范化人物姓名，例：半泽-&gt;半泽直树，大和田-&gt;大和田晓</span>
+<span class=ln> 41</span>                    <span class=n>word</span> <span class=o>=</span> <span class=n>w</span><span class=o>.</span><span class=n>word</span>
+<span class=ln> 42</span>                    <span class=k>if</span> <span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>alias_names</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>word</span><span class=p>)):</span>
+<span class=ln> 43</span>                        <span class=n>word</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>alias_names</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>word</span><span class=p>)</span>  
+<span class=ln> 44</span>                    <span class=n>name_in_paragraph</span><span class=p>[</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>word</span><span class=p>)</span>
+<span class=ln> 45</span>                    <span class=k>if</span> <span class=n>name_frequency</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>word</span><span class=p>)</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+<span class=ln> 46</span>                        <span class=n>name_frequency</span><span class=p>[</span><span class=n>word</span><span class=p>]</span> <span class=o>=</span> <span class=mi>0</span>
+<span class=ln> 47</span>                        <span class=n>relationships</span><span class=p>[</span><span class=n>word</span><span class=p>]</span> <span class=o>=</span> <span class=p>{}</span>
+<span class=ln> 48</span>                    <span class=n>name_frequency</span><span class=p>[</span><span class=n>word</span><span class=p>]</span> <span class=o>+=</span> <span class=mi>1</span>
+<span class=ln> 49</span>
+<span class=ln> 50</span>        <span class=c1># 基于共现组织人物关系</span>
+<span class=ln> 51</span>        <span class=k>for</span> <span class=n>paragraph</span> <span class=ow>in</span> <span class=n>name_in_paragraph</span><span class=p>:</span>
+<span class=ln> 52</span>            <span class=k>for</span> <span class=n>name1</span> <span class=ow>in</span> <span class=n>paragraph</span><span class=p>:</span>
+<span class=ln> 53</span>                <span class=k>for</span> <span class=n>name2</span> <span class=ow>in</span> <span class=n>paragraph</span><span class=p>:</span>
+<span class=ln> 54</span>                    <span class=k>if</span> <span class=n>name1</span> <span class=o>==</span> <span class=n>name2</span><span class=p>:</span>
+<span class=ln> 55</span>                        <span class=k>continue</span>
+<span class=ln> 56</span>                    <span class=k>if</span> <span class=n>relationships</span><span class=p>[</span><span class=n>name1</span><span class=p>]</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>name2</span><span class=p>)</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+<span class=ln> 57</span>                        <span class=n>relationships</span><span class=p>[</span><span class=n>name1</span><span class=p>][</span><span class=n>name2</span><span class=p>]</span> <span class=o>=</span> <span class=mi>1</span>
+<span class=ln> 58</span>                    <span class=k>else</span><span class=p>:</span>
+<span class=ln> 59</span>                        <span class=n>relationships</span><span class=p>[</span><span class=n>name1</span><span class=p>][</span><span class=n>name2</span><span class=p>]</span> <span class=o>+=</span> <span class=mi>1</span> 
+<span class=ln> 60</span>        
+<span class=ln> 61</span>        <span class=c1># 返回节点和边</span>
+<span class=ln> 62</span>        <span class=k>return</span> <span class=n>name_frequency</span><span class=p>,</span> <span class=n>relationships</span>
+<span class=ln> 63</span>
+<span class=ln> 64</span>    <span class=c1># 输出Gephi格式的节点和边信息</span>
+<span class=ln> 65</span>    <span class=k>def</span> <span class=nf>exportGephi</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>nodes</span><span class=p>,</span> <span class=n>relationships</span><span class=p>):</span>
+<span class=ln> 66</span>        <span class=c1># 输出节点</span>
+<span class=ln> 67</span>        <span class=k>with</span> <span class=n>codecs</span><span class=o>.</span><span class=n>open</span><span class=p>(</span><span class=s2>&#34;./output/node.txt&#34;</span><span class=p>,</span> <span class=s2>&#34;w&#34;</span><span class=p>,</span> <span class=s2>&#34;gbk&#34;</span><span class=p>)</span> <span class=k>as</span> <span class=n>f</span><span class=p>:</span>
+<span class=ln> 68</span>            <span class=n>f</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=s2>&#34;Id Label Weight</span><span class=se>\r\n</span><span class=s2>&#34;</span><span class=p>)</span>
+<span class=ln> 69</span>            <span class=k>for</span> <span class=n>name</span><span class=p>,</span> <span class=n>freq</span> <span class=ow>in</span> <span class=n>nodes</span><span class=o>.</span><span class=n>items</span><span class=p>():</span>
+<span class=ln> 70</span>                <span class=n>f</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>name</span> <span class=o>+</span> <span class=s2>&#34; &#34;</span> <span class=o>+</span> <span class=n>name</span> <span class=o>+</span> <span class=s2>&#34; &#34;</span> <span class=o>+</span> <span class=nb>str</span><span class=p>(</span><span class=n>freq</span><span class=p>)</span> <span class=o>+</span> <span class=s2>&#34;</span><span class=se>\r\n</span><span class=s2>&#34;</span><span class=p>)</span>
+<span class=ln> 71</span>
+<span class=ln> 72</span>        <span class=c1># 输出边</span>
+<span class=ln> 73</span>        <span class=k>with</span> <span class=n>codecs</span><span class=o>.</span><span class=n>open</span><span class=p>(</span><span class=s2>&#34;./output/edge.txt&#34;</span><span class=p>,</span> <span class=s2>&#34;w&#34;</span><span class=p>,</span> <span class=s2>&#34;gbk&#34;</span><span class=p>)</span> <span class=k>as</span> <span class=n>f</span><span class=p>:</span>
+<span class=ln> 74</span>            <span class=n>f</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=s2>&#34;Source Target Weight</span><span class=se>\r\n</span><span class=s2>&#34;</span><span class=p>)</span>
+<span class=ln> 75</span>            <span class=k>for</span> <span class=n>name</span><span class=p>,</span> <span class=n>edges</span> <span class=ow>in</span> <span class=n>relationships</span><span class=o>.</span><span class=n>items</span><span class=p>():</span>
+<span class=ln> 76</span>                <span class=k>for</span> <span class=n>v</span><span class=p>,</span> <span class=n>w</span> <span class=ow>in</span> <span class=n>edges</span><span class=o>.</span><span class=n>items</span><span class=p>():</span>
+<span class=ln> 77</span>                    <span class=k>if</span> <span class=n>w</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>:</span>
+<span class=ln> 78</span>                        <span class=n>f</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>name</span> <span class=o>+</span> <span class=s2>&#34; &#34;</span> <span class=o>+</span> <span class=n>v</span> <span class=o>+</span> <span class=s2>&#34; &#34;</span> <span class=o>+</span> <span class=nb>str</span><span class=p>(</span><span class=n>w</span><span class=p>)</span> <span class=o>+</span> <span class=s2>&#34;</span><span class=se>\r\n</span><span class=s2>&#34;</span><span class=p>)</span>   
+<span class=ln> 79</span>
+<span class=ln> 80</span>    <span class=c1># 使用ECharts对人物关系进行渲染</span>
+<span class=ln> 81</span>    <span class=k>def</span> <span class=nf>exportECharts</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>nodes</span><span class=p>,</span> <span class=n>relationships</span><span class=p>):</span>
+<span class=ln> 82</span>        <span class=c1># 总频次，用于数据的归一化</span>
+<span class=ln> 83</span>        <span class=n>total</span> <span class=o>=</span> <span class=nb>sum</span><span class=p>(</span><span class=nb>list</span><span class=p>(</span><span class=nb>map</span><span class=p>(</span><span class=k>lambda</span> <span class=n>x</span><span class=p>:</span><span class=n>x</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=n>nodes</span><span class=o>.</span><span class=n>items</span><span class=p>())))</span>
+<span class=ln> 84</span>
+<span class=ln> 85</span>        <span class=c1># 输出节点</span>
+<span class=ln> 86</span>        <span class=n>nodes_data</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=ln> 87</span>        <span class=k>for</span> <span class=n>name</span><span class=p>,</span> <span class=n>freq</span> <span class=ow>in</span> <span class=n>nodes</span><span class=o>.</span><span class=n>items</span><span class=p>():</span>
+<span class=ln> 88</span>            <span class=n>nodes_data</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>opts</span><span class=o>.</span><span class=n>GraphNode</span><span class=p>(</span>
+<span class=ln> 89</span>                <span class=n>name</span> <span class=o>=</span> <span class=n>name</span><span class=p>,</span> 
+<span class=ln> 90</span>                <span class=n>symbol_size</span> <span class=o>=</span> <span class=nb>round</span><span class=p>(</span><span class=n>freq</span> <span class=o>/</span> <span class=n>total</span> <span class=o>*</span> <span class=mi>100</span><span class=p>,</span> <span class=mi>2</span><span class=p>),</span> 
+<span class=ln> 91</span>                <span class=n>value</span> <span class=o>=</span> <span class=n>freq</span><span class=p>,</span>
+<span class=ln> 92</span>            <span class=p>)),</span>
+<span class=ln> 93</span>
+<span class=ln> 94</span>        <span class=c1># 输出边</span>
+<span class=ln> 95</span>        <span class=n>links_data</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=ln> 96</span>        <span class=k>for</span> <span class=n>name</span><span class=p>,</span> <span class=n>edges</span> <span class=ow>in</span> <span class=n>relationships</span><span class=o>.</span><span class=n>items</span><span class=p>():</span>
+<span class=ln> 97</span>                <span class=k>for</span> <span class=n>v</span><span class=p>,</span> <span class=n>w</span> <span class=ow>in</span> <span class=n>edges</span><span class=o>.</span><span class=n>items</span><span class=p>():</span>
+<span class=ln> 98</span>                    <span class=k>if</span> <span class=n>w</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>:</span>
+<span class=ln> 99</span>                        <span class=n>links_data</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>opts</span><span class=o>.</span><span class=n>GraphLink</span><span class=p>(</span>
+<span class=ln>100</span>                            <span class=n>source</span> <span class=o>=</span> <span class=n>v</span><span class=p>,</span> 
+<span class=ln>101</span>                            <span class=n>target</span> <span class=o>=</span> <span class=n>w</span><span class=p>,</span> 
+<span class=ln>102</span>                            <span class=n>value</span> <span class=o>=</span> <span class=n>w</span>
+<span class=ln>103</span>                        <span class=p>))</span>
+<span class=ln>104</span>
+<span class=ln>105</span>        <span class=c1># 绘制Graph</span>
+<span class=ln>106</span>        <span class=n>c</span> <span class=o>=</span> <span class=p>(</span>
+<span class=ln>107</span>            <span class=n>Graph</span><span class=p>()</span>
+<span class=ln>108</span>            <span class=o>.</span><span class=n>add</span><span class=p>(</span>
+<span class=ln>109</span>                <span class=s2>&#34;&#34;</span><span class=p>,</span>
+<span class=ln>110</span>                <span class=n>nodes_data</span><span class=p>,</span>
+<span class=ln>111</span>                <span class=n>links_data</span><span class=p>,</span>
+<span class=ln>112</span>                <span class=n>gravity</span> <span class=o>=</span> <span class=mf>0.2</span><span class=p>,</span>
+<span class=ln>113</span>                <span class=n>repulsion</span> <span class=o>=</span> <span class=mi>8000</span><span class=p>,</span>
+<span class=ln>114</span>                <span class=n>is_draggable</span> <span class=o>=</span> <span class=kc>True</span><span class=p>,</span>
+<span class=ln>115</span>                <span class=n>symbol</span> <span class=o>=</span> <span class=s1>&#39;circle&#39;</span><span class=p>,</span>
+<span class=ln>116</span>                <span class=n>linestyle_opts</span> <span class=o>=</span> <span class=n>opts</span><span class=o>.</span><span class=n>LineStyleOpts</span><span class=p>(</span>
+<span class=ln>117</span>                    <span class=n>curve</span> <span class=o>=</span> <span class=mf>0.3</span><span class=p>,</span> 
+<span class=ln>118</span>                    <span class=n>width</span> <span class=o>=</span> <span class=mf>0.5</span><span class=p>,</span> 
+<span class=ln>119</span>                    <span class=n>opacity</span> <span class=o>=</span> <span class=mf>0.7</span>
+<span class=ln>120</span>                <span class=p>),</span>
+<span class=ln>121</span>                <span class=n>edge_label</span> <span class=o>=</span> <span class=n>opts</span><span class=o>.</span><span class=n>LabelOpts</span><span class=p>(</span>
+<span class=ln>122</span>                    <span class=n>is_show</span> <span class=o>=</span> <span class=kc>False</span><span class=p>,</span> 
+<span class=ln>123</span>                    <span class=n>position</span> <span class=o>=</span> <span class=s2>&#34;middle&#34;</span><span class=p>,</span> 
+<span class=ln>124</span>                    <span class=n>formatter</span> <span class=o>=</span> <span class=s2>&#34;</span><span class=si>{b}</span><span class=s2>-&gt;</span><span class=si>{c}</span><span class=s2>&#34;</span>
+<span class=ln>125</span>                <span class=p>),</span>
+<span class=ln>126</span>            <span class=p>)</span>
+<span class=ln>127</span>            <span class=o>.</span><span class=n>set_global_opts</span><span class=p>(</span>
+<span class=ln>128</span>                <span class=n>title_opts</span> <span class=o>=</span> <span class=n>opts</span><span class=o>.</span><span class=n>TitleOpts</span><span class=p>(</span><span class=n>title</span><span class=o>=</span><span class=s2>&#34;半泽直树原著小说人物关系抽取&#34;</span><span class=p>)</span>
+<span class=ln>129</span>            <span class=p>)</span>
+<span class=ln>130</span>            <span class=o>.</span><span class=n>render</span><span class=p>(</span><span class=s2>&#34;./docs/半泽直树原著小说人物关系抽取.html&#34;</span><span class=p>)</span>
+<span class=ln>131</span>        <span class=p>)</span>
+<span class=ln>132</span>
+</code></pre></div><p>你可以注意到，在<code>input</code>目录中，博主已经准备好了中文语料。因此，我们可以通过下面的代码来完成任务关系抽取：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln>1</span><span class=n>extractor</span> <span class=o>=</span> <span class=n>RelationExtractor</span><span class=p>(</span><span class=s1>&#39;./input/停用词词典.txt&#39;</span><span class=p>,</span>
+<span class=ln>2</span>    <span class=s1>&#39;./input/人名词典.txt&#39;</span><span class=p>,</span>
+<span class=ln>3</span>    <span class=s1>&#39;./input/别名词典.txt&#39;</span>
+<span class=ln>4</span><span class=p>)</span>
+<span class=ln>5</span><span class=n>nodes</span><span class=p>,</span> <span class=n>relationships</span> <span class=o>=</span> <span class=n>extractor</span><span class=o>.</span><span class=n>extract</span><span class=p>(</span><span class=s1>&#39;./input/半泽直树.txt&#39;</span><span class=p>)</span>
+<span class=ln>6</span><span class=n>extractor</span><span class=o>.</span><span class=n>exportGephi</span><span class=p>(</span><span class=n>nodes</span><span class=p>,</span> <span class=n>relationships</span><span class=p>)</span>
+<span class=ln>7</span><span class=n>extractor</span><span class=o>.</span><span class=n>exportECharts</span><span class=p>(</span><span class=n>nodes</span><span class=p>,</span> <span class=n>relationships</span><span class=p>)</span>
+</code></pre></div><p>此时，我们可以分别在<code>output</code>目录和<code>docs</code>目录获得<code>Gephi</code>和<code>ECharts</code>相关的渲染结果。</p>
+<h1 id=结果展示>结果展示</h1>
+<p>这里，通过 Gephi 软件导入生成的节点和边信息，这两个信息默认情况下在<code>output</code>目录下。如果你熟悉这个软件的使用的话，你可以得到下面的结果：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/12/09/4TV9CAoE6lksGMg.png>
+<img src=https://i.loli.net/2020/12/09/4TV9CAoE6lksGMg.png loading=lazy alt=使用Gephi渲染的小说人物关系图>
+</a>
+<figcaption>使用Gephi渲染的小说人物关系图</figcaption>
+</figure></p>
+<p>作为对比，博主这里同时提供了使用 ECharts 渲染的小说人物关系图：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/12/09/V5pD6mJKCMsN4uS.png>
+<img src=https://i.loli.net/2020/12/09/V5pD6mJKCMsN4uS.png loading=lazy alt=使用ECharts渲染的小说人物关系图>
+</a>
+<figcaption>使用ECharts渲染的小说人物关系图</figcaption>
+</figure></p>
+<p>或者，可以直接访问博主托管在 Github Pages 上的 <a class=link href=https://qinyuanpei.github.io/graph-relation/%e5%8d%8a%e6%b3%bd%e7%9b%b4%e6%a0%91%e5%8e%9f%e8%91%97%e5%b0%8f%e8%af%b4%e4%ba%ba%e7%89%a9%e5%85%b3%e7%b3%bb%e6%8a%bd%e5%8f%96.html target=_blank rel=noopener>在线版本</a> 。关于 Gephi 软件的使用，请参考： <a class=link href=https://www.jianshu.com/p/86145943695a target=_blank rel=noopener>Gephi 网络图极简教程</a>。关于 PyECharts 的使用，请参考： <a class=link href=https://pyecharts.org/#/ target=_blank rel=noopener>PyECharts</a>。</p>
+<h1 id=总结思考>总结思考</h1>
+<p>通过生成的人物关系图，可以发现下列规律：</p>
+<ul>
+<li>大多数人物间的关系是正确的，譬如<strong>东田->浅野匡->半泽</strong>这条线，对应的是第一季西大阪钢铁 5 亿贷款的事件，而<strong>箕部->白井->半泽</strong>这条线，显然对应的第二季议员利用“炼金术”敛财的事件。</li>
+<li>我们发现渡真利拥有仅次于半泽的“连线”数量，这符合他在剧中掌握大量信息来源、职场上八面玲珑的形象设定。相比之下，同样作为半泽好友的近藤和苅田，则没有这样强大的光环。</li>
+<li>关于大和田，我们都知道他在第二季属于编剧强行“加戏”，一定程度上是在顶替内藤部长的作用，大和田实际上并未参与第二季的剧情，这一点从图中人物节点的联系和大小可以看出。</li>
+<li>日本人似乎更喜欢使用姓氏，由于妻子要跟随丈夫的姓氏，剧中很多女性角色譬如半泽花、浅野利惠等似乎都不太好提取出来，除非是像白井、谷川、藤泽这些重要的剧情人物。</li>
+</ul>
+<p>考虑到，小说中同一个人的称呼通常会有很多种，与之相关联的领域被称为“中文指代消解问题”，使用姓氏作为关键字会造成“女性角色”的缺失，而这种基于“共现”的理论，无法解决 A 在 B 交谈的过程中提到 C 的问题，此时，C 和 A、C 和 B 可能并没有直接的联系，譬如图中的垣内，理论上与西大阪钢铁 5 亿贷款事件并无直接联系，因为剧情中参与融资的主要是新人中西，更不用说老员工角田居然“孤零零”的一个人，而主流的命名实体识别的理论基本都针对三元组，所以，在这里要心疼下角田这位老人。</p>
+<p>在目前的人物关系抽取案例中，这种情况称为“无效的人名实体共现句”，所以，更好的做法是，采用文本分类模型，结合依存句法去识别实体间的关系，比如同事关系、朋友关系或者亲属关系等等，它有一个非常专业的名词，称为命名实体识别(NER)，而这会让我们的这张图变得更加丰富。在这个方向上，我个人推荐使用哈工大的语言技术平台(LTP)作为进一步改进，因为它可以更好地识别人名。好了，以上就是这篇博客的全部内容啦，欢迎大家在博客下面留言，喜欢我的博客话，请一键三连，点赞收藏，谢谢大家！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/python/>Python</a>
+<a href=/tags/nlp/>NLP</a>
+<a href=/tags/%E5%8D%8A%E6%B3%BD%E7%9B%B4%E6%A0%91/>半泽直树</a>
+<a href=/tags/gephi/>Gephi</a>
+<a href=/tags/echarts/>ECharts</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/735074641/>
+<div class=article-details>
+<h2 class=article-title>通过 Python 预测 2021 年双十一交易额</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/1772340994/>
+<div class=article-details>
+<h2 class=article-title>SnowNLP 使用自定义语料进行模型训练</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E9%80%9A%E8%BF%87python%E5%88%86%E6%9E%902020%E5%B9%B4%E5%85%A8%E5%B9%B4%E5%BE%AE%E5%8D%9A%E7%83%AD%E6%90%9C%E6%95%B0%E6%8D%AE/>
+<div class=article-details>
+<h2 class=article-title>通过 Python 分析 2020 年全年微博热搜数据</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3148958651/>
+<div class=article-details>
+<h2 class=article-title>基于 Python 和 Selenium 实现 CSDN 一键三连自动化</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3247093203/>
+<div class=article-details>
+<h2 class=article-title>使用多线程为你的 Python 爬虫提速的 N 种姿势，你会几种？</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/1427872047/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#准备工作>准备工作</a></li>
+<li><a href=#原理说明>原理说明</a></li>
+<li><a href=#过程实现>过程实现</a></li>
+<li><a href=#结果展示>结果展示</a></li>
+<li><a href=#总结思考>总结思考</a></li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/%E7%A8%8B%E5%BA%8F%E5%91%98/ class=font_size_3>
+程序员
+</a>
+<a href=/tags/rabbitmq/ class=font_size_2>
+RabbitMQ
+</a>
+<a href=/tags/orm/ class=font_size_1>
+ORM
+</a>
+<a href=/tags/dbeaver/ class=font_size_1>
+DBeaver
+</a>
+<a href=/tags/%E6%88%91%E6%98%AF%E7%8C%AB/ class=font_size_1>
+我是猫
+</a>
+<a href=/tags/mecanim/ class=font_size_1>
+Mecanim
+</a>
+<a href=/tags/%E6%8F%92%E4%BB%B6/ class=font_size_3>
+插件
+</a>
+<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
+塔防
+</a>
+<a href=/tags/%E5%AE%9E%E4%BD%93/ class=font_size_2>
+实体
+</a>
+<a href=/tags/%E5%89%91%E6%8C%87offer/ class=font_size_1>
+剑指Offer
+</a>
+<a href=/tags/%E4%BA%BA%E7%94%9F/ class=font_size_2>
+人生
+</a>
+<a href=/tags/%E8%AE%AD%E7%BB%83/ class=font_size_1>
+训练
+</a>
+<a href=/tags/web/ class=font_size_4>
+Web
+</a>
+<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/ class=font_size_1>
+游戏引擎
+</a>
+<a href=/tags/%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95/ class=font_size_1>
+扩展方法
+</a>
+<a href=/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/ class=font_size_1>
+大数据
+</a>
+<a href=/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/ class=font_size_1>
+响应式
+</a>
+<a href=/tags/prometheus/ class=font_size_1>
+Prometheus
+</a>
+<a href=/tags/mapreduce/ class=font_size_1>
+MapReduce
+</a>
+<a href=/tags/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A0%91/ class=font_size_1>
+表达式树
+</a>
+<a href=/tags/referrer/ class=font_size_1>
+Referrer
+</a>
+<a href=/tags/envoy/ class=font_size_6>
+Envoy
+</a>
+<a href=/tags/visual-studio/ class=font_size_1>
+Visual Studio
+</a>
+<a href=/tags/%E9%95%BF%E6%88%AA%E5%9B%BE/ class=font_size_1>
+长截图
+</a>
+<a href=/tags/%E6%95%99%E7%A8%8B/ class=font_size_7>
+教程
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

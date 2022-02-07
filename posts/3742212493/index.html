@@ -1,0 +1,504 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="这里暂且抛开它到底是 XML、JSON 还是 EDI 这种细节性的问题，我想我们大概会有一个简单的想法，如果把需要传输给对方的接口报文做成模板，然后通过`Liquid`语法完成数据的绑定，那么数据映射这一层的工作就可以减轻不少，毕竟写`A.XXX=B.XXX`这种赋值语句是没什么前途的啦，而`AutoMapper`则需要提前写好 Map 并注册，经过一番权衡，我们来验证一下我们的想法吧;因为要对接的接口数量多、字段多，我首先根据字段对应关系制作了一份`Liquid`模板，并根据业务上的需要，用主表(Main) + 明细表(Details)的方式来定义数据，这意味着我接下来只需要根据业务实现不同的数据源即可：;为此，我们介绍了`Liquid`模板引擎，它提供的语法可以让我们完成一系列的绑定，顺着这个思路，博主为大家展示了这种想法的可行性"><title>使用 Liquid 实现简单的数据交换</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/3742212493/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="使用 Liquid 实现简单的数据交换">
+<meta property="og:description" content="这里暂且抛开它到底是 XML、JSON 还是 EDI 这种细节性的问题，我想我们大概会有一个简单的想法，如果把需要传输给对方的接口报文做成模板，然后通过`Liquid`语法完成数据的绑定，那么数据映射这一层的工作就可以减轻不少，毕竟写`A.XXX=B.XXX`这种赋值语句是没什么前途的啦，而`AutoMapper`则需要提前写好 Map 并注册，经过一番权衡，我们来验证一下我们的想法吧;因为要对接的接口数量多、字段多，我首先根据字段对应关系制作了一份`Liquid`模板，并根据业务上的需要，用主表(Main) + 明细表(Details)的方式来定义数据，这意味着我接下来只需要根据业务实现不同的数据源即可：;为此，我们介绍了`Liquid`模板引擎，它提供的语法可以让我们完成一系列的绑定，顺着这个思路，博主为大家展示了这种想法的可行性">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/3742212493/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="Liquid"><meta property="article:tag" content="数据交换"><meta property="article:tag" content="模板引擎"><meta property="article:published_time" content="2019-12-22T09:36:42+00:00"><meta property="article:modified_time" content="2019-12-22T09:36:42+00:00">
+<meta name=twitter:title content="使用 Liquid 实现简单的数据交换">
+<meta name=twitter:description content="这里暂且抛开它到底是 XML、JSON 还是 EDI 这种细节性的问题，我想我们大概会有一个简单的想法，如果把需要传输给对方的接口报文做成模板，然后通过`Liquid`语法完成数据的绑定，那么数据映射这一层的工作就可以减轻不少，毕竟写`A.XXX=B.XXX`这种赋值语句是没什么前途的啦，而`AutoMapper`则需要提前写好 Map 并注册，经过一番权衡，我们来验证一下我们的想法吧;因为要对接的接口数量多、字段多，我首先根据字段对应关系制作了一份`Liquid`模板，并根据业务上的需要，用主表(Main) + 明细表(Details)的方式来定义数据，这意味着我接下来只需要根据业务实现不同的数据源即可：;为此，我们介绍了`Liquid`模板引擎，它提供的语法可以让我们完成一系列的绑定，顺着这个思路，博主为大家展示了这种想法的可行性">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+数据存储
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/3742212493/>使用 Liquid 实现简单的数据交换</a>
+</h2>
+<h3 class=article-subtitle>
+这里暂且抛开它到底是 XML、JSON 还是 EDI 这种细节性的问题，我想我们大概会有一个简单的想法，如果把需要传输给对方的接口报文做成模板，然后通过`Liquid`语法完成数据的绑定，那么数据映射这一层的工作就可以减轻不少，毕竟写`A.XXX=B.XXX`这种赋值语句是没什么前途的啦，而`AutoMapper`则需要提前写好 Map 并注册，经过一番权衡，我们来验证一下我们的想法吧;因为要对接的接口数量多、字段多，我首先根据字段对应关系制作了一份`Liquid`模板，并根据业务上的需要，用主表(Main) + 明细表(Details)的方式来定义数据，这意味着我接下来只需要根据业务实现不同的数据源即可：;为此，我们介绍了`Liquid`模板引擎，它提供的语法可以让我们完成一系列的绑定，顺着这个思路，博主为大家展示了这种想法的可行性
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2019-12-22</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 7 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>在平时的开发工作中，接口对接是一件无可避免的事情。虽然在“前后端分离”的大趋势下，后端的角色逐渐转换为数据接口的提供者，然而在实际的应用场景中，我们面对的往往是各种不同的“数据”，譬如企业应用中普遍使用的企业服务总线(ESB)，这类服务要求服务接入者必须使用 WebService 来作为数据交换格式；再譬如电子数据交换(EDI)这种特定行业中使用的数据交换格式，从可读性上甚至还不如基于 XML 的 WebService……而更为普遍的则可能是需要使用 Word、Excel、CSV 来作为数据交换的媒介。顺着这个思路继续发散下去，进入我们失业的或许还有各种数据库，譬如 MySQL 和 MongoDB；各种大数据平台，譬如 Hadoop 和 Spark；各种消息队列，譬如 RabbitMQ 和 Kafka 等等。</p>
+<p>注意到，这里反复提到的一个概念是数据交换(Data Switching)，它是指在多个数据终端设备间，为任意两个终端设备建立数据通信临时互联通路的过程。自从阿里提出“中台”的概念以来，越来越多的公司开始跟风“中台”概念，并随之衍生出譬如组织中台、数据中台、业务中台、内容中台等等的概念。今天这篇博客，我并不打算故弄玄虚地扯这些概念，我的落脚点是接口级别的数据交换，主要通过 Liquid 这款模板引擎来实现。它对应我在这篇博客开头提到的场景：一个对外提供 RESful 风格 API 的系统，如何快速地和一个 WebService 实现对接。总而言之，希望能对这篇博客对大家有所启发吧！</p>
+<h2 id=关于-liquid>关于 Liquid</h2>
+<p>首先，我们来介绍<a class=link href=https://shopify.github.io/liquid target=_blank rel=noopener>Liquid</a>，通过它的官方网站，我们应该它是一门模板语言。对于模板语言，我们应该是非常熟悉啦，JavaScript 里的<a class=link href=https://handlebarjs.com target=_blank rel=noopener>Handlebars</a>和<a class=link href=https://ejs.bootcss.com target=_blank rel=noopener>Ejs</a>就是非常著名的模板语言。如大家所见，这个博客就是用<code>Ejs</code>模板渲染出来的。而到了三大前端框架并驾齐驱的时代，模版语法依然被保留了下来，比如<code>Vue</code>中<code>{% raw %}{{model.userName}}{% endraw %}</code>标记常常用来做文本插值。所以，如果要认真追溯起来的话，也许这些框架都或多或少的收到了<code>Liquid</code>的影响，因为它的基本语法如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=ln>1</span>//使用page实例的title属性插值
+<span class=ln>2</span>{{ page.title}}
+</code></pre></div><p>假设 page 是一个对象，它的 title 属性值为：Introduction，此时，渲染后的结果即为：Introduction。是不是感觉非常简单呢? 我们继续往下看。除了基本的“插值”语法以外，我们可以用<code>{% raw %}{% tag %}{% endraw %}</code>这种结构(Liquid 称之为 Tag)：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=ln> 1</span>//声称变量author并赋值
+<span class=ln> 2</span>{% sssign author = &#39;猫先森&#39; %}
+<span class=ln> 3</span>//条件语句
+<span class=ln> 4</span>{% if author == &#39;猫先森&#39; %}
+<span class=ln> 5</span>帅哥，你好
+<span class=ln> 6</span>{% endif %}
+<span class=ln> 7</span>//循环语句
+<span class=ln> 8</span>{% for post in posts %}
+<span class=ln> 9</span>{{post.date}}-{{post.title}}
+<span class=ln>10</span>{% endfor %}
+</code></pre></div><p>这里仅仅展示了一部分<code>Liquid</code>的特性，但对于我们了解一门“语言”已经足够了，因为对于一门编程语言来说，只要学会顺序、条件和循环三种结构足矣。言下之意呢，像常规<code>else</code>、<code>elseif</code>、<code>break</code>和<code>continue</code>，<code>Liquid</code>都是支持的，这样子是不是更有编程语言的感觉了呢？除此之外，它还支持像<code>tablerow</code>这样的 Tag，主要用来渲染 HTML 里的表格。</p>
+<p>也许有人想说，这玩意儿有什么用呢？抱歉啊，这玩意儿还真有用。像发送邮件、发送短信这种一般都需要写个字符串模板的，简单的大家可以用<code>String.Format()</code>或者<code>$</code>来搞定，可一旦遇上循环的场景，这种基于字符串替换的方式就有点力不从心了。不开玩笑地说，在代码里用<code>StringBuilder</code>拼接 HTML 的方式，实在是太傻逼了。如果用<code>Liquid</code>写可能就是：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=ln>1</span>亲爱的{{ model.UserID }}:
+<span class=ln>2</span>   您好！您有以下设备即将超过校验有效期，请及时采取有效行动。
+<span class=ln>3</span>   {% for equipment in model.Equipments %}
+<span class=ln>4</span>   {{ equipment.EquipmentID }}
+<span class=ln>5</span>   {% endfor %}
+<span class=ln>6</span>   
+<span class=ln>7</span>{{ model.SendBy }}
+</code></pre></div><p>显然，这个代码比拼接字符串要优雅很多。博主曾经在一个前端页面看到过大量的 HTML 拼接操作，果然是 jQuery 操作 DOM 一时爽，jQuery 操作 DOM 一直爽，可明明前端就有<a class=link href=https://handlebarjs.com target=_blank rel=noopener>Handlebars</a>和<a class=link href=https://ejs.bootcss.com target=_blank rel=noopener>Ejs</a>这样的模板语言。最近一位同事写前端页面的经历不由得让我感慨，眼睛觉得简单的事情，为什么总是要求手去做呢？直接操作 DOM 带来的弊端就是，业务逻辑永远和 DOM 纠缠在一起，那些没有人敢改的 JavaScript 代码，那些未经模块化全局引入的 JavaScript 代码，虽然马上就要 2020 年了，写下这些句子的时候还是感到魔幻，可能这就是所谓的魔幻现实主义吧。</p>
+<p>OK, 我们把思绪拉回到<code>Liquid</code>。除了使用各种 Tag 实现流程控制以外，<code>Liquid</code>中还提供了过滤器(Filter)的概念，过滤器主要是配合<code>{% raw %}{{ variable | filter }}{% endraw %}</code>语法来使用的。比如说，数据层返回了一个负数，而展示层希望展示正数，在不确定这个数值是否被别人使用的情况下，贸然去修改数据层的返回值是件危险的事情。此时，我们可以：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=ln>1</span>//对绑定的变量或者值取绝对值
+<span class=ln>2</span>{{ -17 | abs}}
+<span class=ln>3</span>//保留小数位
+<span class=ln>4</span>{{ 183.357 | round: 2 }}
+<span class=ln>5</span>//日期/时间格式
+<span class=ln>6</span>{{ article.created_date | data: %b %d, %Y}}
+</code></pre></div><p>类似小数点位数、日期/时间格式等问题，均可以在<code>Liquid</code>中找到相应的过滤器。需要说明的是，<code>Liquid</code>使用<code>Ruby</code>进行开发的。也许在读到这篇博客前，大家都没有听说过<code>Liquid</code>，那么至少听说过<code>Jekyll</code>这个著名的静态博客生成器吧。实际上，在我写这篇博客的时候，我刚刚了解到一件事情，<code>Jekyll</code>就是基于<code>Liquid</code>而开发的，想到当初搭建这个博客时被<code>Ruby</code>劝退的回忆，我大概想不到有一天会再次接触它吧，不得不说，人生还真是奇妙啊！</p>
+<h2 id=一个简单的想法>一个简单的想法</h2>
+<p>好了，关于<code>Liquid</code>的介绍我们先了解到这里。写到这里，再回头去看我们一开始的问题，即：怎么把上游的数据(Model)转化为下游的数据(Template)。这里暂且抛开它到底是 XML、JSON 还是 EDI 这种细节性的问题，我想我们大概会有一个简单的想法，如果把需要传输给对方的接口报文做成模板，然后通过<code>Liquid</code>语法完成数据的绑定，那么数据映射这一层的工作就可以减轻不少，毕竟写<code>A.XXX=B.XXX</code>这种赋值语句是没什么前途的啦，而<code>AutoMapper</code>则需要提前写好 Map 并注册，经过一番权衡，我们来验证一下我们的想法吧！</p>
+<p>这段时间一直在和金蝶 K3Cloud 接口做对接，坦白说我觉得金蝶的接口设计得非常糟糕，从它那个奇葩的<code>FNumber</code>字段就能看出来，而且它试图用一个接口做完所有事情的做法恕我不敢苟同，在我看来它违反了单一职责原则。因为要对接的接口数量多、字段多，我首先根据字段对应关系制作了一份<code>Liquid</code>模板，并根据业务上的需要，用主表(Main) + 明细表(Details)的方式来定义数据，这意味着我接下来只需要根据业务实现不同的数据源即可：</p>
+<p><figure>
+<a href=https://i.loli.net/2019/12/23/HABb1GTJ3NCwedR.png>
+<img src=https://i.loli.net/2019/12/23/HABb1GTJ3NCwedR.png loading=lazy alt=基于Liquid的JSON报文模板>
+</a>
+<figcaption>基于Liquid的JSON报文模板</figcaption>
+</figure></p>
+<p>好了，现在我们使用<code>Liquid</code>的.NET 版本<a class=link href=http://dotliquidmarkup.org target=_blank rel=noopener>DotLiquid</a>来负责模板的解析和渲染，这个库可以直接通过<code>Nuget</code>安装，可以注意到这个代码非常的简单：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln>1</span><span class=kt>string</span> <span class=n>RenderTpl</span><span class=p>(</span><span class=kt>string</span> <span class=n>filePath</span><span class=p>,</span> <span class=kt>dynamic</span> <span class=n>model</span><span class=p>)</span>
+<span class=ln>2</span><span class=p>{</span>
+<span class=ln>3</span>  <span class=kt>var</span> <span class=n>content</span> <span class=p>=</span> <span class=n>File</span><span class=p>.</span><span class=n>ReadAllText</span><span class=p>(</span><span class=n>filePath</span><span class=p>);</span>
+<span class=ln>4</span>  <span class=kt>var</span> <span class=n>template</span> <span class=p>=</span> <span class=n>Template</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=n>content</span><span class=p>);</span>
+<span class=ln>5</span>  <span class=kt>var</span> <span class=n>output</span> <span class=p>=</span> <span class=n>template</span><span class=p>.</span><span class=n>Render</span><span class=p>(</span><span class=n>Hash</span><span class=p>.</span><span class=n>FromAnonymousObject</span><span class=p>(</span><span class=n>model</span><span class=p>));</span>
+<span class=ln>6</span>  <span class=k>return</span> <span class=n>output</span><span class=p>;</span>
+<span class=ln>7</span><span class=p>}</span>
+</code></pre></div><p>实际上渲染后的文本就是对方需要的接口报文了，此时，该怎么样就怎么样处理，只需要把这个报文发送给对方就可以了。唯一需要花时间的就是对字段、写绑定，相比写实体类的方式效率要高更多。这种方式的话，我个人觉得更适合分工合作，如果需要数据加字段，那在数据层(Model)里增加就好了，而像改字段映射关系、字段默认值都可以由别人来完成。我一直相信，开发并不是帮别人做越多事情越好，而是可以提供一种能力让别人去做更多的事情，这就是我们常常听到的“赋能”。继续延伸下去的话，传统的 MVC 其实和<code>Liquid</code>是一个道理，都是根据数据去生成视图，无非是我们这里的"视图"变成了数据报文。</p>
+<h2 id=本文小结>本文小结</h2>
+<p>通过日常工作中的接口对接这一典型场景，我们引出了“数据交换”的概念，而最低层级的数据交换实际上是接口报文的交换。为此，我们介绍了<code>Liquid</code>模板引擎，它提供的语法可以让我们完成一系列的绑定，顺着这个思路，博主为大家展示了这种想法的可行性。<code>Liquid</code>是一个非常成熟的模板引擎，无论是编写邮件、短信的文本模板，还是轻量级的文本表达式实现，都是一个非常不错的选择。即使是做一个 ApiCaller，一定要做一个有头脑的 ApiCaller。好了，以上就是这篇博客的全部内容啦，欢迎大家留言，谢谢大家。</p>
+<h2 id=2020-01-09-更新>2020-01-09 更新</h2>
+<p>在组织 JSON 中的数组结构时，需要在各元素间添加<code>,</code>，同时最后一个元素不需要<code>,</code>，此时，可以使用以下语法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=ln> 1</span>&#34;FEntity&#34;: [
+<span class=ln> 2</span>  {% for Detail in Details %}
+<span class=ln> 3</span>    {
+<span class=ln> 4</span>      &#34;FCOSTID&#34;: {
+<span class=ln> 5</span>        &#34;FNumber&#34;: &#34;{{Detail.FCOSTID}}&#34;
+<span class=ln> 6</span>      },
+<span class=ln> 7</span>      &#34;FCOSTDEPARTMENTID&#34;: {
+<span class=ln> 8</span>        &#34;FNumber&#34;: &#34;BM000005&#34;
+<span class=ln> 9</span>      },
+<span class=ln>10</span>      &#34;FINVOICETYPE&#34;: &#34;0&#34;,
+<span class=ln>11</span>      &#34;FTOTALAMOUNTFOR&#34;: {{Detail.FEE_AMOUNT}},
+<span class=ln>12</span>    }
+<span class=ln>13</span>    {% if forloop.last == false %},{% endif %}
+<span class=ln>14</span>  {% endfor %}
+<span class=ln>15</span>]
+</code></pre></div>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/liquid/>Liquid</a>
+<a href=/tags/%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/>数据交换</a>
+<a href=/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/>模板引擎</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/3219639636/>
+<div class=article-details>
+<h2 class=article-title>EFCore 实体命名约定库：EFCore.NamingConventions</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/2151871792/>
+<div class=article-details>
+<h2 class=article-title>浅议 EF Core 分库分表及多租户架构的实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/835719605/>
+<div class=article-details>
+<h2 class=article-title>基于选项模式实现.NET Core 的配置热更新</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/dapper.contrib%E5%9C%A8oracle%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BC%95%E5%8F%91ora-00928%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/>
+<div class=article-details>
+<h2 class=article-title>Dapper.Contrib 在 Oracle 环境下引发 ORA-00928 异常问题的解决</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3424138425/>
+<div class=article-details>
+<h2 class=article-title>利用 MySQL 的 Binlog 实现数据同步与订阅(下)：EventBus 篇</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/3742212493/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li>
+<ol>
+<li><a href=#关于-liquid>关于 Liquid</a></li>
+<li><a href=#一个简单的想法>一个简单的想法</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+<li><a href=#2020-01-09-更新>2020-01-09 更新</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/mecanim/ class=font_size_1>
+Mecanim
+</a>
+<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
+穿搭
+</a>
+<a href=/tags/markdown/ class=font_size_1>
+Markdown
+</a>
+<a href=/tags/protobuf/ class=font_size_1>
+Protobuf
+</a>
+<a href=/tags/kafka/ class=font_size_1>
+Kafka
+</a>
+<a href=/tags/%E4%BB%B7%E5%80%BC/ class=font_size_1>
+价值
+</a>
+<a href=/tags/keycloak/ class=font_size_1>
+Keycloak
+</a>
+<a href=/tags/%E6%8F%92%E4%BB%B6/ class=font_size_3>
+插件
+</a>
+<a href=/tags/%E5%AD%A4%E7%8B%AC/ class=font_size_1>
+孤独
+</a>
+<a href=/tags/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/ class=font_size_1>
+读写分离
+</a>
+<a href=/tags/%E6%A2%A6%E6%83%B3/ class=font_size_3>
+梦想
+</a>
+<a href=/tags/%E7%8E%B0%E5%AE%9E/ class=font_size_1>
+现实
+</a>
+<a href=/tags/ef/ class=font_size_5>
+EF
+</a>
+<a href=/tags/envoy/ class=font_size_6>
+Envoy
+</a>
+<a href=/tags/%E7%BC%93%E5%AD%98/ class=font_size_5>
+缓存
+</a>
+<a href=/tags/orm/ class=font_size_1>
+ORM
+</a>
+<a href=/tags/%E5%92%8C%E5%B9%B3/ class=font_size_1>
+和平
+</a>
+<a href=/tags/https/ class=font_size_1>
+HTTPS
+</a>
+<a href=/tags/ztree/ class=font_size_1>
+zTree
+</a>
+<a href=/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/ class=font_size_1>
+负载均衡
+</a>
+<a href=/tags/thoughtworks/ class=font_size_1>
+ThoughtWorks
+</a>
+<a href=/tags/%E5%88%AB%E7%A6%BB/ class=font_size_1>
+别离
+</a>
+<a href=/tags/javascript/ class=font_size_1>
+JavaScript
+</a>
+<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
+面试
+</a>
+<a href=/tags/%E4%BA%8B%E4%BB%B6/ class=font_size_1>
+事件
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

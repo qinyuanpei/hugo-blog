@@ -1,0 +1,595 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="考虑到第一种策略无法解决重试无效的问题，我们在此基础上增加对重试次数以及重试间隔的控制，这就是 Try-Catch-Redo-Retry 策略，其基本实现如下：;AOP 是一种可以在运行时期间动态修改代码的技术，我们自然可以想到给所有的函数都加上异常处理和重试的特性，幸运的是 Python 中的有这样一个第三方库：[Tenacity](http://tenacity.readthedocs.io/en/latest/)，它可以帮助我们优雅地实现重试：;通过@retry 这个装饰器函数，我们就可以知道，这里设计的重试策略是：当引发 JSONDecodeError 这个异常时，每隔 5 秒中重试一次，最大重试次数为 3 次"><title>漫谈应用程序重试策略及其实现</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/115524443/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="漫谈应用程序重试策略及其实现">
+<meta property="og:description" content="考虑到第一种策略无法解决重试无效的问题，我们在此基础上增加对重试次数以及重试间隔的控制，这就是 Try-Catch-Redo-Retry 策略，其基本实现如下：;AOP 是一种可以在运行时期间动态修改代码的技术，我们自然可以想到给所有的函数都加上异常处理和重试的特性，幸运的是 Python 中的有这样一个第三方库：[Tenacity](http://tenacity.readthedocs.io/en/latest/)，它可以帮助我们优雅地实现重试：;通过@retry 这个装饰器函数，我们就可以知道，这里设计的重试策略是：当引发 JSONDecodeError 这个异常时，每隔 5 秒中重试一次，最大重试次数为 3 次">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/115524443/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="异常"><meta property="article:tag" content="重试"><meta property="article:tag" content="想法"><meta property="article:published_time" content="2018-03-31T19:20:54+00:00"><meta property="article:modified_time" content="2018-03-31T19:20:54+00:00">
+<meta name=twitter:title content="漫谈应用程序重试策略及其实现">
+<meta name=twitter:description content="考虑到第一种策略无法解决重试无效的问题，我们在此基础上增加对重试次数以及重试间隔的控制，这就是 Try-Catch-Redo-Retry 策略，其基本实现如下：;AOP 是一种可以在运行时期间动态修改代码的技术，我们自然可以想到给所有的函数都加上异常处理和重试的特性，幸运的是 Python 中的有这样一个第三方库：[Tenacity](http://tenacity.readthedocs.io/en/latest/)，它可以帮助我们优雅地实现重试：;通过@retry 这个装饰器函数，我们就可以知道，这里设计的重试策略是：当引发 JSONDecodeError 这个异常时，每隔 5 秒中重试一次，最大重试次数为 3 次">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/115524443/>漫谈应用程序重试策略及其实现</a>
+</h2>
+<h3 class=article-subtitle>
+考虑到第一种策略无法解决重试无效的问题，我们在此基础上增加对重试次数以及重试间隔的控制，这就是 Try-Catch-Redo-Retry 策略，其基本实现如下：;AOP 是一种可以在运行时期间动态修改代码的技术，我们自然可以想到给所有的函数都加上异常处理和重试的特性，幸运的是 Python 中的有这样一个第三方库：[Tenacity](http://tenacity.readthedocs.io/en/latest/)，它可以帮助我们优雅地实现重试：;通过@retry 这个装饰器函数，我们就可以知道，这里设计的重试策略是：当引发 JSONDecodeError 这个异常时，每隔 5 秒中重试一次，最大重试次数为 3 次
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2018-03-31</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 10 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>最近随项目组对整个项目进行联调，在联调过程中暴露出各种问题，让我不得不开始反思，怎么样更好地去做好一件事情，譬如说在开发过程中如何保证 Web 服务的稳定性，在敏捷开发中如何降低文档维护的成本，以及如何提高多环境服务部署的效率等等。我为什么会考虑这些问题呢？通常我们都是在约定好接口后并行开发的，因此在全部接口完成以前，所有的服务都是以渐进的形式进行集成的，那么如何保证服务在集成过程中的稳定性呢？尤其当我们面对开发/测试/生产三套环境时，如何提高服务部署的效率呢？当接口发生变更的时候，如何让每一个人都知悉变化的细节，同时降低人员维护文档的成本呢？这些问题或许和你我无关，甚至这不是一个技术问题，可恰恰这是我们时常忽视的问题，我是我想要写这篇文章的一个重要原因。</p>
+<h1 id=代码越来越复杂>代码越来越复杂</h1>
+<p>面对这种问题，尤其是当你发现，它并不是一个纯粹的技术问题的时候。选择一件你喜欢的事情的去做，固然可以令你开心；而选择一件你不喜欢的事情去做，则可以令你成长。我们每一个人都不是人类学家，可生命中 80%的时间都在研究人类。当你接收到一条别人的讯息时，不管这个讯息本身或对或错，在生而为人的角色预设中，你都必须去提供一个响应，甚至是比对方期望更高的一个响应。可是服务器会返回 403、404 或者 500 甚至更多的状态码，人生有时候并没有机会去选择 Plan B 或者 Plan C。所以，即使所面临境地再艰难，能不能勇敢地再去尝试一次，说服对方或者选择妥协，就像一段代码被修改得面目全非，可人类本来就是喜欢皆大欢喜的动物，总希望别人都认认真真，而自己则马马虎虎，因为“认真你就输了”，有谁喜欢输呢？</p>
+<p>好了，现在假设我们有这样一个业务场景，我们需要调用一个 WebAPI 来获取数据，然后对这些数据做相关处理。这个 API 接口被设计为返回 JSON 数据，因此，这个“简单”的业务场景通过以下代码来实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln>1</span><span class=k>def</span> <span class=nf>extract</span><span class=p>(</span><span class=n>url</span><span class=p>):</span>
+<span class=ln>2</span>    <span class=n>text</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=p>)</span><span class=o>.</span><span class=n>content</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span>
+<span class=ln>3</span>    <span class=n>json_data</span> <span class=o>=</span> <span class=n>json</span><span class=o>.</span><span class=n>loads</span><span class=p>(</span><span class=n>text</span><span class=p>)</span>
+<span class=ln>4</span>    <span class=n>data</span> <span class=o>=</span> <span class=n>json_data</span><span class=p>[</span><span class=s1>&#39;raw_data&#39;</span><span class=p>]</span>
+<span class=ln>5</span>    <span class=k>return</span> <span class=n>data</span>
+</code></pre></div><p>这个代码非常简单吧！可是过了十天半个月，每次解析 JSON 数据的时候随机出现异常，经验丰富的同事建议增加 try&mldr;except，并在捕获到异常以后返回 None。于是，extract()方法被修改为：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln>1</span><span class=k>def</span> <span class=nf>extract</span><span class=p>(</span><span class=n>url</span><span class=p>):</span>
+<span class=ln>2</span>    <span class=n>text</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=p>)</span><span class=o>.</span><span class=n>content</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span>
+<span class=ln>3</span>    <span class=k>try</span><span class=p>:</span>
+<span class=ln>4</span>        <span class=n>json_data</span> <span class=o>=</span> <span class=n>json</span><span class=o>.</span><span class=n>loads</span><span class=p>(</span><span class=n>text</span><span class=p>)</span>
+<span class=ln>5</span>        <span class=n>data</span> <span class=o>=</span> <span class=n>json_data</span><span class=p>[</span><span class=s1>&#39;raw_data&#39;</span><span class=p>]</span>
+<span class=ln>6</span>        <span class=k>return</span> <span class=n>data</span>
+<span class=ln>7</span>    <span class=k>except</span> <span class=ne>Exception</span><span class=p>:</span>
+<span class=ln>8</span>        <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;JSON数据无效，重试！&#34;</span><span class=p>)</span>
+<span class=ln>9</span>        <span class=k>return</span> <span class=kc>None</span>
+</code></pre></div><p>修改后的代码，果然比修改前稳定啦，可是负责后续流程的同事开始抱怨，现在代码中出现大量判断返回值是否为 None 的代码片段，甚至在 Web API 返回正确结果的情况下，依然会返回 None，为此，机智的同事再次修改代码如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln>1</span><span class=k>def</span> <span class=nf>extract</span><span class=p>(</span><span class=n>url</span><span class=p>):</span>
+<span class=ln>2</span>	<span class=n>text</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=p>)</span><span class=o>.</span><span class=n>content</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span>
+<span class=ln>3</span>	<span class=k>try</span><span class=p>:</span>
+<span class=ln>4</span>        <span class=n>json_data</span> <span class=o>=</span> <span class=n>json</span><span class=o>.</span><span class=n>loads</span><span class=p>(</span><span class=n>text</span><span class=p>)</span>
+<span class=ln>5</span>        <span class=n>data</span> <span class=o>=</span> <span class=n>json_data</span><span class=p>[</span><span class=s1>&#39;raw_data&#39;</span><span class=p>]</span>
+<span class=ln>6</span>        <span class=k>return</span> <span class=n>data</span>
+<span class=ln>7</span>    <span class=k>except</span> <span class=ne>Exception</span><span class=p>:</span>
+<span class=ln>8</span>        <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;JSON数据无效，重试！&#34;</span><span class=p>)</span>
+<span class=ln>9</span>        <span class=k>return</span> <span class=n>extract</span><span class=p>(</span><span class=n>url</span><span class=p>)</span>
+</code></pre></div><p>可以预见的是，使用递归可能会导致递归的深度问题，假如调用者传入一个错误的 URL，将导致这里无限递归下去，于是考虑限制重试的次数；增加重试次数的限制以后，发现每次重试需要有一个时间间隔……更不必说要在这里增加日志记录，以及在特定场景下需要将异常抛出，由此可见这段简单的代码会变得越来越复杂，如下所示：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln> 1</span><span class=k>def</span> <span class=nf>extract</span><span class=p>(</span><span class=n>url</span><span class=p>):</span>
+<span class=ln> 2</span>    <span class=n>text</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=p>)</span><span class=o>.</span><span class=n>content</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span>
+<span class=ln> 3</span>    <span class=k>try</span><span class=p>:</span>
+<span class=ln> 4</span>        <span class=n>json_data</span> <span class=o>=</span> <span class=n>json</span><span class=o>.</span><span class=n>loads</span><span class=p>(</span><span class=n>text</span><span class=p>)</span>
+<span class=ln> 5</span>        <span class=n>data</span> <span class=o>=</span> <span class=n>json_data</span><span class=p>[</span><span class=s1>&#39;raw_data&#39;</span><span class=p>]</span>
+<span class=ln> 6</span>        <span class=k>return</span> <span class=n>data</span>
+<span class=ln> 7</span>    <span class=k>except</span> <span class=ne>Exception</span><span class=p>:</span>
+<span class=ln> 8</span>        <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>3</span><span class=p>):</span>
+<span class=ln> 9</span>            <span class=nb>print</span><span class=p>(</span><span class=s1>&#39;正在进行第</span><span class=si>{0}</span><span class=s1>次重试&#39;</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=nb>str</span><span class=p>(</span><span class=n>i</span><span class=p>))</span>
+<span class=ln>10</span>            <span class=n>result</span> <span class=o>=</span> <span class=n>extract</span><span class=p>(</span><span class=n>url</span><span class=p>)</span>
+<span class=ln>11</span>            <span class=k>if</span><span class=p>(</span><span class=n>result</span><span class=o>!=</span><span class=kc>None</span><span class=p>):</span>
+<span class=ln>12</span>                <span class=k>return</span> <span class=n>result</span>
+</code></pre></div><p>可以注意到，这是一个非常合理的代码演进过程。在这个演进过程中，一段非常简单的代码变得越来越复杂。在我写下这篇文章前，我亲眼目睹了这种复杂的代码，是如何难以复用以及集成的，日志记录、异常处理等流程和正常流程“混合”在一起，甚至你不得不通过函数的返回值来判断是否异常，我一直在想怎么样去解决这些“corner”问题，就像人们一致认为：王垠博士擅长解决的是理想状态下的纯问题。而现实世界中存在着各种各样的“corner”问题，这或许就是学术界与工业界的区别，那么怎么样去更好地解决这一切问题呢？</p>
+<h1 id=应用程序重试策略>应用程序重试策略</h1>
+<p>既然我们可以预见到这些问题的存在，那么，现在让我们正式切入今天这篇博客的主题，即应用程序重试策略。我们在这里以一种渐进式的方式，向大家展示了一个简单的应用程序，是如何因为异常处理变得越来越复杂的，这里我们选择重试，是因为现实世界本身存在不稳定性，即使我们现在有各种自动化工具来替代传统运维。就像有时候你怀疑是代码出现 Bug，实际上则是服务器在某一段时间内宕机，当这种事情就发生在你身边的时候，你不得不去着手解决这些“corner”问题，而这恰好是人生的无奈之处。</p>
+<h2 id=try-catch-redo-策略>Try-Catch-Redo 策略</h2>
+<p>这应该是我们最容易想到的一种重试策略了，其思路是对函数的返回值和异常进行处理，其缺点是无法解决重试无效的问题。这里我们将问题简化为对异常进行处理，其基本的代码实现如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>private</span> <span class=k>void</span> <span class=n>Retry</span><span class=p>()</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>  <span class=k>try</span>
+<span class=ln> 4</span>  <span class=p>{</span>
+<span class=ln> 5</span>    <span class=kt>var</span> <span class=n>result</span> <span class=p>=</span> <span class=n>DoWork</span><span class=p>();</span>
+<span class=ln> 6</span>    <span class=k>if</span><span class=p>(!</span><span class=n>result</span><span class=p>){</span>
+<span class=ln> 7</span>      <span class=c1>//重试一次
+</span><span class=ln> 8</span><span class=c1></span>      <span class=n>Thread</span><span class=p>.</span><span class=n>Sleep</span><span class=p>(</span><span class=m>1000</span><span class=p>);</span>
+<span class=ln> 9</span>      <span class=n>DoWork</span><span class=p>();</span>
+<span class=ln>10</span>    <span class=p>}</span>
+<span class=ln>11</span>  <span class=p>}</span>
+<span class=ln>12</span>  <span class=k>catch</span><span class=p>(</span><span class=n>Exception</span> <span class=n>e</span><span class=p>)</span>
+<span class=ln>13</span>  <span class=p>{</span>
+<span class=ln>14</span>    <span class=c1>//重试一次
+</span><span class=ln>15</span><span class=c1></span>    <span class=n>Thread</span><span class=p>.</span><span class=n>Sleep</span><span class=p>(</span><span class=m>1000</span><span class=p>);</span>
+<span class=ln>16</span>    <span class=n>DoWork</span><span class=p>();</span>
+<span class=ln>17</span>  <span class=p>}</span>
+<span class=ln>18</span><span class=p>}</span>
+</code></pre></div><p>可以注意到，这种策略最多可以重试一次，因此如果重试后无效，这个策略就变得毫无意义起来，我们需要寻找一种更好的方式。</p>
+<h2 id=try-catch-redo-retry-策略>Try-Catch-Redo-Retry 策略</h2>
+<p>考虑到第一种策略无法解决重试无效的问题，我们在此基础上增加对重试次数以及重试间隔的控制，这就是 Try-Catch-Redo-Retry 策略，其基本实现如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>private</span> <span class=k>void</span> <span class=n>Retry</span><span class=p>()</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=c1>//最大重试次数为5次
+</span><span class=ln> 4</span><span class=c1></span>    <span class=kt>int</span> <span class=n>times</span> <span class=p>=</span> <span class=m>5</span><span class=p>;</span>
+<span class=ln> 5</span>    <span class=c1>//重试间隔为10秒
+</span><span class=ln> 6</span><span class=c1></span>    <span class=kt>int</span> <span class=n>interval</span> <span class=p>=</span> <span class=m>10</span><span class=p>;</span>
+<span class=ln> 7</span>    <span class=c1>//存储异常的列表
+</span><span class=ln> 8</span><span class=c1></span>    <span class=kt>var</span> <span class=n>exceptions</span> <span class=p>=</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Exception</span><span class=p>&gt;();</span>
+<span class=ln> 9</span>  
+<span class=ln>10</span>    <span class=k>while</span><span class=p>(</span><span class=k>true</span><span class=p>)</span>
+<span class=ln>11</span>    <span class=p>{</span>
+<span class=ln>12</span>        <span class=k>try</span>
+<span class=ln>13</span>        <span class=p>{</span>
+<span class=ln>14</span>            <span class=kt>var</span> <span class=n>result</span> <span class=p>=</span> <span class=n>DoWrok</span><span class=p>();</span>
+<span class=ln>15</span>            <span class=k>if</span><span class=p>(</span><span class=n>result</span><span class=p>)</span> <span class=k>return</span> <span class=n>result</span><span class=p>;</span>
+<span class=ln>16</span>        <span class=p>}</span>
+<span class=ln>17</span>        <span class=k>catch</span><span class=p>(</span><span class=n>Exception</span> <span class=n>ex</span><span class=p>)</span>
+<span class=ln>18</span>        <span class=p>{</span>
+<span class=ln>19</span>            <span class=k>if</span><span class=p>(--</span><span class=n>times</span><span class=p>&lt;=</span><span class=m>0</span><span class=p>)</span> <span class=k>throw</span> <span class=k>new</span> <span class=n>AggregateException</span><span class=p>(</span><span class=n>exceptions</span><span class=p>);</span>
+<span class=ln>20</span>            <span class=n>exceptions</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>ex</span><span class=p>);</span>
+<span class=ln>21</span>            <span class=n>Thread</span><span class=p>.</span><span class=n>Sleep</span><span class=p>(</span><span class=n>TimeSpan</span><span class=p>.</span><span class=n>FromSeconds</span><span class=p>(</span><span class=n>interval</span><span class=p>));</span>
+<span class=ln>22</span>        <span class=p>}</span>
+<span class=ln>23</span>    <span class=p>}</span>
+<span class=ln>24</span><span class=p>}</span>
+</code></pre></div><p>可以注意到，通过 while(true)结构的确可以增加重试的次数。问题在于：如果不设置合理的循环跳出条件，就有可能造成逻辑上的死循环。尤其当循环体内的逻辑执行时间较长时，会增加用户的等待时间，这看起来亦非良策啊！</p>
+<h2 id=retry-builder-策略>Retry-Builder 策略</h2>
+<p>Try-Catch-Redo 和 Try-Catch-Redo-Retry 这两种策略理解起来非常容易，可这两种策略都有一个致命的缺陷，即正常逻辑和重试逻辑重度耦合。我们希望采用一种更优雅的方法，以一种非侵入式的方式给正常逻辑增加重试重试逻辑。需要考虑的是，在确保重试次数和重试间隔可配置的前提下，支持自定义重试源，即可以捕捉一个或多个异常以及对返回值进行处理。在这里推荐三个框架，分别是 Java 中的<a class=link href=https://docs.spring.io/spring-batch/trunk/reference/html/retry.html target=_blank rel=noopener>Spring-Retry</a>和<a class=link href=https://github.com/rholder/guava-retrying target=_blank rel=noopener>Guava-Retrying</a>、.NET 中的<a class=link href=https://github.com/App-vNext/Polly target=_blank rel=noopener>Polly</a>。其中 Spring-Retry 是基于 Throwable 类型的重试机制，即针对可捕获异常执行重试策略，并提供相应的回滚策略；而 Guava-Retrying 提供了更为丰富的重试源定义，譬如多个异常或者多个返回值；而 Polly 则提供了除重试以外的断路器、超时、隔板隔离、缓存、回退等多种策略。这三者的相似之处在于，通过一个 Factory 来创建满足不同重试策略的 Retryer，然后由 Retryer 来通过回调来执行重试逻辑，我不喜欢 Java 中回调函数写法，所以这里以 Polly 为例：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>try</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=kt>var</span> <span class=n>retryTwoTimesPolicy</span> <span class=p>=</span> <span class=n>Policy</span>
+<span class=ln> 4</span>        <span class=p>.</span><span class=n>Handle</span><span class=p>&lt;</span><span class=n>DivideByZeroException</span><span class=p>&gt;()</span>
+<span class=ln> 5</span>        <span class=p>.</span><span class=n>Retry</span><span class=p>(</span><span class=m>3</span><span class=p>,</span> <span class=p>(</span><span class=n>ex</span><span class=p>,</span> <span class=n>count</span><span class=p>)</span> <span class=p>=&gt;</span>
+<span class=ln> 6</span>        <span class=p>{</span>
+<span class=ln> 7</span>            <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;执行失败! 重试次数 {0}&#34;</span><span class=p>,</span> <span class=n>count</span><span class=p>);</span>
+<span class=ln> 8</span>            <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;异常来自 {0}&#34;</span><span class=p>,</span> <span class=n>ex</span><span class=p>.</span><span class=n>GetType</span><span class=p>().</span><span class=n>Name</span><span class=p>);</span>
+<span class=ln> 9</span>        <span class=p>});</span>
+<span class=ln>10</span>    <span class=n>retryTwoTimesPolicy</span><span class=p>.</span><span class=n>Execute</span><span class=p>(()</span> <span class=p>=&gt;</span>
+<span class=ln>11</span>    <span class=p>{</span>
+<span class=ln>12</span>        <span class=kt>var</span> <span class=n>a</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span>
+<span class=ln>13</span>        <span class=kt>var</span> <span class=n>b</span> <span class=p>=</span> <span class=m>1</span><span class=p>/</span><span class=n>a</span><span class=p>;</span>
+<span class=ln>14</span>    <span class=p>});</span>
+<span class=ln>15</span><span class=p>}</span>
+<span class=ln>16</span><span class=k>catch</span> <span class=p>(</span><span class=n>DivideByZeroException</span> <span class=n>e</span><span class=p>)</span>
+<span class=ln>17</span><span class=p>{</span>
+<span class=ln>18</span>    <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;Excuted Failed,Message: ({e.Message})&#34;</span><span class=p>);</span>
+<span class=ln>19</span><span class=p>}</span>
+</code></pre></div><p>可以看到，写出一段语义化的代码是多么的重要，因为我相信大家都看懂了。这里的 Policy 承担了 RetryBuilder 的角色，它定义了这样一种策略：当程序引发 DivideByZeroException 时进行重试，重试次数为 3 次，并且以匿名函数的方式指定了重试时的回调函数；而创建的 retryTowTimesPolicy 承担了 Retryer 的角色，它通过 Execute()方法来定义要执行的重试逻辑。当 3 次都重试失败时就会引发 DivideByZeroException 并在最外层函数中被捕捉到。我经常听到有人说设计模式没有用，我想说因为你从来都不知道什么叫做大道至简，引入无数个中间层是无法让你直接看到代码定义，可计算机领域里有一句名言，“任何一个问题都可以通过引入一个中间层来得到解决”。</p>
+<h2 id=装饰器aop-策略>装饰器/AOP 策略</h2>
+<p>我从来不惮于将各种重复的工作自动化，这并不是我喜欢在别人面前炫技，而是因为在现实生活中我是一个懒惰的人，甚至是每天早上 10 点开站会这样的事情，我都愿意让计算机程序去提前通知我做好准备。我并不是一个不懂得自律的人，仅仅是因为我觉得我们可以用这个时间去做些别的事情。AOP 是一种可以在运行时期间动态修改代码的技术，我们自然可以想到给所有的函数都加上异常处理和重试的特性，幸运的是 Python 中的有这样一个第三方库：<a class=link href=http://tenacity.readthedocs.io/en/latest/ target=_blank rel=noopener>Tenacity</a>，它可以帮助我们优雅地实现重试：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-Python data-lang=Python><span class=ln>1</span><span class=kn>from</span> <span class=nn>tenacity</span> <span class=kn>import</span> <span class=n>retry</span>
+<span class=ln>2</span><span class=kn>from</span> <span class=nn>json.decoder</span> <span class=kn>import</span> <span class=n>JSONDecodeError</span>
+<span class=ln>3</span>
+<span class=ln>4</span><span class=nd>@retry</span><span class=p>(</span><span class=n>retry</span><span class=o>=</span><span class=n>retry_if_exception_type</span><span class=p>(</span><span class=n>JSONDecodeError</span><span class=p>),</span> <span class=n>wait</span><span class=o>=</span><span class=n>wait_fixed</span><span class=p>(</span><span class=mi>5</span><span class=p>),</span> <span class=n>stop</span><span class=o>=</span><span class=n>stop_after_attempt</span><span class=p>(</span><span class=mi>3</span><span class=p>))</span>
+<span class=ln>5</span><span class=k>def</span> <span class=nf>extract</span><span class=p>(</span><span class=n>url</span><span class=p>):</span>
+<span class=ln>6</span>    <span class=n>text</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=p>)</span><span class=o>.</span><span class=n>content</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span>
+<span class=ln>7</span>    <span class=n>json_data</span> <span class=o>=</span> <span class=n>json</span><span class=o>.</span><span class=n>loads</span><span class=p>(</span><span class=n>text</span><span class=p>)</span>
+<span class=ln>8</span>    <span class=n>data</span> <span class=o>=</span> <span class=n>json_data</span><span class=p>[</span><span class=s1>&#39;raw_data&#39;</span><span class=p>]</span>
+<span class=ln>9</span>    <span class=k>return</span> <span class=n>data</span>
+</code></pre></div><p>通过@retry 这个装饰器函数，我们就可以知道，这里设计的重试策略是：当引发 JSONDecodeError 这个异常时，每隔 5 秒中重试一次，最大重试次数为 3 次。Python 中的装饰器，本质上就是高阶函数的概念，修饰器函数对被修饰函数进行“操作”后返回一个新的函数，这个特性在.NET 中可以通过委托/匿名方法/lambda 来实现，结合 Unity、AspectCore 等 AOP 框架，相信大家完全可以将这个特性移植到.NET 中来，当语言的差别变得微乎其微的时候，原理的重要性不言而喻。</p>
+<h2 id=重试策略核心理念>重试策略核心理念</h2>
+<p>好了，截止到目前，我们分析了四种不同的重试策略，并且这四种重试策略是随着我们认知的加深而逐渐递进的。那么，通过这四种不同的重试策略，我们能否梳理出一个相对完整的应用程序重试策略呢？换言之，当为应用程序增加重试相关的功能时，我们都需要考虑哪些因素，因为使用这些框架会是非常简单的过程，而更重要的则是我们逐步演进的思考过程。当我们所依赖的是一个不稳定的场景，譬如远程调用、数据加载、数据上传等场景时，或者是在异常场景中需要重试以满足业务稳定性的要求等等，就可以考虑使用重试策略。这里简单地做一下梳理：</p>
+<ul>
+<li>重试逻辑与正常逻辑解耦，整个设计是非侵入式的。</li>
+<li>支持自定义策略，譬如重试次数、重试间隔、重试源、重试超时时间等。</li>
+<li>支持自定义断言，即可以使用 Predict或者类似表达式来定义返回值满足的条件。</li>
+<li>支持多种异常，即可以针对特定的 Exception 或者自定义的 Exception 进行拦截。</li>
+<li>断言实例和异常实例，作为正常逻辑和重试逻辑两者间的媒介进行交互。</li>
+<li>通过命令模式，由 Retryer 对象完成对正常逻辑的调用，同时在内部封装重试逻辑。</li>
+</ul>
+<h1 id=一个简单的-retry-实现>一个简单的 Retry 实现</h1>
+<p>好了，熟悉我写作风格的朋友，一定知道我不喜欢空泛地讲一套理论，我更喜欢通过“造轮子”的这种方式，以加深对一个事物或者原理的认识。对于今天这篇文章，我的初衷是想告诉大家如何优雅地去实现 Retry，因为在现实中我们总会遇到各种各样的枷锁，这些枷锁约束着你写出糟糕的代码，我们比别人用心甚至更努力，反而常常被认为是有代码洁癖或者是炫技，可不管怎么样，人生是我们自己的，如果没有办法说服别人在项目中使用这些技术，那我们就在项目以外的地方去使用，或者是告诉别人我们有一种相对优雅的设计，如果这个设计恰好对别人有用，对我们来说就是一种莫大的幸福。参考 Polly 的 API 风格，这个 Retry 被我设计成了下面的样子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>try</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=kt>var</span> <span class=n>result</span> <span class=p>=</span> <span class=n>Retry</span><span class=p>.</span><span class=n>Default</span>
+<span class=ln> 4</span>    <span class=p>.</span><span class=n>Times</span><span class=p>(</span><span class=m>3</span><span class=p>)</span>
+<span class=ln> 5</span>    <span class=p>.</span><span class=n>Interval</span><span class=p>(</span><span class=m>2</span><span class=p>)</span>
+<span class=ln> 6</span>    <span class=p>.</span><span class=n>Catch</span><span class=p>&lt;</span><span class=n>DivideByZeroException</span><span class=p>&gt;()</span>
+<span class=ln> 7</span>    <span class=p>.</span><span class=n>Reject</span><span class=p>((</span><span class=n>count</span><span class=p>,</span><span class=n>ex</span><span class=p>)=&gt;</span>
+<span class=ln> 8</span>    <span class=p>{</span>
+<span class=ln> 9</span>        <span class=kt>var</span> <span class=n>message</span> <span class=p>=</span> <span class=kt>string</span><span class=p>.</span><span class=n>format</span><span class=p>(</span><span class=s>&#34;第{0}次重试，异常来自:{1}&#34;</span><span class=p>,</span> <span class=n>count</span><span class=p>,</span> <span class=n>ex</span><span class=p>.</span><span class=n>Message</span><span class=p>);</span>
+<span class=ln>10</span>        <span class=n>Trace</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=n>message</span><span class=p>);</span>
+<span class=ln>11</span>    <span class=p>})</span>
+<span class=ln>12</span>    <span class=p>.</span><span class=n>Execute</span><span class=p>&lt;</span><span class=kt>int</span><span class=p>&gt;(()=&gt;</span>
+<span class=ln>13</span>    <span class=p>{</span>
+<span class=ln>14</span>        <span class=kt>var</span> <span class=n>m</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span>
+<span class=ln>15</span>        <span class=k>return</span> <span class=m>3</span> <span class=p>/</span> <span class=n>m</span><span class=p>;</span>
+<span class=ln>16</span>    <span class=p>});</span>
+<span class=ln>17</span><span class=p>}</span>
+<span class=ln>18</span><span class=k>catch</span><span class=p>(</span><span class=n>Exeption</span> <span class=n>ex</span><span class=p>)</span>
+<span class=ln>19</span><span class=p>{</span>
+<span class=ln>20</span>    <span class=n>Trace</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=n>ex</span><span class=p>.</span><span class=n>Message</span><span class=p>);</span>
+<span class=ln>21</span><span class=p>}</span>
+</code></pre></div><p>我承认它和 Polly 非常地像，不过我并没有去看 Polly 是如何实现的，目前它的实现完全来自这篇文章中我们提到的这些策略。我在为它增加了针对返回值的断言支持，通过 Return 方法来实现，而对异常的支持则是通过 Catch 方法来实现，除此以外，它支持异步方法调用，我们熟悉的 Task/async/await 这些 API 都可以使用。目前它还是一个玩具儿，因为我发现最难的部分，其实是断言或者说自定义表达式的设计，对于线程安全相关的问题，我会在慢慢地去完善它，如果你对它感兴趣的话，可以通过这里访问：<a class=link href=https://github.com/qinyuanpei/RetryIt target=_blank rel=noopener>RetryIt</a>。好了，感谢大家关注我的博客，今天这篇先写到这里啦，欢迎大家在博客中留言！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E5%BC%82%E5%B8%B8/>异常</a>
+<a href=/tags/%E9%87%8D%E8%AF%95/>重试</a>
+<a href=/tags/%E6%83%B3%E6%B3%95/>想法</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/2742255459/>
+<div class=article-details>
+<h2 class=article-title>ASP.NET Core gRPC 集成 Polly 实现优雅重试</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3291578070/>
+<div class=article-details>
+<h2 class=article-title>使用 Unity 框架简化应用程序异常处理及日志记录流程</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/570888918/>
+<div class=article-details>
+<h2 class=article-title>基于过滤器实现异常处理的探索</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/768684858/>
+<div class=article-details>
+<h2 class=article-title>Envoy 集成 Jaeger 实现分布式链路跟踪</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/2478147871/>
+<div class=article-details>
+<h2 class=article-title>浅议非典型 Web 应用场景下的身份认证</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/115524443/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#代码越来越复杂>代码越来越复杂</a></li>
+<li><a href=#应用程序重试策略>应用程序重试策略</a>
+<ol>
+<li><a href=#try-catch-redo-策略>Try-Catch-Redo 策略</a></li>
+<li><a href=#try-catch-redo-retry-策略>Try-Catch-Redo-Retry 策略</a></li>
+<li><a href=#retry-builder-策略>Retry-Builder 策略</a></li>
+<li><a href=#装饰器aop-策略>装饰器/AOP 策略</a></li>
+<li><a href=#重试策略核心理念>重试策略核心理念</a></li>
+</ol>
+</li>
+<li><a href=#一个简单的-retry-实现>一个简单的 Retry 实现</a></li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/%E7%B1%B3%E8%8A%B1%E4%B9%8B%E5%91%B3/ class=font_size_1>
+米花之味
+</a>
+<a href=/tags/dynamic/ class=font_size_1>
+Dynamic
+</a>
+<a href=/tags/%E8%AF%8D%E4%BA%91/ class=font_size_1>
+词云
+</a>
+<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
+面试
+</a>
+<a href=/tags/%E8%A5%BF%E6%BC%82/ class=font_size_1>
+西漂
+</a>
+<a href=/tags/%E9%A9%AC%E5%B0%94%E5%85%8B%E6%96%AF/ class=font_size_1>
+马尔克斯
+</a>
+<a href=/tags/%E5%93%B2%E5%AD%A6/ class=font_size_3>
+哲学
+</a>
+<a href=/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class=font_size_3>
+中间件
+</a>
+<a href=/tags/%E5%8F%AF%E8%A7%86%E5%8C%96/ class=font_size_2>
+可视化
+</a>
+<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
+异步
+</a>
+<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
+装饰器
+</a>
+<a href=/tags/%E6%96%87%E6%A1%A3/ class=font_size_1>
+文档
+</a>
+<a href=/tags/%E8%99%9A%E6%8B%9F%E6%91%87%E6%9D%86/ class=font_size_1>
+虚拟摇杆
+</a>
+<a href=/tags/%E7%88%AC%E8%99%AB/ class=font_size_2>
+爬虫
+</a>
+<a href=/tags/%E6%97%A5%E5%BF%97/ class=font_size_4>
+日志
+</a>
+<a href=/tags/%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6/ class=font_size_1>
+版本控制
+</a>
+<a href=/tags/unity/ class=font_size_1>
+Unity
+</a>
+<a href=/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/ class=font_size_10>
+游戏开发
+</a>
+<a href=/tags/kindle/ class=font_size_3>
+Kindle
+</a>
+<a href=/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/ class=font_size_8>
+微服务
+</a>
+<a href=/tags/signalr/ class=font_size_2>
+SignalR
+</a>
+<a href=/tags/c#/ class=font_size_7>
+C#
+</a>
+<a href=/tags/%E7%AE%A1%E9%81%93/ class=font_size_1>
+管道
+</a>
+<a href=/tags/%E6%8B%96%E6%8B%BD/ class=font_size_1>
+拖拽
+</a>
+<a href=/tags/%E9%98%B2%E7%96%AB/ class=font_size_1>
+防疫
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

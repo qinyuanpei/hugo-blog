@@ -1,0 +1,510 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型"><title>使用 C#开发 HTTP 服务器系列之更简单的实现方式</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/3603924376/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="使用 C#开发 HTTP 服务器系列之更简单的实现方式">
+<meta property="og:description" content="其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/3603924376/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="HTTP"><meta property="article:tag" content="服务器"><meta property="article:tag" content="C#"><meta property="article:published_time" content="2016-06-11T15:01:35+00:00"><meta property="article:modified_time" content="2016-06-11T15:01:35+00:00">
+<meta name=twitter:title content="使用 C#开发 HTTP 服务器系列之更简单的实现方式">
+<meta name=twitter:description content="其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/3603924376/>使用 C#开发 HTTP 服务器系列之更简单的实现方式</a>
+</h2>
+<h3 class=article-subtitle>
+其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2016-06-11</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 6 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>各位朋友大家好，我是秦元培，欢迎大家关注我的博客，我的博客地址是<a class=link href=http://qinyuanpei.com target=_blank rel=noopener>http://qinyuanpei.com</a>。到目前为止，我已经发布了 3 篇 HTTP 服务器开发的系列文章。对我个人而言，我非常享受这个从无到有的过程，或许我现在写的这个 Web 服务器有各种不完美的因素，可是当有一天我需要一个轻量级的服务器的时候，我在无形中是不是比别人多了一种选择呢？我们常常提到“不要重复造轮子”，可事实上这并不能成为我们“不造轮子”的理由，虽然我们有各种各样的服务器软件、有各种各样的服务端框架可以供我们选择，可是在动手写这个系列文章前，我对 Web 服务器的印象无非是因为我是用 LAWP(Linux + Apache + MySQL + PHP)搭建过 Wordpress 博客而已。虽然在对动态页面(如.aspx、.jsp、.php 等)的处理上，可能会和静态页面有所不同，但是我庆幸我了解了这个过程以及它的内部原理，这种跨语言、跨平台的设计思路是任何框架或者标准都无法告诉我的。或许有人会问我，为什么不在最开始的时候就选择更简单的实现方法，那么在这篇文章中你将会找到答案。</p>
+<h1 id=从原理说起>从原理说起</h1>
+<p>我们知道 HTTP 服务器其实是一个“服务端循环监听客户端请求然后响应客户端请求”的请求/响应模型，在这个模型中请求通常是由浏览器来发起的，而服务端负责响应客户端的请求。这是我们通常意义上的认识，可是当我们了解到 HTTP 协议的实质以后就会明白，不管是客户端还是服务端，从本质上来讲都是 Socket 通信，只要我们能够发送符合 HTTP 协议规范的报文就可以啦。</p>
+<p>所以我们立刻就能够想到无论是 Unity 引擎中的 WWW 还是.NET 平台下的 WebClient，它们之所以能够向服务器发起请求，无一例外地是它们都遵循了 HTTP 协议的规范。从这个角度来讲，人类社会存在各种各样的问题，本质上都是存在游离于规范以外的不公平的现象。还记得我们在这个系列中提到的请求报文和响应报文的结构是什么样的吗？此时此刻我们发自内心地向创造 HTTP 协议的先驱们致敬，因为这个协议我们构建起了连接人与人的社交网络，可是同样因为这个协议我们和人越来越远、和手机越来越近。</p>
+<p>HTTP 协议是一种无状态的应用层协议，这个无状态该怎么理解呢？我这里想借助聊天机器人这个实例来解释这个问题，我们都知道聊天机器人是一种问答型的程序，程序每次都可以根据提问者的问题给出，一个从人类角度来看完全合理的答案。然而从目前我了解到的聊天机器人的技术现状来看，具备自然语言理解的机器人程序基本没有，所以在这样的大背景下，机器人程序实际上是没有上下文理解的能力的。</p>
+<p>好了，现在我们回到 HTTP 协议，首先聊天机器人的问答模式是不是和 HTTP 协议中的请求/响应模式非常相似呢？其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢？所以综合下来，我们理解的无状态其实就是说 HTTP 请求和响应完全独立，即在客户端中不会存储服务端的响应，在服务端中同样不会存储客户端的请求。</p>
+<p>这样难免引发一个问题，如果我需要在不同请求和响应中保持状态该怎么做呢？这个在不同的服务器软件中有不同的技术实现，这里我们说一种最通用的 Cookie。Cookie 是存储在客户端中的一个数据，在发起下一轮请求时这个参数会被加入到参数列表中然后传递给服务器，服务器会对客户端传递的参数进行验证，以此来判断本轮请求和上轮请求间是否存在上下文联系。</p>
+<h1 id=两种不同的实现>两种不同的实现</h1>
+<p>到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即 Socket 通信和请求-响应模型。基于这两点考虑，我们这里提供两种快速实现 Web 服务器的具体思路，这是在我们理解了 HTTP 协议实质以后，从原理出发想到的解决方案，为什么我不建议在刚开始就学习这些东西呢？因为我觉得学习有时候其实就是一个不断开阔视野和思路的过程吧。好了，下面我们来说说这两种不同实现方式的具体思路吧！</p>
+<h2 id=基于-tcplistenertcpclienr-改进-socket>基于 TcpListener/TcpClienr 改进 Socket</h2>
+<p>如果说使用 Socket 从头开始编写 HTTP 服务器是一个“刀耕火种”时代的缩影，那么使用 TcpListener/TcpClient 则是让我们开始进入“青铜铸犁”的农耕时代。和 Sokcet 相比，TcpListener/TcpClient 是.NET 对 Socket 的进一步封装，在这个体系下，TcpListener 负责监听和接收传入的连接请求，在该类中仅需要传入一个网络终端信息就可以完成服务端的初始化，而无需设置网络通信协议等细节性的内容。调用 Start 方法后即可以开始监听，这里我们使用 AcceptTcpClient 方法来阻塞进程直到接受到一个客户端请求为止，该方法将返回一个 TcpClient 对象，我们可以借助它完成和客户端的通信。下面我们来一起看基本的代码实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>void</span> <span class=n>Start</span><span class=p>()</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>if</span> <span class=p>(</span><span class=n>isRunning</span><span class=p>)</span>
+<span class=ln> 4</span>        <span class=k>return</span><span class=p>;</span>
+<span class=ln> 5</span>
+<span class=ln> 6</span>    <span class=c1>//创建TcpListener
+</span><span class=ln> 7</span><span class=c1></span>    <span class=n>serverListener</span> <span class=p>=</span> <span class=k>new</span> <span class=n>TcpListener</span><span class=p>(</span><span class=n>IPAddress</span><span class=p>.</span><span class=n>Parse</span><span class=p>(</span><span class=n>ServerIP</span><span class=p>),</span> <span class=n>ServerPort</span><span class=p>);</span>
+<span class=ln> 8</span>    <span class=c1>//开始监听
+</span><span class=ln> 9</span><span class=c1></span>    <span class=n>serverListener</span><span class=p>.</span><span class=n>Start</span><span class=p>(</span><span class=m>10</span><span class=p>);</span>
+<span class=ln>10</span>    <span class=n>isRunning</span> <span class=p>=</span> <span class=k>true</span><span class=p>;</span>
+<span class=ln>11</span>
+<span class=ln>12</span>    <span class=c1>//输出服务器状态
+</span><span class=ln>13</span><span class=c1></span>    <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;Sever is running at http://{0}:{1}/.&#34;</span><span class=p>,</span> <span class=n>ServerIP</span><span class=p>,</span> <span class=n>ServerPort</span><span class=p>);</span>
+<span class=ln>14</span>
+<span class=ln>15</span>    <span class=k>while</span> <span class=p>(</span><span class=n>isRunning</span><span class=p>)</span>
+<span class=ln>16</span>    <span class=p>{</span>
+<span class=ln>17</span>        <span class=c1>//获取客户端连接
+</span><span class=ln>18</span><span class=c1></span>        <span class=n>TcpClient</span> <span class=n>acceptClient</span> <span class=p>=</span> <span class=n>serverListener</span><span class=p>.</span><span class=n>AcceptTcpClient</span><span class=p>();</span>
+<span class=ln>19</span>
+<span class=ln>20</span>        <span class=c1>//获取请求报文
+</span><span class=ln>21</span><span class=c1></span>        <span class=n>NetworkStream</span> <span class=n>netstream</span> <span class=p>=</span> <span class=n>acceptClient</span><span class=p>.</span><span class=n>GetStream</span><span class=p>();</span>
+<span class=ln>22</span>
+<span class=ln>23</span>        <span class=c1>//解析请求报文
+</span><span class=ln>24</span><span class=c1></span>        <span class=kt>byte</span><span class=p>[]</span> <span class=n>bytes</span> <span class=p>=</span> <span class=k>new</span> <span class=kt>byte</span><span class=p>[</span><span class=m>1024</span><span class=p>];</span>
+<span class=ln>25</span>        <span class=kt>int</span> <span class=n>length</span> <span class=p>=</span> <span class=n>netstream</span><span class=p>.</span><span class=n>Read</span><span class=p>(</span><span class=n>bytes</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>bytes</span><span class=p>.</span><span class=n>Length</span><span class=p>);</span>
+<span class=ln>26</span>        <span class=kt>string</span> <span class=n>requestString</span> <span class=p>=</span> <span class=n>Encoding</span><span class=p>.</span><span class=n>UTF8</span><span class=p>.</span><span class=n>GetString</span><span class=p>(</span><span class=n>bytes</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=n>length</span><span class=p>);</span>
+<span class=ln>27</span>
+<span class=ln>28</span>        <span class=c1>//以下为响应报文(略)
+</span><span class=ln>29</span><span class=c1></span>    <span class=p>}</span>
+<span class=ln>30</span><span class=p>}</span>
+</code></pre></div><p>我个人感觉这种形式和原生的 Socket 在实现上区别不是非常大，按照这种思路继续往下设计，我的 HttpRequest 和 HttpResponse 可能都需要进行改进，因为在我的设计中，我是在尽可能地隐藏 Socket 通信的细节，因为我不想让使用者觉察到他这是在使用 Socket 进行通信，这里细心的朋友可能会发现，这里的 TcpListener/TcpClient 都保留了常见的 Socket 用法如同步通信和异步通信的支持等，所以在使用 cpListener/TcpClient 其实没有必要纠结它的这套流程，如果你喜欢继续使用 Socket 通信的经验和方法就可以了。这里我们仅提供一种延伸思路。具体的代码实现大家顺着这个思路继续下去就好啦。</p>
+<h2 id=基于-httplistener-实现请求-响应模型>基于 HttpListener 实现请求-响应模型</h2>
+<p>下面我们再来说说基于 HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的 HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计。这个让我不喜欢的一点是它在设置服务器 IP 地址和端口的时候非常别扭，其思路和我的设计是非常相似的，下面我们来一起看代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>public</span> <span class=k>void</span> <span class=n>Listen</span><span class=p>()</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>if</span> <span class=p>(!</span><span class=n>HttpListener</span><span class=p>.</span><span class=n>IsSupported</span><span class=p>)</span>
+<span class=ln> 4</span>        <span class=k>throw</span> <span class=k>new</span> <span class=n>InvalidOperationException</span><span class=p>(</span>
+<span class=ln> 5</span>            <span class=s>&#34;请确保使用WindowsXP以上版本的Windows!&#34;</span><span class=p>);</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span>    <span class=c1>//初始化Http监听器
+</span><span class=ln> 8</span><span class=c1></span>    <span class=n>listener</span> <span class=p>=</span> <span class=k>new</span> <span class=n>HttpListener</span><span class=p>();</span>
+<span class=ln> 9</span>
+<span class=ln>10</span>    <span class=c1>//初始化服务器URL
+</span><span class=ln>11</span><span class=c1></span>    <span class=kt>string</span><span class=p>[]</span> <span class=n>prefixes</span> <span class=p>=</span> <span class=k>new</span> <span class=kt>string</span><span class=p>[]</span> <span class=p>{</span> <span class=n>address</span> <span class=p>};</span>
+<span class=ln>12</span>    <span class=k>foreach</span> <span class=p>(</span><span class=kt>string</span> <span class=n>prefix</span> <span class=k>in</span> <span class=n>prefixes</span><span class=p>)</span>
+<span class=ln>13</span>    <span class=p>{</span>
+<span class=ln>14</span>        <span class=n>listener</span><span class=p>.</span><span class=n>Prefixes</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>prefix</span><span class=p>);</span>
+<span class=ln>15</span>    <span class=p>}</span>
+<span class=ln>16</span>
+<span class=ln>17</span>    <span class=c1>//开启服务器
+</span><span class=ln>18</span><span class=c1></span>    <span class=n>listener</span><span class=p>.</span><span class=n>Start</span><span class=p>();</span>
+<span class=ln>19</span>
+<span class=ln>20</span>    <span class=c1>//监听服务器
+</span><span class=ln>21</span><span class=c1></span>    <span class=k>while</span> <span class=p>(</span><span class=n>isActive</span><span class=p>)</span>
+<span class=ln>22</span>    <span class=p>{</span>
+<span class=ln>23</span>        <span class=n>HttpListenerContext</span> <span class=n>context</span> <span class=p>=</span> <span class=n>listener</span><span class=p>.</span><span class=n>GetContext</span><span class=p>();</span>
+<span class=ln>24</span>        <span class=n>HttpListenerRequest</span> <span class=n>request</span> <span class=p>=</span> <span class=n>context</span><span class=p>.</span><span class=n>Request</span><span class=p>;</span>
+<span class=ln>25</span>        <span class=n>HttpListenerResponse</span> <span class=n>response</span> <span class=p>=</span> <span class=n>context</span><span class=p>.</span><span class=n>Response</span><span class=p>;</span>
+<span class=ln>26</span>        <span class=k>if</span> <span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>HttpMethod</span> <span class=p>==</span> <span class=s>&#34;GET&#34;</span><span class=p>)</span> <span class=p>{</span>
+<span class=ln>27</span>            <span class=n>OnGetRequest</span><span class=p>(</span><span class=n>request</span><span class=p>,</span> <span class=n>response</span><span class=p>);</span>
+<span class=ln>28</span>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+<span class=ln>29</span>            <span class=n>OnPostRequest</span><span class=p>(</span><span class=n>request</span><span class=p>,</span> <span class=n>response</span><span class=p>);</span>
+<span class=ln>30</span>        <span class=p>}</span>
+<span class=ln>31</span>    <span class=p>}</span>
+<span class=ln>32</span><span class=p>}</span>
+</code></pre></div><p>好了，现在这个东西就非常简单了，因为我们只需要继承 HttpServerBase 这个类然后重写相关方法就可以了，而请求报文和响应报文中的相关属性都在 HttpListenerRequest 和 HttpListenerResponse 这两个类中封装好了，我们直接使用就好了。在没有写这个系列文章前，可能我会对这种方案充满好奇，可是当我了解到这一切的实质以后，我反而更加喜欢使用我设计的 HTTP 服务器了，因为这些东西在我看来区别真的可以忽略。</p>
+<h1 id=one-more-thing>One More Thing</h1>
+<p>关于今天本文中提到的两种方案，我都是作为 HTTP 服务器开发延伸出来的内容来写出来给大家看,所以这块儿内容我都是点到为止不打算给出完整的实现，如果有兴趣的朋友可以顺着我这个思路区继续改进。这个系列文章中的示例代码主要来自我的项目<a class=link href=https://github.com/qinyuanpei/HttpServer target=_blank rel=noopener>HttpServer</a>，大家到我的 GIthub 上去了解更多细节。到目前为止我觉得 HTTP 服务器快发这块儿我能写的内容都基本上写完了，因为是一边写代码一边写博客，所以有时候博客中如果有写得不好或者写的不明白的地方，希望大家能够谅解，同时希望大家在博客中给我积极留言，下一篇我想简单写一下 RESTful API 的相关问题，写完这一篇整个系列就结束了，我还是想说写文章真的很累啊，希望大家继续支持，下期见。</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/http/>HTTP</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/>服务器</a>
+<a href=/tags/c#/>C#</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/2734896333/>
+<div class=article-details>
+<h2 class=article-title>使用 C#开发 HTTP 服务器之支持 HTTPS</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/1700650235/>
+<div class=article-details>
+<h2 class=article-title>使用 C#开发 HTTP 服务器系列之实现 Get 和 Post</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3695777215/>
+<div class=article-details>
+<h2 class=article-title>使用 C#开发 HTTP 服务器系列之静态页面</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3637847962/>
+<div class=article-details>
+<h2 class=article-title>使用C#开发HTTP服务器系列之构建RESTful API</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3040357134/>
+<div class=article-details>
+<h2 class=article-title>使用 C# 开发 HTTP 服务器系列之 Hello World</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/3603924376/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#从原理说起>从原理说起</a></li>
+<li><a href=#两种不同的实现>两种不同的实现</a>
+<ol>
+<li><a href=#基于-tcplistenertcpclienr-改进-socket>基于 TcpListener/TcpClienr 改进 Socket</a></li>
+<li><a href=#基于-httplistener-实现请求-响应模型>基于 HttpListener 实现请求-响应模型</a></li>
+</ol>
+</li>
+<li><a href=#one-more-thing>One More Thing</a></li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/ef/ class=font_size_5>
+EF
+</a>
+<a href=/tags/%E8%AE%A4%E8%AF%81/ class=font_size_1>
+认证
+</a>
+<a href=/tags/%E6%97%A5%E5%BF%97/ class=font_size_4>
+日志
+</a>
+<a href=/tags/%E5%9B%BE%E5%BD%A2/ class=font_size_3>
+图形
+</a>
+<a href=/tags/%E8%BD%AF%E4%BB%B6/ class=font_size_1>
+软件
+</a>
+<a href=/tags/sonar/ class=font_size_1>
+Sonar
+</a>
+<a href=/tags/%E6%95%99%E7%A8%8B/ class=font_size_7>
+教程
+</a>
+<a href=/tags/webassembly/ class=font_size_1>
+WebAssembly
+</a>
+<a href=/tags/%E9%9B%86%E7%BE%A4/ class=font_size_1>
+集群
+</a>
+<a href=/tags/%E4%BA%B2%E6%83%85/ class=font_size_1>
+亲情
+</a>
+<a href=/tags/%E6%8A%80%E6%9C%AF/ class=font_size_2>
+技术
+</a>
+<a href=/tags/%E4%BA%92%E8%81%94%E7%BD%91/ class=font_size_2>
+互联网
+</a>
+<a href=/tags/web-api/ class=font_size_1>
+Web API
+</a>
+<a href=/tags/%E5%89%8D%E4%BB%BB/ class=font_size_1>
+前任
+</a>
+<a href=/tags/%E7%A9%B9%E4%B9%8B%E6%89%89/ class=font_size_1>
+穹之扉
+</a>
+<a href=/tags/%E5%BD%B1%E8%AF%84/ class=font_size_10>
+影评
+</a>
+<a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
+长安十二时辰
+</a>
+<a href=/tags/orm/ class=font_size_1>
+ORM
+</a>
+<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
+对象池
+</a>
+<a href=/tags/mapreduce/ class=font_size_1>
+MapReduce
+</a>
+<a href=/tags/%E4%BA%BA%E7%94%9F/ class=font_size_2>
+人生
+</a>
+<a href=/tags/%E6%9C%9D%E5%9C%A3/ class=font_size_1>
+朝圣
+</a>
+<a href=/tags/%E8%B0%83%E8%AF%95/ class=font_size_1>
+调试
+</a>
+<a href=/tags/%E6%80%9D%E7%BB%B4/ class=font_size_1>
+思维
+</a>
+<a href=/tags/%E6%95%B0%E5%AD%97/ class=font_size_1>
+数字
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

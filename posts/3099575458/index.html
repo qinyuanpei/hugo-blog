@@ -1,0 +1,553 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="升级2.2的时候，调整项目文件中的`Microsoft.NET.Sdk.Web`为`Microsoft.NET.Sdk`可以解决，而这个方法在3.x以后失效;- 安装完 `.NET Core 3.x`，使用`dotnet build`编译项目提示找不到`Microsoft.NET.Sdk.Web`;- 升级后提示无法加载类型：`Microsoft.AspNetCore.Mvc.MvcJsonOptions`，解决方案是："><title>从 .NET Core 2.2 升级到 3.1 的踩坑之旅</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/3099575458/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="从 .NET Core 2.2 升级到 3.1 的踩坑之旅">
+<meta property="og:description" content="升级2.2的时候，调整项目文件中的`Microsoft.NET.Sdk.Web`为`Microsoft.NET.Sdk`可以解决，而这个方法在3.x以后失效;- 安装完 `.NET Core 3.x`，使用`dotnet build`编译项目提示找不到`Microsoft.NET.Sdk.Web`;- 升级后提示无法加载类型：`Microsoft.AspNetCore.Mvc.MvcJsonOptions`，解决方案是：">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/3099575458/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content=".NET Core"><meta property="article:tag" content="SignalR"><meta property="article:tag" content="迁移"><meta property="article:published_time" content="2020-01-22T10:23:08+00:00"><meta property="article:modified_time" content="2020-01-22T10:23:08+00:00">
+<meta name=twitter:title content="从 .NET Core 2.2 升级到 3.1 的踩坑之旅">
+<meta name=twitter:description content="升级2.2的时候，调整项目文件中的`Microsoft.NET.Sdk.Web`为`Microsoft.NET.Sdk`可以解决，而这个方法在3.x以后失效;- 安装完 `.NET Core 3.x`，使用`dotnet build`编译项目提示找不到`Microsoft.NET.Sdk.Web`;- 升级后提示无法加载类型：`Microsoft.AspNetCore.Mvc.MvcJsonOptions`，解决方案是：">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/3099575458/>从 .NET Core 2.2 升级到 3.1 的踩坑之旅</a>
+</h2>
+<h3 class=article-subtitle>
+升级2.2的时候，调整项目文件中的`Microsoft.NET.Sdk.Web`为`Microsoft.NET.Sdk`可以解决，而这个方法在3.x以后失效;- 安装完 `.NET Core 3.x`，使用`dotnet build`编译项目提示找不到`Microsoft.NET.Sdk.Web`;- 升级后提示无法加载类型：`Microsoft.AspNetCore.Mvc.MvcJsonOptions`，解决方案是：
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2020-01-22</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 5 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>有时候，版本更新太快并不是一件好事。虽然，两周一个迭代的“敏捷”开发依然被客户嫌弃交付缓慢，可一边是前端领域“求不要再更新了，学不动了”的声音，一边则是.NET Core从1.x到2.x再到3.x的高歌猛进。版本更新太快，带来的是API的频繁变动，无法形成有效的知识沉淀，就像转眼到了2020年，<code>Python 2.x</code>和<code>Windows 7</code>都引来了“寿终正寝”，可能你都还没有认真地学习过这些知识，突然就被告知这些知识要过期了，想想还是觉得挺疯狂啊。最近一直在捣鼓，如何让<code>.NET Core</code>应用跑在<code>Heroku</code>平台上，因为<code>Docker</code>镜像里使用最新的.NET Core 3.1运行时，所以，痛定思痛之余，决定把手头项目升级到3.1。上一次痛苦还是在2.1升级2.2，这还真没过多长时间。所以呢，这篇博客主要梳理下从2.2升级到3.1过程中遇到的问题。</p>
+<h1 id=更新项目文件>更新项目文件</h1>
+<ul>
+<li>调整目标框架为<code>netcoreapp3.1</code></li>
+<li>删除引用项：<code>Microsoft.AspNetCore.App</code>、<code>Microsoft.AspNetCore.Razor.Design</code></li>
+<li>删除<code>AspNetCoreHostingModel</code>，如果项目文件中的值为<code>InProcess</code>(因为ASP.NET Core 3.0 或更高版本项目默认为进程内承载模型）</li>
+</ul>
+<h1 id=更新程序入口>更新程序入口</h1>
+<ul>
+<li>CreateWebHostBuilder()方法的返回值类型由<code>IWebHostBuilder</code>调整为<code>IHostBuilder</code></li>
+<li>增加引用项：<code>Microsoft.Extensions.Hosting</code></li>
+<li><code>Kestrel</code>配置变更至<code>ConfigureWebHostDefaults()</code>方法</li>
+</ul>
+<pre tabindex=0><code>public static IHostBuilder CreateWebHostBuilder(string[] args) =&gt;
+    Host.CreateDefaultBuilder(args)
+        .ConfigureWebHostDefaults(webBuilder =&gt;
+         {
+             webBuilder.ConfigureKestrel(serverOptions =&gt;
+             {
+                    // Set properties and call methods on options
+             })
+             .UseStartup&lt;Startup&gt;();
+        });
+
+</code></pre><p>如果通过 <code>HostBuilder</code>手动创建宿主，则需要在 <code>ConfigureWebHostDefaults()</code>方法中显式调用·<code>UseKestrel()</code>：</p>
+<pre tabindex=0><code>public static void Main (string[] args) 
+{
+    var host = new HostBuilder ()
+        .UseContentRoot (Directory.GetCurrentDirectory ())
+        .ConfigureWebHostDefaults (webBuilder =&gt; 
+        {
+            webBuilder.UseKestrel (serverOptions =&gt; 
+            {
+                // Set properties and call methods on options
+            })
+            .UseIISIntegration ()
+            .UseStartup&lt;Startup&gt; ();
+        })
+        .Build ();
+
+    host.Run ();
+}
+</code></pre><h1 id=更新startup>更新Startup</h1>
+<ul>
+<li><code>Configure()</code>方法第二个参数由``IHostingEnvironment<code>调整为</code>IWebHostEnvironment<code>(需要引用</code>Microsoft.Extensions.Hosting`)</li>
+<li>从管道中删除<code>UseMvc()</code>扩展方法，相应地，删除<code>AddMvc()</code>及其链式调用相关方法</li>
+<li><code>AddMvc()</code>等价于<code>AddRazorPages()</code> + <code>AddControllersWithViews()</code></li>
+<li><code>AddControllers()</code>对应<code>WebApi</code>模板，<code>AddControllersWithViews()</code>对应<code>MVC</code>模板，<code> AddRazorPages()</code>对应<code>SPA</code>模板</li>
+<li>路由注册由<code>传统路由</code>调整为<code>终结点路由</code>：</li>
+</ul>
+<pre tabindex=0><code>public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    app.UseStaticFiles();
+    app.UseRouting();
+    app.UseCors();
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.UseEndpoints(endpoints =&gt;
+    {
+         //SignalR路由      
+        endpoints.MapHub&lt;ChatHub&gt;(&quot;/chat&quot;);
+        //RazorPages路由
+        endpoints.MapRazorPages()
+        //特性路由(WebApi)
+        endpoints.MapControllers();
+        //控制器路由(MVC)
+        endpoints.MapControllerRoute(&quot;default&quot;, &quot;{controller=Home}/{action=Index}/{id?}&quot;);
+    });
+}
+</code></pre><p>如果希望继续使用<code>传统路由</code>，则可以使用下列方法任一：</p>
+<pre tabindex=0><code>services.AddMvc(options =&gt; options.EnableEndpointRouting = false);
+services.AddControllers(options =&gt; options.EnableEndpointRouting = false);
+services.AddControllersWithViews(options =&gt; options.EnableEndpointRouting = false);
+services.AddRazorPages().AddMvcOptions(options =&gt; options.EnableEndpointRouting = false);
+</code></pre><h1 id=序列化反序列化>序列化/反序列化</h1>
+<ul>
+<li>从<code>.NET Core 3.0</code> 开始，<code>System.Text.Json</code>默认作为替代<code>Newtonsoft.json</code>的新一代JSON API</li>
+<li>直接从<code>.NET Core 3.0</code> 创建的SignalR项目，服务端返回的JSON数据存在大小写的问题，这是由<code>System.Text.Json</code>引起的。解决方案是：</li>
+</ul>
+<pre tabindex=0><code>services.AddSignalR()
+    .AddJsonProtocol(options =&gt; options.PayloadSerializerOptions.PropertyNamingPolicy = null);
+</code></pre><p>同理，对于该方案对于<code>services.AddControllers()</code>一样有效，前提是项目中使用了<code>System.Text.Json</code>。同理，对于SignalR的客户端项目，我们有：</p>
+<pre tabindex=0><code>new HubConnectionBuilder()
+    .WithUrl(&quot;/chatHub&quot;)
+    .AddJsonProtocol(options =&gt;
+    {    
+        //TODO
+    })
+    .Build();
+</code></pre><ul>
+<li>SignalR的JavaScript客户端由<code>@aspnet/signalr</code> 调整为为<code> @microsoft/signalr</code>：</li>
+</ul>
+<pre tabindex=0><code>const signalR = require(&quot;@microsoft/signalr&quot;);
+let connection = new signalR.HubConnectionBuilder().withUrl(url).build();
+</code></pre><ul>
+<li>如果希望继续使用<code>Newtonsoft.json</code>，则需要安装<code>AspNetCore NewtonsoftJson</code>。相应地，需要显式调用<code>AddNewtonsoftJson()</code>扩展方法：</li>
+</ul>
+<pre tabindex=0><code>services.AddControllers()
+    .AddNewtonsoftJson(options =&gt; 
+    {
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    });
+</code></pre><p>同样地，<code>AddNewtonsoftJson()</code>支持<code>AddControllers()</code>， <code>AddControllersWithViews()</code>， <code>AddRazorPages()</code>所有方法</p>
+<h1 id=疑难杂症>疑难杂症</h1>
+<ul>
+<li>升级后提示无法加载类型：<code>Microsoft.AspNetCore.Mvc.MvcJsonOptions</code>，解决方案是：
+升级<code>Swashbuckle.AspNetCore</code>至最新版本(5.0+)，调整Swagger中间件配置代码：</li>
+</ul>
+<pre tabindex=0><code>services.AddSwaggerGen(swagger =&gt;
+{
+    //这里发生了变化，需要引用：Microsoft.OpenApi.Models
+    swagger.SwaggerDoc(&quot;v1&quot;, new OpenApiInfo { Title = &quot;ynamic WebApi&quot;, Version = &quot;v1.0&quot; });
+});
+</code></pre><ul>
+<li>安装完 <code>.NET Core 3.x</code>，使用<code>dotnet build</code>编译项目提示找不到<code>Microsoft.NET.Sdk.Web</code>。解决方案是：
+升级2.2的时候，调整项目文件中的<code>Microsoft.NET.Sdk.Web</code>为<code>Microsoft.NET.Sdk</code>可以解决，而这个方法在3.x以后失效。
+此时，可以检查环境变量<code>MSBuildSDKsPath</code>中的SDK版本和实际版本是否一致，尤其是像博主这样从2.0一路升级到3.x的朋友，应该都会遇到这个问题。</li>
+</ul>
+<h1 id=参考链接>参考链接</h1>
+<ul>
+<li><a class=link href="https://docs.microsoft.com/zh-cn/aspnet/core/migration/22-to-30?view=aspnetcore-2.2&tabs=visual-studio" target=_blank rel=noopener>从 ASP.NET Core 2.2 迁移到3.0</a></li>
+<li><a class=link href=https://www.cnblogs.com/Irving/p/11587556.html target=_blank rel=noopener>升级 ASP.NET Core 3.0 设置 JSON 返回 PascalCase 格式与 SignalR 问题</a></li>
+<li><a class=link href=https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/1030 target=_blank rel=noopener>Incompatibility with ASP.NET Core 3.0</a></li>
+</ul>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/.net-core/>.NET Core</a>
+<a href=/tags/signalr/>SignalR</a>
+<a href=/tags/%E8%BF%81%E7%A7%BB/>迁移</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/2478147871/>
+<div class=article-details>
+<h2 class=article-title>浅议非典型 Web 应用场景下的身份认证</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/2396015802/>
+<div class=article-details>
+<h2 class=article-title>源代码探案系列之 .NET Core 限流中间件 AspNetCoreRateLimit</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/%E6%BA%90%E4%BB%A3%E7%A0%81%E6%8E%A2%E6%A1%88%E7%B3%BB%E5%88%97%E4%B9%8B-.net-core-%E5%B9%B6%E5%8F%91%E9%99%90%E5%88%B6%E4%B8%AD%E9%97%B4%E4%BB%B6-concurrencylimiter/>
+<div class=article-details>
+<h2 class=article-title>源代码探案系列之 .NET Core 并发限制中间件 ConcurrencyLimiter</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3789745079/>
+<div class=article-details>
+<h2 class=article-title>通过 EmbededFileProvider 实现 Blazor 的静态文件访问</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/net-core%E4%B8%AD%E5%AF%B9%E8%B1%A1%E6%B1%A0-object-pool-%E7%9A%84%E4%BD%BF%E7%94%A8/>
+<div class=article-details>
+<h2 class=article-title>.NET Core 中对象池(Object Pool)的使用</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/3099575458/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#更新项目文件>更新项目文件</a></li>
+<li><a href=#更新程序入口>更新程序入口</a></li>
+<li><a href=#更新startup>更新Startup</a></li>
+<li><a href=#序列化反序列化>序列化/反序列化</a></li>
+<li><a href=#疑难杂症>疑难杂症</a></li>
+<li><a href=#参考链接>参考链接</a></li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/%E6%97%B6%E5%8C%BA/ class=font_size_1>
+时区
+</a>
+<a href=/tags/git/ class=font_size_2>
+Git
+</a>
+<a href=/tags/liquid/ class=font_size_1>
+Liquid
+</a>
+<a href=/tags/cg/ class=font_size_1>
+CG
+</a>
+<a href=/tags/opencv/ class=font_size_3>
+OpenCV
+</a>
+<a href=/tags/httpclient/ class=font_size_2>
+HttpClient
+</a>
+<a href=/tags/keycloak/ class=font_size_1>
+Keycloak
+</a>
+<a href=/tags/wechat/ class=font_size_1>
+Wechat
+</a>
+<a href=/tags/%E6%83%85%E6%84%9F/ class=font_size_1>
+情感
+</a>
+<a href=/tags/%E4%BB%99%E5%89%91%E5%A5%87%E4%BE%A0%E4%BC%A0/ class=font_size_1>
+仙剑奇侠传
+</a>
+<a href=/tags/%E6%A8%A1%E5%9E%8B/ class=font_size_1>
+模型
+</a>
+<a href=/tags/jsonp/ class=font_size_1>
+JSONP
+</a>
+<a href=/tags/%E6%97%B6%E9%97%B4/ class=font_size_3>
+时间
+</a>
+<a href=/tags/%E4%BA%BA%E6%96%87/ class=font_size_2>
+人文
+</a>
+<a href=/tags/%E8%AE%BF%E9%97%AE%E9%87%8F/ class=font_size_1>
+访问量
+</a>
+<a href=/tags/%E5%9B%9E%E5%BF%86/ class=font_size_1>
+回忆
+</a>
+<a href=/tags/%E9%85%8D%E8%BD%BD/ class=font_size_1>
+配载
+</a>
+<a href=/tags/html5/ class=font_size_2>
+HTML5
+</a>
+<a href=/tags/ide/ class=font_size_1>
+IDE
+</a>
+<a href=/tags/web/ class=font_size_4>
+Web
+</a>
+<a href=/tags/api/ class=font_size_1>
+API
+</a>
+<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
+网易
+</a>
+<a href=/tags/jetbrain/ class=font_size_1>
+JetBrain
+</a>
+<a href=/tags/%E5%9B%9E%E9%A6%96/ class=font_size_1>
+回首
+</a>
+<a href=/tags/%E6%9C%9D%E5%9C%A3/ class=font_size_1>
+朝圣
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

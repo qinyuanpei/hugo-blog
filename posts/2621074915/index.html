@@ -1,0 +1,607 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="这段时间在维护一个“遗产项目”，体验可以说是相当地难受，因为它的数据持久化层完全由 ADO.NET 纯手工打造，所以，你可以在项目中看到无所不在的 DataT"><title>温故而知新，由 ADO.NET 与 Dapper 所联想到的</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/2621074915/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="温故而知新，由 ADO.NET 与 Dapper 所联想到的">
+<meta property="og:description" content="这段时间在维护一个“遗产项目”，体验可以说是相当地难受，因为它的数据持久化层完全由 ADO.NET 纯手工打造，所以，你可以在项目中看到无所不在的 DataT">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/2621074915/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="ADO.NET"><meta property="article:tag" content="Dapper"><meta property="article:tag" content="Dynamic"><meta property="article:tag" content="技巧"><meta property="article:published_time" content="2020-12-30T12:49:47+00:00"><meta property="article:modified_time" content="2020-12-30T12:49:47+00:00">
+<meta name=twitter:title content="温故而知新，由 ADO.NET 与 Dapper 所联想到的">
+<meta name=twitter:description content="这段时间在维护一个“遗产项目”，体验可以说是相当地难受，因为它的数据持久化层完全由 ADO.NET 纯手工打造，所以，你可以在项目中看到无所不在的 DataT">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+编程语言
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/2621074915/>温故而知新，由 ADO.NET 与 Dapper 所联想到的</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2020-12-30</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 9 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>这段时间在维护一个“遗产项目”，体验可以说是相当地难受，因为它的数据持久化层完全由 ADO.NET 纯手工打造，所以，你可以在项目中看到无所不在的 DataTable，不论是读操作还是写操作。这个 DataTable 让我这个习惯了 Entity Framework 的人感到非常别扭，我并不排斥写手写 SQL 语句，我只是拥有某种自觉并且清醒地知道，自己写的 SQL 语句未必就比 ORM 生成的 SQL 语句要好。可至少应该是像 Dapper 这种程度的封装啊，因为关系型数据库天生就和面向对象编程存在隔离，所以，频繁地使用 DataTable 无疑意味着你要写很多的转换的代码，当我看到<code>DbConnection</code>、<code>DbCommand</code>、<code>DbDataReader</code>、<code>DbDataAdapter</code>这些熟悉的“底层”的时候，我意识到我可以结合着 Dapper 的实现，从中梳理出一点改善的思路，所以，这篇博客想聊一聊<strong>ADO.NET</strong>、<strong>Dapper</strong>和<strong>Dynamic</strong>这三者间交叉的部分，希望能给大家带来新的启发。</p>
+<h1 id=重温-adonet>重温 ADO.NET</h1>
+<p>相信大家都知道，我这里提到的<code>DbConnection</code>、<code>DbCommand</code>、<code>DbDataReader</code>、<code>DbDataAdapte</code>以及<code>DataTable</code>、<code>DataSet</code>，实际上就是 ADO.NET 中核心的组成部分，譬如<code>DbConnection</code>负责管理数据库连接，<code>DbCommand</code>负责 SQL 语句的执行，<code>DbDataReader</code>和<code>DbDataAdapter</code>负责数据库结果集的读取。需要注意的是，这些类型都是抽象类，而各个数据库的具体实现，则是由对应的厂商来完成，即我们称之为“驱动”的部分，它们都遵循同一套接口规范，而<code>DataTable</code>和<code>DataSet</code>则是“装”数据库结果集的容器。关于 ADO.NET 的设计理念，可以从下图中得到更清晰的答案：</p>
+<p><figure>
+<a href=https://i.loli.net/2020/12/31/dEN2tajehboDiTl.png>
+<img src=https://i.loli.net/2020/12/31/dEN2tajehboDiTl.png loading=lazy alt=ADO.NET架构>
+</a>
+<figcaption>ADO.NET架构</figcaption>
+</figure></p>
+<p>在这种理念的指引，使用 ADO.NET 访问数据库通常会是下面的画风。博主相信，大家在各种各样的<code>DbHelper</code>或者<code>DbUtils</code>中都见过类似的代码片段，在更复杂的场景中，我们会使用<code>DbParameter</code>来辅助<code>DbCommand</code>，而这就是所谓的<strong>SQL 参数化查询</strong>。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=kt>var</span> <span class=n>fileName</span> <span class=p>=</span> <span class=n>Path</span><span class=p>.</span><span class=n>Combine</span><span class=p>(</span><span class=n>Directory</span><span class=p>.</span><span class=n>GetCurrentDirectory</span><span class=p>(),</span> <span class=s>&#34;Chinook.db&#34;</span><span class=p>);</span>
+<span class=ln> 2</span><span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>connection</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SQLiteConnection</span><span class=p>(</span><span class=s>$&#34;Data Source={fileName}&#34;</span><span class=p>))</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=k>if</span> <span class=p>(</span><span class=n>connection</span><span class=p>.</span><span class=n>State</span> <span class=p>!=</span> <span class=n>ConnectionState</span><span class=p>.</span><span class=n>Open</span><span class=p>)</span> <span class=n>connection</span><span class=p>.</span><span class=n>Open</span><span class=p>();</span>
+<span class=ln> 5</span>    <span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>command</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateCommand</span><span class=p>())</span>
+<span class=ln> 6</span>    <span class=p>{</span>
+<span class=ln> 7</span>        <span class=n>command</span><span class=p>.</span><span class=n>CommandText</span> <span class=p>=</span> <span class=s>&#34;SELECT AlbumId, Title, ArtistId FROM [Album]&#34;</span><span class=p>;</span>
+<span class=ln> 8</span>        <span class=n>command</span><span class=p>.</span><span class=n>CommandType</span> <span class=p>=</span> <span class=n>CommandType</span><span class=p>.</span><span class=n>Text</span><span class=p>;</span>
+<span class=ln> 9</span>
+<span class=ln>10</span>        <span class=c1>//套路1：使用DbDataReader读取数据
+</span><span class=ln>11</span><span class=c1></span>        <span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>reader</span> <span class=p>=</span> <span class=n>command</span><span class=p>.</span><span class=n>ExecuteReader</span><span class=p>())</span>
+<span class=ln>12</span>        <span class=p>{</span>
+<span class=ln>13</span>            <span class=k>while</span> <span class=p>(</span><span class=n>reader</span><span class=p>.</span><span class=n>Read</span><span class=p>())</span>
+<span class=ln>14</span>            <span class=p>{</span>
+<span class=ln>15</span>                <span class=c1>//各种眼花缭乱的写法:)
+</span><span class=ln>16</span><span class=c1></span>                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;AlbumId={reader.GetValue(0)}&#34;</span><span class=p>);</span>
+<span class=ln>17</span>                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;Title={reader.GetFieldValue&lt;string&gt;(&#34;</span><span class=n>Title</span><span class=s>&#34;)}&#34;</span><span class=p>);</span>
+<span class=ln>18</span>                <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;ArtistId={reader.GetInt32(&#34;</span><span class=n>ArtistId</span><span class=s>&#34;)}&#34;</span><span class=p>);</span>
+<span class=ln>19</span>            <span class=p>}</span>
+<span class=ln>20</span>        <span class=p>}</span>
+<span class=ln>21</span>
+<span class=ln>22</span>        <span class=c1>//套路2：使用DbDataAdapter读取数据
+</span><span class=ln>23</span><span class=c1></span>        <span class=k>using</span> <span class=p>(</span><span class=kt>var</span> <span class=n>adapter</span> <span class=p>=</span> <span class=k>new</span> <span class=n>SQLiteDataAdapter</span><span class=p>(</span><span class=n>command</span><span class=p>))</span>
+<span class=ln>24</span>        <span class=p>{</span>
+<span class=ln>25</span>            <span class=kt>var</span> <span class=n>dataTable</span> <span class=p>=</span> <span class=k>new</span> <span class=n>DataTable</span><span class=p>();</span>
+<span class=ln>26</span>            <span class=n>adapter</span><span class=p>.</span><span class=n>Fill</span><span class=p>(</span><span class=n>dataTable</span><span class=p>);</span>
+<span class=ln>27</span>        <span class=p>}</span>
+<span class=ln>28</span>    <span class=p>}</span>
+<span class=ln>29</span><span class=p>}</span>
+</code></pre></div><p>这里经常会引发的讨论是，<code>DbDataReader</code>和<code>DbDataAdapter</code>的区别以及各自的使用场景是什么？简单来说，前者是按需读取/只读，数据库连接会一直保持；而后者是一次读取，数据全部加载到内存，数据库连接用完就会关掉。从资源释放的角度，听起来后者更友好一点，可显然结果集越大占用的内存就会越多。而如果从易用性上来考虑，后者可以直接填充数据到<code>DataSet</code>或者<code>DataTable</code>，前者则需要费一点周折，你看这段代码是不是有点秀操作的意思：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln>1</span><span class=c1>//各种眼花缭乱的写法:)
+</span><span class=ln>2</span><span class=c1></span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;AlbumId={reader.GetValue(0)}&#34;</span><span class=p>);</span>
+<span class=ln>3</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;Title={reader.GetFieldValue&lt;string&gt;(&#34;</span><span class=n>Title</span><span class=s>&#34;)}&#34;</span><span class=p>);</span>
+<span class=ln>4</span><span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>$&#34;ArtistId={reader.GetInt32(&#34;</span><span class=n>ArtistId</span><span class=s>&#34;)}&#34;</span><span class=p>);</span>
+</code></pre></div><p>在这个“遗产项目”中，<code>DbDataReader</code>和<code>DbDataAdapter</code>都有所涉猎，后者在结果集不大的情况下还是可以的，唯一的遗憾就是<code>DataTable</code>和<code>LINQ</code>的违和感实在太强烈了，虽然可以勉强使用<code>AsEnumerable()</code>拯救一下，而前者就有一点魔幻了，你能看到各种<code>GetValue(1)</code>、<code>GetValue(2)</code>这样的写法，这简直就是成心不想让后面维护的人好过，因为加字段的时候要小心翼翼地，确保字段顺序不会被修改。明明这个世界上有<a class=link href=https://github.com/StackExchange/Dapper target=_blank rel=noopener>Dapper</a>、<a class=link href=https://github.com/donet5/SqlSugar target=_blank rel=noopener>SqlSugar</a>、<a class=link href=https://smartsql.net/ target=_blank rel=noopener>SmartSql</a>这样优秀的 ORM 存在，为什么就要如此执著地写这种代码呢？是觉得 MyBatis 在 XML 里写 SQL 语句很时尚吗？</p>
+<p>所以，我开始尝试改进这些代码，我希望它可以像 Dapper 一样，提供<code>Query&lt;T>()</code>和<code>Execute()</code>两个方法足矣！如果要把结果集映射到一个具体的类型上，大家都能想到使用反射，我更想实现的是 Dapper 里的<code>DapperRow</code>，它可以通过“·”或者字典的形式来访问字段，现在的问题来了，你能实现类似 Dapper 里 DapperRow 的效果吗？因为想偷懒的时候，dynamic 不比 DataRow 更省事儿吗？那玩意儿光转换类型就要烦死人了，更不用说要映射到某个 DTO 啦！</p>
+<h1 id=实现-dynamicrow>实现 DynamicRow</h1>
+<p>通过阅读 Dapper 的源代码，我们知道，Dapper 中用<a class=link href=https://github.com/StackExchange/Dapper/blob/main/Dapper/SqlMapper.DapperTable.cs target=_blank rel=noopener>DapperTable</a>和<a class=link href=https://github.com/StackExchange/Dapper/blob/main/Dapper/SqlMapper.DapperRowMetaObject.cs target=_blank rel=noopener>DapperRow</a>替换掉了 DataTable 和 DataRow，可见这两个玩意儿有多不好用，果然，英雄所见略同啊，哈哈哈！其实，这背后的一切的功臣是<a class=link href="https://docs.microsoft.com/zh-cn/dotnet/api/system.dynamic.idynamicmetaobjectprovider?view=net-5.0" target=_blank rel=noopener>IDynamicMetaObjectProvider</a>，通过这个接口我们就能实现类似的功能，我们熟悉的<code>ExpendoObject</code>就是最好的例子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln>1</span><span class=kt>dynamic</span> <span class=n>person</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ExpandoObject</span><span class=p>();</span> 
+<span class=ln>2</span><span class=n>person</span><span class=p>.</span><span class=n>FirstName</span> <span class=p>=</span> <span class=s>&#34;Sherlock&#34;</span><span class=p>;</span> 
+<span class=ln>3</span><span class=n>person</span><span class=p>.</span><span class=n>LastName</span> <span class=p>=</span> <span class=s>&#34;Holmes&#34;</span><span class=p>;</span>
+<span class=ln>4</span>
+<span class=ln>5</span><span class=c1>//等价形式
+</span><span class=ln>6</span><span class=c1></span><span class=p>(</span><span class=n>person</span> <span class=k>as</span> <span class=n>IDctionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;)[</span><span class=s>&#34;FirstName&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>&#34;Sherlock&#34;</span><span class=p>;</span>
+<span class=ln>7</span><span class=p>(</span><span class=n>person</span> <span class=k>as</span> <span class=n>IDctionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;)[</span><span class=s>&#34;LastName&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s>&#34;Holmes&#34;</span><span class=p>;</span>
+</code></pre></div><p>这里，我们用一种简单的方式，让 DynamicRow 继承者 DynamicObject，下面一起来看具体的代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>class</span> <span class=nc>DynamicRow</span> <span class=p>:</span> <span class=n>DynamicObject</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>private</span> <span class=k>readonly</span> <span class=n>IDataRecord</span> <span class=m>_</span><span class=n>record</span><span class=p>;</span>
+<span class=ln> 4</span>    <span class=k>public</span> <span class=n>DynamicRow</span><span class=p>(</span><span class=n>IDataRecord</span> <span class=n>record</span><span class=p>)</span>
+<span class=ln> 5</span>    <span class=p>{</span>
+<span class=ln> 6</span>        <span class=m>_</span><span class=n>record</span> <span class=p>=</span> <span class=n>record</span><span class=p>;</span>
+<span class=ln> 7</span>    <span class=p>}</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span>    <span class=k>public</span> <span class=k>override</span> <span class=kt>bool</span> <span class=n>TryGetMember</span><span class=p>(</span><span class=n>GetMemberBinder</span> <span class=n>binder</span><span class=p>,</span> <span class=k>out</span> <span class=kt>object</span> <span class=n>result</span><span class=p>)</span>
+<span class=ln>10</span>    <span class=p>{</span>
+<span class=ln>11</span>        <span class=kt>var</span> <span class=n>index</span> <span class=p>=</span> <span class=m>_</span><span class=n>record</span><span class=p>.</span><span class=n>GetOrdinal</span><span class=p>(</span><span class=n>binder</span><span class=p>.</span><span class=n>Name</span><span class=p>);</span>
+<span class=ln>12</span>        <span class=n>result</span> <span class=p>=</span> <span class=n>index</span> <span class=p>&gt;</span> <span class=m>0</span> <span class=p>?</span> <span class=m>_</span><span class=n>record</span><span class=p>[</span><span class=n>binder</span><span class=p>.</span><span class=n>Name</span><span class=p>]</span> <span class=p>:</span> <span class=k>null</span><span class=p>;</span>
+<span class=ln>13</span>        <span class=k>return</span> <span class=n>index</span> <span class=p>&gt;</span> <span class=m>0</span><span class=p>;</span>
+<span class=ln>14</span>    <span class=p>}</span>
+<span class=ln>15</span>        
+<span class=ln>16</span>    <span class=c1>//支持像字典一样使用
+</span><span class=ln>17</span><span class=c1></span>    <span class=k>public</span> <span class=kt>object</span> <span class=k>this</span><span class=p>[</span><span class=kt>string</span> <span class=n>field</span><span class=p>]</span> <span class=p>=&gt;</span>
+<span class=ln>18</span>       <span class=m>_</span><span class=n>record</span><span class=p>.</span><span class=n>GetOrdinal</span><span class=p>(</span><span class=n>field</span><span class=p>)</span> <span class=p>&gt;</span> <span class=m>0</span> <span class=p>?</span> <span class=m>_</span><span class=n>record</span><span class=p>[</span><span class=n>field</span><span class=p>]</span> <span class=p>:</span> <span class=k>null</span><span class=p>;</span>
+<span class=ln>19</span><span class=p>}</span>
+</code></pre></div><p>对于<code>DynamicObject</code>这个类型而言，里面最重要的两个方法其实是<code>TryGetMember()</code>和<code>TrySetMember()</code>，因为这决定了这个动态对象的读和写两个操作。因为我们这里不需要反向地去操作数据库，所以，我们只需要关注<code>TryGetMember()</code>即可，一旦实现这个方法，我们就可以使用类似<code>foo.bar</code>这种形式访问字段，而提供一个索引器，则是为了提供类似<code>foo["bar"]</code>的访问方式，这一点同样是为了像 Dapper 看齐，无非是 Dapper 的 DynamicRow 本来就是一个字典！</p>
+<p>现在，我们来着手实现一个简化版的 Dapper，给<code>IDbConnection</code>这个接口扩展出<code>Query&lt;T>()</code>和<code>Execute()</code>两个方法，我们注意到<code>Query&lt;T>()</code>需要用到<code>DbDataReader</code>或者<code>DbDataAdapter</code>其一，对于<code>DbDataAdapter</code>而言，它的实现完全由具体的子类决定，所以，对于<code>IDbConnection</code>接口而言，它完全不知道对应的子类是什么，此时，我们只能通过判断<code>IDbConnection</code>的类型来返回对应的 DbDataAdapter。读过我之前<a class=link href=https://blog.yuanpei.me/posts/3086300103/ target=_blank rel=noopener>博客</a>的朋友，应该对 Dapper 里的数据库类型的字典有印象，不好意思，这里历史要再次上演啦！</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>static</span> <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=kt>dynamic</span><span class=p>&gt;</span> <span class=n>Query</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>,</span> 
+<span class=ln> 2</span>  <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>trans</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=kt>var</span> <span class=n>reader</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateDataReader</span><span class=p>(</span><span class=n>sql</span><span class=p>);</span>
+<span class=ln> 5</span>    <span class=k>while</span> <span class=p>(</span><span class=n>reader</span><span class=p>.</span><span class=n>Read</span><span class=p>())</span>
+<span class=ln> 6</span>        <span class=k>yield</span> <span class=k>return</span> <span class=k>new</span> <span class=n>DynamicRow</span><span class=p>(</span><span class=n>reader</span> <span class=k>as</span> <span class=n>IDataRecord</span><span class=p>);</span>
+<span class=ln> 7</span><span class=p>}</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span><span class=k>public</span> <span class=k>static</span> <span class=n>IEnumerable</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;</span> <span class=n>Query</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>,</span>
+<span class=ln>10</span>  <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>trans</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span> 
+<span class=ln>11</span>  <span class=k>where</span> <span class=n>T</span> <span class=p>:</span> <span class=n>class</span><span class=p>,</span> <span class=k>new</span><span class=p>()</span>
+<span class=ln>12</span><span class=p>{</span>
+<span class=ln>13</span>    <span class=kt>var</span> <span class=n>reader</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateDataReader</span><span class=p>(</span><span class=n>sql</span><span class=p>);</span>
+<span class=ln>14</span>    <span class=k>while</span> <span class=p>(</span><span class=n>reader</span><span class=p>.</span><span class=n>Read</span><span class=p>())</span>
+<span class=ln>15</span>        <span class=k>yield</span> <span class=k>return</span> <span class=p>(</span><span class=n>reader</span> <span class=k>as</span> <span class=n>IDataRecord</span><span class=p>).</span><span class=n>Cast</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;();</span>
+<span class=ln>16</span><span class=p>}</span>
+</code></pre></div><p>这里的<code>CreateDataReader()</code>和<code>Cast()</code>都是博主自定义的扩展方法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>private</span> <span class=k>static</span> <span class=n>IDataReader</span> <span class=n>CreateDataReader</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=kt>var</span> <span class=n>command</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateCommand</span><span class=p>();</span>
+<span class=ln> 4</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandText</span> <span class=p>=</span> <span class=n>sql</span><span class=p>;</span>
+<span class=ln> 5</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandType</span> <span class=p>=</span> <span class=n>CommandType</span><span class=p>.</span><span class=n>Text</span><span class=p>;</span>
+<span class=ln> 6</span>    <span class=k>return</span> <span class=n>command</span><span class=p>.</span><span class=n>ExecuteReader</span><span class=p>();</span>
+<span class=ln> 7</span><span class=p>}</span>
+<span class=ln> 8</span>
+<span class=ln> 9</span><span class=k>private</span> <span class=k>static</span> <span class=n>T</span> <span class=n>Cast</span><span class=p>&lt;</span><span class=n>T</span><span class=p>&gt;(</span><span class=k>this</span> <span class=n>IDataRecord</span> <span class=n>record</span><span class=p>)</span> <span class=k>where</span> <span class=n>T</span><span class=p>:</span><span class=n>class</span><span class=p>,</span> <span class=k>new</span><span class=p>()</span>
+<span class=ln>10</span><span class=p>{</span>
+<span class=ln>11</span>    <span class=kt>var</span> <span class=n>instance</span> <span class=p>=</span> <span class=k>new</span> <span class=n>T</span><span class=p>();</span>
+<span class=ln>12</span>    <span class=k>foreach</span><span class=p>(</span><span class=kt>var</span> <span class=n>property</span> <span class=k>in</span> <span class=k>typeof</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>GetProperties</span><span class=p>())</span>
+<span class=ln>13</span>    <span class=p>{</span>
+<span class=ln>14</span>        <span class=kt>var</span> <span class=n>index</span> <span class=p>=</span> <span class=n>record</span><span class=p>.</span><span class=n>GetOrdinal</span><span class=p>(</span><span class=n>property</span><span class=p>.</span><span class=n>Name</span><span class=p>);</span>
+<span class=ln>15</span>        <span class=k>if</span> <span class=p>(</span><span class=n>index</span> <span class=p>&lt;</span> <span class=m>0</span><span class=p>)</span> <span class=k>continue</span><span class=p>;</span>
+<span class=ln>16</span>        <span class=kt>var</span> <span class=n>propertyType</span> <span class=p>=</span> <span class=n>property</span><span class=p>.</span><span class=n>PropertyType</span><span class=p>;</span>
+<span class=ln>17</span>        <span class=k>if</span> <span class=p>(</span><span class=n>propertyType</span><span class=p>.</span><span class=n>IsGenericType</span> <span class=p>&amp;&amp;</span> 
+<span class=ln>18</span>          <span class=n>propertyType</span><span class=p>.</span><span class=n>GetGenericTypeDefinition</span><span class=p>()</span> <span class=p>==</span> <span class=k>typeof</span><span class=p>(</span><span class=n>Nullable</span><span class=p>&lt;&gt;))</span>
+<span class=ln>19</span>            <span class=n>propertyType</span> <span class=p>=</span> <span class=n>Nullable</span><span class=p>.</span><span class=n>GetUnderlyingType</span><span class=p>(</span><span class=n>propertyType</span><span class=p>);</span>
+<span class=ln>20</span>        <span class=n>property</span><span class=p>.</span><span class=n>SetValue</span><span class=p>(</span><span class=n>instance</span><span class=p>,</span> 
+<span class=ln>21</span>          <span class=n>Convert</span><span class=p>.</span><span class=n>ChangeType</span><span class=p>(</span><span class=n>record</span><span class=p>[</span><span class=n>property</span><span class=p>.</span><span class=n>Name</span><span class=p>],</span> <span class=n>propertyType</span><span class=p>));</span>
+<span class=ln>22</span>    <span class=p>}</span> 
+<span class=ln>23</span>
+<span class=ln>24</span>    <span class=k>return</span> <span class=n>instance</span><span class=p>;</span>  
+<span class=ln>25</span><span class=p>}</span>
+</code></pre></div><p>而<code>Execute()</code>方法则要简单的多，因为从<code>IDbConnection</code>到<code>IDbCommand</code>的这条线，可以直接通过<code>CreateCommand()</code>来实现：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln>1</span><span class=k>public</span> <span class=k>static</span> <span class=kt>int</span> <span class=n>Execute</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>,</span> 
+<span class=ln>2</span>  <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>trans</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln>3</span><span class=p>{</span>
+<span class=ln>4</span>    <span class=kt>var</span> <span class=n>command</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateCommand</span><span class=p>();</span>
+<span class=ln>5</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandText</span> <span class=p>=</span> <span class=n>sql</span><span class=p>;</span>
+<span class=ln>6</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandType</span> <span class=p>=</span> <span class=n>CommandType</span><span class=p>.</span><span class=n>Text</span><span class=p>;</span>
+<span class=ln>7</span>    <span class=k>return</span> <span class=n>command</span><span class=p>.</span><span class=n>ExecuteNonQuery</span><span class=p>();</span>
+<span class=ln>8</span><span class=p>}</span>
+</code></pre></div><h1 id=实现参数化查询>实现参数化查询</h1>
+<p>大家可以注意到，我这里的参数 param 完全没有用上，这是因为<code>IDbCommand</code>的<code>Paraneters</code>属性显然是一个抽象类的集合。所以，从<code>IDbConnection</code>的角度来看这个问题的时候，它又不知道这个参数要如何来给了，而且像 Dapper 里的参数，涉及到集合类型会存在<code>IN</code>和<code>NOT IN</code>以及批量操作的问题，比普通的字符串替换还要稍微复杂一点。如果我们只考虑最简单的情况，它还是可以尝试一番的：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>private</span> <span class=k>static</span> <span class=k>void</span> <span class=n>SetDbParameter</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbCommand</span> <span class=n>command</span><span class=p>,</span> <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln> 2</span><span class=p>{</span>
+<span class=ln> 3</span>    <span class=k>if</span> <span class=p>(</span><span class=n>param</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span> <span class=k>return</span><span class=p>;</span>
+<span class=ln> 4</span>    <span class=k>if</span> <span class=p>(</span><span class=n>param</span> <span class=k>is</span> <span class=n>IDictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;)</span>
+<span class=ln> 5</span>    <span class=p>{</span>
+<span class=ln> 6</span>        <span class=c1>//使用字典作为参数
+</span><span class=ln> 7</span><span class=c1></span>        <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>arg</span> <span class=k>in</span> <span class=n>param</span> <span class=k>as</span> <span class=n>IDictionary</span><span class=p>&lt;</span><span class=kt>string</span><span class=p>,</span> <span class=kt>object</span><span class=p>&gt;)</span>
+<span class=ln> 8</span>        <span class=p>{</span>
+<span class=ln> 9</span>              <span class=kt>var</span> <span class=n>newParam</span> <span class=p>=</span> <span class=n>command</span><span class=p>.</span><span class=n>CreateParameter</span><span class=p>();</span>
+<span class=ln>10</span>              <span class=n>newParam</span><span class=p>.</span><span class=n>ParameterName</span> <span class=p>=</span> <span class=s>$&#34;@{arg.Key}&#34;</span><span class=p>;</span>
+<span class=ln>11</span>              <span class=n>newParam</span><span class=p>.</span><span class=n>Value</span> <span class=p>=</span> <span class=n>arg</span><span class=p>.</span><span class=n>Value</span><span class=p>;</span>
+<span class=ln>12</span>              <span class=n>command</span><span class=p>.</span><span class=n>Parameters</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>newParam</span><span class=p>);</span>
+<span class=ln>13</span>        <span class=p>}</span>
+<span class=ln>14</span>    <span class=p>}</span>
+<span class=ln>15</span>    <span class=k>else</span> 
+<span class=ln>16</span>    <span class=p>{</span>
+<span class=ln>17</span>        <span class=c1>//使用匿名对象作为参数
+</span><span class=ln>18</span><span class=c1></span>        <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>property</span> <span class=k>in</span> <span class=n>param</span><span class=p>.</span><span class=n>GetType</span><span class=p>().</span><span class=n>GetProperties</span><span class=p>())</span>
+<span class=ln>19</span>        <span class=p>{</span>
+<span class=ln>20</span>              <span class=kt>var</span> <span class=n>propVal</span> <span class=p>=</span> <span class=n>property</span><span class=p>.</span><span class=n>GetValue</span><span class=p>(</span><span class=n>param</span><span class=p>);</span>
+<span class=ln>21</span>              <span class=k>if</span> <span class=p>(</span><span class=n>propVal</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span> <span class=k>continue</span><span class=p>;</span>
+<span class=ln>22</span>              <span class=kt>var</span> <span class=n>newParam</span> <span class=p>=</span> <span class=n>command</span><span class=p>.</span><span class=n>CreateParameter</span><span class=p>();</span>
+<span class=ln>23</span>              <span class=n>newParam</span><span class=p>.</span><span class=n>ParameterName</span> <span class=p>=</span> <span class=s>$&#34;@{property.Name}&#34;</span><span class=p>;</span>
+<span class=ln>24</span>              <span class=n>newParam</span><span class=p>.</span><span class=n>Value</span> <span class=p>=</span> <span class=n>propVal</span><span class=p>;</span>
+<span class=ln>25</span>              <span class=n>command</span><span class=p>.</span><span class=n>Parameters</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>newParam</span><span class=p>);</span>
+<span class=ln>26</span>        <span class=p>}</span>
+<span class=ln>27</span>    <span class=p>}</span>
+<span class=ln>28</span><span class=p>}</span>
+</code></pre></div><p>相应地，为了能在<code>Query&lt;T>()</code>和<code>Execute()</code>两个方法中使用参数，我们需要修改相关的方法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=ln> 1</span><span class=k>public</span> <span class=k>static</span> <span class=kt>int</span> <span class=n>Execute</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>,</span> 
+<span class=ln> 2</span>  <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span> <span class=n>IDbTransaction</span> <span class=n>trans</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln> 3</span><span class=p>{</span>
+<span class=ln> 4</span>    <span class=kt>var</span> <span class=n>command</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateCommand</span><span class=p>();</span>
+<span class=ln> 5</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandText</span> <span class=p>=</span> <span class=n>sql</span><span class=p>;</span>
+<span class=ln> 6</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandType</span> <span class=p>=</span> <span class=n>CommandType</span><span class=p>.</span><span class=n>Text</span><span class=p>;</span>
+<span class=ln> 7</span>    <span class=n>command</span><span class=p>.</span><span class=n>SetDbParameter</span><span class=p>(</span><span class=n>param</span><span class=p>);</span>
+<span class=ln> 8</span>    <span class=k>return</span> <span class=n>command</span><span class=p>.</span><span class=n>ExecuteNonQuery</span><span class=p>();</span>
+<span class=ln> 9</span><span class=p>}</span>
+<span class=ln>10</span>
+<span class=ln>11</span><span class=k>private</span> <span class=k>static</span> <span class=n>IDataReader</span> <span class=n>CreateDataReader</span><span class=p>(</span><span class=k>this</span> <span class=n>IDbConnection</span> <span class=n>connection</span><span class=p>,</span> <span class=kt>string</span> <span class=n>sql</span><span class=p>,</span> 
+<span class=ln>12</span>  <span class=kt>object</span> <span class=n>param</span> <span class=p>=</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln>13</span><span class=p>{</span>
+<span class=ln>14</span>    <span class=kt>var</span> <span class=n>command</span> <span class=p>=</span> <span class=n>connection</span><span class=p>.</span><span class=n>CreateCommand</span><span class=p>();</span>
+<span class=ln>15</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandText</span> <span class=p>=</span> <span class=n>sql</span><span class=p>;</span>
+<span class=ln>16</span>    <span class=n>command</span><span class=p>.</span><span class=n>CommandType</span> <span class=p>=</span> <span class=n>CommandType</span><span class=p>.</span><span class=n>Text</span><span class=p>;</span>
+<span class=ln>17</span>    <span class=n>command</span><span class=p>.</span><span class=n>SetDbParameter</span><span class=p>(</span><span class=n>param</span><span class=p>);</span>
+<span class=ln>18</span>    <span class=k>return</span> <span class=n>command</span><span class=p>.</span><span class=n>ExecuteReader</span><span class=p>();</span>
+<span class=ln>19</span><span class=p>}</span>
+</code></pre></div><p>现在，唯一的问题就剩下<code>DbType</code>和<code>@</code>啦，前者在不同的数据库中可能对应不同的类型，后者则要面临 Oracle 这朵奇葩的兼容性问题，相关内容可以参考在这篇博客：<a class=link href=https://blog.yuanpei.me/posts/3086300103/ target=_blank rel=noopener>Dapper.Contrib 在 Oracle 环境下引发 ORA-00928 异常问题的解决</a>。到这一步，我们基本上可以实现类似 Dapper 的效果。当然，我并不是为了重复制造轮子，只是像从 Dapper 这样一个结果反推出相关的技术细节，从而可以串联起整个 ASO.NET 甚至是 Entity Framework 的知识体系，工作中解决类似的问题非常简单，直接通过 NuGet 安装 Dapper 即可，可如果你想深入了解某一个事物，最好的方法就是亲自去探寻其中的原理。现在基础设施越来越完善了，可有时候我们再找不回编程的那种快乐，大概是我们内心深处放弃了什么……</p>
+<p>考虑到，从微软的角度，它鼓励我们为每一家数据库去实现数据库驱动，所以，它定义了很多的抽象类。而从 ORM 的角度来考虑，它要抹平不同数据库的差异，Dapper 的做法是给<code>IDbConnection</code>写扩展方法，而针对每个数据库的“方言”，实际上不管什么 ORM 都要去做这部分“脏活儿”，以前是分给数据库厂商去做，现在是交给 ORM 设计者去做，我觉得 ADO.NET 里似乎缺少了一部分东西，它需要提供一个 IDbAdapterProvider 的接口，返回 IDbAdapter 接口，这样就可以不用关心它是被如何创建出来的。你看，同样是设计接口，可微软和 ServiceStack 俨然是两种不同的思路，这其中的差异，足可窥见一斑矣！实际上，Entity Framework 就是在以 ADO.NET 为基础发展而来的，在这个过程中，还是由厂商来实现对应的 Provider。此时此刻，你悟到了我所说的“温故而知新”了嘛？</p>
+<h1 id=本文小结>本文小结</h1>
+<p>本文实则由针对 DataSet/DataTable 的吐槽而引出，在这个过程中，我们重新温习了 ADO.NET 中<code>DbConnection</code>、<code>DbCommand</code>、<code>DbDataReader</code>、<code>DbDataAdapter</code>这些关键的组成部分，而为了解决 DataTable 在使用上的种种不变，我们想到了借鉴 Dapper 中的 DapperRow 来实现“动态查询”，由此引出了.NET 中实现 dynamic 最重要的一个接口：<code>IDynamicMetaObjectProvide</code>，这使得我们可以在查询数据库的时候返回一个 dynamic 的集合。而为了更接近 Dapper 一点，我们基于扩展方法的形式为<code>IDbConnection</code>编写了<code>Query&lt;T>()</code>和<code>Execute()</code>方法，在数据库读写层面上彻底终结了 DataSet/DataTable 的生命。最后，我们实现了一个简化版本的参数化查询，同样是借鉴 Dapper 的思路。这说明一件什么事情呢？<strong>当你在一个看似合理、结局固定的现状中无法摆脱的时候，“平躺”虽然能让你获得一丝喘息的机会，但与此同时，你永远失去了跳出这个层级去看待事物的机会</strong>，就像我以前吐槽同事天天用<code>StringBuider</code>拼接字符串一样，一味地吐槽是没有什么用的，重要的是你会选择怎么做，所以，后来我向大家推荐了<a class=link href=https://github.com/dotliquid/dotliquid target=_blank rel=noopener>Linquid</a>，<strong>2021 年已经来了，希望你不只是增长了年龄和皱纹</strong>，晚安！</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/ado.net/>ADO.NET</a>
+<a href=/tags/dapper/>Dapper</a>
+<a href=/tags/dynamic/>Dynamic</a>
+<a href=/tags/%E6%8A%80%E5%B7%A7/>技巧</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/net-core%E4%B8%AD%E5%AF%B9%E8%B1%A1%E6%B1%A0-object-pool-%E7%9A%84%E4%BD%BF%E7%94%A8/>
+<div class=article-details>
+<h2 class=article-title>.NET Core 中对象池(Object Pool)的使用</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/net-core%E5%8E%9F%E7%94%9Fdi%E6%89%A9%E5%B1%95%E4%B9%8B%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A5%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>.NET Core 原生 DI 扩展之属性注入实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/net-core%E5%8E%9F%E7%94%9Fdi%E6%89%A9%E5%B1%95%E4%B9%8B%E5%9F%BA%E4%BA%8E%E5%90%8D%E7%A7%B0%E7%9A%84%E6%B3%A8%E5%85%A5%E5%AE%9E%E7%8E%B0/>
+<div class=article-details>
+<h2 class=article-title>.NET Core 原生 DI 扩展之基于名称的注入实现</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/net-core-pococontroller%E5%9C%A8%E5%8A%A8%E6%80%81web-api%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/>
+<div class=article-details>
+<h2 class=article-title>.NET Core POCOController 在动态 Web API 中的应用</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/c#%E4%B8%AD%E7%9A%84%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/>
+<div class=article-details>
+<h2 class=article-title>C#中的扩展方法学习总结</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/2621074915/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#重温-adonet>重温 ADO.NET</a></li>
+<li><a href=#实现-dynamicrow>实现 DynamicRow</a></li>
+<li><a href=#实现参数化查询>实现参数化查询</a></li>
+<li><a href=#本文小结>本文小结</a></li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/markdown/ class=font_size_1>
+Markdown
+</a>
+<a href=/tags/%E4%BD%8E%E4%BB%A3%E7%A0%81/ class=font_size_1>
+低代码
+</a>
+<a href=/tags/%E4%BB%99%E5%89%91%E5%A5%87%E4%BE%A0%E4%BC%A0/ class=font_size_1>
+仙剑奇侠传
+</a>
+<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
+装饰器
+</a>
+<a href=/tags/liquid/ class=font_size_1>
+Liquid
+</a>
+<a href=/tags/assetbundle/ class=font_size_2>
+AssetBundle
+</a>
+<a href=/tags/windows/ class=font_size_1>
+Windows
+</a>
+<a href=/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/ class=font_size_3>
+多线程
+</a>
+<a href=/tags/cg/ class=font_size_1>
+CG
+</a>
+<a href=/tags/cdn/ class=font_size_1>
+CDN
+</a>
+<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
+平凡
+</a>
+<a href=/tags/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF/ class=font_size_2>
+贝塞尔曲线
+</a>
+<a href=/tags/%E5%89%91%E6%8C%87offer/ class=font_size_1>
+剑指Offer
+</a>
+<a href=/tags/%E9%82%AA%E4%B8%8D%E5%8E%8B%E6%AD%A3/ class=font_size_1>
+邪不压正
+</a>
+<a href=/tags/pl/sql/ class=font_size_1>
+PL/SQL
+</a>
+<a href=/tags/%E6%80%A7%E8%83%BD/ class=font_size_1>
+性能
+</a>
+<a href=/tags/%E8%BF%81%E7%A7%BB/ class=font_size_1>
+迁移
+</a>
+<a href=/tags/orm/ class=font_size_1>
+ORM
+</a>
+<a href=/tags/%E7%AD%BE%E5%90%8D/ class=font_size_1>
+签名
+</a>
+<a href=/tags/%E8%AE%BE%E8%AE%A1/ class=font_size_2>
+设计
+</a>
+<a href=/tags/mvc/ class=font_size_1>
+MVC
+</a>
+<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
+穿搭
+</a>
+<a href=/tags/%E6%83%85%E6%84%9F/ class=font_size_1>
+情感
+</a>
+<a href=/tags/%E7%BC%96%E7%A8%8B/ class=font_size_6>
+编程
+</a>
+<a href=/tags/mvvm/ class=font_size_1>
+MVVM
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

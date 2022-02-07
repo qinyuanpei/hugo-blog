@@ -101,7 +101,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>《阿里巴巴 Java 开发手册》读书笔记</a>
+<a href=/posts/1122710277/>《阿里巴巴 Java 开发手册》读书笔记</a>
 </h2>
 <h3 class=article-subtitle>
 说明：表达是否最好用 0 和 1 来表示，我们用 Y 和 N 时经常会出现，开发人员忘记给模型赋值，导致进入到数据库里的数据出现错误数据，而领域模型里又不建议给字段默认值，可如果使用 unsigned tinyint 类型，它本身就自带默认值 0，这样就可以避免这种问题的出现;说明：建议全部使用小写，因为主流 SQL 教程的里关键字都采用大写，但在 PLSQL/SQLyog 里编写 SQL 语句时，字段会自动地变成小写，而且不区分大小写，为了避免人格分裂，建议所有字段都用小写;说明：英文不好可以去查，禁止使用纯拼音或者拼音缩写的命名方式，除了不能“望文生义”以外，对导致别人在调用接口的时候，向这种“丧心病狂”的编码风格妥协，这里不点名批评某 SAP 提供的 OA 接口，除了超级难用以外，每次都要花大量时间去对字段
@@ -128,7 +128,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E8%81%8A%E8%81%8A%E5%89%8D%E7%AB%AF%E8%B7%A8%E5%9F%9F%E7%9A%84%E7%88%B1%E6%81%A8%E6%83%85%E4%BB%87/>聊聊前端跨域的爱恨情仇</a>
+<a href=/posts/3846545990/>聊聊前端跨域的爱恨情仇</a>
 </h2>
 <h3 class=article-subtitle>
 现在，我们可以注意到，在控制台中输出了我们期望的结果，这说明页面中定义的 showUser()方法确实被执行了，所以，到这里我们可以对 JSONP 做一个简单总结：**JSONP 是一种利用 script 标签实现跨域的方案，它需要对后端接口进行适当改造以返回可以执行的 JavaScript，客户端需要事先定义好接收数据的方法，两者通过 callback 参数建立起联系，返回类似 callback({"name":"tom",“gender”:"male"})结构的数据，因此 JSONP 请求必然且只能是一个 GET 请求**;其中，JSONP 本质上是返回可以执行的 JS，其基本套路是 callback({"foo":"bar"})，利用了 HTML 中含 src 的属性天生具备跨域能力的“漏洞”，是一种相对"hack"的方案，要求预先定义好 callback，需要改造后端接口，仅支持最简单的 GET 请求;JSONP 实际上返回的是可以执行的 JavaScript，即 text/javascript，它和我们所使用的大多数 JavaScript 并无区别，所以，你可以想到，当我们把一个远程地址赋值给 script 标签的 src 属性时，它和我们引用 CDN 上的医院文件并无区别，这正是 JSONP 的秘密所在，显然它只支持 Get 方式，当我们想要支持更多方式的时候，我们需要的是 CORS，一起来看下面这段代码，我们首先来写一个简单的 API 接口：
@@ -155,7 +155,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9F%BA%E4%BA%8Eserver-sent-events%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81/>基于Server-Sent Events实现服务端消息推送</a>
+<a href=/posts/3175881014/>基于Server-Sent Events实现服务端消息推送</a>
 </h2>
 <h3 class=article-subtitle>
 所谓**万变不离其宗"**，下面我们以.NET为例来快速集成Server-Sent Events，这里需要说明的是，博主下面的例子采用ASP.NET Core 2.0版本编写，首先，我们建一个名为SSEController的控制器，在默认的Index()方法中，按照SSE规范，我们首先组织HTTP响应头，然后发送了一个名为SSE_Start的自定义事件，接下来，我们每隔10秒钟给客户端发送一条消息，请原谅我如此敷衍的Sleep()：;对于SSE而言，它是一个单工通道，客户端不能主动向服务端发送信息，所以，一旦建立了SSE通道，客户端唯一需要关注的地方就是**onmessage**这个回调函数，因为客户端只需要负责处理消息即可，甚至我们可以连**onerror**都不用关注，因为SSE自带断线重连机制，当然你可以选择在发生错误的时候关掉连接，此时你需要**close()**方法;可以看到，完全按照SSE规范来定义的，这里每次生成一个新的GUID来作为消息的ID，客户端断线后重连的间隔为30秒，默认发送的是**"消息"**，当指定eventName参数时，它就表示一个自定义事件，这里我们使用JSON格式来传递信息
@@ -182,7 +182,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E8%BF%81%E7%A7%BB%E6%8A%98%E8%85%BE%E8%AE%B0/>博客图片迁移折腾记</a>
+<a href=/posts/3444626340/>博客图片迁移折腾记</a>
 </h2>
 <h3 class=article-subtitle>
 其实，你仔细观察七牛图片外链的格式就会发现，除了域名部分以外，剩下的就是该文件在 bucket 里对应的 key 啦，所以，博主的想法开始从 Markdown 文件入手，最终我们的思路是，解析博客对应的 Markdown 文件，通过正则匹配所有的图片链接，截取出图片的文件名并通过 qshell 下载到本地;七牛的测试域名被官方回收了以后，我们有两种思路去导出这些图片，其一，是临时像官方提工单申请一个测试域名，这样在测试域名被回收前，我们可以直接使用官方提供的[qrsctl](https://developer.qiniu.com/kodo/tools/qrsctl)或者[qshell](https://developer.qiniu.com/kodo/tools/qshell)工具进行批量导出，因为此时我们可以直接在配置文件里配置测试域名，具体可以参考这篇文章：[跑路之后七牛图片如何导出备份至本地](https://www.jianshu.com/p/309709f7bfe4)，甚至你可以直接到七牛的管理控制台手动下载，可这样就一点都不极客了对吗;如果你现在访问我的博客，大概就会发现，之前那些无法显示的图片，现在基本上都可以显示啦，而我所做的事情，就是执行这些 Python 脚本，让它帮我完成从图片下载、上传再到替换链接的所有事情
@@ -209,7 +209,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9F%BA%E4%BA%8Eef%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%E5%AE%9E%E7%8E%B0/>基于 EF 的数据库主从复制、读写分离实现</a>
+<a href=/posts/2418566449/>基于 EF 的数据库主从复制、读写分离实现</a>
 </h2>
 <h3 class=article-subtitle>
 通常来讲，不同的数据库都在数据库层面上实现了主从复制，各自的实现细节上可能会存在差异，譬如 SQLServer 中可以通过“发布订阅”来配置主从复制的策略，而 Oracle 中可以通过 DataGurd 来实现主从复制，甚至你可以直接把主库 Dump 出来再导入到从库;public static void SwitchToSlave(DbCommand command, string serverName = "");public static void SwitchToMaster(DbCommand command, string serverName = "")
@@ -236,7 +236,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E6%88%8F%E9%87%8C%E6%88%8F%E5%A4%96%E7%9A%84%E4%B8%80%E5%87%BA%E5%A5%BD%E6%88%8F/>戏里戏外的一出好戏</a>
+<a href=/posts/1127467740/>戏里戏外的一出好戏</a>
 </h2>
 <h3 class=article-subtitle>
 就像人们觉得大街上耍猴有意思，人们看着被驯化的猴子，遵从人们的指令做出各种动作，人们瞬间有了种睥睨众生的感觉，可明明人类就是由猿猴进化而来，想到这一点，你忽然觉得人类世界的奇妙之处，即人类以自身有限的认知，所勾勒和描绘出的这个世界，其实永远都是冰山一角，在某种情况下，这种体系的崩塌，我让我们不得不重新审视自我的合理性，所谓“你站在桥上看风景，看风景的人在楼上看你;上周国庆节放假，在家里看了黄渤的导演处女座《一出好戏》，虽然网上对它的评价还不错，可当我真正看完了这部电影，我反而觉得它更适合一个人的时候去看，因为在“演而优则导”的大趋势下，越来越多的人都在尝试“触电”，前有角逐奥斯卡的《逐梦演艺圈》，后有倒卖情怀的《爱情公寓》大电影，在这样一个充斥着“浮躁”的娱乐时代，有这样一类充满哲学意味的电影，可以说这是中国电影里的“净土”;电影快结束的时候，马进一直在重复“真的”还是“假的”，当一个人认识到这个社会的复杂性，当一个人在真真假假中来回穿梭的时候，或许他就会和马进一样，真的就分不出“真假”，可让马进走上神坛的电灯，和让小王变成“精神病”的电，难道不是一样的吗
@@ -263,7 +263,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E4%BD%BF%E7%94%A8vscode%E4%BD%9C%E4%B8%BAsourcetree%E7%9A%84diff%E5%92%8Cmerge%E5%B7%A5%E5%85%B7/>使用 VSCode 作为 SourceTree 的 Diff 和 Merge 工具</a>
+<a href=/posts/3222622531/>使用 VSCode 作为 SourceTree 的 Diff 和 Merge 工具</a>
 </h2>
 <h3 class=article-subtitle>
 既然，作为 Git 可视化工具的 SourceTree 可以使用 VSCode 作为 Diff 和 Merge 的工具，那么，我们干脆一鼓作气，将 VSCode 作为 Git 默认的 Diff 和 Merge 的工具吧;现在，使用 SourceTree 的时候，周围同事大部分都习惯 GUI 操作，所以，就想能不能把 SourceTree 和 VSCode 结合着来用，因为我发现 SourceTree 可以支持外部的 Diff 和 Merge 工具;然后，我们在 SourceTree 里做如下配置，这里我们直接让 VSCode 作为我们的 Diff 和 Merge 工具，具体参数如图所示：
@@ -290,7 +290,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E8%AE%B0%E9%80%9A%E8%BF%87ef%E7%94%9F%E6%88%90%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93sql%E8%84%9A%E6%9C%AC%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/>记通过 EF 生成不同数据库 SQL 脚本的一次尝试</a>
+<a href=/posts/795474045/>记通过 EF 生成不同数据库 SQL 脚本的一次尝试</a>
 </h2>
 <h3 class=article-subtitle>
 好了，顺着这个思路，我们就会想到在 ORM 中添加拦截器或者是日志的方式，来获得由 ORM 生成的 SQL 语句，这里我们以 Entity Framework(以下简称 EF)为例，这是.NET 中最常见的 ORM，因为目前官方的 Web 开发框架有 ASP.NET 和 ASP.NET Core 两个版本，所以这里我们分别以 ASP.NET 和 ASP.NET Core 为例来说明具体的实现过程，相应地，我们分别使用了 EF6 和 EF Core 作为各自的 ORM;我们说过，ILoggerProvider 接口决定在什么情况下应该提供什么样的 Logger，我们注意到它提供了一个 CreateLogger()的方法，它会根据 categoryName 来返回不同的 Logger，而参数 categoryName 实际上等价与 nameof(FooController)，所以，到这里我们就会明白，为什么这里要判断 categoryName 了，它实际上起一个过滤的作用，因为我们只需要 SQL 相关的日志，它和 SQLGenLogger 中的 state 相对应，我们已经说过，这是博主试出来的;这篇文章主要介绍如何利用 EF 来生成不同数据库的 SQL 脚本，对 EF6 来说，需要继承 DbCommandInterecptor 类编写拦截器
@@ -317,7 +317,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E6%BC%AB%E8%B0%88%E5%89%8D%E7%AB%AF%E8%BF%9B%E5%8C%96%E5%8F%B2%E4%B9%8B%E4%BB%8Eform%E8%A1%A8%E5%8D%95%E5%88%B0%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/>漫谈前端进化史之从 Form 表单到文件上传</a>
+<a href=/posts/2463121881/>漫谈前端进化史之从 Form 表单到文件上传</a>
 </h2>
 <h3 class=article-subtitle>
 而从功能性角度来讲，把整个文件的内容全部放在请求体中，则会造成文件信息的不完整，因为此时文件名等信息是没有办法传输到服务器端的，所以，这样综合下来再看的话，HTTP 协议本身留给我们的选择的空间并不大，我们能够选择的就只有 multipart/form-data 和 x-www-form-urlencode 这两种啦，下面着重来分析下这种数据加密方式;通过这个例子，我们很容易发现的一点是，当我们采用 type 为 file 的 Input 控件上传一个文件时，它会采用 multipart/form-data 来传递数据，报文中使用了和第二个示例类似的结构，即第一部分负责描述文件信息，譬如文件的名称、扩展名类型等等;当我们回顾 Form 表单中关于 HTTP 的部分，我们就会发现，HTTP 中具备上传文件可能性的方式只有两种，即 multipart/form-data 和 x-www-form-urlencode
@@ -344,7 +344,7 @@
 </a>
 </header>
 <h2 class=article-title>
-<a href=/posts/%E5%9F%BA%E4%BA%8Ewebsocket%E5%92%8Credis%E5%AE%9E%E7%8E%B0bilibili%E5%BC%B9%E5%B9%95%E6%95%88%E6%9E%9C/>基于 WebSocket 和 Redis 实现 Bilibili 弹幕效果</a>
+<a href=/posts/3269605707/>基于 WebSocket 和 Redis 实现 Bilibili 弹幕效果</a>
 </h2>
 <h3 class=article-subtitle>
 OK，现在我们来一起看看最终的效果，如你所见，在视频播放过程中，我们可以通过视频下方的输入框发送弹幕，弹幕会首先经由 Redis 缓存起来，当到达一定的时间间隔以后，我们就会将消息推送到客户端，这样所有的客户端都会看到这条弹幕，而对于客户端来说，它在和服务端建立 WebSocket 连接以后，唯一要做的事情就是在 onmessage 回调中取得弹幕数据，并将其追加到弹幕数组中，关于弹幕绘制的细节，我们在本文的第三节已经做了相关说明，在此不再赘述;当客户端接收到服务端推送的消息后，我们通过 Canvas API 完成对弹幕的绘制，这样就可以实现一个基本的弹幕系统啦;当 WebSocket 完成握手以后，我们定时从消息队列中取出弹幕，并推送到所有客户端
@@ -478,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E5%8D%95%E6%9C%BA%E6%B8%B8%E6%88%8F/ class=font_size_1>
-单机游戏
+<a href=/tags/%E5%92%8C%E5%B9%B3/ class=font_size_1>
+和平
 </a>
-<a href=/tags/%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/ class=font_size_1>
-动态加载
+<a href=/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/ class=font_size_2>
+依赖注入
 </a>
-<a href=/tags/disunity/ class=font_size_1>
-disunity
+<a href=/tags/nlp/ class=font_size_2>
+NLP
 </a>
-<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
-技巧
+<a href=/tags/%E8%A1%8C%E4%B8%9A/ class=font_size_1>
+行业
 </a>
-<a href=/tags/%E4%BA%BA%E6%96%87/ class=font_size_2>
-人文
+<a href=/tags/%E7%BD%91%E5%85%B3/ class=font_size_1>
+网关
 </a>
-<a href=/tags/castle/ class=font_size_1>
-Castle
+<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
+网易
 </a>
-<a href=/tags/%E6%83%85%E6%84%9F/ class=font_size_1>
-情感
+<a href=/tags/web/ class=font_size_4>
+Web
 </a>
-<a href=/tags/sklearn/ class=font_size_1>
-Sklearn
+<a href=/tags/.net/ class=font_size_7>
+.NET
 </a>
-<a href=/tags/git/ class=font_size_2>
-Git
+<a href=/tags/%E7%88%AC%E8%99%AB/ class=font_size_2>
+爬虫
 </a>
-<a href=/tags/https/ class=font_size_1>
-HTTPS
+<a href=/tags/%E8%AF%84%E8%AE%BA/ class=font_size_1>
+评论
 </a>
-<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
-加密
+<a href=/tags/ztree/ class=font_size_1>
+zTree
 </a>
-<a href=/tags/%E5%9B%9E%E9%A1%BE/ class=font_size_1>
-回顾
+<a href=/tags/dynamic-proxy/ class=font_size_1>
+Dynamic Proxy
 </a>
-<a href=/tags/grafana/ class=font_size_1>
-Grafana
+<a href=/tags/%E4%B8%80%E5%87%BA%E5%A5%BD%E6%88%8F/ class=font_size_1>
+一出好戏
 </a>
-<a href=/tags/mono/ class=font_size_4>
-Mono
+<a href=/tags/windows/ class=font_size_1>
+Windows
 </a>
-<a href=/tags/github/ class=font_size_2>
-Github
+<a href=/tags/ar/ class=font_size_3>
+AR
 </a>
-<a href=/tags/%E6%95%99%E7%A8%8B/ class=font_size_7>
-教程
+<a href=/tags/restful/ class=font_size_4>
+RESTful
 </a>
-<a href=/tags/%E9%87%8D%E8%AF%95/ class=font_size_2>
-重试
-</a>
-<a href=/tags/%E6%9C%9D%E5%9C%A3/ class=font_size_1>
-朝圣
-</a>
-<a href=/tags/%E7%9B%91%E6%8E%A7/ class=font_size_2>
-监控
-</a>
-<a href=/tags/%E5%9B%9E%E5%BF%86/ class=font_size_1>
-回忆
-</a>
-<a href=/tags/%E5%BB%BA%E7%AD%91/ class=font_size_1>
-建筑
-</a>
-<a href=/tags/c#/ class=font_size_7>
-C#
-</a>
-<a href=/tags/%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5/ class=font_size_1>
-健康检查
+<a href=/tags/mysql/ class=font_size_2>
+MySQL
 </a>
 <a href=/tags/%E8%AF%8D%E4%BA%91/ class=font_size_1>
 词云
 </a>
-<a href=/tags/%E6%A0%BC%E5%BC%8F/ class=font_size_1>
-格式
+<a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
+长安十二时辰
+</a>
+<a href=/tags/%E5%A4%9A%E7%A7%9F%E6%88%B7/ class=font_size_1>
+多租户
+</a>
+<a href=/tags/%E5%BB%BA%E7%AD%91/ class=font_size_1>
+建筑
+</a>
+<a href=/tags/%E4%BA%BA%E8%84%B8%E6%A3%80%E6%B5%8B/ class=font_size_1>
+人脸检测
+</a>
+<a href=/tags/kafka/ class=font_size_1>
+Kafka
+</a>
+<a href=/tags/%E5%B9%B4%E5%BA%A6/ class=font_size_1>
+年度
+</a>
+<a href=/tags/%E5%8D%95%E6%9C%BA%E6%B8%B8%E6%88%8F/ class=font_size_1>
+单机游戏
 </a>
 <a href=/tags class=font_size_9999>
 更多

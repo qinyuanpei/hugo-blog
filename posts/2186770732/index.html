@@ -1,0 +1,608 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="在《CG Programming in Unity》一书中提到了贝塞尔曲线，实现了一个基础版本的贝塞尔曲线绘制，即在给定 P0 和 P2 的前提下，由用户通过滑杆对 P1 进行控制，可以实时预览当前曲线的样式，感兴趣的朋友可以阅读该书的第 9 章部分;二次贝塞尔曲线的路径由给定点 P0、P1、P2 的函数 B(t)给出:;P0、P1、P2、P3 四个点在平面或在三维空间中定义了三次方贝塞尔曲线"><title>贝塞尔曲线学习笔记</title>
+<link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/2186770732/>
+<link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="贝塞尔曲线学习笔记">
+<meta property="og:description" content="在《CG Programming in Unity》一书中提到了贝塞尔曲线，实现了一个基础版本的贝塞尔曲线绘制，即在给定 P0 和 P2 的前提下，由用户通过滑杆对 P1 进行控制，可以实时预览当前曲线的样式，感兴趣的朋友可以阅读该书的第 9 章部分;二次贝塞尔曲线的路径由给定点 P0、P1、P2 的函数 B(t)给出:;P0、P1、P2、P3 四个点在平面或在三维空间中定义了三次方贝塞尔曲线">
+<meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/2186770732/">
+<meta property="og:site_name" content="素履独行">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="贝塞尔曲线"><meta property="article:tag" content="计算机图形"><meta property="article:tag" content="数学"><meta property="article:published_time" content="2015-04-08T12:25:28+00:00"><meta property="article:modified_time" content="2015-04-08T12:25:28+00:00">
+<meta name=twitter:title content="贝塞尔曲线学习笔记">
+<meta name=twitter:description content="在《CG Programming in Unity》一书中提到了贝塞尔曲线，实现了一个基础版本的贝塞尔曲线绘制，即在给定 P0 和 P2 的前提下，由用户通过滑杆对 P1 进行控制，可以实时预览当前曲线的样式，感兴趣的朋友可以阅读该书的第 9 章部分;二次贝塞尔曲线的路径由给定点 P0、P1、P2 的函数 B(t)给出:;P0、P1、P2、P3 四个点在平面或在三维空间中定义了三次方贝塞尔曲线">
+</head>
+<body class=article-page>
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+on-phone--column extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<aside class="sidebar left-sidebar sticky">
+<button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box>
+<span class=hamburger-inner></span>
+</span>
+</button>
+<header class=site-info>
+<figure class=site-avatar>
+<a href=/>
+<img src=/img/avatar_huf6869c1bfe3e2e6474d7f62f6b0d098c_190636_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a>
+<span class=emoji>🍥</span>
+</figure>
+<h1 class=site-name><a href=/>素履独行</a></h1>
+<h2 class=site-description>起风了，唯有努力生存</h2><ol class=social-menu>
+<li>
+<a href=https://github.com/qinyuanpei target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Zhihu><!doctype html><svg t="1643514753280" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2043" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M564.7 230.1V803h60l25.2 71.4L756.3 803h131.5V230.1H564.7zm247.7 497h-59.9l-75.1 50.4-17.8-50.4h-18V308.3h170.7v418.8zM526.1 486.9H393.3c2.1-44.9 4.3-104.3 6.6-172.9h130.9l-.1-8.1c0-.6-.2-14.7-2.3-29.1-2.1-15-6.6-34.9-21-34.9H287.8c4.4-20.6 15.7-69.7 29.4-93.8l6.4-11.2-12.9-.7c-.8.0-19.6-.9-41.4 10.6-35.7 19-51.7 56.4-58.7 84.4-18.4 73.1-44.6 123.9-55.7 145.6-3.3 6.4-5.3 10.2-6.2 12.8-1.8 4.9-.8 9.8 2.8 13 10.5 9.5 38.2-2.9 38.5-3 .6-.3 1.3-.6 2.2-1 13.9-6.3 55.1-25 69.8-84.5h56.7c.7 32.2 3.1 138.4 2.9 172.9h-141l-2.1 1.5c-23.1 16.9-30.5 63.2-30.8 65.2l-1.4 9.2h167c-12.3 78.3-26.5 113.4-34 127.4-3.7 7-7.3 14-10.7 20.8-21.3 42.2-43.4 85.8-126.3 153.6-3.6 2.8-7 8-4.8 13.7 2.4 6.3 9.3 9.1 24.6 9.1 5.4.0 11.8-.3 19.4-1 49.9-4.4 100.8-18 135.1-87.6 17-35.1 31.7-71.7 43.9-108.9L497 850l5-12c.8-1.9 19-46.3 5.1-95.9l-.5-1.8-108.1-123-22 16.6c6.4-26.1 10.6-49.9 12.5-71.1h158.7v-8c0-40.1-18.5-63.9-19.2-64.9l-2.4-3z" p-id="2044"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Douban><!doctype html><svg t="1643515290339" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="2972" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M896 213.333333H128V128h768zM746.666667 362.666667H277.333333v128h469.333334v-128M832 277.333333V576H192V277.333333zm-98.56 533.333334L832 640h-98.56l-98.56 170.666667H389.12L290.56 640H192l98.56 170.666667H128V896h768v-85.333333z" p-id="2973"/></svg>
+</a>
+</li>
+<li>
+<a href=https://www.zhihu.com/people/qinyuanpei target=_blank title=Weibo><!doctype html><svg t="1643515412052" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="3779" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M457.3 543c-68.1-17.7-145 16.2-174.6 76.2-30.1 61.2-1 129.1 67.8 151.3 71.2 23 155.2-12.2 184.4-78.3 28.7-64.6-7.2-131-77.6-149.2zm-52 156.2c-13.8 22.1-43.5 31.7-65.8 21.6-22-10-28.5-35.7-14.6-57.2 13.7-21.4 42.3-31 64.4-21.7 22.4 9.5 29.6 35 16 57.3zm45.5-58.5c-5 8.6-16.1 12.7-24.7 9.1-8.5-3.5-11.2-13.1-6.4-21.5 5-8.4 15.6-12.4 24.1-9.1 8.7 3.2 11.8 12.9 7 21.5zM785.3 443.5c15 4.8 31-3.4 35.9-18.3 11.8-36.6 4.4-78.4-23.2-109-27.6-30.6-68.4-42.3-106-34.3-15.4 3.3-25.2 18.4-21.9 33.8 3.3 15.3 18.4 25.2 33.8 21.8 18.4-3.9 38.3 1.8 51.9 16.7 13.5 15 17.2 35.4 11.3 53.3-4.9 15.1 3.2 31.1 18.2 36z" p-id="3780"/><path d="M885.1 237.5c-56.7-62.9-140.4-86.9-217.7-70.5-17.9 3.8-29.3 21.4-25.4 39.3 3.8 17.9 21.4 29.3 39.3 25.5 55-11.7 114.4 5.4 154.8 50.1 40.3 44.7 51.2 105.7 34 159.1-5.6 17.4 3.9 36 21.3 41.7 17.4 5.6 36-3.9 41.6-21.2v-.1c24.1-75.4 8.9-161.1-47.9-223.9zM729 499c-12.2-3.6-20.5-6.1-14.1-22.1 13.8-34.7 15.2-64.7.3-86-28-40.1-104.8-37.9-192.8-1.1.0.0-27.6 12.1-20.6-9.8 13.5-43.5 11.5-79.9-9.6-101-47.7-47.8-174.6 1.8-283.5 110.6C127.3 471.1 80 557.5 80 632.2 80 775.1 263.2 862 442.5 862c235 0 391.3-136.5 391.3-245 0-65.5-55.2-102.6-104.8-118zM443 810.8c-143 14.1-266.5-50.5-275.8-144.5-9.3-93.9 99.2-181.5 242.2-195.6 143-14.2 266.5 50.5 275.8 144.4C694.4 709 586 796.6 443 810.8z" p-id="3781"/></svg>
+</a>
+</li>
+<li>
+<a href=https://blog.csdn.net/qinyuanpei target=_blank title=CSDN><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</a>
+</li>
+</ol></header>
+<ol class=menu id=main-menu>
+<li>
+<a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a href=/archives><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span>
+</a>
+</li>
+<li>
+<a href=/works><!doctype html><svg t="1643870079685" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1249" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><style/></defs><path d="M843.093333 815.36l-189.44-294.826667A85.333333 85.333333.0 01640 474.453333V170.666667h21.333333a21.333333 21.333333.0 0021.333334-21.333334v-42.666666a21.333333 21.333333.0 00-21.333334-21.333334H362.666667a21.333333 21.333333.0 00-21.333334 21.333334v42.666666a21.333333 21.333333.0 0021.333334 21.333334H384V474.88a85.333333 85.333333.0 01-13.653333 46.08l-189.44 294.826667a64.426667 64.426667.0 000 66.56l13.653333 24.32a64.853333 64.853333.0 0055.466667 32h525.226666a64.853333 64.853333.0 0055.466667-32L844.8 881.92a63.573333 63.573333.0 00-1.706667-66.56zm-400.64-248.32a173.226667 173.226667.0 0026.88-92.16V170.666667h85.333334v303.786666a167.68 167.68.0 0027.306666 92.16l74.24 116.053334H367.786667z" p-id="1250" fill="#8a8a8a"/></svg>
+<span>作品</span>
+</a>
+</li>
+<li>
+<a href=/search><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span>
+</a>
+</li>
+<li>
+<a href=/links><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友链</span>
+</a>
+</li>
+<li>
+<a href=/about><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span>
+</a>
+</li>
+<li>
+<a href=/index.xml><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg>
+<span>RSS</span>
+</a>
+</li>
+<li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span>
+</li>
+</ol>
+</aside>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+读书笔记
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/2186770732/>贝塞尔曲线学习笔记</a>
+</h2>
+<h3 class=article-subtitle>
+在《CG Programming in Unity》一书中提到了贝塞尔曲线，实现了一个基础版本的贝塞尔曲线绘制，即在给定 P0 和 P2 的前提下，由用户通过滑杆对 P1 进行控制，可以实时预览当前曲线的样式，感兴趣的朋友可以阅读该书的第 9 章部分;二次贝塞尔曲线的路径由给定点 P0、P1、P2 的函数 B(t)给出:;P0、P1、P2、P3 四个点在平面或在三维空间中定义了三次方贝塞尔曲线
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2015-04-08</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 5 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>贝塞尔曲线(Bezier Curve)是由法国工程师皮埃尔·贝塞尔(Pierre Bezier)于 1962 年提出的一种曲线。在数学的数值分析领域中，贝塞尔曲线是计算机图形学中相当重要的参数曲线，其主要意义在于无论是直线还是曲线都能在数学上予以描述。最早贝塞尔曲线被用来对汽车主体进行设计，现在贝塞尔曲线被广泛地运用到计算机图形软件(如 Photoshop、Flash 等)中，是计算机图形领域重要的一个数学曲线。</p>
+<h1 id=贝塞尔曲线主要内容>贝塞尔曲线主要内容</h1>
+<p>贝塞尔曲线就是这样的一条曲线，它是依据四个位置任意的点坐标绘制出的一条光滑曲线。在历史上，研究贝塞尔曲线的人最初是按照已知曲线参数方程来确定四个点的思路设计出这种矢量曲线绘制法。贝塞尔曲线的有趣之处更在于它的皮筋效应，也就是说，随着点有规律地移动，曲线将产生皮筋伸引一样的变换，带来视觉上的冲击。1962 年，法国数学家 Pierre Bezier 第一个研究了这种矢量绘制曲线的方法，并给出了详细的计算公式，因此按照这样的公式绘制出来的曲线就用他的姓氏来命名是为贝塞尔曲线。贝塞尔曲线按照阶数可以从一次扩展到 n 次，这里例举出常见的一次贝塞尔曲线、二次贝塞尔曲线和三次贝塞尔曲线。</p>
+<h2 id=一次贝塞尔曲线>一次贝塞尔曲线</h2>
+<p>一次贝塞尔曲线，即线性贝塞尔曲线，其定义是:给定点 P0、P1，贝塞尔曲线是两点间的一条直线。线性贝塞尔曲线由下列公式给出：</p>
+<blockquote>
+<p>B(t)=P0+(P1-P0)<em>t=(1-t)P0+t</em>P1,其中 t 是一个 0 到 1 之间的数值</p>
+</blockquote>
+<p>该公式等同于对 P1,P0 两点进行线性插值。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fziy0m9qvng206o02s74z.gif>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fziy0m9qvng206o02s74z.gif loading=lazy alt=一次贝塞尔曲线>
+</a>
+<figcaption>一次贝塞尔曲线</figcaption>
+</figure></p>
+<h2 id=二次贝塞尔曲线>二次贝塞尔曲线</h2>
+<p>二次贝塞尔曲线的路径由给定点 P0、P1、P2 的函数 B(t)给出:</p>
+<blockquote>
+<p>B(t)=(1-t)^2 * P0+2t(1-t)P1+t^2P2,其中 t 是一个 0 到 1 之间的数值</p>
+</blockquote>
+<p>为构建二次贝塞尔曲线，可以中介点 Q0 和 Q1 作为由 0 至 1 的 t:</p>
+<ul>
+<li>由 P0 至 P1 的连续点 Q0，描述一条线性贝塞尔曲线。</li>
+<li>由 P1 至 P2 的连续点 Q1，描述一条线性贝塞尔曲线。</li>
+<li>由 Q0 至 Q1 的连续点 B(t)，描述一条二次贝塞尔曲线。</li>
+</ul>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05pf9zdcj206o02sa9x.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05pf9zdcj206o02sa9x.jpg loading=lazy alt=二次贝塞尔曲线原理图>
+</a>
+<figcaption>二次贝塞尔曲线原理图</figcaption>
+</figure></p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05mpz5ijg206o02sgnc.gif>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05mpz5ijg206o02sgnc.gif loading=lazy alt=二次贝塞尔曲线演示效果>
+</a>
+<figcaption>二次贝塞尔曲线演示效果</figcaption>
+</figure></p>
+<h2 id=三次贝塞尔曲线>三次贝塞尔曲线</h2>
+<p>P0、P1、P2、P3 四个点在平面或在三维空间中定义了三次方贝塞尔曲线。曲线起始于 P0 走向 P1，并从 P2 的方向来到 P3。P0 和 P1 之间的间距，决定了曲线在转而趋进 P3 之前，走向 P2 方向的“长度有多长”。三次贝塞尔曲线的公式是:</p>
+<blockquote>
+<p>B(t)=P0(1-t)^3+3P1t(1-t)^2+3P2t^2(1-t)+P3t^3,其中 t 是一个 0 到 1 之间的数值</p>
+</blockquote>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz05gr7svtj206o02sq2v.jpg>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz05gr7svtj206o02sq2v.jpg loading=lazy alt=三次贝塞尔曲线原理图>
+</a>
+<figcaption>三次贝塞尔曲线原理图</figcaption>
+</figure></p>
+<p>三次贝塞尔曲线的绘制这里采取的是一种已知曲线参数方程来确定四个点的方法，这种方法称为矢量曲线绘制法。这里以二维平面为例(如需三维空间同理构造出 z(t)即可):</p>
+<blockquote>
+<p>x(t)=ax<em>t^3+bx</em>t^2+cx<em>t+x0
+y(t)=ay</em>t^3+by<em>t^2+cy</em>t+y0</p>
+</blockquote>
+<p>因为 x0、y0 已知，因此我们可以用下列公式计算出剩余三个点的坐标:</p>
+<blockquote>
+<p>x1 = x0 + cx / 3
+x2 = x1 + ( cx + bx ) / 3
+x3 = x0 + cx + bx + ax</p>
+</blockquote>
+<blockquote>
+<p>y1 = y0 + cy / 3
+y2 = y1 + ( cy + by ) / 3
+y3 = y0 + cy + by + ay</p>
+</blockquote>
+<p>在 x0、y0 已知的前提下，可以通过变换得到:</p>
+<blockquote>
+<p>cx = 3 * ( x1 - x0 )
+bx = 3 * ( x2 - x1 ) - cx
+ax = x3 - x0 - cx - bx</p>
+</blockquote>
+<blockquote>
+<p>cy = 3 * ( y1 - y0 )
+by = 3 * ( y2 - y1 ) - cy
+ay = y3 - y0 - cy - by</p>
+</blockquote>
+<p>因此只要给定四个点，总能构造出一条三次贝塞尔曲线，这种方法是一种较为实用和可靠的方法。</p>
+<p><figure>
+<a href=https://ww1.sinaimg.cn/large/4c36074fly1fz022bq7csg206o02s76z.gif>
+<img src=https://ww1.sinaimg.cn/large/4c36074fly1fz022bq7csg206o02s76z.gif loading=lazy alt=三次贝塞尔曲线效果演示>
+</a>
+<figcaption>三次贝塞尔曲线效果演示</figcaption>
+</figure></p>
+<p>下面我们来看一个简单的示例，该示例以 Unity3D 为基础建立，希望对大家理解贝塞尔曲线有所帮助。</p>
+<h1 id=代码示例>代码示例</h1>
+<p>(尝试着实现了下，发现暂时有些问题，等实现了再更新上来吧！)</p>
+<p>2015 年 12 月 19 日更新：
+在《CG Programming in Unity》一书中提到了贝塞尔曲线，实现了一个基础版本的贝塞尔曲线绘制，即在给定 P0 和 P2 的前提下，由用户通过滑杆对 P1 进行控制，可以实时预览当前曲线的样式，感兴趣的朋友可以阅读该书的第 9 章部分。下面给出代码示例：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=ln> 1</span><span class=k>using</span> <span class=nn>UnityEngine</span><span class=p>;</span>
+<span class=ln> 2</span><span class=k>using</span> <span class=nn>System.Collections</span><span class=p>;</span>
+<span class=ln> 3</span>
+<span class=ln> 4</span><span class=k>public</span> <span class=k>class</span> <span class=nc>QuadraticBezier</span> <span class=p>:</span> <span class=n>MonoBehaviour</span> 
+<span class=ln> 5</span><span class=p>{</span>
+<span class=ln> 6</span>
+<span class=ln> 7</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln> 8</span><span class=c1></span>    <span class=c1>/// 3个基础点
+</span><span class=ln> 9</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>10</span><span class=c1></span>    <span class=k>public</span> <span class=n>Vector3</span> <span class=n>P0</span><span class=p>;</span>
+<span class=ln>11</span>    <span class=k>public</span> <span class=n>Vector3</span> <span class=n>P1</span><span class=p>;</span>
+<span class=ln>12</span>    <span class=k>public</span> <span class=n>Vector3</span> <span class=n>P2</span><span class=p>;</span>
+<span class=ln>13</span>
+<span class=ln>14</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>15</span><span class=c1></span>    <span class=c1>/// 调整第二个参数的水平分量
+</span><span class=ln>16</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>17</span><span class=c1></span>    <span class=k>private</span> <span class=kt>float</span> <span class=n>paramX</span> <span class=p>=</span> <span class=m>0.5f</span><span class=p>;</span>
+<span class=ln>18</span>
+<span class=ln>19</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>20</span><span class=c1></span>    <span class=c1>/// 调整第二个参数的垂直分量
+</span><span class=ln>21</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>22</span><span class=c1></span>    <span class=k>private</span> <span class=kt>float</span> <span class=n>paramY</span> <span class=p>=</span> <span class=m>0.5f</span><span class=p>;</span>
+<span class=ln>23</span>
+<span class=ln>24</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>25</span><span class=c1></span>    <span class=c1>/// 线条宽度
+</span><span class=ln>26</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>27</span><span class=c1></span>    <span class=k>public</span> <span class=kt>float</span> <span class=n>LineWidth</span> <span class=p>=</span> <span class=m>0.15f</span><span class=p>;</span>
+<span class=ln>28</span>
+<span class=ln>29</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>30</span><span class=c1></span>    <span class=c1>/// 线条颜色
+</span><span class=ln>31</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>32</span><span class=c1></span>    <span class=k>public</span> <span class=n>Color</span> <span class=n>LineColor</span> <span class=p>=</span> <span class=n>Color</span><span class=p>.</span><span class=n>white</span><span class=p>;</span>
+<span class=ln>33</span>
+<span class=ln>34</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>35</span><span class=c1></span>    <span class=c1>/// 顶点数目
+</span><span class=ln>36</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>37</span><span class=c1></span>    <span class=k>public</span> <span class=kt>int</span> <span class=n>PointsCount</span> <span class=p>=</span> <span class=m>10</span><span class=p>;</span>
+<span class=ln>38</span>
+<span class=ln>39</span>    <span class=c1>/// &lt;summary&gt;
+</span><span class=ln>40</span><span class=c1></span>    <span class=c1>/// 线渲染器
+</span><span class=ln>41</span><span class=c1></span>    <span class=c1>/// &lt;/summary&gt;
+</span><span class=ln>42</span><span class=c1></span>    <span class=k>private</span> <span class=n>LineRenderer</span> <span class=n>lineRenderer</span><span class=p>;</span>
+<span class=ln>43</span>
+<span class=ln>44</span>
+<span class=ln>45</span>    <span class=k>void</span> <span class=n>Start</span> <span class=p>()</span> 
+<span class=ln>46</span>    <span class=p>{</span>
+<span class=ln>47</span>        <span class=c1>//初始化线渲染器
+</span><span class=ln>48</span><span class=c1></span>        <span class=n>lineRenderer</span> <span class=p>=</span> <span class=k>this</span><span class=p>.</span><span class=n>GetComponent</span><span class=p>&lt;</span><span class=n>LineRenderer</span><span class=p>&gt;();</span>
+<span class=ln>49</span>        <span class=k>if</span><span class=p>(</span><span class=n>lineRenderer</span> <span class=p>==</span> <span class=k>null</span><span class=p>)</span>
+<span class=ln>50</span>            <span class=n>lineRenderer</span> <span class=p>=</span> <span class=k>this</span><span class=p>.</span><span class=n>gameObject</span><span class=p>.</span><span class=n>AddComponent</span><span class=p>&lt;</span><span class=n>LineRenderer</span><span class=p>&gt;();</span>
+<span class=ln>51</span>        <span class=n>lineRenderer</span><span class=p>.</span><span class=n>useWorldSpace</span> <span class=p>=</span> <span class=k>true</span><span class=p>;</span>
+<span class=ln>52</span>        <span class=n>lineRenderer</span><span class=p>.</span><span class=n>SetColors</span><span class=p>(</span><span class=n>LineColor</span><span class=p>,</span><span class=n>LineColor</span><span class=p>);</span>
+<span class=ln>53</span>        <span class=n>lineRenderer</span><span class=p>.</span><span class=n>material</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Material</span><span class=p>(</span><span class=n>Shader</span><span class=p>.</span><span class=n>Find</span><span class=p>(</span><span class=s>&#34;Particles/Additive&#34;</span><span class=p>));</span>
+<span class=ln>54</span>        <span class=n>lineRenderer</span><span class=p>.</span><span class=n>SetWidth</span><span class=p>(</span><span class=n>LineWidth</span><span class=p>,</span><span class=n>LineWidth</span><span class=p>);</span>
+<span class=ln>55</span>        <span class=n>lineRenderer</span><span class=p>.</span><span class=n>SetVertexCount</span><span class=p>(</span><span class=n>PointsCount</span><span class=p>);</span>
+<span class=ln>56</span>    <span class=p>}</span>
+<span class=ln>57</span>
+<span class=ln>58</span>
+<span class=ln>59</span>    <span class=k>void</span> <span class=n>Update</span><span class=p>()</span> 
+<span class=ln>60</span>    <span class=p>{</span>
+<span class=ln>61</span>        <span class=c1>//根据滑杆参数计算P1
+</span><span class=ln>62</span><span class=c1></span>        <span class=n>P1</span> <span class=p>=</span> <span class=k>new</span> <span class=n>Vector3</span><span class=p>(</span><span class=n>Mathf</span><span class=p>.</span><span class=n>Abs</span><span class=p>(</span><span class=n>P0</span><span class=p>.</span><span class=n>x</span><span class=p>-</span><span class=n>P2</span><span class=p>.</span><span class=n>x</span><span class=p>)</span> <span class=p>*</span> <span class=n>paramX</span><span class=p>,</span> <span class=n>Mathf</span><span class=p>.</span><span class=n>Abs</span><span class=p>(</span><span class=n>P0</span><span class=p>.</span><span class=n>x</span><span class=p>-</span><span class=n>P2</span><span class=p>.</span><span class=n>x</span><span class=p>)</span> <span class=p>*</span> <span class=n>paramY</span><span class=p>,</span> <span class=m>0</span><span class=p>);</span>
+<span class=ln>63</span>
+<span class=ln>64</span>        <span class=c1>//绘制曲线
+</span><span class=ln>65</span><span class=c1></span>        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=p>=</span> <span class=m>0</span><span class=p>;</span> <span class=n>i</span> <span class=p>&lt;</span> <span class=n>PointsCount</span><span class=p>;</span> <span class=n>i</span><span class=p>++)</span>
+<span class=ln>66</span>        <span class=p>{</span>
+<span class=ln>67</span>            <span class=kt>float</span> <span class=n>t</span> <span class=p>=</span> <span class=n>i</span> <span class=p>/</span> <span class=p>(</span><span class=n>PointsCount</span> <span class=p>-</span> <span class=m>1.0f</span><span class=p>);</span>
+<span class=ln>68</span>            <span class=n>Vector3</span> <span class=n>position</span> <span class=p>=</span> <span class=p>(</span><span class=m>1.0f</span> <span class=p>-</span> <span class=n>t</span><span class=p>)</span> <span class=p>*</span> <span class=p>(</span><span class=m>1.0f</span> <span class=p>-</span> <span class=n>t</span><span class=p>)</span> <span class=p>*</span> <span class=n>P0</span> <span class=p>+</span> <span class=m>2.0f</span> <span class=p>*</span> <span class=p>(</span><span class=m>1.0f</span> <span class=p>-</span> <span class=n>t</span><span class=p>)</span> <span class=p>*</span> <span class=n>t</span> <span class=p>*</span> <span class=n>P1</span> <span class=p>+</span> <span class=n>t</span> <span class=p>*</span> <span class=n>t</span> <span class=p>*</span> <span class=n>P2</span><span class=p>;</span>
+<span class=ln>69</span>            <span class=n>lineRenderer</span><span class=p>.</span><span class=n>SetPosition</span><span class=p>(</span><span class=n>i</span><span class=p>,</span> <span class=n>position</span><span class=p>);</span>
+<span class=ln>70</span>        <span class=p>}</span>
+<span class=ln>71</span>    <span class=p>}</span>
+<span class=ln>72</span>
+<span class=ln>73</span>    <span class=k>void</span> <span class=n>OnGUI</span><span class=p>()</span>
+<span class=ln>74</span>    <span class=p>{</span>
+<span class=ln>75</span>        <span class=n>GUILayout</span><span class=p>.</span><span class=n>Label</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;第一个参数：P0=({0},{1},{2})&#34;</span><span class=p>,</span> <span class=n>P0</span><span class=p>.</span><span class=n>x</span><span class=p>,</span> <span class=n>P0</span><span class=p>.</span><span class=n>y</span><span class=p>,</span> <span class=n>P0</span><span class=p>.</span><span class=n>z</span><span class=p>));</span>
+<span class=ln>76</span>        <span class=n>GUILayout</span><span class=p>.</span><span class=n>Label</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;第二个参数：P1=({0},{1},{2})&#34;</span><span class=p>,</span> <span class=n>P1</span><span class=p>.</span><span class=n>x</span><span class=p>,</span> <span class=n>P1</span><span class=p>.</span><span class=n>y</span><span class=p>,</span> <span class=n>P1</span><span class=p>.</span><span class=n>z</span><span class=p>));</span>
+<span class=ln>77</span>        <span class=n>GUILayout</span><span class=p>.</span><span class=n>Label</span><span class=p>(</span><span class=s>&#34;请拖动下面的滑杆调整第二个参数P1观察曲线变化&#34;</span><span class=p>);</span>
+<span class=ln>78</span>        <span class=n>paramX</span> <span class=p>=</span> <span class=n>GUILayout</span><span class=p>.</span><span class=n>HorizontalSlider</span><span class=p>(</span><span class=n>paramX</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=m>1</span><span class=p>);</span>
+<span class=ln>79</span>        <span class=n>paramY</span> <span class=p>=</span> <span class=n>GUILayout</span><span class=p>.</span><span class=n>HorizontalSlider</span><span class=p>(</span><span class=n>paramY</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=m>1</span><span class=p>);</span>
+<span class=ln>80</span>        <span class=n>GUILayout</span><span class=p>.</span><span class=n>Label</span><span class=p>(</span><span class=kt>string</span><span class=p>.</span><span class=n>Format</span><span class=p>(</span><span class=s>&#34;第三个参数：P2=({0},{1},{2})&#34;</span><span class=p>,</span> <span class=n>P2</span><span class=p>.</span><span class=n>x</span><span class=p>,</span> <span class=n>P2</span><span class=p>.</span><span class=n>y</span><span class=p>,</span> <span class=n>P2</span><span class=p>.</span><span class=n>z</span><span class=p>));</span>
+<span class=ln>81</span>    <span class=p>}</span>
+<span class=ln>82</span><span class=p>}</span>
+</code></pre></div><p>在这段代码中通过两个参数来调整 P1，这里取 Z 分量为 0 主要是方便研究，扩展到三维空间需要给定第三个参数来对应的调整。这个示例的运行效果如下：</p>
+<p><figure>
+<a href=/>
+<img src=/ loading=lazy alt=效果展示>
+</a>
+<figcaption>效果展示</figcaption>
+</figure></p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF/>贝塞尔曲线</a>
+<a href=/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2/>计算机图形</a>
+<a href=/tags/%E6%95%B0%E5%AD%A6/>数学</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/posts/2752169106/>
+<div class=article-details>
+<h2 class=article-title>写给永远单纯的自己</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3677280829/>
+<div class=article-details>
+<h2 class=article-title>《Web API 的设计与开发》读书笔记</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/3782208845/>
+<div class=article-details>
+<h2 class=article-title>爱情像一场霍乱</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/352037321/>
+<div class=article-details>
+<h2 class=article-title>我是猫，一只特立独行的猫</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/posts/345410188/>
+<div class=article-details>
+<h2 class=article-title>《C#多线程编程实战》读书笔记</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<div id=comment class=valine-container></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#comment',notify:!1,verify:!0,appId:'JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz',appKey:'VsiKvLuiBGvJL1XrAfv7siY2',placeholder:'云中谁寄锦书来，雁字回时，月满西楼。&#10;Tips：如果希望收到我的评论回复，请至少留下你的邮箱哦:)',path:'https://hugo-blog-tan.vercel.app/posts/2186770732/',avatar:'identicon',requiredFields:['nick','mail']})</script>
+<style>.valine-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2014 -
+2022 素履独行
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.7.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<form action=/search/ class="search-form widget">
+<p>
+<label>搜索</label>
+<input name=keyword required placeholder=请输入关键词>
+<button title=搜索><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+</button>
+</p>
+</form>
+<section class="widget archives">
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#贝塞尔曲线主要内容>贝塞尔曲线主要内容</a>
+<ol>
+<li><a href=#一次贝塞尔曲线>一次贝塞尔曲线</a></li>
+<li><a href=#二次贝塞尔曲线>二次贝塞尔曲线</a></li>
+<li><a href=#三次贝塞尔曲线>三次贝塞尔曲线</a></li>
+</ol>
+</li>
+<li><a href=#代码示例>代码示例</a></li>
+</ol>
+</nav>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">归档</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/archives/#2022>
+<span class=year>2022</span>
+<span class=count>2</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2021>
+<span class=year>2021</span>
+<span class=count>42</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2020>
+<span class=year>2020</span>
+<span class=count>26</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2019>
+<span class=year>2019</span>
+<span class=count>24</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2018>
+<span class=year>2018</span>
+<span class=count>36</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/archives/#2017>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</section>
+<section class="widget archives">
+<h2 class="widget-title section-title">分类</h2>
+<div class=widget-archive--list>
+<div class=archives-year>
+<a href=/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>
+<span class=year>编程语言</span>
+<span class=count>85</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/>
+<span class=year>生活感悟</span>
+<span class=count>40</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/>
+<span class=year>数据存储</span>
+<span class=count>18</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/>
+<span class=year>游戏开发</span>
+<span class=count>17</span>
+</a>
+</div>
+<div class=archives-year>
+<a href=/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>
+<span class=year>读书笔记</span>
+<span class=count>16</span>
+</a>
+</div>
+<div class=archives-year>
+<div class=archives-year>
+<a href=/categories>
+<span class=year>更多</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="widget tagCloud">
+<h2 class="widget-title section-title">标签云</h2>
+<div class=tagCloud-tags>
+<a href=/tags/%E7%AE%A1%E9%81%93/ class=font_size_1>
+管道
+</a>
+<a href=/tags/%E7%86%B5%E5%A2%9E%E5%AE%9A%E5%BE%8B/ class=font_size_1>
+熵增定律
+</a>
+<a href=/tags/%E6%96%87%E4%BB%B6/ class=font_size_1>
+文件
+</a>
+<a href=/tags/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/ class=font_size_1>
+读写分离
+</a>
+<a href=/tags/%E5%8F%8C%E5%8D%81%E4%B8%80/ class=font_size_1>
+双十一
+</a>
+<a href=/tags/%E6%83%B3%E6%B3%95/ class=font_size_1>
+想法
+</a>
+<a href=/tags/%E8%AF%84%E8%AE%BA/ class=font_size_1>
+评论
+</a>
+<a href=/tags/%E6%80%BB%E7%BB%93/ class=font_size_2>
+总结
+</a>
+<a href=/tags/jsonp/ class=font_size_1>
+JSONP
+</a>
+<a href=/tags/%E5%89%8D%E7%AB%AF/ class=font_size_5>
+前端
+</a>
+<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
+塔防
+</a>
+<a href=/tags/ef/ class=font_size_5>
+EF
+</a>
+<a href=/tags/%E8%BD%AC%E7%9B%98/ class=font_size_1>
+转盘
+</a>
+<a href=/tags/%E9%83%A8%E7%BD%B2/ class=font_size_1>
+部署
+</a>
+<a href=/tags/websocket/ class=font_size_3>
+WebSocket
+</a>
+<a href=/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/ class=font_size_1>
+函数式编程
+</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E7%BC%96%E6%8E%92/ class=font_size_1>
+服务编排
+</a>
+<a href=/tags/mock/ class=font_size_1>
+Mock
+</a>
+<a href=/tags/mono/ class=font_size_4>
+Mono
+</a>
+<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
+展望
+</a>
+<a href=/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/ class=font_size_3>
+设计模式
+</a>
+<a href=/tags/csharp/ class=font_size_2>
+CSharp
+</a>
+<a href=/tags/%E5%BC%82%E5%B8%B8/ class=font_size_3>
+异常
+</a>
+<a href=/tags/%E5%BE%AE%E4%BF%A1/ class=font_size_1>
+微信
+</a>
+<a href=/tags/envoy/ class=font_size_6>
+Envoy
+</a>
+<a href=/tags class=font_size_9999>
+更多
+</a>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

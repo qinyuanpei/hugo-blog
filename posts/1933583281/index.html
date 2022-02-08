@@ -147,7 +147,7 @@ on-phone--column extended">
 </section>
 </div>
 </div>
-<img class=post-preview--image src="<%= model.cover %>">
+<img class=post-preview--image src="<%= model.cover %>" loading=lazy>
 </div>
 <style>.post-preview{max-width:100%;height:200px;margin:1em auto;position:relative;display:flex;background:#fff;border-radius:0;box-shadow:0 1px 2px rgba(0,0,0,.25),0 0 1px rgba(0,0,0,.25)}.post-preview--meta{width:85%;padding:25px;overflow:hidden}.post-preview--middle{line-height:28px}.post-preview--title{font-size:18px;margin:0!important}.post-preview--middle h4{padding-left:0!important;border-left:0!important}.post-preview--title a{text-decoration:none}.post-preview--date{font-size:14px;color:#999}.post-preview--excerpt{font-size:14px;line-height:1.825}.post-preview--excerpt p{margin-bottom:0}.post-preview--image{height:200px!important;width:auto;float:right;border-top-right-radius:2px!important;border-bottom-right-radius:2px!important;border-top-left-radius:0!important;border-bottom-left-radius:0!important}@media(max-width:550px){.post-preview{width:95%}.post-preview--excerpt{display:none}.post-preview--middle{line-height:28px}}.rating{display:block;line-height:15px}.rating-star{display:inline-block;width:75px;height:15px;background-repeat:no-repeat;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAAClCAYAAAAUAAAYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA5xJREFUeNrs3T9rFEEcxvG7qEQIglaCICKkin9AUEtBKxU7wS61VlYivgWj70TtNFj5BqzE7qxEWwsxKIoYn4UtluFmbm8nczvzm+/BjxyuDwNzu3uXD0+46f7LC5PA45Hm+WTYw1x2LRDc0jzTXB+wqMlsaLPutz8fDFjYZHYauAz3NBvt83XNnyUWNpn1nVm3OsHmsb3EomazzZnVXKMPNcc0xzUnNKc0Rzv/77fms+Z7O3vt9b1eU7bZrNN68l5zcolX4ofmsuZXTdnmMvyi2dR86Bmcac62P6vKrnVubpc0bxYE32nOab45N8YqsvPeDfcD4SOav4HjprPuu+H5BTt9LXDMfNbdLPfT678Fx6vKupt1o/O8+R3pkOaJ5/iktqx7z/qp+aq5q/nY+fczmheaK03Gs7D5rLtZdzSvA6/Ebc2u55j57HQB0TzW7AzkjiKzny6+2hlKNE8juMNcFqKBaIZndRlCNBBNgmx7ZkE0fbLtZkE0EA1EM17WuQwhGogGooFoss6296y52cNO+J6HLJoPaFdbsvA9zGerIxrPh85eWYgGooFoDiQbuAxp0UA0EVmdWbRo+ma1WbRoIBqIZtzsnHdDWjQQDUQD0WSbde5ZS2UhmtqJJtSEiVkXooFoIJre2VATJmZdiKZ2ogk1YSb8oVMvDeUPnSAaiCaPJkzMuhANRAPRQDQpsqEmTMy6EI11oolpwkA0EA1EcyDZmCYMRAPR+LMxTZjqiCamCQPRQDQQzehNGIgGooFoIJpVZ2OaMBBN7USTqgkD0UA0EE3vbKomDERTO9GkasKYJJpUTRiIBqKBaEZvwkA0EA1EA9GkyKZqwkA01olmrCYMRAPRQDR9LkO+0QmiKbAJUyTRjNWEgWggGohm9CYMRAPRQDQQzZDsWE0YiMYC0eTYhIFoIJrKiCbHJgxEY4FocmzCZEs0OTZhIBqIpjKiybEJA9FANBANROPL5tiEgWhKIJoSmzAQDURjjGhKbMJANCUQTYlNmNGIpsQmDEQD0RgjmhKbMBANRAPR1Es0JTZhIJpciMZaEwaigWgKJBprTRiIJheisdaESUo01powEA1EUyDRWGvCQDQQDURjm2isNWEgmlURzWw2q4pZIBqIJkOiCVyGJpkFolkV0ejMMvel28mIRptl7ku3IRqIpjCimfNuaJpZIBqIBqIpm2ice5Z5ZonJupvVkMRu4JW4qXnrOWY++1+AAQBw9BJSCTeN9wAAAABJRU5ErkJggg==);overflow:hidden}.allstar10{background-position:0 0}.allstar9{background-position:0 -15px}.allstar8{background-position:0 -30px}.allstar7{background-position:0 -45px}.allstar6{background-position:0 -60px}.allstar5{background-position:0 -75px}.allstar4{background-position:0 -90px}.allstar3{background-position:0 -105px}.allstar2{background-position:0 -120px}.allstar1{background-position:0 -135px}.allstar0{background-position:0 -150px}.rating-average{color:#777;display:inline-block;font-size:13px;margin-left:10px}</style>
 <script>var ele,requestUrl,subjectId;function bindView(b,c){var a=document.querySelector(b);let d=a.outerHTML.replaceAll('&lt;','<').replaceAll("&gt;",'>');html=ejs.render(d,{model:c}),a.outerHTML=html,a=document.querySelector(b),a.style.display=''}ele=document.querySelector('.post-preview'),requestUrl=ele.getAttribute('data-url'),subjectId=ele.getAttribute('data-id'),document.addEventListener('DOMContentLoaded',b=>{var a=localStorage.getItem(subjectId);a==null||a=='undefined'?fetch(requestUrl).then(a=>a.json()).then(a=>{let b={title:a.data[0].name,link:'https://movie.douban.com/subject/'+a.doubanId,cover:a.data[0].poster,desc:a.data[0].description,star:Math.floor(parseFloat(a.doubanRating)),vote:a.doubanRating,genre:a.data[0].genre,date:a.dateReleased,director:a.director[0].data[0].name};localStorage.setItem(subjectId,JSON.stringify(b)),bindView('.post-preview',b)}):bindView('.post-preview',JSON.parse(a))})</script>
@@ -410,80 +410,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/2019/ class=font_size_1>
-2019
+<a href=/tags/%E6%B8%B8%E6%88%8F/ class=font_size_13>
+游戏
 </a>
-<a href=/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/ class=font_size_3>
-跨平台
+<a href=/tags/%E6%97%A0%E9%97%AE%E8%A5%BF%E4%B8%9C/ class=font_size_1>
+无问西东
 </a>
-<a href=/tags/keycloak/ class=font_size_1>
-Keycloak
+<a href=/tags/%E5%8D%95%E4%BD%8D/ class=font_size_1>
+单位
 </a>
-<a href=/tags/%E5%89%91%E6%8C%87offer/ class=font_size_1>
-剑指Offer
+<a href=/tags/%E6%B6%88%E6%81%AF/ class=font_size_1>
+消息
 </a>
-<a href=/tags/%E5%A3%81%E7%BA%B8/ class=font_size_1>
-壁纸
-</a>
-<a href=/tags/%E6%9E%B6%E6%9E%84/ class=font_size_2>
-架构
-</a>
-<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
-对象池
-</a>
-<a href=/tags/%E6%8E%A8%E8%8D%90/ class=font_size_1>
-推荐
-</a>
-<a href=/tags/hangfire/ class=font_size_1>
-Hangfire
-</a>
-<a href=/tags/mock/ class=font_size_1>
-Mock
-</a>
-<a href=/tags/%E5%9B%BE%E5%BD%A2/ class=font_size_3>
-图形
-</a>
-<a href=/tags/%E6%B5%AA%E5%AE%A2%E5%89%91%E5%BF%83/ class=font_size_1>
-浪客剑心
-</a>
-<a href=/tags/%E5%8A%A8%E6%BC%AB/ class=font_size_1>
-动漫
-</a>
-<a href=/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/ class=font_size_1>
-自动化
-</a>
-<a href=/tags/%E4%BA%8B%E4%BB%B6/ class=font_size_1>
-事件
-</a>
-<a href=/tags/%E9%95%BF%E5%AE%89/ class=font_size_1>
-长安
+<a href=/tags/sublime/ class=font_size_1>
+Sublime
 </a>
 <a href=/tags/c#/ class=font_size_7>
 C#
 </a>
-<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
-穿搭
+<a href=/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/ class=font_size_3>
+跨平台
 </a>
-<a href=/tags/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/ class=font_size_2>
-动态代理
+<a href=/tags/consul/ class=font_size_1>
+Consul
 </a>
-<a href=/tags/grpc/ class=font_size_8>
-gRPC
+<a href=/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/ class=font_size_1>
+插件化
 </a>
-<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
-装饰器
+<a href=/tags/%E6%89%A9%E5%B1%95/ class=font_size_4>
+扩展
 </a>
-<a href=/tags/httpclient/ class=font_size_2>
-HttpClient
+<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
+面试
 </a>
-<a href=/tags/rfc/ class=font_size_1>
-RFC
+<a href=/tags/%E8%B4%AA%E5%90%83%E8%9B%87/ class=font_size_1>
+贪吃蛇
 </a>
-<a href=/tags/%E4%BA%BA%E7%94%9F/ class=font_size_2>
-人生
+<a href=/tags/dynamic/ class=font_size_1>
+Dynamic
 </a>
-<a href=/tags/redis/ class=font_size_8>
-Redis
+<a href=/tags/lua/ class=font_size_2>
+Lua
+</a>
+<a href=/tags/%E8%A5%BF%E6%BC%82/ class=font_size_1>
+西漂
+</a>
+<a href=/tags/websocket/ class=font_size_3>
+WebSocket
+</a>
+<a href=/tags/%E7%BD%91%E5%85%B3/ class=font_size_1>
+网关
+</a>
+<a href=/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/ class=font_size_1>
+反向代理
+</a>
+<a href=/tags/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF/ class=font_size_2>
+贝塞尔曲线
+</a>
+<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
+异步
+</a>
+<a href=/tags/%E7%AC%94%E8%AE%B0/ class=font_size_8>
+笔记
+</a>
+<a href=/tags/trace/ class=font_size_1>
+Trace
+</a>
+<a href=/tags/eventbus/ class=font_size_1>
+EventBus
+</a>
+<a href=/tags/%E7%8A%B6%E6%80%81/ class=font_size_1>
+状态
+</a>
+<a href=/tags/%E8%AE%BE%E8%AE%A1/ class=font_size_2>
+设计
 </a>
 <a href=/tags class=font_size_9999>
 更多

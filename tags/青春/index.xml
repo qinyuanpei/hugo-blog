@@ -36,7 +36,7 @@ loop="false"
 &lt;/section>
 &lt;/div>
 &lt;/div>
-&lt;img class="post-preview--image" src="&lt;%= model.cover %>">
+&lt;img class="post-preview--image" src="&lt;%= model.cover %>" loading="lazy">
 &lt;/div>
 &lt;style>
 .post-preview {

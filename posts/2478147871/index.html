@@ -1,14 +1,14 @@
 <!doctype html><html lang=en-us>
 <head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="据我所知，软件行业，向来是充满着鄙视链的，人们时常会因为语言、框架、范式、架构等等问题而争执不休。不必说 PHP 到底是不是世界上最好的语言，不必说"><title>浅议非典型 Web 应用场景下的身份认证</title>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="不过，请放心，这一切不会特别难，因为 这个类我们已经在前面用过一次： 不过，我个人感觉，这样会增加消息消费方的工作，更好的做法是采用   或者   来做统一的处理，这样，消息订阅方只需要关心消息怎么处理即可，考虑到 Kafka 属于 Pull 模式的消息队列，这种思路不见得在性能上有多少提升，更多的是一种简化啦，算是少写一点重复代码： 其中， 内部利用 在不同线程间共享用户信息，这可以让我们在任意位置访问用户信息，因为该扩展方法中会调用一次 方法，所以，只要在 Kafka 的消息头上维护了 字段，就可以从中解析出常用的用户信息，譬如用户名、用户角色等等"><title>浅议非典型 Web 应用场景下的身份认证</title>
 <link rel=canonical href=https://hugo-blog-tan.vercel.app/posts/2478147871/>
 <link rel=stylesheet href=/scss/style.min.e3797f68b5789b2779adf67ceab810f14ed17a5f881616a0f3d36b0e258d759a.css><meta property="og:title" content="浅议非典型 Web 应用场景下的身份认证">
-<meta property="og:description" content="据我所知，软件行业，向来是充满着鄙视链的，人们时常会因为语言、框架、范式、架构等等问题而争执不休。不必说 PHP 到底是不是世界上最好的语言，不必说">
+<meta property="og:description" content="不过，请放心，这一切不会特别难，因为 这个类我们已经在前面用过一次： 不过，我个人感觉，这样会增加消息消费方的工作，更好的做法是采用   或者   来做统一的处理，这样，消息订阅方只需要关心消息怎么处理即可，考虑到 Kafka 属于 Pull 模式的消息队列，这种思路不见得在性能上有多少提升，更多的是一种简化啦，算是少写一点重复代码： 其中， 内部利用 在不同线程间共享用户信息，这可以让我们在任意位置访问用户信息，因为该扩展方法中会调用一次 方法，所以，只要在 Kafka 的消息头上维护了 字段，就可以从中解析出常用的用户信息，譬如用户名、用户角色等等">
 <meta property="og:url" content="https://hugo-blog-tan.vercel.app/posts/2478147871/">
 <meta property="og:site_name" content="素履独行">
 <meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="gRPC"><meta property="article:tag" content="SignalR"><meta property="article:tag" content="Kafka"><meta property="article:published_time" content="2021-12-28T11:53:29+00:00"><meta property="article:modified_time" content="2021-12-28T11:53:29+00:00">
 <meta name=twitter:title content="浅议非典型 Web 应用场景下的身份认证">
-<meta name=twitter:description content="据我所知，软件行业，向来是充满着鄙视链的，人们时常会因为语言、框架、范式、架构等等问题而争执不休。不必说 PHP 到底是不是世界上最好的语言，不必说">
+<meta name=twitter:description content="不过，请放心，这一切不会特别难，因为 这个类我们已经在前面用过一次： 不过，我个人感觉，这样会增加消息消费方的工作，更好的做法是采用   或者   来做统一的处理，这样，消息订阅方只需要关心消息怎么处理即可，考虑到 Kafka 属于 Pull 模式的消息队列，这种思路不见得在性能上有多少提升，更多的是一种简化啦，算是少写一点重复代码： 其中， 内部利用 在不同线程间共享用户信息，这可以让我们在任意位置访问用户信息，因为该扩展方法中会调用一次 方法，所以，只要在 Kafka 的消息头上维护了 字段，就可以从中解析出常用的用户信息，譬如用户名、用户角色等等">
 </head>
 <body class=article-page>
 <script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
@@ -108,6 +108,9 @@ on-phone--column extended">
 <h2 class=article-title>
 <a href=/posts/2478147871/>浅议非典型 Web 应用场景下的身份认证</a>
 </h2>
+<h3 class=article-subtitle>
+不过，请放心，这一切不会特别难，因为 这个类我们已经在前面用过一次： 不过，我个人感觉，这样会增加消息消费方的工作，更好的做法是采用 或者 来做统一的处理，这样，消息订阅方只需要关心消息怎么处理即可，考虑到 Kafka 属于 Pull 模式的消息队列，这种思路不见得在性能上有多少提升，更多的是一种简化啦，算是少写一点重复代码： 其中， 内部利用 在不同线程间共享用户信息，这可以让我们在任意位置访问用户信息，因为该扩展方法中会调用一次 方法，所以，只要在 Kafka 的消息头上维护了 字段，就可以从中解析出常用的用户信息，譬如用户名、用户角色等等
+</h3>
 <footer class=article-time>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
 <time class=article-time--published>2021-12-28</time>
@@ -641,80 +644,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/ef/ class=font_size_5>
-EF
-</a>
-<a href=/tags/%E9%98%BF%E9%87%8C/ class=font_size_1>
-阿里
-</a>
-<a href=/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/ class=font_size_3>
-跨平台
-</a>
-<a href=/tags/%E5%93%B2%E5%AD%A6/ class=font_size_3>
-哲学
-</a>
-<a href=/tags/%E5%8A%A8%E7%94%BB/ class=font_size_1>
-动画
-</a>
-<a href=/tags/%E6%96%87%E4%BB%B6/ class=font_size_1>
-文件
-</a>
-<a href=/tags/%E7%8E%B0%E5%AE%9E/ class=font_size_1>
-现实
-</a>
-<a href=/tags/%E7%AC%94%E8%AE%B0/ class=font_size_8>
-笔记
-</a>
 <a href=/tags/github/ class=font_size_2>
 Github
 </a>
-<a href=/tags/%E4%BD%8E%E4%BB%A3%E7%A0%81/ class=font_size_1>
-低代码
+<a href=/tags/msbuild/ class=font_size_1>
+MSBuild
 </a>
-<a href=/tags/restful/ class=font_size_4>
-RESTful
+<a href=/tags/sqlite/ class=font_size_1>
+SQLite
 </a>
-<a href=/tags/%E7%94%9F%E6%AD%BB/ class=font_size_1>
-生死
+<a href=/tags/react/ class=font_size_1>
+React
 </a>
-<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
-平凡
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/ class=font_size_6>
+服务器
 </a>
-<a href=/tags/%E4%B8%83%E7%89%9B/ class=font_size_1>
-七牛
+<a href=/tags/%E5%A7%94%E6%89%98/ class=font_size_1>
+委托
 </a>
-<a href=/tags/%E7%AB%A5%E8%AF%9D/ class=font_size_1>
-童话
+<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
+脚本
 </a>
-<a href=/tags/%E5%8F%8C%E5%8D%81%E4%B8%80/ class=font_size_1>
-双十一
+<a href=/tags/%E5%B1%95%E6%9C%9B/ class=font_size_1>
+展望
 </a>
-<a href=/tags/linux/ class=font_size_5>
-Linux
+<a href=/tags/webapi/ class=font_size_4>
+WebApi
 </a>
-<a href=/tags/%E6%95%B0%E6%8D%AE/ class=font_size_1>
-数据
+<a href=/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/ class=font_size_3>
+多线程
 </a>
-<a href=/tags/%E8%BD%AC%E7%9B%98/ class=font_size_1>
-转盘
+<a href=/tags/sourcetree/ class=font_size_1>
+SourceTree
 </a>
-<a href=/tags/%E6%B5%AA%E5%AE%A2%E5%89%91%E5%BF%83/ class=font_size_1>
-浪客剑心
+<a href=/tags/%E8%B0%83%E4%BC%98/ class=font_size_1>
+调优
 </a>
-<a href=/tags/prometheus/ class=font_size_1>
-Prometheus
+<a href=/tags/%E6%8B%96%E6%8B%BD/ class=font_size_1>
+拖拽
+</a>
+<a href=/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/ class=font_size_1>
+模板引擎
+</a>
+<a href=/tags/%E7%AE%A1%E9%81%93/ class=font_size_1>
+管道
 </a>
 <a href=/tags/%E4%BB%B7%E5%80%BC/ class=font_size_1>
 价值
 </a>
-<a href=/tags/%E7%88%B1%E6%83%85/ class=font_size_2>
-爱情
+<a href=/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/ class=font_size_3>
+跨平台
 </a>
-<a href=/tags/dynamic/ class=font_size_1>
-Dynamic
+<a href=/tags/%E5%BC%80%E6%BA%90/ class=font_size_1>
+开源
 </a>
-<a href=/tags/%E9%9C%8D%E9%87%91/ class=font_size_1>
-霍金
+<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
+加密
+</a>
+<a href=/tags/%E5%A2%9E%E5%BC%BA%E7%8E%B0%E5%AE%9E/ class=font_size_4>
+增强现实
+</a>
+<a href=/tags/webassembly/ class=font_size_1>
+WebAssembly
+</a>
+<a href=/tags/jsdelivr/ class=font_size_1>
+jsDelivr
+</a>
+<a href=/tags/lua/ class=font_size_2>
+Lua
+</a>
+<a href=/tags/dynamic-proxy/ class=font_size_1>
+Dynamic Proxy
+</a>
+<a href=/tags/%E5%89%8D%E4%BB%BB/ class=font_size_1>
+前任
 </a>
 <a href=/tags class=font_size_9999>
 更多

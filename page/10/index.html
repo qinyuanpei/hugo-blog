@@ -212,7 +212,7 @@
 <a href=/posts/2418566449/>基于 EF 的数据库主从复制、读写分离实现</a>
 </h2>
 <h3 class=article-subtitle>
-通常来讲，不同的数据库都在数据库层面上实现了主从复制，各自的实现细节上可能会存在差异，譬如 SQLServer 中可以通过“发布订阅”来配置主从复制的策略，而 Oracle 中可以通过 DataGurd 来实现主从复制，甚至你可以直接把主库 Dump 出来再导入到从库;public static void SwitchToSlave(DbCommand command, string serverName = "");public static void SwitchToMaster(DbCommand command, string serverName = "")
+好了，下面一起来看具体代码，首先我们定义一个主从库管理类 MasterSlaveManager： 接下来，和之前关于 EF 中的 SQL 拦截器类似，我们定义一个名为 MasterSlaveDbInterceptor 的拦截器： 至此，我们就实现了基于 EF 的数据库主从复制、读写分离
 </h3>
 <footer class=article-time>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
@@ -478,80 +478,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E4%BA%91%E9%9F%B3%E4%B9%90/ class=font_size_1>
-云音乐
+<a href=/tags/%E4%B8%80%E5%87%BA%E5%A5%BD%E6%88%8F/ class=font_size_1>
+一出好戏
+</a>
+<a href=/tags/git/ class=font_size_2>
+Git
+</a>
+<a href=/tags/%E5%8D%95%E4%BD%8D/ class=font_size_1>
+单位
+</a>
+<a href=/tags/%E5%A3%81%E7%BA%B8/ class=font_size_1>
+壁纸
+</a>
+<a href=/tags/%E9%98%85%E8%AF%BB/ class=font_size_2>
+阅读
+</a>
+<a href=/tags/json/ class=font_size_1>
+JSON
+</a>
+<a href=/tags/api/ class=font_size_1>
+API
+</a>
+<a href=/tags/%E5%85%A8%E6%99%BA%E8%B4%A4/ class=font_size_1>
+全智贤
+</a>
+<a href=/tags/%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95/ class=font_size_1>
+扩展方法
+</a>
+<a href=/tags/assetbundle/ class=font_size_2>
+AssetBundle
+</a>
+<a href=/tags/%E5%8A%A8%E6%BC%AB/ class=font_size_1>
+动漫
+</a>
+<a href=/tags/mecanim/ class=font_size_1>
+Mecanim
+</a>
+<a href=/tags/%E9%85%8D%E7%BD%AE/ class=font_size_1>
+配置
+</a>
+<a href=/tags/%E5%9B%9E%E9%A6%96/ class=font_size_1>
+回首
+</a>
+<a href=/tags/%E9%BB%91%E5%AE%A2/ class=font_size_2>
+黑客
+</a>
+<a href=/tags/aop/ class=font_size_6>
+AOP
+</a>
+<a href=/tags/%E7%A9%BF%E6%90%AD/ class=font_size_1>
+穿搭
+</a>
+<a href=/tags/hangfire/ class=font_size_1>
+Hangfire
 </a>
 <a href=/tags/%E6%96%87%E4%BB%B6/ class=font_size_1>
 文件
 </a>
-<a href=/tags/socket/ class=font_size_2>
-Socket
+<a href=/tags/trace/ class=font_size_1>
+Trace
 </a>
-<a href=/tags/cg/ class=font_size_1>
-CG
+<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
+脚本
 </a>
-<a href=/tags/%E9%9A%8F%E7%AC%94/ class=font_size_9>
-随笔
+<a href=/tags/%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/ class=font_size_1>
+数据交换
 </a>
-<a href=/tags/github/ class=font_size_2>
-Github
+<a href=/tags/%E5%85%B3%E5%8D%A1%E7%B3%BB%E7%BB%9F/ class=font_size_1>
+关卡系统
 </a>
-<a href=/tags/rsetful/ class=font_size_1>
-RSETful
+<a href=/tags/%E8%AE%AD%E7%BB%83/ class=font_size_1>
+训练
 </a>
-<a href=/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/ class=font_size_1>
-大数据
-</a>
-<a href=/tags/%E6%AF%95%E4%B8%9A%E5%AD%A3/ class=font_size_1>
-毕业季
-</a>
-<a href=/tags/%E4%BB%99%E5%89%91%E5%A5%87%E4%BE%A0%E4%BC%A0/ class=font_size_1>
-仙剑奇侠传
-</a>
-<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
-技巧
-</a>
-<a href=/tags/%E8%AF%8D%E4%BA%91/ class=font_size_1>
-词云
-</a>
-<a href=/tags/%E5%88%86%E5%B8%83%E5%BC%8F/ class=font_size_2>
-分布式
-</a>
-<a href=/tags/lambda/ class=font_size_2>
-Lambda
-</a>
-<a href=/tags/2019/ class=font_size_1>
-2019
-</a>
-<a href=/tags/blazor/ class=font_size_1>
-Blazor
-</a>
-<a href=/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/ class=font_size_1>
-模板引擎
-</a>
-<a href=/tags/%E5%B9%B3%E5%87%A1/ class=font_size_1>
-平凡
-</a>
-<a href=/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/ class=font_size_1>
-插件化
-</a>
-<a href=/tags/jsonp/ class=font_size_1>
-JSONP
-</a>
-<a href=/tags/%E4%BA%8B%E4%BB%B6/ class=font_size_1>
-事件
-</a>
-<a href=/tags/%E8%BD%AF%E4%BB%B6/ class=font_size_1>
-软件
-</a>
-<a href=/tags/%E8%AF%97%E4%BA%BA/ class=font_size_1>
-诗人
-</a>
-<a href=/tags/%E7%9F%A5%E8%AF%86%E5%85%B1%E4%BA%AB/ class=font_size_1>
-知识共享
-</a>
-<a href=/tags/kafka/ class=font_size_1>
-Kafka
+<a href=/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/ class=font_size_8>
+微服务
 </a>
 <a href=/tags class=font_size_9999>
 更多

@@ -103,6 +103,9 @@
 <h2 class=article-title>
 <a href=/posts/861688878/>烟波梦影，从天国王朝到刺客信条</a>
 </h2>
+<h3 class=article-subtitle>
+尾声 育碧说， History Is Our Playground ，电影里的故事真真假假，游戏里的故事更不必说，甚至是我这些未曾考据过的文过饰非，可这恰恰是历史最为迷人的地方，一个人的形象，其实是由无数个人的记忆拼凑出来的，你可以去肆意地想象你心目中的鲍德温四世、萨拉丁，亦或者是狮心王理查一世、传奇刺客阿泰尔，只要这一切都能自圆其说
+</h3>
 <footer class=article-time>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
 <time class=article-time--published>2022-02-03</time>
@@ -151,6 +154,9 @@
 <h2 class=article-title>
 <a href=/posts/2478147871/>浅议非典型 Web 应用场景下的身份认证</a>
 </h2>
+<h3 class=article-subtitle>
+不过，请放心，这一切不会特别难，因为 这个类我们已经在前面用过一次： 不过，我个人感觉，这样会增加消息消费方的工作，更好的做法是采用 或者 来做统一的处理，这样，消息订阅方只需要关心消息怎么处理即可，考虑到 Kafka 属于 Pull 模式的消息队列，这种思路不见得在性能上有多少提升，更多的是一种简化啦，算是少写一点重复代码： 其中， 内部利用 在不同线程间共享用户信息，这可以让我们在任意位置访问用户信息，因为该扩展方法中会调用一次 方法，所以，只要在 Kafka 的消息头上维护了 字段，就可以从中解析出常用的用户信息，譬如用户名、用户角色等等
+</h3>
 <footer class=article-time>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
 <time class=article-time--published>2021-12-28</time>
@@ -319,6 +325,9 @@
 <h2 class=article-title>
 <a href=/posts/4056800047/>gRPC 搭配 Swagger 实现微服务文档化</a>
 </h2>
+<h3 class=article-subtitle>
+一旦搞清楚了这些内容，我们发现这个里面最关键的两个信息是： 和 ，如果我们回过头来看 Protobuf 的声明文件，就会发现这两个东西，分别对应的是 和 ，如下图所示： Swagger 与 Protobuf 的对应关系 通常情况下，我们使用 这个库来为 ASP.NET Core 项目提供 Swagger 支持，其中最为关键的是 接口，这里我们来尝试为 Protobuf 提供一个具体的实现： 这里的 对应着 OpenAPI 规范中的定义的结构，我们需要返回一个 ，并对其 和 属性进行填充，这部分工作由 类来完成
+</h3>
 <footer class=article-time>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
 <time class=article-time--published>2021-09-28</time>
@@ -445,80 +454,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E7%BC%96%E8%AF%91/ class=font_size_1>
-编译
+<a href=/tags/2019/ class=font_size_1>
+2019
 </a>
-<a href=/tags/%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95/ class=font_size_1>
-扩展方法
+<a href=/tags/%E7%A8%8B%E5%BA%8F%E5%91%98/ class=font_size_3>
+程序员
 </a>
-<a href=/tags/%E5%A1%94%E9%98%B2/ class=font_size_1>
-塔防
+<a href=/tags/%E5%90%8E%E7%AB%AF/ class=font_size_1>
+后端
 </a>
-<a href=/tags/mono/ class=font_size_4>
-Mono
+<a href=/tags/%E6%97%A5%E6%9C%AC/ class=font_size_1>
+日本
 </a>
-<a href=/tags/swagger/ class=font_size_2>
-Swagger
+<a href=/tags/ar/ class=font_size_3>
+AR
 </a>
-<a href=/tags/%E6%9E%B6%E6%9E%84/ class=font_size_2>
-架构
+<a href=/tags/%E9%95%BF%E5%AE%89%E5%8D%81%E4%BA%8C%E6%97%B6%E8%BE%B0/ class=font_size_1>
+长安十二时辰
 </a>
-<a href=/tags/%E5%A4%9A%E7%A7%9F%E6%88%B7/ class=font_size_1>
-多租户
+<a href=/tags/%E5%A2%9E%E5%BC%BA%E7%8E%B0%E5%AE%9E/ class=font_size_4>
+增强现实
 </a>
-<a href=/tags/%E9%BB%91%E5%AE%A2/ class=font_size_2>
-黑客
+<a href=/tags/%E7%AE%A1%E9%81%93/ class=font_size_1>
+管道
 </a>
-<a href=/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/ class=font_size_1>
-负载均衡
+<a href=/tags/%E6%A8%A1%E5%9E%8B/ class=font_size_1>
+模型
 </a>
-<a href=/tags/%E6%84%9F%E6%82%9F/ class=font_size_14>
-感悟
+<a href=/tags/%E7%83%AD%E6%90%9C/ class=font_size_1>
+热搜
 </a>
-<a href=/tags/web-api/ class=font_size_1>
-Web API
+<a href=/tags/python/ class=font_size_17>
+Python
 </a>
-<a href=/tags/%E8%B4%AA%E5%90%83%E8%9B%87/ class=font_size_1>
-贪吃蛇
+<a href=/tags/%E8%AF%B7%E8%AE%B0%E4%BD%8F%E6%88%91/ class=font_size_1>
+请记住我
 </a>
-<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
-同步
+<a href=/tags/%E6%80%A7%E8%83%BD/ class=font_size_1>
+性能
 </a>
-<a href=/tags/%E7%B1%B3%E8%8A%B1%E4%B9%8B%E5%91%B3/ class=font_size_1>
-米花之味
+<a href=/tags/ztree/ class=font_size_1>
+zTree
 </a>
-<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
-脚本
+<a href=/tags/%E6%83%85%E6%84%9F/ class=font_size_1>
+情感
 </a>
-<a href=/tags/%E4%BC%98%E5%8C%96/ class=font_size_1>
-优化
+<a href=/tags/%E9%98%B2%E7%96%AB/ class=font_size_1>
+防疫
 </a>
-<a href=/tags/javascript/ class=font_size_1>
-JavaScript
+<a href=/tags/%E5%8E%86%E5%8F%B2/ class=font_size_3>
+历史
+</a>
+<a href=/tags/%E4%BD%90%E8%97%A4%E5%81%A5/ class=font_size_1>
+佐藤健
+</a>
+<a href=/tags/%E6%A0%BC%E5%BC%8F/ class=font_size_1>
+格式
+</a>
+<a href=/tags/abp/ class=font_size_2>
+ABP
+</a>
+<a href=/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2/ class=font_size_2>
+计算机图形
 </a>
 <a href=/tags/%E5%8D%8A%E6%B3%BD%E7%9B%B4%E6%A0%91/ class=font_size_1>
 半泽直树
 </a>
-<a href=/tags/sse/ class=font_size_1>
-SSE
+<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
+技巧
 </a>
-<a href=/tags/%E6%B6%88%E6%81%AF/ class=font_size_1>
-消息
+<a href=/tags/protobuf/ class=font_size_1>
+Protobuf
 </a>
-<a href=/tags/%E5%88%86%E5%B8%83%E5%BC%8F/ class=font_size_2>
-分布式
-</a>
-<a href=/tags/redis/ class=font_size_8>
-Redis
-</a>
-<a href=/tags/lua/ class=font_size_2>
-Lua
-</a>
-<a href=/tags/%E9%9D%A2%E8%AF%95/ class=font_size_3>
-面试
-</a>
-<a href=/tags/mapreduce/ class=font_size_1>
-MapReduce
+<a href=/tags/mono/ class=font_size_4>
+Mono
 </a>
 <a href=/tags class=font_size_9999>
 更多

@@ -4,6 +4,8 @@ categories:
 - 编程语言
 copyright: true
 date: 2021-07-10 14:41:24
+description: 在接下来的例子中，我们会部署下面四个服务，我们希望在调用 gRPC 服务的时候，可以在 Grafana 看到相关的监控指标： 接下来，为了让
+  Prometheus 可以直接读取 Envoy 中输出的指标数据，我们需要在其配置文件 中添加一个对应的任务： 大家还记得 Envoy 中提供的管理接口吗
 slug: 1519021197
 tags:
 - 微服务

@@ -3,10 +3,8 @@ abbrlink: 2418566449
 categories:
 - 数据存储
 date: 2018-10-18 08:41:08
-description: 通常来讲，不同的数据库都在数据库层面上实现了主从复制，各自的实现细节上可能会存在差异，譬如 SQLServer 中可以通过“发布订阅”来配置主从复制的策略，而
-  Oracle 中可以通过 DataGurd 来实现主从复制，甚至你可以直接把主库 Dump 出来再导入到从库;public static void SwitchToSlave(DbCommand
-  command, string serverName = "");public static void SwitchToMaster(DbCommand command,
-  string serverName = "")
+description: 好了，下面一起来看具体代码，首先我们定义一个主从库管理类 MasterSlaveManager： 接下来，和之前关于 EF 中的 SQL
+  拦截器类似，我们定义一个名为 MasterSlaveDbInterceptor 的拦截器： 至此，我们就实现了基于 EF 的数据库主从复制、读写分离
 slug: 2418566449
 tags:
 - EF

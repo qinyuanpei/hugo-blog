@@ -1,4 +1,4 @@
-baseurl: https://hugo-blog-tan.vercel.app/
+﻿baseurl: https://hugo-blog-tan.vercel.app/
 languageCode: en-us
 theme: hugo-theme-stack
 paginate: 10
@@ -302,3 +302,6 @@ markup:
         lineNos: true
         lineNumbersInTable: false
         tabWidth: 4
+
+ignoreErrors: 
+    - error-remote-getjson 

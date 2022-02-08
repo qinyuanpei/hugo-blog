@@ -117,13 +117,40 @@ on-phone--column extended">
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <time class=article-time--reading>
-阅读时长: 6 分钟
+阅读时长: 7 分钟
 </time>
 </div>
 </footer>
 </div>
 </header>
 <section class=article-content>
+<script src=https://cdn.jsdelivr.net/npm/ejs@3.1.6/ejs.min.js></script>
+<div class=post-preview data-url="https://movie.querydata.org/api?id=26849758" data-id=26849758 style=display:none>
+<div class=post-preview--meta>
+<div class=post-preview--middle>
+<h4 class=post-preview--title>
+<a target=_blank href="<%= model.link %>">
+&lt;%= model.title %>
+</a>
+</h4>
+<div class=rating>
+<div class="rating-star allstar<%= model.star %>"></div>
+<div class=rating-average>
+&lt;%= model.vote %>
+</div>
+</div>
+<time class=post-preview--date>
+&lt;%= model.director %>, &lt;%= model.genre %>, &lt;%= model.date %>
+</time>
+<section style=max-height:75px;overflow:hidden class=post-preview--excerpt>
+&lt;%= model.desc %>
+</section>
+</div>
+</div>
+<img class=post-preview--image src="<%= model.cover %>">
+</div>
+<style>.post-preview{max-width:100%;height:200px;margin:1em auto;position:relative;display:flex;background:#fff;border-radius:0;box-shadow:0 1px 2px rgba(0,0,0,.25),0 0 1px rgba(0,0,0,.25)}.post-preview--meta{width:85%;padding:25px;overflow:hidden}.post-preview--middle{line-height:28px}.post-preview--title{font-size:18px;margin:0!important}.post-preview--middle h4{padding-left:0!important;border-left:0!important}.post-preview--title a{text-decoration:none}.post-preview--date{font-size:14px;color:#999}.post-preview--excerpt{font-size:14px;line-height:1.825}.post-preview--excerpt p{margin-bottom:0}.post-preview--image{height:200px!important;width:auto;float:right;border-top-right-radius:2px!important;border-bottom-right-radius:2px!important;border-top-left-radius:0!important;border-bottom-left-radius:0!important}@media(max-width:550px){.post-preview{width:95%}.post-preview--excerpt{display:none}.post-preview--middle{line-height:28px}}.rating{display:block;line-height:15px}.rating-star{display:inline-block;width:75px;height:15px;background-repeat:no-repeat;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAAClCAYAAAAUAAAYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA5xJREFUeNrs3T9rFEEcxvG7qEQIglaCICKkin9AUEtBKxU7wS61VlYivgWj70TtNFj5BqzE7qxEWwsxKIoYn4UtluFmbm8nczvzm+/BjxyuDwNzu3uXD0+46f7LC5PA45Hm+WTYw1x2LRDc0jzTXB+wqMlsaLPutz8fDFjYZHYauAz3NBvt83XNnyUWNpn1nVm3OsHmsb3EomazzZnVXKMPNcc0xzUnNKc0Rzv/77fms+Z7O3vt9b1eU7bZrNN68l5zcolX4ofmsuZXTdnmMvyi2dR86Bmcac62P6vKrnVubpc0bxYE32nOab45N8YqsvPeDfcD4SOav4HjprPuu+H5BTt9LXDMfNbdLPfT678Fx6vKupt1o/O8+R3pkOaJ5/iktqx7z/qp+aq5q/nY+fczmheaK03Gs7D5rLtZdzSvA6/Ebc2u55j57HQB0TzW7AzkjiKzny6+2hlKNE8juMNcFqKBaIZndRlCNBBNgmx7ZkE0fbLtZkE0EA1EM17WuQwhGogGooFoss6296y52cNO+J6HLJoPaFdbsvA9zGerIxrPh85eWYgGooFoDiQbuAxp0UA0EVmdWbRo+ma1WbRoIBqIZtzsnHdDWjQQDUQD0WSbde5ZS2UhmtqJJtSEiVkXooFoIJre2VATJmZdiKZ2ogk1YSb8oVMvDeUPnSAaiCaPJkzMuhANRAPRQDQpsqEmTMy6EI11oolpwkA0EA1EcyDZmCYMRAPR+LMxTZjqiCamCQPRQDQQzehNGIgGooFoIJpVZ2OaMBBN7USTqgkD0UA0EE3vbKomDERTO9GkasKYJJpUTRiIBqKBaEZvwkA0EA1EA9GkyKZqwkA01olmrCYMRAPRQDR9LkO+0QmiKbAJUyTRjNWEgWggGohm9CYMRAPRQDQQzZDsWE0YiMYC0eTYhIFoIJrKiCbHJgxEY4FocmzCZEs0OTZhIBqIpjKiybEJA9FANBANROPL5tiEgWhKIJoSmzAQDURjjGhKbMJANCUQTYlNmNGIpsQmDEQD0RgjmhKbMBANRAPR1Es0JTZhIJpciMZaEwaigWgKJBprTRiIJheisdaESUo01powEA1EUyDRWGvCQDQQDURjm2isNWEgmlURzWw2q4pZIBqIJkOiCVyGJpkFolkV0ejMMvel28mIRptl7ku3IRqIpjCimfNuaJpZIBqIBqIpm2ice5Z5ZonJupvVkMRu4JW4qXnrOWY++1+AAQBw9BJSCTeN9wAAAABJRU5ErkJggg==);overflow:hidden}.allstar10{background-position:0 0}.allstar9{background-position:0 -15px}.allstar8{background-position:0 -30px}.allstar7{background-position:0 -45px}.allstar6{background-position:0 -60px}.allstar5{background-position:0 -75px}.allstar4{background-position:0 -90px}.allstar3{background-position:0 -105px}.allstar2{background-position:0 -120px}.allstar1{background-position:0 -135px}.allstar0{background-position:0 -150px}.rating-average{color:#777;display:inline-block;font-size:13px;margin-left:10px}</style>
+<script>var ele,requestUrl,subjectId;function bindView(b,c){var a=document.querySelector(b);let d=a.outerHTML.replaceAll('&lt;','<').replaceAll("&gt;",'>');html=ejs.render(d,{model:c}),a.outerHTML=html,a=document.querySelector(b),a.style.display=''}ele=document.querySelector('.post-preview'),requestUrl=ele.getAttribute('data-url'),subjectId=ele.getAttribute('data-id'),document.addEventListener('DOMContentLoaded',b=>{var a=localStorage.getItem(subjectId);a==null||a=='undefined'?fetch(requestUrl).then(a=>a.json()).then(a=>{let b={title:a.data[0].name,link:'https://movie.douban.com/subject/'+a.doubanId,cover:a.data[0].poster,desc:a.data[0].description,star:Math.floor(parseFloat(a.doubanRating)),vote:a.doubanRating,genre:a.data[0].genre,date:a.dateReleased,director:a.director[0].data[0].name};localStorage.setItem(subjectId,JSON.stringify(b)),bindView('.post-preview',b)}):bindView('.post-preview',JSON.parse(a))})</script>
 <p>年少时未见长安，难以想象万国来朝的盛唐气象，心中最为仰慕的人物，是那个“好剑术、喜任侠“、二十五岁“仗剑去国、辞亲远游”的李白。人在年少轻狂的时候，容易因为一个人的豪迈不羁，而选择性地模糊一个时代的印象。于是，长安就蓦地变成了李太白大放异彩的舞台。印象里的长安，是一个可以让人吟咏“安能摧眉折腰事权贵，使我不得开心颜”的地方，是一个可以让“贵妃捧墨、力士脱靴”的地方，是一个“绣口一吐，就是半个盛唐”的地方。自此，喜欢上“大道如青天，我独不得出”，喜欢上“古来圣贤皆寂寞，唯有饮者留其名”，喜欢上“天生我才必有用，千金散尽还复来”，仿佛李白就是盛唐，而盛唐就是长安，若非如此，杨玉环便不会在极乐之宴上称赞李白的才华。</p>
 <p>可当历史脉络逐渐清晰起来的时候，我们突然发现，原本我们以为最为意气风发的李白，那一年(开元 18 年，即公元 730 年)李白已经 30 岁了，就在那一年李白谒见宰相张说及一干长安名流，均无结果，直到他结识贺知章并被对方称之为“谪仙”， 引出一段“金龟换酒”的传奇佳话。这位谪仙人曾两度离开长安，第一次是感慨“行路难，归去来”，那一年李白 38 岁；第二次是供奉翰林期间遭玄宗“贬谪”，那一年李白 43 岁。所以，年少时以为的李白，是否是真实的李白？年少时以为的长安，是否是真实的长安？李白生平豪放，有诗的地方必有酒、有剑，一首《侠客行》更是金庸武侠小说中接近玄学的存在，可李白生平最快乐的时候，或许只有白帝城两岸猿啼知道了。</p>
 <p>人们喜欢选择性地美化回忆，就像迪士尼重制的《狮子王》，我们曾以为木法沙和辛巴是正义的化身，而弑兄上位的刀疤则是邪恶的代表，其实用成人的眼光来看待这部电影，我们还真的找不出木法沙和辛巴的统治会比刀疤的统治好到哪里去的证据，这大概就是记忆本身的滤镜作用，长大了发现小时候常吃的熊毅武方便面，居然是陕西省出产的，而中萃方便面，则是江苏省出产的。当你未来的时光，有一小部分是和这两个地方有关，你不能不说，记忆真的是个奇妙的东西。《妖猫传》里绮丽璀璨的幻术表演，极力展现长安奢华的一面，虽然这一切都是活在两位主角的想象中，因为它想表达的是一种美的消逝和幻灭，此时的长安，其伟大和无与伦比体现在这三个符号上——空海代表的真理密法、李白代表的艺术创作、杨贵妃代表的绝对的美。</p>
@@ -335,80 +362,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E6%9E%B6%E6%9E%84/ class=font_size_2>
-架构
+<a href=/tags/%E4%BA%BA%E7%94%9F/ class=font_size_2>
+人生
 </a>
-<a href=/tags/%E5%93%B2%E5%AD%A6/ class=font_size_3>
-哲学
+<a href=/tags/trace/ class=font_size_1>
+Trace
 </a>
-<a href=/tags/referrer/ class=font_size_1>
-Referrer
+<a href=/tags/%E6%B6%88%E6%81%AF/ class=font_size_1>
+消息
 </a>
-<a href=/tags/%E5%8A%A8%E7%94%BB/ class=font_size_1>
-动画
+<a href=/tags/wechat/ class=font_size_1>
+Wechat
 </a>
-<a href=/tags/%E5%85%AC%E4%BC%97%E5%8F%B7/ class=font_size_1>
-公众号
+<a href=/tags/%E7%88%B1%E6%83%85/ class=font_size_2>
+爱情
 </a>
-<a href=/tags/aop/ class=font_size_6>
-AOP
+<a href=/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/ class=font_size_1>
+大数据
 </a>
-<a href=/tags/%E6%8F%90%E7%BA%B2/ class=font_size_1>
-提纲
+<a href=/tags/opencv/ class=font_size_3>
+OpenCV
 </a>
-<a href=/tags/%E6%8B%96%E6%8B%BD/ class=font_size_1>
-拖拽
+<a href=/tags/%E7%9F%A5%E8%AF%86%E5%85%B1%E4%BA%AB/ class=font_size_1>
+知识共享
 </a>
-<a href=/tags/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A0%91/ class=font_size_1>
-表达式树
+<a href=/tags/jetbrain/ class=font_size_1>
+JetBrain
 </a>
-<a href=/tags/tracing/ class=font_size_1>
-Tracing
+<a href=/tags/es6/ class=font_size_1>
+ES6
 </a>
-<a href=/tags/%E7%B1%B3%E8%8A%B1%E4%B9%8B%E5%91%B3/ class=font_size_1>
-米花之味
-</a>
-<a href=/tags/java/ class=font_size_1>
-Java
-</a>
-<a href=/tags/pl/sql/ class=font_size_1>
-PL/SQL
-</a>
-<a href=/tags/web/ class=font_size_4>
-Web
-</a>
-<a href=/tags/%E4%BB%99%E5%89%91%E5%A5%87%E4%BE%A0%E4%BC%A0/ class=font_size_1>
-仙剑奇侠传
-</a>
-<a href=/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/ class=font_size_1>
-响应式
-</a>
-<a href=/tags/%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/ class=font_size_1>
-动态加载
-</a>
-<a href=/tags/%E4%BA%8C%E7%BB%B4%E7%A0%81/ class=font_size_1>
-二维码
-</a>
-<a href=/tags/%E6%80%BB%E7%BB%93/ class=font_size_2>
-总结
-</a>
-<a href=/tags/%E6%AF%95%E4%B8%9A/ class=font_size_1>
-毕业
-</a>
-<a href=/tags/%E5%85%A8%E6%99%BA%E8%B4%A4/ class=font_size_1>
-全智贤
-</a>
-<a href=/tags/%E7%8A%B6%E6%80%81/ class=font_size_1>
-状态
+<a href=/tags/rabbitmq/ class=font_size_2>
+RabbitMQ
 </a>
 <a href=/tags/%E5%9B%9E%E5%AE%B6/ class=font_size_1>
 回家
 </a>
-<a href=/tags/echarts/ class=font_size_1>
-ECharts
+<a href=/tags/%E7%9B%91%E6%8E%A7/ class=font_size_2>
+监控
 </a>
-<a href=/tags/%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80/ class=font_size_1>
-脚本语言
+<a href=/tags/%E5%8A%A8%E7%94%BB/ class=font_size_1>
+动画
+</a>
+<a href=/tags/%E5%BC%80%E6%BA%90/ class=font_size_1>
+开源
+</a>
+<a href=/tags/%E5%88%86%E9%A1%B5/ class=font_size_1>
+分页
+</a>
+<a href=/tags/%E8%9B%8B%E7%82%92%E9%A5%AD/ class=font_size_1>
+蛋炒饭
+</a>
+<a href=/tags/jexus/ class=font_size_1>
+Jexus
+</a>
+<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
+技巧
+</a>
+<a href=/tags/ide/ class=font_size_1>
+IDE
+</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E7%BC%96%E6%8E%92/ class=font_size_1>
+服务编排
+</a>
+<a href=/tags/valine/ class=font_size_1>
+Valine
+</a>
+<a href=/tags/dottrace/ class=font_size_1>
+dotTrace
+</a>
+<a href=/tags/%E5%8E%86%E5%8F%B2/ class=font_size_3>
+历史
+</a>
+<a href=/tags/%E6%BA%90%E7%A0%81/ class=font_size_5>
+源码
 </a>
 <a href=/tags class=font_size_9999>
 更多

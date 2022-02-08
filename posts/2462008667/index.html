@@ -130,6 +130,33 @@ on-phone--column extended">
 <meting-js server=netease type=song id=569213279 autoplay theme=#2980b9 fixed=false mini=false loop=false>
 </meting-js>
 <p>最近看过了由全智贤主演的电影《暗杀》，虽然说这是一部我们早已熟稔的抗战题材电影，可是在全女神颜值和演技的诱惑下，我终于还是花了点时间来看这部电影。或许是因为我们见识过了太多的**“抗日神剧”**，所以在面对这样一部电影的时候，我们难免带着某种不屑的眼光去审视它。可是当你看完了这部电影，突然间兴奋到难以自制，不由地惊呼一声：想不到韩国拍这种主旋律电影都能这么好看。我想，这是一种由视角转换所引起的代入感，我曾经看过日本拍摄的甲午海战，日本在明治维新以后，积极地向西方学习先进技术，从天皇到官员，都能从俸禄中省出钱来发展海军事业，相比之下，以天朝上国自诩的大清帝国则是李鸿章一人在支撑着岌岌可危的朝廷。同样地，通过《浪客剑心》同名电影，你会意识到，在明治维新这场变革背后，可能会有无数个像志志雄这样的政治牺牲品。这些都是因为视角发生变化而引起的变化，同样地，在这部电影中，它讲述了韩、朝两国人记忆中的抗日战争，这场我们曾经经历过的抗日战争，在韩国人眼中到底是什么样子的，这或许对我们看待历史会有所启示。</p>
+<script src=https://cdn.jsdelivr.net/npm/ejs@3.1.6/ejs.min.js></script>
+<div class=post-preview data-url="https://movie.querydata.org/api?id=25823132" data-id=25823132 style=display:none>
+<div class=post-preview--meta>
+<div class=post-preview--middle>
+<h4 class=post-preview--title>
+<a target=_blank href="<%= model.link %>">
+&lt;%= model.title %>
+</a>
+</h4>
+<div class=rating>
+<div class="rating-star allstar<%= model.star %>"></div>
+<div class=rating-average>
+&lt;%= model.vote %>
+</div>
+</div>
+<time class=post-preview--date>
+&lt;%= model.director %>, &lt;%= model.genre %>, &lt;%= model.date %>
+</time>
+<section style=max-height:75px;overflow:hidden class=post-preview--excerpt>
+&lt;%= model.desc %>
+</section>
+</div>
+</div>
+<img class=post-preview--image src="<%= model.cover %>">
+</div>
+<style>.post-preview{max-width:100%;height:200px;margin:1em auto;position:relative;display:flex;background:#fff;border-radius:0;box-shadow:0 1px 2px rgba(0,0,0,.25),0 0 1px rgba(0,0,0,.25)}.post-preview--meta{width:85%;padding:25px;overflow:hidden}.post-preview--middle{line-height:28px}.post-preview--title{font-size:18px;margin:0!important}.post-preview--middle h4{padding-left:0!important;border-left:0!important}.post-preview--title a{text-decoration:none}.post-preview--date{font-size:14px;color:#999}.post-preview--excerpt{font-size:14px;line-height:1.825}.post-preview--excerpt p{margin-bottom:0}.post-preview--image{height:200px!important;width:auto;float:right;border-top-right-radius:2px!important;border-bottom-right-radius:2px!important;border-top-left-radius:0!important;border-bottom-left-radius:0!important}@media(max-width:550px){.post-preview{width:95%}.post-preview--excerpt{display:none}.post-preview--middle{line-height:28px}}.rating{display:block;line-height:15px}.rating-star{display:inline-block;width:75px;height:15px;background-repeat:no-repeat;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAAClCAYAAAAUAAAYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA5xJREFUeNrs3T9rFEEcxvG7qEQIglaCICKkin9AUEtBKxU7wS61VlYivgWj70TtNFj5BqzE7qxEWwsxKIoYn4UtluFmbm8nczvzm+/BjxyuDwNzu3uXD0+46f7LC5PA45Hm+WTYw1x2LRDc0jzTXB+wqMlsaLPutz8fDFjYZHYauAz3NBvt83XNnyUWNpn1nVm3OsHmsb3EomazzZnVXKMPNcc0xzUnNKc0Rzv/77fms+Z7O3vt9b1eU7bZrNN68l5zcolX4ofmsuZXTdnmMvyi2dR86Bmcac62P6vKrnVubpc0bxYE32nOab45N8YqsvPeDfcD4SOav4HjprPuu+H5BTt9LXDMfNbdLPfT678Fx6vKupt1o/O8+R3pkOaJ5/iktqx7z/qp+aq5q/nY+fczmheaK03Gs7D5rLtZdzSvA6/Ebc2u55j57HQB0TzW7AzkjiKzny6+2hlKNE8juMNcFqKBaIZndRlCNBBNgmx7ZkE0fbLtZkE0EA1EM17WuQwhGogGooFoss6296y52cNO+J6HLJoPaFdbsvA9zGerIxrPh85eWYgGooFoDiQbuAxp0UA0EVmdWbRo+ma1WbRoIBqIZtzsnHdDWjQQDUQD0WSbde5ZS2UhmtqJJtSEiVkXooFoIJre2VATJmZdiKZ2ogk1YSb8oVMvDeUPnSAaiCaPJkzMuhANRAPRQDQpsqEmTMy6EI11oolpwkA0EA1EcyDZmCYMRAPR+LMxTZjqiCamCQPRQDQQzehNGIgGooFoIJpVZ2OaMBBN7USTqgkD0UA0EE3vbKomDERTO9GkasKYJJpUTRiIBqKBaEZvwkA0EA1EA9GkyKZqwkA01olmrCYMRAPRQDR9LkO+0QmiKbAJUyTRjNWEgWggGohm9CYMRAPRQDQQzZDsWE0YiMYC0eTYhIFoIJrKiCbHJgxEY4FocmzCZEs0OTZhIBqIpjKiybEJA9FANBANROPL5tiEgWhKIJoSmzAQDURjjGhKbMJANCUQTYlNmNGIpsQmDEQD0RgjmhKbMBANRAPR1Es0JTZhIJpciMZaEwaigWgKJBprTRiIJheisdaESUo01powEA1EUyDRWGvCQDQQDURjm2isNWEgmlURzWw2q4pZIBqIJkOiCVyGJpkFolkV0ejMMvel28mIRptl7ku3IRqIpjCimfNuaJpZIBqIBqIpm2ice5Z5ZonJupvVkMRu4JW4qXnrOWY++1+AAQBw9BJSCTeN9wAAAABJRU5ErkJggg==);overflow:hidden}.allstar10{background-position:0 0}.allstar9{background-position:0 -15px}.allstar8{background-position:0 -30px}.allstar7{background-position:0 -45px}.allstar6{background-position:0 -60px}.allstar5{background-position:0 -75px}.allstar4{background-position:0 -90px}.allstar3{background-position:0 -105px}.allstar2{background-position:0 -120px}.allstar1{background-position:0 -135px}.allstar0{background-position:0 -150px}.rating-average{color:#777;display:inline-block;font-size:13px;margin-left:10px}</style>
+<script>var ele,requestUrl,subjectId;function bindView(b,c){var a=document.querySelector(b);let d=a.outerHTML.replaceAll('&lt;','<').replaceAll("&gt;",'>');html=ejs.render(d,{model:c}),a.outerHTML=html,a=document.querySelector(b),a.style.display=''}ele=document.querySelector('.post-preview'),requestUrl=ele.getAttribute('data-url'),subjectId=ele.getAttribute('data-id'),document.addEventListener('DOMContentLoaded',b=>{var a=localStorage.getItem(subjectId);a==null||a=='undefined'?fetch(requestUrl).then(a=>a.json()).then(a=>{let b={title:a.data[0].name,link:'https://movie.douban.com/subject/'+a.doubanId,cover:a.data[0].poster,desc:a.data[0].description,star:Math.floor(parseFloat(a.doubanRating)),vote:a.doubanRating,genre:a.data[0].genre,date:a.dateReleased,director:a.director[0].data[0].name};localStorage.setItem(subjectId,JSON.stringify(b)),bindView('.post-preview',b)}):bindView('.post-preview',JSON.parse(a))})</script>
 <h1 id=一明一灭两条暗杀线>一明一灭，两条暗杀线</h1>
 <p>电影讲述了 19 世纪 30 年代，以安沃允(<strong>全智贤</strong>饰)为首的暗杀三人组，奉命刺杀日军驻朝鲜司令官及本国卖国贼的故事。故事发生在京城(即韩国首尔)和上海，时任韩国临时政府局务局局长的廉锡镇(<strong>李政宰</strong>饰)，在早年刺杀日军大将失败以后，暗地里早已投靠日本人，此时更将暗杀三人组的消息泄露给日方。一时间，暗杀三人组的刺杀行动和处决叛徒廉锡镇刺杀行动，构成了一明一暗两条线索，呼应了本片片名**“暗杀”<strong>，而廉锡镇更是找来赏金猎人</strong>“夏威夷手枪"<strong>(<strong>河内宇</strong>饰)，意图阻挠暗杀三人组的刺杀行动，可以说，整个故事脉络就像这个刺杀行动一样简单直接，因此其故事悬念就落在了</strong>刺客的刺杀计划如何落实<strong>以及</strong>反派的阻挠方案将如何开展**。所以，这个电影吸引人的地方就在于，即使你知道反派最终一定没有好下场，可不到全女神放下枪的那一刻，你总是不肯放下心来。因为即使是看双方斗智斗勇，在颜值与演技都在线的情况下，这一切依然显得赏心悦目。全女神在片中几乎承担了所有的动作戏份，可即便如此，李政宰在片中饰演的反派廉锡镇，风头一度不亚于全女神，这些我们后面再详细说。</p>
 <p>电影中前期出现的场景都是在上海，可能有朋友会疑惑：为什么一部韩国拍的电影里会出现上海。这就要首先说说这段历史，当时韩国的临时政府是设在上海的，目的是方便金九、金元凤这样的革命志士开展救亡图存活动，因为当时的韩国(在南、北朝鲜没有分裂以前，指整个朝鲜半岛）早已笼罩在日军的军事统治阴影下。历史上，这段时期长达 35 年之久。日本是什么时候占领朝鲜的呢？没错，就是我们熟悉的中日甲午战争。当时北洋水师正是在运送陆军抵达朝鲜后的返航途中，与日本海军发生近代历史上第一次大规模铁甲舰海战。这场战争的结果我们都知道，北洋水师几乎全军覆没，清政府更是同日本签订了丧权辱国的马关条约。日本占领朝鲜半岛后，曾对当地人进行了惨无人道的屠杀，正是从那个时候起，朝鲜开始笼罩在日军的统治阴影之下，而流亡国外的临时政府，不得不寄居在上海的法租界，继续开展抗日活动。影片中的金九和金元凤，在历史上都可以找到记录。上海虹口爆炸事件，其实就是这部电影的历史原型，影片中二金的合作促成了三人暗杀组的成立，故事由此开始。</p>
@@ -361,80 +388,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/javascript/ class=font_size_1>
-JavaScript
+<a href=/tags/%E9%82%AA%E4%B8%8D%E5%8E%8B%E6%AD%A3/ class=font_size_1>
+邪不压正
 </a>
-<a href=/tags/%E9%9D%92%E6%98%A5/ class=font_size_1>
-青春
+<a href=/tags/%E8%AF%BB%E4%B9%A6/ class=font_size_5>
+读书
 </a>
-<a href=/tags/cors/ class=font_size_2>
-CORS
+<a href=/tags/cg/ class=font_size_1>
+CG
+</a>
+<a href=/tags/websocket/ class=font_size_3>
+WebSocket
 </a>
 <a href=/tags/elk/ class=font_size_1>
 ELK
 </a>
+<a href=/tags/dynamic-proxy/ class=font_size_1>
+Dynamic Proxy
+</a>
+<a href=/tags/%E5%90%8C%E6%AD%A5/ class=font_size_1>
+同步
+</a>
+<a href=/tags/%E6%88%90%E9%95%BF/ class=font_size_3>
+成长
+</a>
+<a href=/tags/dynamic/ class=font_size_1>
+Dynamic
+</a>
+<a href=/tags/%E5%AF%B9%E8%B1%A1%E6%B1%A0/ class=font_size_1>
+对象池
+</a>
+<a href=/tags/blazor/ class=font_size_1>
+Blazor
+</a>
+<a href=/tags/%E7%94%BB%E5%AE%B6/ class=font_size_1>
+画家
+</a>
+<a href=/tags/%E7%94%9F%E6%AD%BB/ class=font_size_1>
+生死
+</a>
+<a href=/tags/%E5%92%8C%E5%B9%B3/ class=font_size_1>
+和平
+</a>
+<a href=/tags/%E8%AE%AD%E7%BB%83/ class=font_size_1>
+训练
+</a>
+<a href=/tags/jetbrain/ class=font_size_1>
+JetBrain
+</a>
+<a href=/tags/%E4%BB%99%E5%89%91%E5%A5%87%E4%BE%A0%E4%BC%A0/ class=font_size_1>
+仙剑奇侠传
+</a>
+<a href=/tags/shader/ class=font_size_1>
+Shader
+</a>
+<a href=/tags/lua/ class=font_size_2>
+Lua
+</a>
+<a href=/tags/keycloak/ class=font_size_1>
+Keycloak
+</a>
+<a href=/tags/%E4%BA%91%E9%9F%B3%E4%B9%90/ class=font_size_1>
+云音乐
+</a>
 <a href=/tags/%E6%B8%B8%E6%88%8F/ class=font_size_13>
 游戏
 </a>
-<a href=/tags/%E7%89%88%E6%9D%83/ class=font_size_1>
-版权
+<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
+技巧
 </a>
-<a href=/tags/%E6%80%BB%E7%BB%93/ class=font_size_2>
-总结
+<a href=/tags/sklearn/ class=font_size_1>
+Sklearn
 </a>
-<a href=/tags/%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2/ class=font_size_1>
-数据交换
-</a>
-<a href=/tags/fp/ class=font_size_1>
-FP
-</a>
-<a href=/tags/%E5%85%A8%E6%99%BA%E8%B4%A4/ class=font_size_1>
-全智贤
-</a>
-<a href=/tags/script/ class=font_size_1>
-Script
-</a>
-<a href=/tags/%E6%9C%8D%E5%8A%A1/ class=font_size_1>
-服务
-</a>
-<a href=/tags/%E5%B7%A5%E5%85%B7/ class=font_size_2>
-工具
-</a>
-<a href=/tags/%E9%85%8D%E8%BD%BD/ class=font_size_1>
-配载
-</a>
-<a href=/tags/mecanim/ class=font_size_1>
-Mecanim
-</a>
-<a href=/tags/dapper/ class=font_size_3>
-Dapper
-</a>
-<a href=/tags/ugui/ class=font_size_5>
-uGUI
-</a>
-<a href=/tags/valine/ class=font_size_1>
-Valine
-</a>
-<a href=/tags/%E9%95%BF%E6%88%AA%E5%9B%BE/ class=font_size_1>
-长截图
-</a>
-<a href=/tags/%E9%82%AA%E4%B8%8D%E5%8E%8B%E6%AD%A3/ class=font_size_1>
-邪不压正
-</a>
-<a href=/tags/%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/ class=font_size_1>
-文本分类
-</a>
-<a href=/tags/2014/ class=font_size_1>
-2014
-</a>
-<a href=/tags/%E5%88%86%E5%B8%83%E5%BC%8F/ class=font_size_2>
-分布式
-</a>
-<a href=/tags/opencv/ class=font_size_3>
-OpenCV
-</a>
-<a href=/tags/%E8%AE%BF%E9%97%AE%E9%87%8F/ class=font_size_1>
-访问量
+<a href=/tags/docker/ class=font_size_4>
+Docker
 </a>
 <a href=/tags class=font_size_9999>
 更多

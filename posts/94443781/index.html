@@ -117,7 +117,7 @@ on-phone--column extended">
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <time class=article-time--reading>
-阅读时长: 9 分钟
+阅读时长: 10 分钟
 </time>
 </div>
 </footer>
@@ -130,6 +130,33 @@ on-phone--column extended">
 <meting-js server=netease type=song id=432821964 autoplay theme=#2980b9 fixed=false mini=false loop=false>
 </meting-js>
 <p>最近一直在看 <a class=link href=https://movie.douban.com/subject/26816519/ target=_blank rel=noopener>《逃避虽可耻但有用》(逃げるは恥だが役に立つ)</a> 这部日剧，当我们感慨各种脑洞都满足不了人类的好奇心时，日剧依然在老老实实地讲述着故事，即使这个故事离普通人依旧很遥远。可我认为，这是一部以轻喜剧为载体的温情剧，不管你是单身、恋爱中还是已婚，你都能从这部剧中找到自己对应的部分。所以，对于这部日剧而言，我个人是推荐大家去看一看的。原谅我不肯用我贫乏的语言去评价这部电视剧，因为我相信“此中不足为外人道也”。所谓“如人饮水，冷暖自知”，感情这件事情，懂的人自然会懂，不懂的人假装懂。</p>
+<script src=https://cdn.jsdelivr.net/npm/ejs@3.1.6/ejs.min.js></script>
+<div class=post-preview data-url="https://movie.querydata.org/api?id=26816519" data-id=26816519 style=display:none>
+<div class=post-preview--meta>
+<div class=post-preview--middle>
+<h4 class=post-preview--title>
+<a target=_blank href="<%= model.link %>">
+&lt;%= model.title %>
+</a>
+</h4>
+<div class=rating>
+<div class="rating-star allstar<%= model.star %>"></div>
+<div class=rating-average>
+&lt;%= model.vote %>
+</div>
+</div>
+<time class=post-preview--date>
+&lt;%= model.director %>, &lt;%= model.genre %>, &lt;%= model.date %>
+</time>
+<section style=max-height:75px;overflow:hidden class=post-preview--excerpt>
+&lt;%= model.desc %>
+</section>
+</div>
+</div>
+<img class=post-preview--image src="<%= model.cover %>">
+</div>
+<style>.post-preview{max-width:100%;height:200px;margin:1em auto;position:relative;display:flex;background:#fff;border-radius:0;box-shadow:0 1px 2px rgba(0,0,0,.25),0 0 1px rgba(0,0,0,.25)}.post-preview--meta{width:85%;padding:25px;overflow:hidden}.post-preview--middle{line-height:28px}.post-preview--title{font-size:18px;margin:0!important}.post-preview--middle h4{padding-left:0!important;border-left:0!important}.post-preview--title a{text-decoration:none}.post-preview--date{font-size:14px;color:#999}.post-preview--excerpt{font-size:14px;line-height:1.825}.post-preview--excerpt p{margin-bottom:0}.post-preview--image{height:200px!important;width:auto;float:right;border-top-right-radius:2px!important;border-bottom-right-radius:2px!important;border-top-left-radius:0!important;border-bottom-left-radius:0!important}@media(max-width:550px){.post-preview{width:95%}.post-preview--excerpt{display:none}.post-preview--middle{line-height:28px}}.rating{display:block;line-height:15px}.rating-star{display:inline-block;width:75px;height:15px;background-repeat:no-repeat;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAAClCAYAAAAUAAAYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA5xJREFUeNrs3T9rFEEcxvG7qEQIglaCICKkin9AUEtBKxU7wS61VlYivgWj70TtNFj5BqzE7qxEWwsxKIoYn4UtluFmbm8nczvzm+/BjxyuDwNzu3uXD0+46f7LC5PA45Hm+WTYw1x2LRDc0jzTXB+wqMlsaLPutz8fDFjYZHYauAz3NBvt83XNnyUWNpn1nVm3OsHmsb3EomazzZnVXKMPNcc0xzUnNKc0Rzv/77fms+Z7O3vt9b1eU7bZrNN68l5zcolX4ofmsuZXTdnmMvyi2dR86Bmcac62P6vKrnVubpc0bxYE32nOab45N8YqsvPeDfcD4SOav4HjprPuu+H5BTt9LXDMfNbdLPfT678Fx6vKupt1o/O8+R3pkOaJ5/iktqx7z/qp+aq5q/nY+fczmheaK03Gs7D5rLtZdzSvA6/Ebc2u55j57HQB0TzW7AzkjiKzny6+2hlKNE8juMNcFqKBaIZndRlCNBBNgmx7ZkE0fbLtZkE0EA1EM17WuQwhGogGooFoss6296y52cNO+J6HLJoPaFdbsvA9zGerIxrPh85eWYgGooFoDiQbuAxp0UA0EVmdWbRo+ma1WbRoIBqIZtzsnHdDWjQQDUQD0WSbde5ZS2UhmtqJJtSEiVkXooFoIJre2VATJmZdiKZ2ogk1YSb8oVMvDeUPnSAaiCaPJkzMuhANRAPRQDQpsqEmTMy6EI11oolpwkA0EA1EcyDZmCYMRAPR+LMxTZjqiCamCQPRQDQQzehNGIgGooFoIJpVZ2OaMBBN7USTqgkD0UA0EE3vbKomDERTO9GkasKYJJpUTRiIBqKBaEZvwkA0EA1EA9GkyKZqwkA01olmrCYMRAPRQDR9LkO+0QmiKbAJUyTRjNWEgWggGohm9CYMRAPRQDQQzZDsWE0YiMYC0eTYhIFoIJrKiCbHJgxEY4FocmzCZEs0OTZhIBqIpjKiybEJA9FANBANROPL5tiEgWhKIJoSmzAQDURjjGhKbMJANCUQTYlNmNGIpsQmDEQD0RgjmhKbMBANRAPR1Es0JTZhIJpciMZaEwaigWgKJBprTRiIJheisdaESUo01powEA1EUyDRWGvCQDQQDURjm2isNWEgmlURzWw2q4pZIBqIJkOiCVyGJpkFolkV0ejMMvel28mIRptl7ku3IRqIpjCimfNuaJpZIBqIBqIpm2ice5Z5ZonJupvVkMRu4JW4qXnrOWY++1+AAQBw9BJSCTeN9wAAAABJRU5ErkJggg==);overflow:hidden}.allstar10{background-position:0 0}.allstar9{background-position:0 -15px}.allstar8{background-position:0 -30px}.allstar7{background-position:0 -45px}.allstar6{background-position:0 -60px}.allstar5{background-position:0 -75px}.allstar4{background-position:0 -90px}.allstar3{background-position:0 -105px}.allstar2{background-position:0 -120px}.allstar1{background-position:0 -135px}.allstar0{background-position:0 -150px}.rating-average{color:#777;display:inline-block;font-size:13px;margin-left:10px}</style>
+<script>var ele,requestUrl,subjectId;function bindView(b,c){var a=document.querySelector(b);let d=a.outerHTML.replaceAll('&lt;','<').replaceAll("&gt;",'>');html=ejs.render(d,{model:c}),a.outerHTML=html,a=document.querySelector(b),a.style.display=''}ele=document.querySelector('.post-preview'),requestUrl=ele.getAttribute('data-url'),subjectId=ele.getAttribute('data-id'),document.addEventListener('DOMContentLoaded',b=>{var a=localStorage.getItem(subjectId);a==null||a=='undefined'?fetch(requestUrl).then(a=>a.json()).then(a=>{let b={title:a.data[0].name,link:'https://movie.douban.com/subject/'+a.doubanId,cover:a.data[0].poster,desc:a.data[0].description,star:Math.floor(parseFloat(a.doubanRating)),vote:a.doubanRating,genre:a.data[0].genre,date:a.dateReleased,director:a.director[0].data[0].name};localStorage.setItem(subjectId,JSON.stringify(b)),bindView('.post-preview',b)}):bindView('.post-preview',JSON.parse(a))})</script>
 <p>剧中男主津崎平匡是一个“典型”的程序员，因为外表无攻击性，一脸的人畜无害，而被女主森山实栗称为“草食系”男人。男主的长相在主流审美中或许谈不上帅，因为这个世界更欣赏的，是风见君这样帅气的男人。程序员群体木讷而内向的性格，其实都是大众给贴上去的标签。人们不喜欢被贴上各种标签，可人们喜欢给别人贴各种标签，因为这样子区分不同的人最省事儿。我们无法指责这个世界用五官和三观来割裂地看待一个人，我们唯一能做的，就是去改变留在人们心中的刻板印象。剧中男主在很多方面是比我们优秀的，向他学习不能保证我们会娶到 Gakki，可能让我们变得更优秀。</p>
 <p>好了，下面就由我带大家一起来盘点男主在剧中的穿搭，所以，这是一篇总结向的草食系程序员穿搭指南。考虑到这部剧中室内场景比室外场景更多，季节主要集中在秋冬季，所以，我们将从环境、季节、种类等多个维度，对男主在剧中的穿搭进行盘点。活在一个看脸的时代最大的悲哀就是，那些长得比你好看，明明可以靠颜值，非要靠才华的人，永远都比你更努力。虽然津崎先生经常被人说“低情商”和“屌丝”，可我相信他比我们大多数“屌丝”要优秀得多。当然，这些优点需要大家在剧中去发掘。我只是希望，通过这种方式来提升自我。面对来自这个世界的恶意，争辩是没有意义的，你只能努力去纠正这种偏见。</p>
 <h1 id=室内篇>室内篇</h1>
@@ -541,80 +568,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/dottrace/ class=font_size_1>
-dotTrace
+<a href=/tags/mock/ class=font_size_1>
+Mock
 </a>
-<a href=/tags/nginx/ class=font_size_1>
-Nginx
+<a href=/tags/%E5%8D%95%E4%BD%8D/ class=font_size_1>
+单位
 </a>
-<a href=/tags/jetbrain/ class=font_size_1>
-JetBrain
+<a href=/tags/%E6%96%87%E4%BB%B6/ class=font_size_1>
+文件
 </a>
-<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
-脚本
+<a href=/tags/%E6%AF%95%E4%B8%9A%E5%AD%A3/ class=font_size_1>
+毕业季
 </a>
-<a href=/tags/%E5%89%8D%E4%BB%BB/ class=font_size_1>
-前任
+<a href=/tags/%E5%A7%94%E6%89%98/ class=font_size_1>
+委托
 </a>
-<a href=/tags/ide/ class=font_size_1>
-IDE
+<a href=/tags/linq/ class=font_size_1>
+Linq
 </a>
-<a href=/tags/%E8%BF%81%E7%A7%BB/ class=font_size_1>
-迁移
+<a href=/tags/%E7%AB%A5%E8%AF%9D/ class=font_size_1>
+童话
 </a>
-<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
-异步
+<a href=/tags/%E5%B9%B6%E5%8F%91/ class=font_size_1>
+并发
 </a>
-<a href=/tags/%E5%8A%A8%E7%94%BB/ class=font_size_1>
-动画
+<a href=/tags/%E6%A6%82%E7%8E%87/ class=font_size_2>
+概率
 </a>
-<a href=/tags/%E7%94%B5%E5%BD%B1/ class=font_size_12>
-电影
+<a href=/tags/jsdelivr/ class=font_size_1>
+jsDelivr
 </a>
-<a href=/tags/unity/ class=font_size_1>
-Unity
+<a href=/tags/castle/ class=font_size_1>
+Castle
 </a>
-<a href=/tags/vue/ class=font_size_3>
-Vue
+<a href=/tags/sonar/ class=font_size_1>
+Sonar
 </a>
-<a href=/tags/%E7%8E%B0%E5%AE%9E/ class=font_size_1>
-现实
+<a href=/tags/%E9%9A%8F%E7%AC%94/ class=font_size_9>
+随笔
 </a>
-<a href=/tags/%E9%85%8D%E7%BD%AE/ class=font_size_1>
-配置
-</a>
-<a href=/tags/%E7%94%9F%E6%B4%BB/ class=font_size_7>
-生活
+<a href=/tags/%E9%98%BF%E9%87%8C/ class=font_size_1>
+阿里
 </a>
 <a href=/tags/%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/ class=font_size_1>
 动态加载
 </a>
-<a href=/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/ class=font_size_3>
-中间件
+<a href=/tags/%E6%8A%80%E5%B7%A7/ class=font_size_7>
+技巧
 </a>
-<a href=/tags/%E6%8E%A8%E8%8D%90/ class=font_size_1>
-推荐
+<a href=/tags/%E6%80%9D%E7%BB%B4/ class=font_size_1>
+思维
 </a>
-<a href=/tags/%E4%BD%90%E8%97%A4%E5%81%A5/ class=font_size_1>
-佐藤健
+<a href=/tags/%E5%9B%BE%E5%BD%A2/ class=font_size_3>
+图形
 </a>
-<a href=/tags/windows/ class=font_size_1>
-Windows
+<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
+网易
 </a>
-<a href=/tags/socket/ class=font_size_2>
-Socket
+<a href=/tags/mono/ class=font_size_4>
+Mono
 </a>
-<a href=/tags/protobuf/ class=font_size_1>
-Protobuf
+<a href=/tags/%E5%88%86%E5%B8%83%E5%BC%8F/ class=font_size_2>
+分布式
 </a>
-<a href=/tags/%E6%97%B6%E9%97%B4/ class=font_size_3>
-时间
+<a href=/tags/any/ class=font_size_1>
+Any
 </a>
-<a href=/tags/grpc/ class=font_size_8>
-gRPC
+<a href=/tags/%E6%A2%A6%E6%83%B3/ class=font_size_3>
+梦想
 </a>
-<a href=/tags/travis/ class=font_size_3>
-Travis
+<a href=/tags/%E8%84%9A%E6%9C%AC/ class=font_size_1>
+脚本
+</a>
+<a href=/tags/prometheus/ class=font_size_1>
+Prometheus
 </a>
 <a href=/tags class=font_size_9999>
 更多

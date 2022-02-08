@@ -117,13 +117,40 @@ on-phone--column extended">
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <time class=article-time--reading>
-阅读时长: 8 分钟
+阅读时长: 9 分钟
 </time>
 </div>
 </footer>
 </div>
 </header>
 <section class=article-content>
+<script src=https://cdn.jsdelivr.net/npm/ejs@3.1.6/ejs.min.js></script>
+<div class=post-preview data-url="https://movie.querydata.org/api?id=26366496" data-id=26366496 style=display:none>
+<div class=post-preview--meta>
+<div class=post-preview--middle>
+<h4 class=post-preview--title>
+<a target=_blank href="<%= model.link %>">
+&lt;%= model.title %>
+</a>
+</h4>
+<div class=rating>
+<div class="rating-star allstar<%= model.star %>"></div>
+<div class=rating-average>
+&lt;%= model.vote %>
+</div>
+</div>
+<time class=post-preview--date>
+&lt;%= model.director %>, &lt;%= model.genre %>, &lt;%= model.date %>
+</time>
+<section style=max-height:75px;overflow:hidden class=post-preview--excerpt>
+&lt;%= model.desc %>
+</section>
+</div>
+</div>
+<img class=post-preview--image src="<%= model.cover %>">
+</div>
+<style>.post-preview{max-width:100%;height:200px;margin:1em auto;position:relative;display:flex;background:#fff;border-radius:0;box-shadow:0 1px 2px rgba(0,0,0,.25),0 0 1px rgba(0,0,0,.25)}.post-preview--meta{width:85%;padding:25px;overflow:hidden}.post-preview--middle{line-height:28px}.post-preview--title{font-size:18px;margin:0!important}.post-preview--middle h4{padding-left:0!important;border-left:0!important}.post-preview--title a{text-decoration:none}.post-preview--date{font-size:14px;color:#999}.post-preview--excerpt{font-size:14px;line-height:1.825}.post-preview--excerpt p{margin-bottom:0}.post-preview--image{height:200px!important;width:auto;float:right;border-top-right-radius:2px!important;border-bottom-right-radius:2px!important;border-top-left-radius:0!important;border-bottom-left-radius:0!important}@media(max-width:550px){.post-preview{width:95%}.post-preview--excerpt{display:none}.post-preview--middle{line-height:28px}}.rating{display:block;line-height:15px}.rating-star{display:inline-block;width:75px;height:15px;background-repeat:no-repeat;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAAClCAYAAAAUAAAYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA5xJREFUeNrs3T9rFEEcxvG7qEQIglaCICKkin9AUEtBKxU7wS61VlYivgWj70TtNFj5BqzE7qxEWwsxKIoYn4UtluFmbm8nczvzm+/BjxyuDwNzu3uXD0+46f7LC5PA45Hm+WTYw1x2LRDc0jzTXB+wqMlsaLPutz8fDFjYZHYauAz3NBvt83XNnyUWNpn1nVm3OsHmsb3EomazzZnVXKMPNcc0xzUnNKc0Rzv/77fms+Z7O3vt9b1eU7bZrNN68l5zcolX4ofmsuZXTdnmMvyi2dR86Bmcac62P6vKrnVubpc0bxYE32nOab45N8YqsvPeDfcD4SOav4HjprPuu+H5BTt9LXDMfNbdLPfT678Fx6vKupt1o/O8+R3pkOaJ5/iktqx7z/qp+aq5q/nY+fczmheaK03Gs7D5rLtZdzSvA6/Ebc2u55j57HQB0TzW7AzkjiKzny6+2hlKNE8juMNcFqKBaIZndRlCNBBNgmx7ZkE0fbLtZkE0EA1EM17WuQwhGogGooFoss6296y52cNO+J6HLJoPaFdbsvA9zGerIxrPh85eWYgGooFoDiQbuAxp0UA0EVmdWbRo+ma1WbRoIBqIZtzsnHdDWjQQDUQD0WSbde5ZS2UhmtqJJtSEiVkXooFoIJre2VATJmZdiKZ2ogk1YSb8oVMvDeUPnSAaiCaPJkzMuhANRAPRQDQpsqEmTMy6EI11oolpwkA0EA1EcyDZmCYMRAPR+LMxTZjqiCamCQPRQDQQzehNGIgGooFoIJpVZ2OaMBBN7USTqgkD0UA0EE3vbKomDERTO9GkasKYJJpUTRiIBqKBaEZvwkA0EA1EA9GkyKZqwkA01olmrCYMRAPRQDR9LkO+0QmiKbAJUyTRjNWEgWggGohm9CYMRAPRQDQQzZDsWE0YiMYC0eTYhIFoIJrKiCbHJgxEY4FocmzCZEs0OTZhIBqIpjKiybEJA9FANBANROPL5tiEgWhKIJoSmzAQDURjjGhKbMJANCUQTYlNmNGIpsQmDEQD0RgjmhKbMBANRAPR1Es0JTZhIJpciMZaEwaigWgKJBprTRiIJheisdaESUo01powEA1EUyDRWGvCQDQQDURjm2isNWEgmlURzWw2q4pZIBqIJkOiCVyGJpkFolkV0ejMMvel28mIRptl7ku3IRqIpjCimfNuaJpZIBqIBqIpm2ice5Z5ZonJupvVkMRu4JW4qXnrOWY++1+AAQBw9BJSCTeN9wAAAABJRU5ErkJggg==);overflow:hidden}.allstar10{background-position:0 0}.allstar9{background-position:0 -15px}.allstar8{background-position:0 -30px}.allstar7{background-position:0 -45px}.allstar6{background-position:0 -60px}.allstar5{background-position:0 -75px}.allstar4{background-position:0 -90px}.allstar3{background-position:0 -105px}.allstar2{background-position:0 -120px}.allstar1{background-position:0 -135px}.allstar0{background-position:0 -150px}.rating-average{color:#777;display:inline-block;font-size:13px;margin-left:10px}</style>
+<script>var ele,requestUrl,subjectId;function bindView(b,c){var a=document.querySelector(b);let d=a.outerHTML.replaceAll('&lt;','<').replaceAll("&gt;",'>');html=ejs.render(d,{model:c}),a.outerHTML=html,a=document.querySelector(b),a.style.display=''}ele=document.querySelector('.post-preview'),requestUrl=ele.getAttribute('data-url'),subjectId=ele.getAttribute('data-id'),document.addEventListener('DOMContentLoaded',b=>{var a=localStorage.getItem(subjectId);a==null||a=='undefined'?fetch(requestUrl).then(a=>a.json()).then(a=>{let b={title:a.data[0].name,link:'https://movie.douban.com/subject/'+a.doubanId,cover:a.data[0].poster,desc:a.data[0].description,star:Math.floor(parseFloat(a.doubanRating)),vote:a.doubanRating,genre:a.data[0].genre,date:a.dateReleased,director:a.director[0].data[0].name};localStorage.setItem(subjectId,JSON.stringify(b)),bindView('.post-preview',b)}):bindView('.post-preview',JSON.parse(a))})</script>
 <p>一直想约朋友去看场电影，可是要找一部两个人都喜欢看的电影，当真是一件非常困难的事情。直到遇上了姜文的新片《邪不压正》，愿望终于在这个周末达成。说到姜文的电影，总是不可避免地提到“政治隐喻”这个词汇，所以，对这部电影而言，导演自成一体的独特风格，让其在与普通商业片拉开差距的同时，更将观众推向了一个略显尴尬的境地，以至于散场时朋友的第一反应是：好像完全没有看懂。</p>
 <p>电影一开始，茫茫雪地里闪现出两个模糊的背影，向着雪地深处无限地延伸。而此时此刻，在火红的灯笼的映衬下，屋内一众人正忙着为师父庆贺寿辰，两位不速之客的到访，让一切瞬间化为烈焰中的修罗场。可以说，开篇这一场极具暴力美学的戏份，的确是可以吸引人眼球的戏份。姜文电影里有一种与生俱来的英雄主义，所谓的硬汉精神，于是你看到了身负东西方文化的李天然，是握着一把武士刀参与刺杀任务，而信奉武士道精神的根本一郎，果真是单刀赴会，说让三刀就是三刀。可这位武术名家，甚至连出手的机会都没有，就被手枪击中了头颅，武术在坚船利炮前又算得了什么呢？</p>
 <p>不知道大家有没有注意到这样一个细节，朱潜龙和根本一郎闯到师父家里时，师父说了句：没听到狗叫，这是否是因为，在向师父祝寿时，跪拜的声音掩盖了炸弹的声音。联想到《让子弹飞》里，张牧之到鹅城上任，对老百姓说，“不许跪，皇帝都没有了，没有人值得你们跪……”。同样地，朱潜龙在师父面前，一样跪得可谓是以头抢地，可下一秒子弹就在师父脑袋上留下弹孔……其实，人蠢一点没有关系，毕竟都跪了几千年，可偏偏人还有点儿坏。师父问朱潜龙为什么日本人不在日本种植鸦片，朱潜龙说日本是文明的国家。</p>
@@ -368,80 +395,80 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <section class="widget tagCloud">
 <h2 class="widget-title section-title">标签云</h2>
 <div class=tagCloud-tags>
-<a href=/tags/%E7%BD%91%E6%98%93/ class=font_size_1>
-网易
-</a>
-<a href=/tags/jaeger/ class=font_size_1>
-Jaeger
-</a>
-<a href=/tags/%E5%8A%A0%E5%AF%86/ class=font_size_2>
-加密
-</a>
-<a href=/tags/mysql/ class=font_size_2>
-MySQL
-</a>
-<a href=/tags/%E9%98%BF%E9%87%8C/ class=font_size_1>
-阿里
-</a>
-<a href=/tags/echarts/ class=font_size_1>
-ECharts
-</a>
-<a href=/tags/%E5%8D%95%E6%9C%BA%E6%B8%B8%E6%88%8F/ class=font_size_1>
-单机游戏
-</a>
-<a href=/tags/json/ class=font_size_1>
-JSON
-</a>
-<a href=/tags/%E7%94%9F%E6%B4%BB/ class=font_size_7>
-生活
-</a>
-<a href=/tags/%E8%A3%85%E9%A5%B0%E5%99%A8/ class=font_size_1>
-装饰器
-</a>
-<a href=/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/ class=font_size_8>
-数据库
-</a>
-<a href=/tags/http/ class=font_size_9>
-HTTP
-</a>
-<a href=/tags/%E6%9C%8D%E5%8A%A1%E7%BC%96%E6%8E%92/ class=font_size_1>
-服务编排
-</a>
-<a href=/tags/unity3d/ class=font_size_27>
-Unity3D
-</a>
-<a href=/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/ class=font_size_6>
-服务器
-</a>
-<a href=/tags/%E6%83%85%E6%84%9F/ class=font_size_1>
-情感
-</a>
-<a href=/tags/%E5%A4%95%E9%9B%BE%E8%8A%B1%E5%9B%AD/ class=font_size_1>
-夕雾花园
-</a>
-<a href=/tags/pwa/ class=font_size_1>
-PWA
-</a>
-<a href=/tags/%E9%99%90%E6%B5%81/ class=font_size_1>
-限流
-</a>
-<a href=/tags/sourcetree/ class=font_size_1>
-SourceTree
-</a>
-<a href=/tags/%E4%BB%B7%E5%80%BC/ class=font_size_1>
-价值
-</a>
-<a href=/tags/%E8%AE%BE%E8%AE%A1/ class=font_size_2>
-设计
-</a>
 <a href=/tags/rpg/ class=font_size_1>
 RPG
 </a>
-<a href=/tags/jexus/ class=font_size_1>
-Jexus
+<a href=/tags/%E6%8A%80%E6%9C%AF/ class=font_size_2>
+技术
 </a>
-<a href=/tags/httpclient/ class=font_size_2>
-HttpClient
+<a href=/tags/any/ class=font_size_1>
+Any
+</a>
+<a href=/tags/%E5%BC%82%E6%AD%A5/ class=font_size_2>
+异步
+</a>
+<a href=/tags/excel/ class=font_size_1>
+Excel
+</a>
+<a href=/tags/%E5%8F%8D%E7%BC%96%E8%AF%91/ class=font_size_1>
+反编译
+</a>
+<a href=/tags/%E5%BB%BA%E7%AD%91/ class=font_size_1>
+建筑
+</a>
+<a href=/tags/%E5%93%B2%E5%AD%A6/ class=font_size_3>
+哲学
+</a>
+<a href=/tags/%E7%8A%B6%E6%80%81/ class=font_size_1>
+状态
+</a>
+<a href=/tags/nlp/ class=font_size_2>
+NLP
+</a>
+<a href=/tags/%E6%88%91%E6%98%AF%E7%8C%AB/ class=font_size_1>
+我是猫
+</a>
+<a href=/tags/%E6%B1%82%E8%81%8C/ class=font_size_3>
+求职
+</a>
+<a href=/tags/%E5%9B%9E%E5%AE%B6/ class=font_size_1>
+回家
+</a>
+<a href=/tags/%E6%84%9F%E6%82%9F/ class=font_size_14>
+感悟
+</a>
+<a href=/tags/%E5%91%BD%E4%BB%A4/ class=font_size_1>
+命令
+</a>
+<a href=/tags/%E5%BC%80%E6%BA%90/ class=font_size_1>
+开源
+</a>
+<a href=/tags/ide/ class=font_size_1>
+IDE
+</a>
+<a href=/tags/vscode/ class=font_size_2>
+VSCode
+</a>
+<a href=/tags/%E5%92%8C%E5%B9%B3/ class=font_size_1>
+和平
+</a>
+<a href=/tags/%E7%AE%97%E6%B3%95/ class=font_size_2>
+算法
+</a>
+<a href=/tags/dynamic-proxy/ class=font_size_1>
+Dynamic Proxy
+</a>
+<a href=/tags/%E6%9E%B6%E6%9E%84/ class=font_size_2>
+架构
+</a>
+<a href=/tags/jwt/ class=font_size_1>
+JWT
+</a>
+<a href=/tags/github/ class=font_size_2>
+Github
+</a>
+<a href=/tags/prometheus/ class=font_size_1>
+Prometheus
 </a>
 <a href=/tags class=font_size_9999>
 更多

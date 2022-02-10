@@ -67,3 +67,19 @@ jobs:
           git commit -m "${{ github.event.head_commit.message }}"
           git tag latest
           git push --tags --force --quiet "https://${{ secrets.CI_TOKEN }}@$GH_REPO" master:master
+
+  audit_static_pages:
+    name: Audit Static Pages
+    needs: deploy_static_pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lighthouse for blog.yuanpei.me
+        uses: jakejarvis/lighthouse-action@master
+        with:
+          url: "https://blog.yuanpei.me"
+
+      - name: Upload Report for blog.yuanpei.me
+        uses: actions/upload-artifact@master
+        with:
+          name: blog.yuanpei.me_report
+          path: "./report"

@@ -33,10 +33,10 @@
             <span>{{ T "article.back" }}</span>
         </a>
     </div>
-    {{ partial "sidebar/left.html" . }}
+    {{ partialCached "sidebar/left.html" . }}
 {{ end }}
 
 {{ define "right-sidebar" }}
-    {{ partial "sidebar/right.html" . }}
+    {{ partialCached "sidebar/right.html" . }}
 {{ end }}
 

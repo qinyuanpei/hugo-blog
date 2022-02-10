@@ -259,13 +259,13 @@ menu:
             icon: brand-zhihu
         - identifier: douban
           name: Douban
-          url: https://www.zhihu.com/people/qinyuanpei
+          url: https://www.douban.com/people/60029335
           weight: 30
           params:
             icon: brand-douban
         - identifier: weibo
           name: Weibo
-          url: https://www.zhihu.com/people/qinyuanpei
+          url: https://weibo.com/1278609231/profile
           weight: 40
           params:
             icon: brand-weibo

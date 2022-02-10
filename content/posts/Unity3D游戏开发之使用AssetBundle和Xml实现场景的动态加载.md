@@ -3,11 +3,7 @@ abbrlink: 1467630055
 categories:
 - 游戏开发
 date: 2015-06-15 07:24:17
-description: 可是因为这种打包方式仅仅是保证了场景中的 GameObject 与本地资源的引用关系而非是将本地资源打包，因此从减少游戏容量的角度来说并不是十分实用，而且当我们使用
-  WWW 下载完 AssetBundle 后，需要使用 Application.Load()方法来加载场景，我们知道在 Unity3D 中加载一个关卡(场景)是需要在
-  BuildSetting 中注册关卡的，因此在使用这种方式动态加载的时候请注意到这一点;这种思路是考虑到需要在一个场景中动态替换 GameObject 或者是动态生成
-  GameObject 的情形，使用这种方法首先要满足一个条件，即：场景内所有的物体都是预制件(Prefab);既然今天的题目已然告诉大家是使用 AssetBundle
-  和 Xml 文件实现场景的动态加载，我相信大家已经明白我要使用那种方式了
+description: ''
 slug: 1467630055
 tags:
 - Unity3D

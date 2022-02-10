@@ -3,12 +3,7 @@ abbrlink: 1320325685
 categories:
 - Unity3D
 date: 2015-07-02 09:35:42
-description: 'Unity3D 的[Asset Server](http://unity3d.com/unity/team/assetserver/)是一个
-  Unity3D 内部集成的版本控制软件，它和我们熟知的 SVN 类似，适合在小团队内进行版本控制，这是一个收费软件，尽管在某些方面它甚至比 SVN 还要方便，不过在实际的项目中使用这个的还是比较少的，所以如果大家对这个感兴趣，可以从这里了解它的具体情况，这里我们不打算介绍这个软件的使用;因此为了方便版本控制软件对文件进行比对，常常需要项目变动的这些因素转化为文本形式，如果熟悉
-  Github 的朋友应该知道，Github 中判断两个文件的差异就是根据文本(代码)来比较的，因此在 Unity3D 中使用版本控制同样需要遵循这个原则，好在
-  Unity3D 在管理 Unity3D 项目时已经考虑到了这一点，通常在对 Unity3D 项目进行版本控制的时候，我们需要做这样的事情：;使用 Github
-  进行版本控制时可以在 Git 仓库中添加一个.gitignore 文件来对项目中需要同步的文件进行过滤，在文章开始我们已经知道 Unity3D 项目的版本控制主要针对
-  Assets 和 ProjectSetting 这两个文件，因此.gitignore 的内容可以这样填写:'
+description: ''
 slug: 1320325685
 tags:
 - 版本控制

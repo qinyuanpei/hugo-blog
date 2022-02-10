@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches:    
+    branches:
       - blog
 
 jobs:
@@ -10,36 +10,60 @@ jobs:
     name: Build Static Pages
     runs-on: ubuntu-18.04
     steps:
-    - name: Checkout 
-      uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v1
 
-    - name: Setup Hugo
-      uses: peaceiris/actions-hugo@v2
-      with:
-        hugo-version: latest
-        extended: true
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: latest
+          extended: true
 
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.7'
-        architecture: 'x64'
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.7"
+          architecture: "x64"
 
-    - name: Setup Dependency
-      run: |
-       sudo apt-get install python-dev libxml2-dev libxslt1-dev zlib1g-dev
-       python -m pip install pip -U
-       python -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
-       python -m pip config set install.trusted-host mirrors.aliyun.com
+      - name: Setup Dependency
+        run: |
+          sudo apt-get install python-dev libxml2-dev libxslt1-dev zlib1g-dev
+          python -m pip install pip -U
+          python -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
+          python -m pip config set install.trusted-host mirrors.aliyun.com
 
-    - name: Build Site
-      run: |
-        hugo --minify
+      - name: Build Site
+        run: |
+          hugo --minify
+          sudo mkdir -p /home/runner/work/artifacts/blog.yuanpei.me
+          sudo cp -r /home/runner/work/hugo-blog/hugo-blog/public/* /home/runner/work/artifacts/blog.yuanpei.me
 
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        personal_token: ${{ secrets.CI_TOKEN }} 
-        PUBLISH_BRANCH: master
-        PUBLISH_DIR: ./public  
-        commit_message: ${{ github.event.head_commit.message }}
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: blog.yuanpei.me
+          path: /home/runner/work/artifacts/blog.yuanpei.me
+
+  deploy_static_pages:
+    name: Deploy Static Pages
+    needs: build_static_pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts for blog.yuanpei.me
+        uses: actions/download-artifact@v1
+        with:
+          name: blog.yuanpei.me
+
+      - name: Deploy Artifacts for blog.yuanpei.me
+        env:
+          GH_REPO: github.com/qinyuanpei/blog.yuanpei.me.git
+        run: |
+          cd ./blog.yuanpei.me
+          git init
+          git config user.name "qinyuanpei"
+          git config user.email "qinyuanpei@163.com"
+          git remote add origin https://$GH_REPO
+          git add .
+          git commit -m "${{ github.event.head_commit.message }}"
+          git tag latest
+          git push --tags --force --quiet "https://${{ secrets.CI_TOKEN }}@$GH_REPO" master:master

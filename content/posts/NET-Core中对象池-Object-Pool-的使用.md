@@ -1,3 +1,7 @@
+---
+description: ''
+---
+
 ﻿---
 toc: true
 title: .NET Core 中对象池(Object Pool)的使用

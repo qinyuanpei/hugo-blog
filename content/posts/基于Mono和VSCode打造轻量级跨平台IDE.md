@@ -3,12 +3,7 @@ abbrlink: 3568552646
 categories:
 - 编程语言
 date: 2016-11-18 20:23:44
-description: 我们现在按 F5 进行调试，和编译时一样，如果用户没有为当前项目配置“任务调试程序”，VSCode 会提示我们去创建一个配置文件 launch.json，我们这里选择
-  mono，该选项在安装 Mono-Debug 插件以前是没有的，该配置文件如下，我们注意到这里需要修改 program 属性为 MainClass.exe:;现在，我们应该会得到一个
-  MainClass.exe 的文件，最初博主尝试直接去配置 launch.json，发现直接填写 type 为 mono 在 VSCode 中是无法识别的，最后决定去安装
-  mono-debug 的插件，安装插件在 VSCode 中是非常简单的，按下 Ctrl+Shift+X 打开插件界面，可以在这里查看最流行的插件列表、官方推荐的插件列表等等，我们直接搜索
-  mono-debug 然后安装插件即可;因为博主的计算机上安装了 Mono，所以在一开始使用 VSCode 的时候，就先入为主地认为在不安装插件的情况下，应该就可以直接在
-  VSCode 中编译和调试代码了
+description: ''
 slug: 3568552646
 tags:
 - Mono

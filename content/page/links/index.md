@@ -1,5 +1,5 @@
----
-title: links
+﻿---
+title: 友情链接
 sulg: links
 links:
   - title: 阮一峰的网络日志
@@ -13,11 +13,11 @@ links:
   - title: Catcher Wong
     description: Catcher Wong
     website: http://www.c-sharpcorner.com/members/catcher-wong
-    image: ts-logo-128.jpg
+    image: https://avatars.githubusercontent.com/u/8394988?v=4
   - title: 咕咚
     description: 咕咚
     website: https://gudong.site
-    image: ts-logo-128.jpg
+    image: https://gudong.site/static/img/logo.jpg
   - title: 小凡梦
     description: 小凡梦
     website: https://www.xiaofm.cn

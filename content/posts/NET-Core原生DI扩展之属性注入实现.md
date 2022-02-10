@@ -1,3 +1,7 @@
+---
+description: ''
+---
+
 ﻿---
 toc: true
 title: .NET Core 原生 DI 扩展之属性注入实现
@@ -185,4 +189,3 @@ public class AutowiredControllerActivator : IControllerActivator
 }
 ```
 此时，一切都会像我们期待的那样美好，返回正确的结果。目前，这个方案最大的问题是，在非 Controller 层使用的时候，还是需要构造`AutowirdServiceProvider`实例。其实，在`AutowiredControllerActivator`里同样有这个问题，就是你即使实现`IServiceProviderFactory`接口，依然没有办法替换掉默认的 ServiceProvider 实现，只能说它能解决一部分问题，同时又引入了新的问题，最直观的例子是，你看到一个接口的时候，你并不能找全所有加了`[Autowired]`标签的依赖项，所以，直接造成了依赖关系模糊、不透明、难以测试等等的一系列问题，我认为，在一个可控的、小范围内使用还是可以的。
-

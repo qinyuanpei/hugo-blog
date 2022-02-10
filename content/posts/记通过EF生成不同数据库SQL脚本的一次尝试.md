@@ -3,13 +3,7 @@ abbrlink: 795474045
 categories:
 - 编程语言
 date: 2018-09-17 09:42:23
-description: 好了，顺着这个思路，我们就会想到在 ORM 中添加拦截器或者是日志的方式，来获得由 ORM 生成的 SQL 语句，这里我们以 Entity
-  Framework(以下简称 EF)为例，这是.NET 中最常见的 ORM，因为目前官方的 Web 开发框架有 ASP.NET 和 ASP.NET Core 两个版本，所以这里我们分别以
-  ASP.NET 和 ASP.NET Core 为例来说明具体的实现过程，相应地，我们分别使用了 EF6 和 EF Core 作为各自的 ORM;我们说过，ILoggerProvider
-  接口决定在什么情况下应该提供什么样的 Logger，我们注意到它提供了一个 CreateLogger()的方法，它会根据 categoryName 来返回不同的
-  Logger，而参数 categoryName 实际上等价与 nameof(FooController)，所以，到这里我们就会明白，为什么这里要判断 categoryName
-  了，它实际上起一个过滤的作用，因为我们只需要 SQL 相关的日志，它和 SQLGenLogger 中的 state 相对应，我们已经说过，这是博主试出来的;这篇文章主要介绍如何利用
-  EF 来生成不同数据库的 SQL 脚本，对 EF6 来说，需要继承 DbCommandInterecptor 类编写拦截器
+description: ''
 slug: 795474045
 tags:
 - EF

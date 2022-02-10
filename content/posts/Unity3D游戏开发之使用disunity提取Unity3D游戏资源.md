@@ -3,11 +3,7 @@ abbrlink: 1082185388
 categories:
 - 单机游戏
 date: 2015-04-03 13:29:18
-description: 好了，下面我们再来看看怎么提取这个模型文件对应的贴图，在游戏目录/assetbundles/NPC/Texture/下有一个名为 s049_1.unity3d_1D2446B9
-  的文件，这就是 s049 这个模型对应的贴图了;下面我们就来尝试解析这个文件，不过游戏制作方对 config 文件夹下的内容进行了加密，因为在这个文件夹下面是两个
-  AssetBundle 文件，博主尝试用 extract 和 bundle-extract 两个命令进行解析，可是得到的只是些文本文件，对我们继续研究没有什么帮助;这个工具呢，博主在[Unity3D
-  游戏开发之反编译 AssetBundle 提取游戏资源](http://www.qinyuanpei.com/2015/04/02/unity3d-development-with-assetbundle/)这篇文章中其实已经提到过了，不过因为有些朋友对如何使用这个工具依然存在问题，所以博主决定特地写一篇文章来讲解如何使用
-  disunity 来提取 Unity3D 游戏中的素材
+description: ''
 slug: 1082185388
 tags:
 - 穹之扉

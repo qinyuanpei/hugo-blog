@@ -3,10 +3,7 @@ abbrlink: 4159187524
 categories:
 - 编程语言
 date: 2019-04-22 22:13:36
-description: 好了，以上就是在使用 WSL 中的 Docker 搭建 ELK 全家桶过程中遇到的问题的梳理，从体验上来讲，我个人会把 Linux 平台相关的工作渐渐转移到
-  WSL 上，因为安装双系统总会分散你的精力去处理维护相关的事情，虽然装系统对程序员来说都不算是个事儿，可我内心依旧排斥自己被贴上“修电脑”的标签;curl -fsSL
-  https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;装完 WSL 以后，对各种编译环境的使用相当满意，最近在研究日志可视化平台
-  ELK，其中需要使用 Docker 来搭建环境，一顿 sudo 操作猛如虎，快速安装完 Docker 环境，结果发现熟悉的命令行居然无法正常工作，是可忍孰不可忍
+description: ''
 slug: 4159187524
 tags:
 - WSL

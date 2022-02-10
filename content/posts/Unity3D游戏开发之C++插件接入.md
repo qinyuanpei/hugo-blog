@@ -3,12 +3,7 @@ abbrlink: 2527231326
 categories:
 - Unity3D
 date: 2015-11-21 14:47:26
-description: 目前主要有 C++ CLR 和 C++ Native 两种实现方法，其中 C++ CLR 可以理解为运行在.Net CLR 即公共语言运行库上的
-  C++代码，这种代码是托管的 C++代码，目前并没有被 C++标准承认，因为它更像是 C++和 C#两种语言的混合代码，这种代码的优势是可以像普通的.NET 库一样被
-  C#调用，考虑到 Unity3D 建立在和.Net 类似的 Mono 上，因此这种方式应该是我们的最佳实践方案;Debug.Log("调用 C++ CLR 中的方法
-  Max(5,10):" + ExampleClass.Max(5,10));C++ Native 则是指传统的 C++ 动态链接库，通过 DllImport 在
-  C#中进行包装后在 C#中进行调用，相对地这种方式调用的是非托管的 C++代码，这种方式相信接触过 Windows 开发的朋友应该不会感到陌生啦，它是一种更为普遍的方法，例如我们要接入苹果官方
-  SDK 的时候，需要对 Object C 的代码进行封装后交给 C#去调用，而这里使用的方法就是 DllImport 了
+description: ''
 slug: 2527231326
 tags:
 - Unity3D

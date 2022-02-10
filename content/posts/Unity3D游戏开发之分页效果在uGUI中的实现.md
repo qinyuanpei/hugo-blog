@@ -3,9 +3,7 @@ abbrlink: 166983157
 categories:
 - Unity3D
 date: 2015-11-10 20:46:35
-description: 经过博客中一位朋友指出，这篇文章中实现 BindPage 这个方法时可以在代码上再精简些，主要是考虑这个代码中有部分功能是重合的，因此这里对这个方法进行重写，分页从本质上来讲是编写这样一个函数：输入数据集合
-  data、每页显示的元素个数 pageSize 以及当前页数 page，然后返回一个新的数据集合;在这段代码中，m_ItemList 表示我们要展示的元素列表，m_ItemsCount
-  表示元素列表中元素的个数，m_PageCount 表示这些元素可以分成的总页数，m_PageIndex 表示页数的索引**默认从 1 开始**;return sprite
+description: ''
 slug: 166983157
 tags:
 - 游戏开发

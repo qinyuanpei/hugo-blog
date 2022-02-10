@@ -4,10 +4,7 @@ categories:
 - 编程语言
 copyright: true
 date: 2021-09-28 14:13:32
-description: 一旦搞清楚了这些内容，我们发现这个里面最关键的两个信息是：  和  ，如果我们回过头来看 Protobuf 的声明文件，就会发现这两个东西，分别对应的是   和  ，如下图所示：
-  Swagger 与 Protobuf 的对应关系 通常情况下，我们使用   这个库来为 ASP.NET Core 项目提供 Swagger 支持，其中最为关键的是
-  接口，这里我们来尝试为 Protobuf 提供一个具体的实现： 这里的 对应着 OpenAPI 规范中的定义的结构，我们需要返回一个 ，并对其 和 属性进行填充，这部分工作由
-  类来完成
+description: ''
 slug: 4056800047
 tags:
 - gRPC

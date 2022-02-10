@@ -3,7 +3,7 @@ abbrlink: 1417719502
 categories:
 - 独立博客
 date: 2020-02-05 19:01:00
-description: '> https://cdn.jsdelivr.net/gh/user/repo@version/file;[jsDelivr提供的CDN加速资源](https://i.loli.net/2020/02/05/HtmhUdsSRLW4Q9A.png);https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js'
+description: ''
 slug: 1417719502
 tags:
 - Hexo

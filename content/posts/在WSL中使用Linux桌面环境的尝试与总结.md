@@ -3,11 +3,7 @@ abbrlink: 3972610476
 categories:
 - 开发工具
 date: 2019-08-17 21:09:46
-description: Linux Deepin 安装是非常顺畅的，但即便安装完这个桌面环境，博主还是不知道怎么启动这个环境，因为你常规使用 Ubuntu 的话，安装完切换桌面管理器就可以了，可当你用
-  WSL 这种方式使用 Ubuntu 的时候，可能你就会感到非常困惑;虽然目前应用商店里已经提供了 Ubuntu、Debian、Kail Linux、OpenSUSE
-  这些常见的发行版，可当你熟悉了 Linux 的世界以后，就会明白这个世界对多元化的追求是永无止境的，我不想去 Judge 这些多元化间优劣，我只想自由地使用我喜欢的技术，比如
-  Linux Deepin、Elementary OS;在对比了 Gnome、KDE、Unity、Mint、xfce 等等的桌面环境以后，我觉得 Linux 在桌面市场输给
-  Windows 是理所当然的，因为实在太混乱了，WSL 下需要的应该是一个轻量级的桌面，因为越是华而不实东西，越会消耗大量资源
+description: ''
 slug: 3972610476
 tags:
 - WSL

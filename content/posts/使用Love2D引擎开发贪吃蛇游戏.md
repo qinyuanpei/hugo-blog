@@ -3,9 +3,7 @@ abbrlink: 426338252
 categories:
 - 游戏开发
 date: 2015-03-10 10:51:19
-description: local dir=1;这里定义了 getNextPoint()的方法，目的是计算在蛇头位置添加的下一个元素，这里我们注意到根据蛇的移动方向(dir)的不同，其中
-  0 表示上、1 表示下、2 表示左、3 表示右，计算出下一个元素的位置，因为在这个游戏中网格大小是 20，所以这里可以直接根据坐标来计算一个元素的位置;local
-  gameState=1
+description: ''
 slug: 426338252
 tags:
 - Love2D

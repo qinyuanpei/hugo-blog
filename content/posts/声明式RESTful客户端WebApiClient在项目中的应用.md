@@ -3,13 +3,7 @@ abbrlink: 380519286
 categories:
 - 编程语言
 date: 2018-07-16 09:02:35
-description: "在这里，上传我使用了 ASP.NET Core 中的 IFormFile 接口，并且在 Postman 测试通过，可是在网页上用 type
-  为 file 的 input 标签进行测试时，发现页面一直无法正常响应，不知道具体是什么原因(**后来发现它完全和 Postman 中的请求体一样，好吧\U0001F62C**)，我一直不太理解
-  ajax 上传和表单上传的区别，曾经项目上用 HttpWebRequest 去做文件的上传，里面需要大量的字符串拼接动作去构造 MulitpartFormData，只要后端上传的
-  API 发生变更，这段代码几乎就会变成不可维护的代码，幸运的是，在经过几次迭代以后，他们终于意识到了这个问题，在我的建议下，他们使用 HttpClient 重构了代码;大家会注意到，在我的示例代码中，有一个东西一直没有去说，这就是
-  OAuth2Filter，这其实是博主自己扩展的一个特性，这意味着在请求该 API 前，需要通过 OAuth2 授权以获得身份令牌;简单来说，所有你想要调用 Web
-  API 都是接口中的一个方法，你通过注解来告诉 Retrofit，该方法会请求哪一个 Web API，参数会以什么样的形式传递过去，结果会以什么样的形式返回回来，你完全不必去写那些底层
-  HTTP 通信相关的东西，因为 Retrofit 会帮你在运行时实现这个接口"
+description: ''
 slug: 380519286
 tags:
 - RESTful

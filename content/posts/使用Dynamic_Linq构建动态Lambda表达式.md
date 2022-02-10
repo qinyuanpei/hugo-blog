@@ -4,10 +4,7 @@ categories:
 - 编程语言
 copyright: true
 date: 2020-05-08 12:27:11
-description: var propertyParam = Expression.Property (parameter, condition.Field);searchParameters.Query.Add(new
-  Condition() { Field = "StringValue", Op = Operation.Contains, Value = "山", OrGroup
-  = "StringValue" });searchParameters.Query.Add(new Condition<Foo>() { Field = x =>
-  x.StringValue, Op = Operation.Contains, Value = "有朋", OrGroup = "StringValue" })
+description: ''
 slug: 118272597
 tags:
 - Linq

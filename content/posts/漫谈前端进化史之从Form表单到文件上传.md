@@ -3,10 +3,7 @@ abbrlink: 2463121881
 categories:
 - 编程语言
 date: 2018-09-05 12:57:36
-description: 而从功能性角度来讲，把整个文件的内容全部放在请求体中，则会造成文件信息的不完整，因为此时文件名等信息是没有办法传输到服务器端的，所以，这样综合下来再看的话，HTTP
-  协议本身留给我们的选择的空间并不大，我们能够选择的就只有 multipart/form-data 和 x-www-form-urlencode 这两种啦，下面着重来分析下这种数据加密方式;通过这个例子，我们很容易发现的一点是，当我们采用
-  type 为 file 的 Input 控件上传一个文件时，它会采用 multipart/form-data 来传递数据，报文中使用了和第二个示例类似的结构，即第一部分负责描述文件信息，譬如文件的名称、扩展名类型等等;当我们回顾
-  Form 表单中关于 HTTP 的部分，我们就会发现，HTTP 中具备上传文件可能性的方式只有两种，即 multipart/form-data 和 x-www-form-urlencode
+description: ''
 slug: 2463121881
 tags:
 - HTTP

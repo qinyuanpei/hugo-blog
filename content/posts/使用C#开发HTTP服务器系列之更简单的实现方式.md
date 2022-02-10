@@ -3,10 +3,7 @@ abbrlink: 3603924376
 categories:
 - 编程语言
 date: 2016-06-11 15:01:35
-description: 其次，我们在设计 HTTP 服务器的时候，每次在向客户端返回响应报文以后，我们就关闭了 Socket 连接，这意味着每次的请求和响应完全都是独立的，那么这样是不是就和聊天机器人不能理解上下文非常相似了呢;下面我们再来说说基于
-  HttpListener 实现请求-响应模型，它和改进 Socket 不同，它对我们编写一个 Web 服务器的意义主要体现在它提供了一个非常规范的接口，类似我这里的
-  HttpResponse 和 HttpRequest 以及 OnPost、OnGet 等接口这些设计;到目前为止我们了解的 HTTP 服务器开发，实际上由两部分组成，即
-  Socket 通信和请求-响应模型
+description: ''
 slug: 3603924376
 tags:
 - HTTP

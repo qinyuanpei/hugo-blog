@@ -1,3 +1,7 @@
+---
+description: ''
+---
+
 ﻿---
 toc: true
 title: Dapper.Contrib 在 Oracle 环境下引发 ORA-00928 异常问题的解决

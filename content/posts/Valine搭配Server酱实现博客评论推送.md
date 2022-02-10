@@ -3,10 +3,7 @@ abbrlink: 369095810
 categories:
 - 独立博客
 date: 2019-11-06 18:15:14
-description: 所以，说白了我们就是想利用它这个“云引擎”来调用 Server 酱的接口，幸运的是，LeanCloud 提供的 Hooks 目前是支持 Nodejs
-  的，所以，到这里思路就非常清晰了，我们给`Comment`这张表加一个`AfterSave`类型的 Hooks，在保存完以后调用 Server 酱接口推送评论信息即可;[Valine](https://valine.js.org/)是一个基于[LeanCloud](https://leancloud.cn)的评论系统，在很长的一段时间里，一直作为多说、[Gitalk](https://gitalk.github.io/)、[Gitment](https://github.com/imsun/gitment)等等的一个替代品，博主所使用的评论系统实际上就是
-  Valine，虽然独立博客的整体活跃度无法媲美专业博客，可还是想在这纷扰的世界里有自己的一方天地啊;Valine 本身是利用 LeanCloud 的数据存储 SDK
-  来实现评论的读写的，所以，它相对于“多说”这种第三方的服务，在数据安全性上更有保障一点，虽然“多说”在关闭评论服务以前，提供了导出 JSON 格式评论信息的功能
+description: ''
 slug: 369095810
 tags:
 - Valine

@@ -3,16 +3,7 @@ abbrlink: 4236649
 categories:
 - 编程语言
 date: 2019-06-08 13:48:41
-description: DynamicControllerActivator 实现了 IHttpControllerActivator 接口，这里我们通过单例模式获得了
-  DynamicHttpControllerManager 对象的一个实例，其内部封装了 Castle 的容器接口 IWindsorContainer，所以，在这里我们直接通过
-  controllerType 从容器中 Resolve 对应的 Controller 即可，而默认情况下，所有的 Controller 都实现了 IHttpController
-  接口，所以，这一步我们需要做一个显示的类型转换，后面我们会通过它替换微软默认的实现，这样，当一个请求被发送过来的时候，我们实际上是从这个自定义容器中获取对应 Controller
-  的实例;老实说，通过自定义 IHttpControllerActivator 的方式实现依赖注入的方式并不常见，因为更一般的情况是，大家在 Global.asax
-  里初始化像 Unity、Autofac 等等类似的容器，然后在 Controller 里通过容器去 Resolve 一个服务出来，对于 IHttpControllerActivator
-  接口而言，它只有一个 Create()方法，在这篇文章中，我们是通过 Castle 这个容器来实现依赖注入的，所以，你大概可以想象出它的过程，首先把所有动态生成的
-  Controller 全部注入到 Ioc 容器中，然后再根据传入的类型获取对应 Controller 的实例;在这个过程中，我们回顾了 ASP.NET MVC
-  的基本原理，了解了 MVC 是如何根据路由筛选 Controller、激活 Controller 和筛选 Action，在此基础上，我们对微软的 MVC 进行了一次
-  Hack，使用我们自定义的组件替换了微软的默认实现，从而可以让原来托管在 ServiceHost 上的接口，通过 Web API 来访问和调用
+description: ''
 slug: 4236649
 tags:
 - RESTful

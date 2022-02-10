@@ -3,8 +3,7 @@ abbrlink: 2418566449
 categories:
 - 数据存储
 date: 2018-10-18 08:41:08
-description: 好了，下面一起来看具体代码，首先我们定义一个主从库管理类 MasterSlaveManager： 接下来，和之前关于 EF 中的 SQL
-  拦截器类似，我们定义一个名为 MasterSlaveDbInterceptor 的拦截器： 至此，我们就实现了基于 EF 的数据库主从复制、读写分离
+description: ''
 slug: 2418566449
 tags:
 - EF

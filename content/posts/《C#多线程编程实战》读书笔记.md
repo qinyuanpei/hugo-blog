@@ -3,13 +3,7 @@ abbrlink: 345410188
 categories:
 - 读书笔记
 date: 2018-01-07 21:34:36
-description: '* Tips38：通过 Task 实例的 ConfigureAwait()方法，可以设置使用 await 时同步上下文的行为，默认情况下，await
-  操作符会尝试捕捉同步上下文，并在其中执行代码，即调度器会向 UI 线程投入成千上百个后续操作任务，这会使用它的消息循环来异步地执行这些任务，当我们不需要在 UI
-  线程中运行这些代码时，向 ConfigureAwait 方法传入 false 将会是一个更高效的方案;* Tips51：ParallelEnumerable 类含有
-  PLINQ 的全部逻辑，并且作为 IEnumerable 集合功能的一组扩展方法，默认情况下结果会被合并单个线程中，我们可以通过 ForAll 方法来指定处理逻辑，此时它们使用的是同一个线程，将跳过合并结果的过程，除了
-  AsParallel()方法，我们同样可以使用 AsSequential()方法，来使得 PLINQ 查询以顺序方式执行(相对于并行);* Tips13：SemaphoreSlim
-  是 Semaphore 的轻量级版本，用以限制同时访问同一个资源的线程数量，超过该数量的线程需要等待，直到之前的线程中某一个完成工作，并调用 Release()方法发出信号，其使用了混合模式，而
-  Semaphore 则使用内核模式，可以在跨程序同步的场景下使用'
+description: ''
 slug: 345410188
 tags:
 - 读书

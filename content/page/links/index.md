@@ -9,7 +9,7 @@ links:
   - title: Steve Sanderson
     description: Steve Sanderson
     website: https://blog.stevensanderson.com/
-    image: ts-logo-128.jpg
+    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
   - title: Catcher Wong
     description: Catcher Wong
     website: http://www.c-sharpcorner.com/members/catcher-wong
@@ -21,7 +21,7 @@ links:
   - title: 小凡梦
     description: 小凡梦
     website: https://www.xiaofm.cn
-    image: ts-logo-128.jpg
+    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
   - title: 小球飞鱼
     description: 小球飞鱼
     website: https://mantyke.icu/

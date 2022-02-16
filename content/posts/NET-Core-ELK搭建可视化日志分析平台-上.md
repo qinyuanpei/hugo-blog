@@ -1,15 +1,9 @@
----
-description: ''
----
-
-﻿---
+﻿﻿---
 slug: 3687594958
 abbrlink: 3687594958
 categories:
 - 编程语言
 date: 2020-02-15 16:01:13
-description: 下面，按照惯例，我们将实现一个“**Hello World**”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息;所以，从今天开始，我将为大家带来
-  **.NET Core + ELK 搭建可视化日志分析平台** 系列文章，希望大家喜欢;博主计划在接下来的篇幅中介绍`Logstash`/`FireBeat`管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客
 tags:
 - .NET Core
 - ELK

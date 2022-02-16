@@ -1,8 +1,4 @@
----
-description: ''
----
-
-﻿---
+﻿﻿---
 toc: true
 title: .NET Core 原生 DI 扩展之属性注入实现
 categories:

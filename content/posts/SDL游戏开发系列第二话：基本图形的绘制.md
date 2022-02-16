@@ -1,14 +1,9 @@
----
-description: ''
----
-
-﻿---
+﻿﻿---
 slug: 3789971938
 abbrlink: 3789971938
 categories:
 - 游戏开发
 date: 2015-07-27 08:48:59
-description: SDL_RenderCopy(g_pRenderer,m_pTexture,m_pSrcRect,m_pTargetRect);SDL_RenderCopy(renderer,m_pTexture,m_pSrcRect,m_pTargetRect);SDL_RenderCopy(renderer,m_pTexture,m_pSrcRect,m_pTargetRect)
 tags:
 - SDL
 - 游戏

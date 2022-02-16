@@ -1,4 +1,4 @@
----
+﻿---
 abbrlink: 570137885
 categories:
 - 开发工具
@@ -10,7 +10,7 @@ tags:
 - Sublime
 - 编辑器
 - IDE
-title: 在Sublime Text3下安装Package Control
+title: 在 Sublime Text3 下安装 Package Control
 toc: true
 ---
 

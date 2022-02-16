@@ -1,14 +1,9 @@
----
-description: ''
----
-
-﻿---
+﻿﻿---
 slug: 2038378679
 abbrlink: 2038378679
 categories:
 - 读书笔记
 date: 2015-03-08 19:14:44
-description: '## JavaScript 中的面向对象编程;如果直接使用 JavaScript 代码;### 在 JavaScript 中函数(function)就是就是一个类(class)'
 tags:
 - 游戏
 - HTML5

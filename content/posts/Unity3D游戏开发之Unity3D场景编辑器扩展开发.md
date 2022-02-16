@@ -1,14 +1,9 @@
----
-description: ''
----
-
-﻿---
+﻿﻿---
 slug: 3019914405
 abbrlink: 3019914405
 categories:
 - 游戏开发
 date: 2015-10-13 12:59:01
-description: 注意到 DrawRotate()方法与 DrawPositin()及 DrawScale()方法在实现方式上略有不同，这是因为 Transform 组件的 Rotation 属性是一个 Quaternion 即四元数的结构，四元数是利用 x、y、z、w 四个数值来表示物体的三维旋转，这不仅和我们平时习惯的欧拉角相违背而且更为关键的是貌似目前我还没有发现可以直接绘制四元数的 API 接口，如果有的话希望大家可以告诉我，所以这里我们用了变通的一种方法，即通过 Transform 的 eulerAngles 来实现，但是这种方式绘制的属性框大小和 EditorGUILayout.PropertyField()方法绘制的属性框大小并不一致，同时我们需要自己去完成属性值的更新;此时如果我们给场景中的某个物体附加上该脚本，则我们在 Inspector 窗口可以看到 Example 类的实例 Example 将被序列化到编辑器面板中，同时我们可以注意到私有的 editable 字段并没有被序列化出来，这是因为**在 Unity3D 中，公有的字段默认支持序列化，私有的字段除非显式的增加[SerializeField]标记，否则都不会被序列化**，这一点希望大家注意;在第一个示例中，可以注意到我们使用了 FindProperty()方法来获取一个可序列化物体的属性(字段)，然后我们在 EditorGUILayout.PropertyField()方法来绘制了各种属性框，这种方式可以实现属性的自动更新
 tags:
 - 编辑器
 - 扩展

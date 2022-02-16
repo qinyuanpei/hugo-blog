@@ -190,6 +190,12 @@ params:
         content:
             enabled: true
 
+    jsdelivr:
+        enable: true
+        gh_user: qinyuanpei
+        gh_repo: hugo-blog
+        baseUrl: cdn.jsdelivr.net
+
 ### Custom menu
 ### See https://docs.stack.jimmycai.com/configuration/custom-menu.html
 ### To remove about, archive and search page menu item, remove `menu` field from their FrontMatter
@@ -302,6 +308,3 @@ markup:
         lineNos: true
         lineNumbersInTable: false
         tabWidth: 4
-
-ignoreErrors: 
-    - error-remote-getjson 

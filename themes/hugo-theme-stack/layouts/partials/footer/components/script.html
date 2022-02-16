@@ -3,7 +3,12 @@
 {{- $opts := dict "minify" hugo.IsProduction -}}
 {{- $script := resources.Get "ts/main.ts" | js.Build $opts -}}
 
+{{ $jsdelivr := .Site.Params.jsdelivr }}
+{{ if and $jsdelivr $jsdelivr.enable }}
+<script type="text/javascript" src="//{{ $jsdelivr.baseUrl }}/gh/{{ $jsdelivr.gh_user }}/{{ $jsdelivr.gh_repo }}@master{{ $script.RelPermalink }}" defer></script>
+{{ else }}
 <script type="text/javascript" src="{{ $script.RelPermalink }}" defer></script>
+{{ end }}
 
 {{- with resources.Get "ts/custom.ts" -}}
     {{/* Place your custom script in HUGO_SITE_FOLDER/assets/ts/custom.ts */}}

@@ -1,0 +1,12 @@
+{{ $siteValidation := .Site.Params.siteValidation }}
+{{ if $siteValidation.enable }}
+    {{ range $siteValidation.providers }}
+        {{ if eq .provider "bing" }}
+            <meta name="msvalidate.01" content="{{ .content }}" />
+        {{ else if eq .provider "baidu" }}
+            <meta name="baidu-site-verification" content="{{ .content }}" />
+        {{ else if eq .provider "google" }}
+            <meta name="google-site-verification" content="{{ .content }}" />
+        {{ end }}
+    {{ end }}
+{{ end }}

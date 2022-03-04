@@ -18,6 +18,10 @@ DefaultContentLanguage: zh-cn
 # This will make .Summary and .WordCount behave correctly for CJK languages.
 hasCJKLanguage: true
 
+summaryLength: 120
+
+disablePathToLower: false
+
 permalinks:
     post: /posts/:slug/
     page: /:slug/
@@ -142,6 +146,7 @@ params:
         cusdis:
             host: 
             id: 
+
     widgets:
         enabled:
             - search
@@ -195,6 +200,16 @@ params:
         gh_user: qinyuanpei
         gh_repo: hugo-blog
         baseUrl: cdn.jsdelivr.net
+
+    siteValidation:
+        enable: true
+        providers:
+            - provider: bing
+              content: 713A48A3FE17D4841C292A6B3942EB4C
+            - provider: baidu
+              content: c50FGqYOSh
+            - provider: google
+              content: 8AqkWAh0QNZqCYB2oKA5yIrqEA3sgxUvglVmtWkuU0s
 
 ### Custom menu
 ### See https://docs.stack.jimmycai.com/configuration/custom-menu.html

@@ -19,7 +19,6 @@ DefaultContentLanguage: zh-cn
 hasCJKLanguage: true
 
 summaryLength: 120
-
 disablePathToLower: false
 
 permalinks:
@@ -191,9 +190,9 @@ params:
 
     imageProcessing:
         cover:
-            enabled: true
+            enabled: false
         content:
-            enabled: true
+            enabled: false
 
     jsdelivr:
         enable: true

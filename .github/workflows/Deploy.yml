@@ -67,6 +67,26 @@ jobs:
           git commit -m "${{ github.event.head_commit.message }}"
           git tag latest
           git push --tags --force --quiet "https://${{ secrets.CI_TOKEN }}@$GH_REPO" master:master
+      
+      - name: Generate README.md for github.com
+        env:
+          GH_REPO: github.com/qinyuanpei/qinyuanpei.git
+        run: |
+          sudo mkdir -p /home/runner/work/artifacts/
+          cd /home/runner/work/artifacts/
+          sudo git clone https://github.com/qinyuanpei/qinyuanpei.git 
+          cd /home/runner/work/artifacts/qinyuanpei
+          sudo git config user.name "qinyuanpei"
+          sudo git config user.email "qinyuanpei@163.com"
+          sudo rm -f README.md
+          sudo python -m pip install pip -U
+          sudo python -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
+          sudo python -m pip config set install.trusted-host mirrors.aliyun.com
+          sudo python -m pip install -r requirements.txt 
+          sudo python generator.py
+          sudo git add -f README.md
+          sudo git commit -m "Update README.md by Github Action"
+          sudo git push --force --quiet "https://${{ secrets.CI_TOKEN }}@$GH_REPO" master:master
 
   audit_static_pages:
     name: Audit Static Pages

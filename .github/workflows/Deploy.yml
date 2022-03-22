@@ -27,7 +27,7 @@ jobs:
 
       - name: Setup Dependency
         run: |
-          sudo apt-get install python-dev libxml2-dev libxslt1-dev zlib1g-dev
+          #sudo apt-get install python-dev libxml2-dev libxslt1-dev zlib1g-dev
           python -m pip install pip -U
           python -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
           python -m pip config set install.trusted-host mirrors.aliyun.com

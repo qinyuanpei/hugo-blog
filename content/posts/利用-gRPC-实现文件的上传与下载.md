@@ -166,7 +166,7 @@ var downloadResult = fileServiceClient.DownloadFile(downloadRequest);
 var downloadPath = Path.Combine(Directory.GetCurrentDirectory(), downloadRequest.FilePath);
 if (File.Exists(downloadPath)) File.Delete(downloadPath);
 
-using(var fileStram = File.Open(downloadPath, FileMode.Append, FileAccess.Write))
+using(var fileStream = File.Open(downloadPath, FileMode.Append, FileAccess.Write))
 {
     var received = 0L;
     while (await downloadResult.ResponseStream.MoveNext(CancellationToken.None))
@@ -174,8 +174,8 @@ using(var fileStram = File.Open(downloadPath, FileMode.Append, FileAccess.Write)
         var current = downloadResult.ResponseStream.Current;
         var buffer = current.Content.ToByteArray();
 
-        fileStram.Seek(received, SeekOrigin.Begin);
-        await fileStram.WriteAsync(buffer);
+        fileStream.Seek(received, SeekOrigin.Begin);
+        await fileStream.WriteAsync(buffer);
 
         received += buffer.Length;
         received = Math.Min(received, current.TotalSize);

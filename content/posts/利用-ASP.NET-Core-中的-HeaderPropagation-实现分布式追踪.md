@@ -8,7 +8,7 @@ tags:
 - Tracing
 - Jeager
 - 
-title: 利用 ASP.NET Core 中的 HeaderPropagation 实现分布式链路跟踪
+title: 利用 ASP.NET Core 中的标头传播实现分布式链路跟踪
 slug: ASP-NET-Core-Using-HeaderPropagation-For-Distributed-Tracking
 ---
 
@@ -135,7 +135,10 @@ services.AddHttpClient("PaymentService", client =>
 
 可以注意到，这个中间件内部会维护一个叫做 `HeaderPropagationValues` 的对象实例，其生命周期为 `Singleton`，当有入站请求产生时，它会尝试从 `HttpContext` 中读取指定的请求头，并保存到 `HeaderPropagationValues` 实例的 `Headers` 属性中中。当我们注入 `HttpClient` 的时候，中间件内部会创建一个 `HeaderPropagationMessageHandler` 实例，它继承自 `DelegatingHandler`。如果你看过我以前的文章，[《使用 HttpMessageHandler 实现 HttpClient 请求管道自定义》](/posts/2070070822/)，相信你会在电光火石间明白我在说什么。总而言之，通过这个 Handler，你就可以把保存下来的请求头添加到 HttpClient 的实例上，相当于我们一开始手动设置请求头的这个环节，这样，这些请求头就可以“自动”传播下去啦！
 
-其实，除了这个分布式链路跟踪的场景，更一般的场景，或许是认证的场景。譬如，客户端通过认证服务拿到了一个令牌，它在向后端发起请求的时候会把这个令牌添加到请求头中。此时，我们只需要确保所有后端服务都配置了这个中间件，令牌会随着调用链路一路传播下去，这样，是不是比每个服务间都相互协商如何传递身份信息要好的多呢？我想，这是毫无疑问的。好啦，以上就是这篇博客的全部内容啦，如果大家对博客内容有任何意见或者建议，欢迎大家在评论区留言，谢谢大家！
+![通过 HeaderPropagation 中间件传递请求头字段](/posts/利用-ASP.NET-Core-中的-HeaderPropagation-实现分布式追踪/HeaderPropagation.Logs.png)
+
+
+其实，除了这个分布式链路跟踪的场景，更一般的场景，或许是认证的场景。譬如，客户端通过认证服务拿到了一个令牌，它在向后端发起请求的时候，会把这个令牌添加到请求头中。此时，我们只需要确保所有后端服务都配置了这个中间件，令牌会随着调用链路一路传播下去，这样，是不是比每个服务间都相互协商如何传递身份信息要好的多呢？我想，这是毫无疑问的，做正确的事情永远比单纯的做事情要重要得多。好啦，以上就是这篇博客的全部内容啦，如果大家对博客内容有任何意见或者建议，欢迎大家在评论区留言，谢谢大家！
 
 
 

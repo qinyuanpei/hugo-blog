@@ -129,7 +129,7 @@ services.AddHttpClient("PaymentService", client =>
 
 ![It's Amazing！](/posts/利用-ASP.NET-Core-中的-HeaderPropagation-实现分布式追踪/Envoy-Jeager-Tracing.png)
 
-关于这个中间件内部是如何运作的，大家可以阅读它的 [源代码](https://github.com/dotnet/aspnetcore/tree/main/src/Middleware/HeaderPropagation)，博主这里画了一个简单的示意图：
+关于这个中间件内部是如何运作的，大家可以阅读它的 [源代码](https://github.com/dotnet/aspnetcore/tree/main/src/Middleware/HeaderPropagation)，博主这里画了一个简单的示意图来辅助说明：
 
 ![HeaderPropagation 中间件示意图](/posts/利用-ASP.NET-Core-中的-HeaderPropagation-实现分布式追踪/HeaderPropagation.drawio.png)
 

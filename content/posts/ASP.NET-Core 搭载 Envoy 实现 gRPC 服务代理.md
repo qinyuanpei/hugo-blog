@@ -1,4 +1,4 @@
----
+﻿---
 abbrlink: 3942175942
 categories:
 - 编程语言
@@ -13,6 +13,7 @@ tags:
 - RESTful
 title: ASP.NET Core 搭载 Envoy 实现 gRPC 服务代理
 toc: true
+image: https://grpc.io/img/landing-2.svg
 ---
 
 在构建以 gRPC 为核心的微服务架构的过程中，博主曾经写过一篇名为 [ASP.NET Core gRPC 打通前端世界的尝试](https://blog.yuanpei.me/posts/2167892202/) 的文章，主要是希望打通 gRPC 和 前端这样两个异次元世界，因为无论我们构建出怎样高大上的微服务架构，最终落地的时候，我们还是要面对当下前后端分离的浪潮。所以，在那篇文章中，博主向大家介绍过 gRPC-Web 、gRPC-Gateway 、封装 API 、[编写中间件](https://github.com/qinyuanpei/Grpc.Gateway) 这样四种方案。我个人当时更喜欢编写中间件这种方案，甚至后来博主进一步实现了 gRPC 的 “扫描” 功能。

@@ -14,6 +14,7 @@ tags:
 - ECharts
 title: 使用 Python 抽取《半泽直树》原著小说人物关系
 toc: true
+image: https://i.loli.net/2020/12/09/4TV9CAoE6lksGMg.png
 ---
 
 {{<douban type="movie" id="24697949">}}

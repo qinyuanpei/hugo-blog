@@ -10,6 +10,7 @@ tags:
 - 
 title: 利用 ASP.NET Core 中的标头传播实现分布式链路跟踪
 slug: ASP-NET-Core-Using-HeaderPropagation-For-Distributed-Tracking
+image: "/posts/利用-ASP.NET-Core-中的-HeaderPropagation-实现分布式追踪/HeaderPropagation.drawio.png"
 ---
 
 在此之前，我曾写过一篇博客，[《Envoy 集成 Jaeger 实现分布式链路跟踪》](/posts/768684858/)，主要分享了 ASP.NET Core 应用如何结合 [Envoy](https://www.envoyproxy.io/) 和 [Jeager](https://www.jaegertracing.io/) 来实现分布式链路跟踪，其核心思想是：生成一个全局唯一的`x-request-id`，并在不同的微服务或者子系统中传播该信息。进而，可以使得相关的信息像一条线上的珠子一样串联起来。在此基础上，社区主导并产生了 [OpenTracing](https://opentracing.io/) 规范，在这个 [规范](https://github.com/opentracing/specification/blob/master/specification.md) 中，一个 Trace，即调用链，是由多个 `Span` 组成的有向无环图，而每个 `Span` 则可以含有多个键值对组成的 `Tag`。不过，当时我们有一个非常尴尬的问题，那就是每个微服务必须显式地传递相关的 HTTP 请求头。那么，是否有一种更优雅的方案呢？而这就是我们今天要分享的内容。首先，我们来回头看看当初的方案，这是一个非常朴实无华的实现：

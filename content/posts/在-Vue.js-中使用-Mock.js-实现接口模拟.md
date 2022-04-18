@@ -76,7 +76,7 @@ export async function getMessages() {
 
 这个方案最大的问题是，当后端接口准备就绪以后，你还需要用实际的请求过程比如 [Axios](https://axios-http.com/) 替换掉这个方法，虽然这个工作量并不算特别大，可我总觉得这不是一个正确的思路，虽然代码频繁地改动对程序员来说是家常便饭，我是个不大愿意在同一件事情上来回折腾的人，我更喜欢古龙武侠小说里那种一招制敌的感觉，我们来一起看看 Mock.js 是如何解决这个问题的：
 
-```
+```javascript
 // 通过 npm 安装
 npm install mockjs
 // 通过 yarn 安装
@@ -138,7 +138,7 @@ import './mock/index'
 
 ![Vue.js 搭配 Mock.js 使用效果](/posts/在-Vue.js-中使用-Mock.js-实现接口模拟/Vue.js-With-Mock.js.png)
 
-在平时的工作中，我常常听到一个词叫做“造数据”，本质上这依然属于 Mock 的范畴。现实生活中使用到的数据，毫无疑问会比这篇文章中的例子更加复杂和多样化，典型的有地址、邮箱、身份证号、IP 等等。对于这些，Mock.js 同样可以模拟，下面列举了常见的 API，更详细的可以参考 [官方文档](http://mockjs.com/examples.html) 的示例:
+在平时的工作中，我常常听到一个词叫做“造数据”，本质上这依然属于 Mock 的范畴。现实生活中使用到的数据，毫无疑问会比这篇文章中的例子更加复杂和多样化，典型的有地址、邮箱、身份证号、IP 等等。对于这些，Mock.js 同样可以模拟，下面列举了常见的 API，更详细的可以参考官方文档中的 [示例](https://mockjs.com/examples.html)：
 
 ```javascript
 // 随机生成省份、直辖市或者自治区

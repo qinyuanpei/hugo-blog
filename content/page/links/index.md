@@ -30,6 +30,11 @@ links:
     description: 小清新IT旅程 | 为中华之崛起而读书 
     website: https://hubojing.github.io/
     image: https://hubojing.github.io/img/avatar.jpg
+  - title: Hayami's Blog
+    description: 日常人间观察 
+    website: https://hayami.typlog.io/
+    image: https://i.typlog.com/hayami/8374611717_430303.png?x-oss-process=style/ss
+
 comments: false
 ---
 

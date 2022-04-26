@@ -25,7 +25,7 @@ links:
   - title: 小球飞鱼
     description: 小球飞鱼
     website: https://mantyke.icu/
-    image: https://mantyke.icu/img/avatar_hu5235ac48980fd45483f73bac4b632ef6_522544_300x0_resize_box_3.png
+    image: https://mantyke.icu/images/logo.png
   - title: 靖待的技术博客
     description: 小清新IT旅程 | 为中华之崛起而读书 
     website: https://hubojing.github.io/

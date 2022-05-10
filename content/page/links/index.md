@@ -1,6 +1,6 @@
 ﻿---
-title: links
-sulg: links
+title: 友情链接
+slug: links
 links:
   - title: 阮一峰的网络日志
     description: 阮一峰的网络日志
@@ -34,7 +34,10 @@ links:
     description: 日常人间观察 
     website: https://hayami.typlog.io/
     image: https://i.typlog.com/hayami/8374611717_430303.png?x-oss-process=style/ss
-
+  - title: DrumCoder
+    description: DrumCoder
+    website: blog.hotsun168.com
+    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 comments: false
 ---
 

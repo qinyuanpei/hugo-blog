@@ -1,4 +1,4 @@
----
+﻿---
 toc: false
 slug: about
 title: 关于
@@ -27,7 +27,7 @@ lastmod: '2020-10-09'
 * 消息队列(**Kafka**)
 
 更多的页面：
-* [书单](https://blog.yuanpei.me/books/) / [歌单](https://blog.yuanpei.me/musics/) / [影单](https://blog.yuanpei.me/movies/) / [诗集](https://qinyuanpei.github.io/poems/) / [友人帐](https://blog.yuanpei.me/friends/)
+* [书单](https://blog.yuanpei.me/books/) / [歌单](https://blog.yuanpei.me/musics/) / [影单](https://blog.yuanpei.me/movies/) / [诗集](https://qinyuanpei.github.io/poems/) / [友人帐](https://blog.yuanpei.me/links/)
 
 更大的世界：
 * [微博](https://weibo.com/1278609231/profile) / [知乎](https://www.zhihu.com/people/qinyuanpei) / [豆瓣](https://www.douban.com/people/60029335/)
@@ -38,6 +38,6 @@ lastmod: '2020-10-09'
 
 {{<meting server="netease" type="song" id="1443173907">}}
 
-本博客使用 [Hexo](https://hexo.io) 驱动，在 [Github Pages](https://pages.github.com) 与 [Vercel](https://vercel.com/) 双线部署，由 [Travis CI](https://travis-ci.org/) 和 [Github Actions](https://github.com/actions/starter-workflows) 提供持续集成服务，由 [不蒜子](http://busuanzi.ibruce.info/) 和 [LeanCloud](https://leancloud.cn/) 提供访客统计服务，由 [Valine](https://valine.js.org/) 提供评论服务，由 [jsDelivr](https://www.jsdelivr.com/) 提供 CDN加速服务。如需订阅本博客，可以通过 [RSS](https://blog.yuanpei.me/atom.xml) 或者在 [Github](https://github.com/) 上 Watch [本项目](https://github.com/qinyuanpei/qinyuanpei.github.io)，如需联系本人，请在博客中留言(**注意留下你的邮箱**) 或者发送邮件至：qinyuanpei@163.com
+本博客使用 [Hugo](https://www.gohugo.org/) 驱动，在 [Github Pages](https://pages.github.com) 与 [Vercel](https://vercel.com/) 双线部署，由 [Travis CI](https://travis-ci.org/) 和 [Github Actions](https://github.com/actions/starter-workflows) 提供持续集成服务，由 [不蒜子](http://busuanzi.ibruce.info/) 和 [LeanCloud](https://leancloud.cn/) 提供访客统计服务，由 [Valine](https://valine.js.org/) 提供评论服务，由 [jsDelivr](https://www.jsdelivr.com/) 提供 CDN加速服务。如需订阅本博客，可以通过 [RSS](https://blog.yuanpei.me/atom.xml) 或者在 [Github](https://github.com/) 上 Watch [本项目](https://github.com/qinyuanpei/qinyuanpei.github.io)，如需联系本人，请在博客中留言(**注意留下你的邮箱**) 或者发送邮件至：qinyuanpei@163.com
 
 ****

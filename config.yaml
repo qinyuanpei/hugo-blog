@@ -196,7 +196,7 @@ params:
             enabled: false
 
     jsdelivr:
-        enable: true
+        enable: false
         gh_user: qinyuanpei
         gh_repo: hugo-blog
         baseUrl: cdn.jsdelivr.net

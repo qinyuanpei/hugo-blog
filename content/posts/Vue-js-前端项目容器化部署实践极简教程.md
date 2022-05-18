@@ -2,7 +2,7 @@
 categories:
 - 编程语言
 copyright: true
-date: 2022-05-08 13:30:47
+date: 2022-05-17 13:30:47
 description: ''
 slug: A-Simplified-Tutorial-On-Containerized-Deployment-Of-Front-End-Projects-For-Vue
 tags:
@@ -87,3 +87,5 @@ networks:
 ![通过 Docker 部署前端项目](/posts/Vue-js-前端项目容器化部署实践极简教程/Vue.js-With-Docker.png)
 
 没错，我为了节省写作时间，直接使用了 [在 Vue.js 中使用 Mock.js 实现接口模拟](/posts/interface-mock-implemention-using-mock.js-in-vue.js/) 这篇文章里的项目，果然，我再次完美发扬了 “懒惰” 这种优良美德，总而言之，到这里我们已经成功地通过容器技术部署了一个前端项目，在这个基础上，你还可以接入 `Envoy` 这个代理层 或者 是为 `Nginx` 添加 `SSL` 证书等等...当然，这些都是后话啦，各位比我聪明千倍、万倍的读者朋友们可以进一步去完善它，这篇短浅易懂的文章就当作诸位的入门教程好啦，愿「他山之石，可以攻玉」，谢谢大家，本文完！
+
+> 番外预告！！！接下来会写一篇关于 ASP.NET Core 单元/集成测试的文章，敬请期待！

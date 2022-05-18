@@ -1,0 +1,89 @@
+﻿---
+categories:
+- 编程语言
+copyright: true
+date: 2022-05-08 13:30:47
+description: ''
+slug: A-Simplified-Tutorial-On-Containerized-Deployment-Of-Front-End-Projects-For-Vue
+tags:
+- 容器
+- Vue
+- Nginx
+- Envoy
+title: Vue.js 前端项目容器化部署实践极简教程
+toc: true
+image: /posts/Vue-js-前端项目容器化部署实践极简教程/cover.jpg
+---
+大概一周前，在某个「微雨燕双飞」的下午，我正穿梭于熙熙攘攘的车流人海当中，而被雨水濯洗过的天空略显灰白，傍晚亮起的路灯恍惚中有种朝阳初升的错觉，内心更是涌现出一种「一蓑烟雨任平生」的豁达，我还没来得及给这场内心戏添油加醋，兴哥的电话突然打断了我的思绪。一番攀谈交心，我了解到，他想问的是前端容器化部署的相关问题。虽然，靠着兴哥的睿智、果敢，他第二天就想明白了整个事情的来龙去脉；但是，这完全不影响我水一篇博客出来。所以，今天这篇文章，我们来聊聊前端项目的容器化部署，并提供一个极简的实践教程，这里以 `Vue.js` 为例，希望对大家有所启发。
+
+![你说，这像太阳吗？](/posts/Vue-js-前端项目容器化部署实践极简教程/light-like-a-sun.jpg)
+
+首先，我们来编写 `Dockerfile`，这里采用的是多阶段构建的做法，第一个阶段，即 `build`，主要是利用 [node.js](https://nodejs.org/en/) 基础镜像来实现前端项目的发布，所以，你可以看到 `package.json`、`npm install` 以及考虑到国情的 `cnpm install` 这些前端项目中喜闻乐见的东西，安装完依赖以后我们通过 `npm run build` 来完成打包，这取决于你项目中实际使用的脚本或者命令，如果你不喜欢 `npm`，你同样可以用 `yarn` 来编写这些指令，只要你喜欢就好。做人嘛，最重要的是开心！
+
+```dockfile
+# build
+FROM node:lts-alpine as build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install -g cnpm --registry=https://registry.npm.taobao.org
+RUN cnpm install
+COPY . .
+RUN npm run build
+
+# deploy
+FROM nginx:stable-alpine as deploy
+COPY --from=build /app/dist/ /usr/nginx/wwwroot
+COPY /nginx/nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+OK，第二个阶段，即 `deploy`，前端发布出来的产物是无法直接在浏览器里打开的，这一点你平时用 [Vue.js](https://vuejs.org/) 的脚手架的话应该会注意到。所以，此时我们需要一个静态文件服务器来托管这些产物，这些产物通常会被放到 `dist` 目录，因此，在这一阶段主要就是把这个目录里的内容拷贝到 [Nginx](https://nginx.org/en/) 下面，这里我们用的是 `wwwroot`。当然，如果你还怀念曾经的 LAMP 組合，同样可以替换为 [Apache](https://apache.org/)。我们在这个世界的一切努力，无非是为了比别人多一种选择，甚至有时候你完全没有选择。可是在计算机的世界里，你可以尽情地去创造，而这则是我的选择，从我高中在班级电脑上写出第一个 Visual Basic 程序开始，我庆幸能一直坚持这份热爱到现在。
+
+```conf
+worker_processes 1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include  mime.types;
+    default_type  application/octet-stream;
+    sendfile  on;
+    keepalive_timeout  65;
+    server {
+        listen  80;
+        server_name  localhost;
+        root /usr/nginx/wwwroot;
+        index index.html;
+    }
+}
+```
+
+这里提到了 `Nginx`，那么，自然而然地，对于 `Nginx` 的配置问题就无可避免。可惜，事实是：**每一个声称配置文件更灵活的人，从来都不会去摆弄配置文件，只有程序员天天和这些配置文件打交道**。幸运的是，对于简单的静态文件服务器而言，它的配置并不算特别复杂，还记得前面的  `wwwroot` 吗？其实，它是在这里定义的，对应了 `server` 节点中的 `root` 属性，从这里我们可以看到，容器内部默认监听 80 端口，默认页面是 index.html。如果你现在还不太了解 Nginx 的配置文件，相信我，这几个配置已足够你快速上手啦！我不大愿意再写教程的原因是，我不喜欢每个步骤都要截图，并且还要在图上做好标记。显然，对于程序员而言，懒惰是一种美德。
+
+```yaml
+version: "3.8"
+
+services:
+  font_mock:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: font_mock
+    ports:
+      - "50001:80"
+    volumes:
+      - '/etc/localtime:/etc/localtime:ro'
+    networks:
+      envoymesh:
+networks:
+  envoymesh: {}
+```
+
+好了，现在万事具备，我们再来写一个 `docker-compose.yaml` 来对服务进行编排，可以注意到，我们把 `50001` 端口绑定到了 `80` 端口，这就和前面呼应上了，对不对？剩下的就没什么好说的啦，不再一一赘述，如果你看不懂，可以先去了解一下 [docker-compose](https://docs.docker.com/compose/)。此时，我们运行 `docker-compose up` 命令，就可以看到下面的结果：
+
+![通过 Docker 部署前端项目](/posts/Vue-js-前端项目容器化部署实践极简教程/Vue.js-With-Docker.png)
+
+没错，我为了节省写作时间，直接使用了 [在 Vue.js 中使用 Mock.js 实现接口模拟](/posts/interface-mock-implemention-using-mock.js-in-vue.js/) 这篇文章里的项目，果然，我再次完美发扬了 “懒惰” 这种优良美德，总而言之，到这里我们已经成功地通过容器技术部署了一个前端项目，在这个基础上，你还可以接入 `Envoy` 这个代理层 或者 是为 `Nginx` 添加 `SSL` 证书等等...当然，这些都是后话啦，各位比我聪明千倍、万倍的读者朋友们可以进一步去完善它，这篇短浅易懂的文章就当作诸位的入门教程好啦，愿「他山之石，可以攻玉」，谢谢大家，本文完！

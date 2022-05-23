@@ -87,5 +87,66 @@ networks:
 ![通过 Docker 部署前端项目](/posts/Vue-js-前端项目容器化部署实践极简教程/Vue.js-With-Docker.png)
 
 没错，我为了节省写作时间，直接使用了 [在 Vue.js 中使用 Mock.js 实现接口模拟](/posts/interface-mock-implemention-using-mock.js-in-vue.js/) 这篇文章里的项目，果然，我再次完美发扬了 “懒惰” 这种优秀的美德，总而言之，到这里我们已经成功地通过容器技术部署了一个前端项目，在这个基础上，你还可以接入 `Envoy` 这个代理层 或者 是为 `Nginx` 添加 `SSL` 证书等等...当然，这些都是后话啦，各位比我聪明千倍、万倍的读者朋友们可以进一步去完善它，这篇短浅易懂的文章就当作诸位的入门教程好啦，愿「他山之石，可以攻玉」，谢谢大家，本文完！
+ 
+```bash
+# 创建 CA 密钥
+openssl genrsa -out ca.key 1024
+# 利用 CA 密钥生成自签名 CA 证书
+openssl req -new -x509 -days 3650 -key ca.key -out ca.crt
+# 创建服务器端证书密钥
+openssl genrsa -des3 -out server.key 1024
+# 生成服务器端证书
+openssl req -new -key server.key -out server.csr
+# 利用 CA 证书对服务器端证书进行签名
+openssl ca -in server.csr -out server.crt -cert ca.crt -keyfile ca.key
+```
+
+此时，我们会得到服务器端证书文件 `server.crt` 以及密钥文件 `server.key`，我们将其配置到 `Nginx` 中即可，下面是修改后的 `Nginx` 配置文件：
+
+```conf
+worker_processes 1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+ 
+    sendfile        on;
+    keepalive_timeout  65;
+ 
+    server {
+        listen  80;
+        listen  443 ssl;
+        server_name  localhost;
+        
+        # 证书文件
+        ssl_certificate      /usr/nginx/ssl/server.crt;
+        # 密钥文件
+        ssl_certificate_key  /usr/nginx/ssl/server.key;
+        # SSL 会话缓存大小为：1M
+        ssl_session_cache    shared:SSL:1m;
+        # SSL 会话超时时间为：5min
+        ssl_session_timeout  5m;
+        # 支持 TLS1.0/1.1/1.2 三个版本
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers  HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers  on;
+
+        root /usr/nginx/wwwroot;
+        index index.html;
+    }
+}
+```
+
+需要注意的是，在创建证书时，对应的 `Common Name` 应该和网站的域名保持一致，这里的示例域名为：`https://www.snowfly.com`，在本地调试的时候，我们可以通过修改 `hosts` 文件来进行测试：
+
+![通过 OpenSSL 创建证书](/posts/Vue-js-前端项目容器化部署实践极简教程/OpenSSL_Certificates.png)
+
+通常，你需要把自己创建的证书导入到 `受信任的根证书颁发机构` 这个分类下面，这样，就可以通过 `HTTPS` 协议访问你的站点啦！
+
+![在浏览器中查看 HTTPS 证书](/posts/Vue-js-前端项目容器化部署实践极简教程/OpenSSL_Certificates_2.png)
 
 > 番外预告！！！接下来会写一篇关于 ASP.NET Core 单元/集成测试的文章，敬请期待！

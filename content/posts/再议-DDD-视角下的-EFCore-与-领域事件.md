@@ -91,7 +91,7 @@ public class OrderInfoCreatedEvent : DomainEvent
 }
 
 // DomainEvent 实现了 IDomainEvent 接口
-public class DomainEvent : 
+public class DomainEvent : IDomainEvent
 {
     public Guid EventId { get; set; } = Guid.NewGuid();
 }

@@ -210,6 +210,7 @@ using (var server = host.GetTestServer())
         .GetRequiredService<MessageSrv.MessageSrvClient>();
     var messages = (await messageSrvClient.GetAllMessagesAsync()).Notes;
     Assert.True(messages.Count > 0);
+}
 ```
 
 截至到目前，在最新的 `.NET 6.0` 这一版本中，我们还可以使用 `WebApplicationFactory` 来进行测试，它主要的改进点是消除了对 `Startup` 类的需求，允许你直接使用 `Program` 这个入口类：
@@ -233,7 +234,7 @@ var client = application.CreateClient();
 在写测试的过程中，如果每次都创建一个 `TestServer`，不单单麻烦，而且效率非常低，所以，微软官方的建议是让测试类实现 `IClassFixture<TFixture>` 接口，这是 [xUnit](https://xunit.net/) 中的一个特性，其作用是让 `TFixture` 这个具体的类型，在运行第一个测试用例前被初始化。而如果 `TFixture` 这个类型实现了 `IDisposable` 接口，则 `xUnit` 会在运行最后一个测试用例后调用其 `Dispose()` 方法。直白一点的说法就是，它解决的是测试类中共享的数据如何初始化、如何销毁的问题，对我们而言，我们当然希望 `TestServer` 只初始化一次，下面是一个基本的示例：
 
 ```csharp
- public class WebAppTest : IClassFixture<WebApplicationFactory<Startup>>
+public class WebAppTest : IClassFixture<WebApplicationFactory<Startup>>
 {
     private readonly WebApplicationFactory<Startup> _factory;
     public WebAppTest(WebApplicationFactory<Startup> factory)

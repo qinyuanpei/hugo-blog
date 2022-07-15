@@ -97,7 +97,6 @@
     color: var(--card-text-color-tertiary);
     gap: 15px;
     margin-top: 10px;
-    flex-wrap: wrap;
 
     svg {
         vertical-align: middle;
@@ -142,10 +141,10 @@
     border-radius: var(--card-border-radius);
     box-shadow: var(--shadow-l1);
     background-color: var(--card-background);
-    --image-size: 50px;
+    --image-size: 100px;
 
     @include respond(md) {
-        --image-size: 60px;
+        --image-size: 100px;
     }
 
     & + .pagination {
@@ -153,6 +152,8 @@
     }
 
     article {
+        display: flex;
+        
         & > a {
             display: flex;
             align-items: center;
@@ -180,15 +181,38 @@
         }
 
         .article-image {
+            margin-right: 15px;
             img {
                 width: var(--image-size);
                 height: var(--image-size);
-                object-fit: cover;
+                object-fit: scale-down;
             }
         }
 
         .article-time {
             font-size: 1.4rem;
+
+            .categories {
+                a {
+                    margin-left: 0.5px;
+                    margin-right: 0.5px;
+                }
+
+                @media (max-width: 1280px) {
+                    display: none;
+                }
+            }
+
+            .tags {
+                a {
+                    margin-left: 3px;
+                    margin-right: 3px;
+                }
+                
+                @media (max-width: 1280px) {
+                    display: none;
+                }
+            }
         }
 
         .article-preview {

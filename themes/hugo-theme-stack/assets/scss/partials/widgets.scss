@@ -16,19 +16,21 @@
         flex-wrap: wrap;
 
         a {
-            background: var(--card-background);
-            box-shadow: var(--shadow-l1);
-            border-radius: var(--tag-border-radius);
-            padding: 8px 20px;
+            background: var(--body-background);
 
-            color: var(--card-text-color-main);
+            padding: 8px 20px;
+            color:  rgba(51,65,85,1);
             margin-bottom: 10px;
             margin-right: 5px;
             font-size: 1.4rem;
             transition: box-shadow 0.3s ease;
 
             &:hover {
+                color: #fff;
                 box-shadow: var(--shadow-l2);
+                background: rgba(51,65,85,1);
+                box-shadow: var(--shadow-l1);
+                border-radius: var(--tag-border-radius);
             }
         }
     }

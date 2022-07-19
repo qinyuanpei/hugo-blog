@@ -2,9 +2,10 @@
     {{ if .Params.categories }}
     <header class="article-category">
         {{ range (.GetTerms "categories") }}
-            <a href="{{ .RelPermalink }}" {{ with .Params.style }}style="background-color: {{ .background }}; color: {{ .color }};"{{ end }}>
-                {{ .LinkTitle }}
-            </a>
+        <a href="{{ .RelPermalink }}" {{ with .Params.style
+            }}style="background-color: {{ .background }}; color: {{ .color }};" {{ end }}>
+            {{ .LinkTitle }}
+        </a>
         {{ end }}
     </header>
     {{ end }}
@@ -15,31 +16,59 @@
         </a>
     </h2>
 
-    {{ with .Params.description }}
+    {{ with .Summary }}
     <h3 class="article-subtitle">
-        {{ . }}
+        {{ . | plainify }}
     </h3>
     {{ end }}
 
     {{ if or (not .Date.IsZero) (.Site.Params.article.readingTime) }}
     <footer class="article-time">
         {{ if not .Date.IsZero }}
-            <div>
-                {{ partial "helper/icon" "date" }}
-                <time class="article-time--published">
-                    {{- .Date.Format (or .Site.Params.dateFormat.published "Jan 02, 2006") -}}
-                </time>
-            </div>
+        <div>
+            {{ partial "helper/icon" "date" }}
+            <time class="article-time--published">
+                {{- .Date.Format (or .Site.Params.dateFormat.published "Jan 02, 2006") -}}
+            </time>
+        </div>
         {{ end }}
 
         {{ if .Site.Params.article.readingTime }}
-            <div>
-                {{ partial "helper/icon" "clock" }}
-                <time class="article-time--reading">
-                    {{ T "article.readingTime" .ReadingTime }}
-                </time>
-            </div>
+        <div>
+            {{ partial "helper/icon" "clock" }}
+            <time class="article-time--reading">
+                {{ T "article.readingTime" .ReadingTime }}
+            </time>
+        </div>
         {{ end }}
     </footer>
     {{ end }}
 </div>
+{{- $image := partialCached "helper/image" (dict "Context" . "Type" "article") .RelPermalink "article" -}}
+{{ if $image.exists }}
+<div class="article-image"
+    style="align-items: flex-end; align-content: flex-end; margin-left: auto; margin-right: 30px;">
+    <a href="{{ .RelPermalink }}">
+        {{ if $image.resource }}
+        {{- $Permalink := $image.resource.RelPermalink -}}
+        {{- $Width := $image.resource.Width -}}
+        {{- $Height := $image.resource.Height -}}
+        {{- $Srcset := "" -}}
+
+        {{- if (default true .Page.Site.Params.imageProcessing.cover.enabled) -}}
+        {{- $thumbnail := $image.resource.Resize "800x" -}}
+        {{- $thumbnailRetina := $image.resource.Resize "1600x" -}}
+        {{- $Srcset = printf "%s 800w, %s 1600w" $thumbnail.RelPermalink $thumbnailRetina.RelPermalink -}}
+        {{- $Permalink = $thumbnail.RelPermalink -}}
+        {{- $Width = $thumbnail.Width -}}
+        {{- $Height = $thumbnail.Height -}}
+        {{- end -}}
+
+        <img src="{{ $Permalink }}" {{ with $Srcset }}srcset="{{ . }}" {{ end }} width="{{ $Width }}"
+            height="{{ $Height }}" loading="lazy" alt="Featured image of post {{ .Title }}" />
+        {{ else }}
+        <img src="{{ $image.permalink }}" loading="lazy" alt="Featured image of post {{ .Title }}" />
+        {{ end }}
+    </a>
+</div>
+{{ end }}

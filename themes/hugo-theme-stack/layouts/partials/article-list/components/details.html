@@ -46,8 +46,7 @@
 </div>
 {{- $image := partialCached "helper/image" (dict "Context" . "Type" "article") .RelPermalink "article" -}}
 {{ if $image.exists }}
-<div class="article-image"
-    style="align-items: flex-end; align-content: flex-end; margin-left: auto; margin-right: 30px;">
+<div class="article-image">
     <a href="{{ .RelPermalink }}">
         {{ if $image.resource }}
         {{- $Permalink := $image.resource.RelPermalink -}}

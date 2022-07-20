@@ -198,7 +198,7 @@ params:
     jsdelivr:
         enable: true
         gh_user: qinyuanpei
-        gh_repo: hugo-blog
+        gh_repo: blog.yuanpei.me
         baseUrl: cdn.jsdelivr.net
 
     siteValidation:

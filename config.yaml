@@ -322,7 +322,7 @@ markup:
         startLevel: 1
     highlight:
         noClasses: false
-        lineNos: true
+        lineNos: false
         lineNumbersInTable: false
         tabWidth: 4
 

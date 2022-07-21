@@ -1,4 +1,4 @@
----
+﻿---
 abbrlink: 3742212493
 categories:
 - 数据存储
@@ -21,20 +21,20 @@ title: 使用 Liquid 实现简单的数据交换
 首先，我们来介绍[Liquid](https://shopify.github.io/liquid)，通过它的官方网站，我们应该它是一门模板语言。对于模板语言，我们应该是非常熟悉啦，JavaScript 里的[Handlebars](https://handlebarjs.com)和[Ejs](https://ejs.bootcss.com)就是非常著名的模板语言。如大家所见，这个博客就是用 `Ejs` 模板渲染出来的。而到了三大前端框架并驾齐驱的时代，模版语法依然被保留了下来，比如 `Vue` 中 `{% raw %}{{model.userName}}{% endraw %}` 标记常常用来做文本插值。所以，如果要认真追溯起来的话，也许这些框架都或多或少的收到了 `Liquid` 的影响，因为它的基本语法如下：
 
 ```plain
-//使用page实例的title属性插值
+// 使用page实例的title属性插值
 {{ page.title}}
 ```
 
 假设 page 是一个对象，它的 title 属性值为：Introduction，此时，渲染后的结果即为：Introduction。是不是感觉非常简单呢? 我们继续往下看。除了基本的“插值”语法以外，我们可以用 `{% raw %}{% tag %}{% endraw %}` 这种结构(Liquid 称之为 Tag)：
 
 ```plain
-//声称变量author并赋值
+// 声称变量author并赋值
 {% sssign author = '猫先森' %}
-//条件语句
+// 条件语句
 {% if author == '猫先森' %}
 帅哥，你好
 {% endif %}
-//循环语句
+// 循环语句
 {% for post in posts %}
 {{post.date}}-{{post.title}}
 {% endfor %}
@@ -61,9 +61,9 @@ OK, 我们把思绪拉回到 `Liquid` 。除了使用各种 Tag 实现流程控�
 ```plain
 //对绑定的变量或者值取绝对值
 {{ -17 | abs}}
-//保留小数位
+// 保留小数位
 {{ 183.357 | round: 2 }}
-//日期/时间格式
+// 日期/时间格式
 {{ article.created_date | data: %b %d, %Y}}
 ```
 

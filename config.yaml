@@ -55,6 +55,16 @@ params:
         toc: true
         readingTime: true
         sharejs: true
+        reward: 
+            enabled: true
+            providers:
+                - id: wechat
+                  src: /imgs/reward/wechat.jpg
+                  desc: 微信打赏
+                - id: alipay
+                  src: /imgs/reward/alipay.jpg
+                  desc: 支付宝打赏
+
         license:
             enabled: true
             default: CC BY-NC-SA 4.0
@@ -323,8 +333,6 @@ markup:
     highlight:
         noClasses: false
         lineNos: false
-        lineNumbersInTable: false
-        tabWidth: 4
 
 
 frontmatter:

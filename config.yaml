@@ -21,6 +21,8 @@ hasCJKLanguage: true
 summaryLength: 120
 disablePathToLower: false
 
+enableGitInfo: true
+
 permalinks:
     post: /posts/:slug/
     page: /:slug/
@@ -323,3 +325,12 @@ markup:
         lineNos: true
         lineNumbersInTable: false
         tabWidth: 4
+
+
+frontmatter:
+  lastmod:
+  - lastmod
+  - :fileModTime
+  - :git
+  - :default
+

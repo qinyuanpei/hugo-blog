@@ -1,7 +1,7 @@
 ﻿baseurl: https://blog.yuanpei.me/
 languageCode: en-us
 theme: hugo-theme-stack
-paginate: 10
+paginate: 15
 title: 素履独行
 
 # Change it to your Disqus shortname before using

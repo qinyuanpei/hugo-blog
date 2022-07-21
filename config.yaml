@@ -329,6 +329,8 @@ markup:
 
 frontmatter:
   lastmod:
+  - lastmod
   - :git
+  - :fileModTime
   - :default
 

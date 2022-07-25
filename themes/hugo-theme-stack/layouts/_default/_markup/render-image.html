@@ -1,5 +1,4 @@
 {{- $image := .Page.Resources.GetMatch (printf "%s" (.Destination | safeURL)) -}}
-{{ printf "%#v" $image }}
 {{- $Permalink := .Destination | relURL | safeURL -}}
 {{- $publicCDN := cond .Page.Site.IsServer "" .Page.Site.Params.publicCDN -}}
 

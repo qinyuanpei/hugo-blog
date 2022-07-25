@@ -33,6 +33,7 @@ params:
     featuredImageField: image
     rssFullContent: true
     favicon:
+    publicCDN: //cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master
 
     footer:
         since: 2014

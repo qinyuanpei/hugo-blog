@@ -1,7 +1,6 @@
 {{- $image := .Page.Resources.GetMatch (printf "%s" (.Destination | safeURL)) -}}
 {{- $Permalink := .Destination | relURL | safeURL -}}
-{{- $Permalink := replace $Permalink "/http:/" "http://" 1 -}}
-{{- $Permalink := replace $Permalink "/https:/" "https://" 1 -}}
+{{- $publicCDN := cond .Page.Site.IsServer "" .Page.Site.Params.publicCDN -}}
 
 {{- $alt := .PlainText | safeHTML -}}
 {{- $Width := 0 -}}
@@ -27,6 +26,8 @@
 		{{- end -}}
 	{{- end -}}
 {{- end -}}
+
+{{- $Permalink := print $publicCDN $Permalink -}}
 
 <figure 
 	{{ if $galleryImage }}

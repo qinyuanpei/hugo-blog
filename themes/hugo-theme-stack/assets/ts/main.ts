@@ -8,6 +8,7 @@
 import StackGallery from "ts/gallery";
 import { getColor } from 'ts/color';
 import menu from 'ts/menu';
+import lazyLoad from 'ts/lazyLoad'
 import createElement from 'ts/createElement';
 import StackColorScheme from 'ts/colorScheme';
 import { setupScrollspy } from 'ts/scrollspy';
@@ -19,6 +20,8 @@ let Stack = {
          * Bind menu event
          */
         menu();
+
+        lazyLoad();
 
         const articleContent = document.querySelector('.article-content') as HTMLElement;
         if (articleContent) {

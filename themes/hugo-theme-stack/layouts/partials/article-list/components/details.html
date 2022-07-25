@@ -46,6 +46,7 @@
 </div>
 {{- $publicCDN := cond .Page.Site.IsServer "" .Page.Site.Params.publicCDN -}}
 {{- $image := partialCached "helper/image" (dict "Context" . "Type" "article") .RelPermalink "article" -}}
+{{- $loadingImage := print ("/imgs/loading.gif" | relURL) -}}
 {{ if $image.exists }}
 <div class="article-image">
     <a href="{{ .RelPermalink }}">
@@ -70,7 +71,7 @@
         {{ else }}
         {{- $isInternal := eq (slicestr $image.permalink 0 1) "/" -}}
         {{- $cdnURL := cond $isInternal (print $publicCDN $image.permalink) ($image.permalink) -}}
-        <img src="{{ $cdnURL }}" loading="lazy" alt="Featured image of post {{ .Title }}" />
+        <img src="{{ $loadingImage }}"  data-src="{{ $cdnURL}}" loading="lazy" alt="Featured image of post {{ .Title }}" />
         {{ end }}
     </a>
 </div>

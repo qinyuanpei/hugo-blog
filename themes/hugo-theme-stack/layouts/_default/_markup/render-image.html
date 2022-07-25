@@ -1,6 +1,7 @@
 {{- $image := .Page.Resources.GetMatch (printf "%s" (.Destination | safeURL)) -}}
 {{- $Permalink := .Destination | relURL | safeURL -}}
 {{- $publicCDN := cond .Page.Site.IsServer "" .Page.Site.Params.publicCDN -}}
+{{- $loadingImage := print ("/imgs/loading.gif" | relURL) -}}
 
 {{- $alt := .PlainText | safeHTML -}}
 {{- $Width := 0 -}}
@@ -37,11 +38,12 @@
 			flex-basis: {{ div (mul $image.Width 240) $image.Height }}px"
 	{{ end }}>
 	<a href="{{ $Permalink }}" {{ if $galleryImage }}data-size="{{ $image.Width }}x{{ $image.Height }}"{{ end }}>
-		<img src="{{ $Permalink }}"
+		<img src="{{ $loadingImage }}"
 			{{ with $Width }}width="{{ . }}"{{ end }}
 			{{ with $Height }}height="{{ . }}"{{ end }}
 			{{ with $Srcset }}srcset="{{ . }}"{{ end }}
 			loading="lazy"
+            data-src="{{ $Permalink }}"
 			{{ with $alt }}alt="{{ . }}"{{ end }}>
 	</a>
 	{{ with $alt }}

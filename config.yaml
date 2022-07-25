@@ -59,10 +59,10 @@ params:
             enabled: true
             providers:
                 - id: wechat
-                  src: /imgs/reward/wechat.jpg
+                  src: //cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master/imgs/reward/wechat.jpg
                   desc: 微信打赏
                 - id: alipay
-                  src: /imgs/reward/alipay.jpg
+                  src: //cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master/imgs/reward/alipay.jpg
                   desc: 支付宝打赏
 
         license:

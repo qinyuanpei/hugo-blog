@@ -12,7 +12,7 @@ tags:
 - 思考
 title: 支持外部链接跳转的 Vue Router 扩展实现
 toc: true
-image: /posts/支持外部链接跳转的-Vue-Router-扩展实现/cover.jpeg
+image: //cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master/posts/支持外部链接跳转的-Vue-Router-扩展实现/cover.jpeg
 ---
 
 众所周知，[Vue Router](https://v3.router.vuejs.org/zh/installation.html) 是 [Vue](https://cn.vuejs.org/) 中重要的插件之一，特别是在当下流行的 [单页面应用/SPA](https://docs.microsoft.com/zh-cn/aspnet/single-page-application/overview/) 中，这种感觉会越来越明显。此时，路由的作用就是根据 `URL` 来决定要显示什么内容。诚然，页面这个概念在工程/模块中依然存在，可当你开始关注最终发布的产物时，你会发现本质上它只有一个页面。无论你选择 `hash` 或者是 `history` 模式的路由，它都像是在同一张纸上反复写写画画，让你看起来觉得它有很多个不同的页面。回顾早期的前端项目，它往往会有多个不同的页面组成，我们是通过一个个的超链接来实现不同页面间的跳转。如今，这一切都已一去不复返，我们只能在单页面应用的世界里继续披荆斩棘。当然，绝大多数的普通用户无法感知到这种程度的变化，在他们的眼中，那依然不过是普通的一个超链接。那么，当一个项目中充斥着各种各样的超链接的时候，这个问题就值得我们单独拿出来讲一讲。所以，今天这篇博客的主题是路由和外部链接。请注意，这是一组相对通用的概念，不受限于任何一个前端框架，我们只是选择了使用 `Vue` 来进行说明。

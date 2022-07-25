@@ -1,3 +1,4 @@
+{{- $loadingImage := print ("/imgs/loading.gif" | relURL) -}}
 <div class="works-item">
     <div class="title">
         <h3>{{ .title }}</h3>
@@ -6,7 +7,7 @@
         </span>
     </div>
     <div class="works-item-img">
-        <img src="{{ .cover }}">
+        <img src="{{ .cover }}" loading="lazy" data-src="{{ .cover }}">
     </div>
     <div class="works-content">
         <div class="use text-warning">

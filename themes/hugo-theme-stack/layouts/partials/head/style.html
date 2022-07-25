@@ -1,7 +1,7 @@
 {{ $sass := resources.Get "scss/style.scss" }}
 {{ $style := $sass | resources.ToCSS | minify | resources.Fingerprint "sha256" }}
 {{ $jsdelivr := .Site.Params.jsdelivr }}
-{{ if and $jsdelivr $jsdelivr.enable }}
+{{ if and $jsdelivr $jsdelivr.enable (ne .Page.Site.IsServer true) }}
 <link rel="stylesheet" href="//{{ $jsdelivr.baseUrl }}/gh/{{ $jsdelivr.gh_user }}/{{ $jsdelivr.gh_repo }}@master{{ $style.RelPermalink }}">
 {{ else }}
 <link rel="stylesheet" href="{{ $style.RelPermalink }}">

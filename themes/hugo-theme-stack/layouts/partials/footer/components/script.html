@@ -4,7 +4,7 @@
 {{- $script := resources.Get "ts/main.ts" | js.Build $opts -}}
 
 {{ $jsdelivr := .Site.Params.jsdelivr }}
-{{ if and $jsdelivr $jsdelivr.enable }}
+{{ if and $jsdelivr $jsdelivr.enable (ne .Page.Site.IsServer true) }}
 <script type="text/javascript" src="//{{ $jsdelivr.baseUrl }}/gh/{{ $jsdelivr.gh_user }}/{{ $jsdelivr.gh_repo }}@master{{ $script.RelPermalink }}" defer></script>
 {{ else }}
 <script type="text/javascript" src="{{ $script.RelPermalink }}" defer></script>

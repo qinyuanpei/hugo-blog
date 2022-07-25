@@ -1,4 +1,5 @@
 {{- $image := .Page.Resources.GetMatch (printf "%s" (.Destination | safeURL)) -}}
+{{ printf "%#v" $image }}
 {{- $Permalink := .Destination | relURL | safeURL -}}
 {{- $publicCDN := cond .Page.Site.IsServer "" .Page.Site.Params.publicCDN -}}
 
@@ -25,9 +26,9 @@
 			{{- $Srcset = printf `%s 480w, %s 1024w` $small.RelPermalink $big.RelPermalink -}}
 		{{- end -}}
 	{{- end -}}
-{{- end -}}
-
+{{- else -}}
 {{- $Permalink := print $publicCDN $Permalink -}}
+{{- end -}}
 
 <figure 
 	{{ if $galleryImage }}

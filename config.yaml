@@ -207,9 +207,12 @@ params:
             enabled: true
         content:
             enabled: true
-
+    
+    debugger:
+        enable: true
+        
     jsdelivr:
-        enable: false
+        enable: true
         gh_user: qinyuanpei
         gh_repo: blog.yuanpei.me
         baseUrl: cdn.jsdelivr.net
@@ -342,4 +345,6 @@ frontmatter:
   - :git
   - :fileModTime
   - :default
+
+  
 

@@ -40,6 +40,7 @@
                     <li>
                         <a 
                             href='{{ .URL | relLangURL }}'
+                            rel="noreferrer"
                             {{ if eq (default true .Params.newTab) true }}target="_blank"{{ end }}
                             {{ with .Name }}title="{{ . }}"{{ end }}
                         >

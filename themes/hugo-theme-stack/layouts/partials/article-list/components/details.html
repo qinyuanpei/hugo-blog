@@ -72,7 +72,6 @@
         {{- $isInternal := eq (slicestr $image.permalink 0 1) "/" -}}
         {{- $enableCDN := .Site.Params.jsdelivr.enable }}
         {{- $cdnURL := cond (and $isInternal $enableCDN) (print $publicCDN $image.permalink | safeURL) ($image.permalink | safeURL) -}}
-        {{- printf "%#v" (print $publicCDN $image.permalink | safeURL) -}}
         <img src="{{ $loadingImage }}"  data-src="{{ $cdnURL | safeURL }}" loading="lazy" alt="Featured image of post {{ .Title }}" />
         {{ end }}
     </a>

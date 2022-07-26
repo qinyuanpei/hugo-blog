@@ -1,4 +1,4 @@
-toggleMenu:
+﻿toggleMenu:
     other: 切换菜单
 
 darkMode:
@@ -26,7 +26,7 @@ article:
         other: 相关文章
 
     lastUpdatedOn:
-        other: 最后更新于
+        other: 最后更新: 
 
     readingTime:
         other: "阅读时长: {{ .Count }} 分钟"

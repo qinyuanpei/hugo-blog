@@ -27,7 +27,8 @@
 		{{- end -}}
 	{{- end -}}
 {{- else -}}
-{{- $Permalink := print $publicCDN $Permalink -}}
+{{- $enableCDN := .Page.Site.Params.jsdelivr.enable -}}
+{{- $Permalink := cond $enableCDN (print $publicCDN $Permalink) $Permalink -}}
 {{- end -}}
 
 <figure 

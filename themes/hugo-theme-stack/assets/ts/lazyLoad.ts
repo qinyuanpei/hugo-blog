@@ -12,7 +12,8 @@ let lazyLoad = function(imgs) {
     for (var i = 0; i < imgs.length; i++) {
         if (H + S > getTop(imgs[i])) {
             if (imgs[i].getAttribute('loading') == 'lazy' && imgs[i].getAttribute('data-src')) {
-                let src = decodeURIComponent(imgs[i].getAttribute('data-src'))
+                let src = decodeURI(imgs[i].getAttribute('data-src'))
+                console.log(src)
                 imgs[i].src = src
             }
         }

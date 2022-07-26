@@ -55,7 +55,7 @@ params:
         math: true
         toc: true
         readingTime: true
-        sharejs: true
+        sharejs: false
         reward: 
             enabled: true
             providers:
@@ -68,7 +68,7 @@ params:
 
         license:
             enabled: true
-            default: CC BY-NC-SA 4.0
+            default: BY-NC-SA 4.0
 
     comments:
         enabled: true
@@ -191,7 +191,7 @@ params:
 
     defaultImage:
         opengraph:
-            enabled: false
+            enabled: true
             local: false
             src:
 

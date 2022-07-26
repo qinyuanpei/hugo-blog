@@ -70,7 +70,8 @@
             height="{{ $Height }}" loading="lazy" alt="Featured image of post {{ .Title }}" />
         {{ else }}
         {{- $isInternal := eq (slicestr $image.permalink 0 1) "/" -}}
-        {{- $cdnURL := cond $isInternal (print $publicCDN $image.permalink | safeURL) ($image.permalink | safeURL) -}}
+        {{- $enableCDN := .Site.Params.jsdelivr.enable }}
+        {{- $cdnURL := cond (and $isInternal  $enableCDN) (print $publicCDN $image.permalink | safeURL) ($image.permalink | safeURL) -}}
         <img src="{{ $loadingImage }}"  data-src="{{ $cdnURL | safeURL }}" loading="lazy" alt="Featured image of post {{ .Title }}" />
         {{ end }}
     </a>

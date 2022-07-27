@@ -45,7 +45,6 @@
     {{ end }}
 </div>
 {{- $publicCDN := cond .Page.Site.IsServer "" .Page.Site.Params.publicCDN -}}
-{{- $publicCDN := .Page.Site.Params.publicCDN -}}
 {{- $image := partialCached "helper/image" (dict "Context" . "Type" "article") .RelPermalink "article" -}}
 {{- $loadingImage := print ("/imgs/loading.gif" | relURL) -}}
 {{ if $image.exists }}

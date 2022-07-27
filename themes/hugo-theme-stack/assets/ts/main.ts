@@ -16,12 +16,11 @@ import { setupSmoothAnchors } from "ts/smoothAnchors";
 
 let Stack = {
     init: () => {
+        lazyLoad();
         /**
          * Bind menu event
          */
         menu();
-
-        lazyLoad();
 
         const articleContent = document.querySelector('.article-content') as HTMLElement;
         if (articleContent) {

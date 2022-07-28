@@ -1,6 +1,8 @@
 ﻿---
 title: 友情链接
 slug: links
+layout: links
+comments: true
 links:
   - title: 阮一峰的网络日志
     description: 阮一峰的网络日志

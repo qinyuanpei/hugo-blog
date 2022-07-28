@@ -1,0 +1,45 @@
+{{ define "body-class" }}
+{{ $TOCEnabled := default (default false .Site.Params.article.toc) .Params.toc }}
+{{- .Scratch.Set "hasTOC" (and (ge (len .TableOfContents) 100) $TOCEnabled) -}}
+article-page
+{{ end }}
+
+{{ define "container-class" }}
+on-phone--column {{ if .Site.Params.widgets.enabled }}extended{{ else }}compact{{ end }}
+{{ end }}
+
+{{ define "main" }}
+<header>
+    <div class="container">
+        <h1>{{ .Title }}</h1>
+        <p class="subtitle">{{ .Params.subtitle }}</p>
+    </div>
+</header>
+<article class="{{ if .Params.image }}has-image {{ end }}main-article">
+    <section class="article-content">
+        <!-- Refer to https://discourse.gohugo.io/t/responsive-tables-in-markdown/10639/5 -->
+        {{ $wrappedTable := printf "<div class=\"table-wrapper\">${1}</div>" }}
+        {{ .Content | replaceRE "(<table>(?:.|\n)+?</table>)" $wrappedTable | safeHTML }}
+    </section>
+    <section>
+        {{ partial "article/components/links" . }}
+    </section>
+    
+</article>
+{{ partial "comments/include" . }}
+{{ partialCached "footer/footer" . }}
+{{ end }}
+
+{{ define "left-sidebar" }}
+<div id="article-toolbar">
+    <a href="{{ .Site.BaseURL | relLangURL }}" class="back-home">
+        {{ (resources.Get "icons/back.svg").Content | safeHTML }}
+        <span>{{ T "article.back" }}</span>
+    </a>
+</div>
+{{ partialCached "sidebar/left.html" . }}
+{{ end }}
+
+{{ define "right-sidebar" }}
+{{ partial "sidebar/right.html" . }}
+{{ end }}

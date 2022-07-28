@@ -28,6 +28,7 @@ on-phone--column {{ if .Site.Params.widgets.enabled }}extended{{ else }}compact{
 </article>
 {{ partial "comments/include" . }}
 {{ partialCached "footer/footer" . }}
+{{ partialCached "article/components/photoswipe" . }}
 {{ end }}
 
 {{ define "left-sidebar" }}

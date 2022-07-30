@@ -2,7 +2,7 @@
 {{ $type := (.Get "type") }}
 {{ $url := (printf "https://movie.querydata.org/api?id=%s" $id) }}
 {{- $opts := dict "minify" hugo.IsProduction "JSXFactory" "createElement" -}}
-{{- $doubanScript := resources.Get "ts/douban.tsx" | js.Build $opts -}}
+{{- $doubanScript := resources.Get "ts/douban.ts" | js.Build $opts -}}
 <script type="text/javascript" src="{{ $doubanScript.RelPermalink }}"></script>
 <script type="text/javascript">
     new window.DoubanCard('{{ $id }}', '{{ $url }}', '{{ $type }}');

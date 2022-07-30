@@ -67,4 +67,5 @@ class DoubanCard {
     }
 }
 
-export default DoubanCard;
+window.DoubanCard = DoubanCard
+export default window.DoubanCard;

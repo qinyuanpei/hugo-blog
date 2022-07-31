@@ -1,0 +1,44 @@
+{{ define "main" }}
+
+<header>
+    <div class="container">
+        <h1>{{ .Title }}</h1>
+        <p class="subtitle">{{ .Params.subtitle }}</p>
+    </div>
+</header>
+
+<section>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"></script>
+    <script src="/plugins/echarts-wordcloud.js"></script>
+    <div id="container" class="statics-container">
+        <div id="chart1" class="statics-chart-item"></div>
+        <div id="chart2" class="statics-chart-item"></div>
+        <div id="chart3" class="statics-chart-item"></div>
+        <div id="chart4" class="statics-chart-item"></div>
+    </div>
+    {{- $opts := dict "minify" hugo.IsProduction "JSXFactory" "createElement" -}}
+    {{- $staticsScript := resources.Get "ts/statics.ts" | js.Build $opts -}}
+    <script type="text/javascript" src="{{ $staticsScript.RelPermalink }}"></script>
+    <script>
+        fetch('/search/index.json')
+            .then(function (res) {
+                res.json().then(function (data) {
+                    var result = handleData(data);
+                    handleYearlyChart('chart1', result);
+                    handleCategoryChart('chart2', result);
+                    handleTagsChart('chart3', result);
+                });
+            })
+            .catch(function (err) {
+                console.log('Fetch Error : %S', err);
+            })
+    </script>
+</section>
+
+{{ partialCached "footer/footer" . }}
+
+{{ end }}
+
+{{ define "right-sidebar" }}
+{{ partialCached "sidebar/right.html" . }}
+{{ end }}

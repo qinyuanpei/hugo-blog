@@ -13,6 +13,7 @@ import createElement from 'ts/createElement';
 import StackColorScheme from 'ts/colorScheme';
 import { setupScrollspy } from 'ts/scrollspy';
 import { setupSmoothAnchors } from "ts/smoothAnchors";
+import { initDouban } from 'ts/douban';
 
 let Stack = {
     init: () => {
@@ -102,7 +103,7 @@ window.addEventListener('load', () => {
 declare global {
     interface Window {
         createElement: any;
-        Stack: any
+        Stack: any;
     }
 }
 

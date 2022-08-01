@@ -1,11 +1,10 @@
 ﻿{{ $id := (.Get "id") }}
 {{ $type := (.Get "type") }}
 {{ $url := (printf "https://movie.querydata.org/api?id=%s" $id) }}
-{{- $opts := dict "minify" hugo.IsProduction "JSXFactory" "createElement" -}}
-{{- $doubanScript := resources.Get "ts/douban.js" | js.Build $opts -}}
+{{- $opts := dict "minify" hugo.IsProduction -}}
+{{- $doubanScript := resources.Get "ts/douban.ts" | js.Build $opts -}}
 <script type="text/javascript" src="{{ $doubanScript.RelPermalink }}"></script>
-<script type="module">
-    var douban = new DoubanCard('{{ $id }}', '{{ $url }}', '{{ $type }}');
-    var model = douban.fetchData()
-    douban.render(model)
+<script type="text/javascript">
+    var ele = document.currentScript
+    var douban = window.DoubanCard(ele, '{{ $id }}', '{{ $url }}', '{{ $type }}');
 </script>

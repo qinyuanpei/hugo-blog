@@ -40,13 +40,4 @@ let lazyLoadByObserver = function(lazyImages) {
       });
 }
 
-export default function() {
-    window.onload = window.onscroll = function () {
-        var imgs = document.querySelectorAll('img');
-        if ("IntersectionObserver" in window) {
-            lazyLoadByObserver(imgs)
-        } else {
-            lazyLoadByDefault(imgs)
-        }
-    }
-}
+export { lazyLoadByDefault, lazyLoadByObserver }

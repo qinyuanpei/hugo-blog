@@ -13,11 +13,10 @@ import createElement from 'ts/createElement';
 import StackColorScheme from 'ts/colorScheme';
 import { setupScrollspy } from 'ts/scrollspy';
 import { setupSmoothAnchors } from "ts/smoothAnchors";
-import { initDouban } from 'ts/douban';
+import { lazyLoadByObserver, lazyLoadByDefault } from 'ts/lazyLoad'
 
 let Stack = {
     init: () => {
-        lazyLoad();
         /**
          * Bind menu event
          */
@@ -91,6 +90,8 @@ let Stack = {
         });
 
         new StackColorScheme(document.getElementById('dark-mode-toggle'));
+
+
     }
 }
 
@@ -99,6 +100,16 @@ window.addEventListener('load', () => {
         Stack.init();
     }, 0);
 })
+
+window.addEventListener('scroll', () => {
+    var imgs = document.querySelectorAll('img');
+    if ("IntersectionObserver" in window) {
+        lazyLoadByObserver(imgs)
+    } else {
+        lazyLoadByDefault(imgs)
+    }
+})
+
 
 declare global {
     interface Window {

@@ -48,7 +48,7 @@ links:
 comments: false
 ---
 
-有朋自远方来，不亦乐乎？
+子曰：有朋自远方来，不亦乐乎？
 
 * 名称：素履独行
 * 简介：谢谢你，在这世界的角落，找到我
@@ -56,5 +56,5 @@ comments: false
 * 头像：https://cdn.jsdelivr.net/gh/qinyuanpei/blog.yuanpei.me@master/assets/images/avatar.jpg
 
 
-欢迎交换友情链接
+欢迎交换友情链接，以下排名按添加时间的先后排序
 

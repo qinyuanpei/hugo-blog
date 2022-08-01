@@ -2,7 +2,7 @@ function handleData (posts) {
     var tags = {};
     var yearly = {};
     var categories = {};
-    for (post of posts) {
+    for (let post of posts) {
         //统计不同年份
         var post_date = new Date(post.date);
         var post_year = post_date.getFullYear().toString();
@@ -12,16 +12,19 @@ function handleData (posts) {
             yearly[post_year] = 1;
         }
         //统计不同分类
-        for (category of post.categories) {
-            if (category in categories) {
+        for (let category of post.categories) {
+            if (post.categories.length > 1) {
+                console.log(post.title)
+            }
+            if (categories[category]) {
                 categories[category] = categories[category] + 1;
             } else {
                 categories[category] = 1;
             }
         }
         //统计标签
-        for (tag of post.tags) {
-            if (tag.name in tags) {
+        for (let tag of post.tags) {
+            if (tags[tag]) {
                 tags[tag] = tags[tag] + 1;
             } else {
                 tags[tag] = 1;
@@ -67,7 +70,7 @@ function handleCategoryChart (el, data) {
             return;
         }
         if (param.type == 'click') {
-            location.href = '<%- config.url %>' + '/categories/' + encodeURI(param.data.name);
+            location.href = '/categories/' + encodeURI(param.data.name);
         }
     });
     var seriesData = []
@@ -112,7 +115,7 @@ function handleTagsChart (el, data) {
             return;
         }
         if (param.type == 'click') {
-            location.href = '<%- config.url %>' + '/tags/' + encodeURI(param.data.name);
+            location.href = '/tags/' + encodeURI(param.data.name);
         }
     });
     var seriesData = [];
@@ -282,7 +285,7 @@ function handleShanbayChart (el, data) {
     chart.setOption(option);
 }
 
-export default {
+window.statics = {
     handleData,
     handleYearlyChart,
     handleCategoryChart,

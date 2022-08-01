@@ -16,17 +16,18 @@
         <div id="chart3" class="statics-chart-item"></div>
         <div id="chart4" class="statics-chart-item"></div>
     </div>
-    {{- $opts := dict "minify" hugo.IsProduction "JSXFactory" "createElement" -}}
+    {{- $opts := dict "minify" hugo.IsProduction -}}
     {{- $staticsScript := resources.Get "ts/statics.ts" | js.Build $opts -}}
     <script type="text/javascript" src="{{ $staticsScript.RelPermalink }}"></script>
     <script>
+        var statics = window.statics
         fetch('/search/index.json')
             .then(function (res) {
                 res.json().then(function (data) {
-                    var result = handleData(data);
-                    handleYearlyChart('chart1', result);
-                    handleCategoryChart('chart2', result);
-                    handleTagsChart('chart3', result);
+                    var result = statics.handleData(data);
+                    statics.handleYearlyChart('chart1', result);
+                    statics.handleCategoryChart('chart2', result);
+                    statics.handleTagsChart('chart3', result);
                 });
             })
             .catch(function (err) {
@@ -37,8 +38,4 @@
 
 {{ partialCached "footer/footer" . }}
 
-{{ end }}
-
-{{ define "right-sidebar" }}
-{{ partialCached "sidebar/right.html" . }}
 {{ end }}

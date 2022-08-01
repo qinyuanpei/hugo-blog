@@ -1,4 +1,4 @@
-/*! For license information please see echarts-wordcloud.min.js.LICENSE.txt(2021/06/23) */
+ï»¿/*! For license information please see echarts-wordcloud.min.js.LICENSE.txt(2021/06/23) */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(require("echarts"));
@@ -337,7 +337,7 @@ if (!window.clearImmediate) {
     /* Default values to be overwritten by options object */
     var settings = {
       list: [],
-      fontFamily: '"Trebuchet MS", "Heiti TC", "Î¢Ü›ÕýºÚów", ' +
+      fontFamily: '"Trebuchet MS", "Heiti TC", "å¾®è»Ÿæ­£é»‘é«”", ' +
                   '"Arial Unicode MS", "Droid Fallback Sans", sans-serif',
       fontWeight: 'normal',
       color: 'random-dark',

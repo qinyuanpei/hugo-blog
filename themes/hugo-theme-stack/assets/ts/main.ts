@@ -102,12 +102,14 @@ window.addEventListener('load', () => {
 })
 
 window.addEventListener('scroll', () => {
-    var imgs = document.querySelectorAll('img');
-    if ("IntersectionObserver" in window) {
-        lazyLoadByObserver(imgs)
-    } else {
-        lazyLoadByDefault(imgs)
-    }
+    setTimeout(() => {
+        var imgs = document.querySelectorAll('img');
+        if ("IntersectionObserver" in window) {
+            lazyLoadByObserver(imgs)
+        } else {
+            lazyLoadByDefault(imgs)
+        }
+    }, 500);
 })
 
 

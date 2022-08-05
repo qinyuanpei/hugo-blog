@@ -34,9 +34,11 @@ jobs:
 
       - name: Build Site
         run: |
+          sudo sh ./before-build.sh
           hugo --minify
           sudo mkdir -p /home/runner/work/artifacts/blog.yuanpei.me
           sudo cp -r /home/runner/work/hugo-blog/hugo-blog/public/* /home/runner/work/artifacts/blog.yuanpei.me
+
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v1

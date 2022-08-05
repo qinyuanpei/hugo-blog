@@ -1,5 +1,4 @@
 ﻿import os
-import io
 import json
 
 # 列举所有博客
@@ -22,7 +21,7 @@ def analyseLanguages(posts):
     languages = {}
     for post in posts:
         try:
-            fi = io.open(post,'rt',encoding='utf-8')
+            fi = open(post,'rt',encoding='utf-8')
             text = list(map(lambda x:x.strip().replace('\n','').replace('\t',''), fi.readlines()))
             matches = list(filter(lambda x:x.startswith('```') and len(x) > 3, text))
             if len(matches) > 0:
@@ -55,7 +54,7 @@ def analyseLanguages(posts):
 
 posts = listPosts('./content/posts')
 languages = analyseLanguages(posts)
-with io.open('languages.json','wt',encoding='utf-8') as f:
+with open('languages.json','wt',encoding='utf-8') as f:
     f.write(str(json.dumps(languages)))
 
 

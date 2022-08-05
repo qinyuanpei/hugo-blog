@@ -4,16 +4,35 @@
     display: flex;
     flex-flow: row wrap;
     flex-wrap: wrap;
-    justify-content: center;
-    align-content: flex-start;
+    justify-content: flex-start;
+    align-content: center;
     background-color: var(--card-background);
     border-radius: var(--card-border-radius);
 }
+
 .statics-chart-item {
+    width: calc((100% - 18px) / 3);
     box-sizing: border-box;
     background-color: #fff;
-    flex: 0 0 33%;
     height: 300px;
     border: 1px solid #fff;
-    margin: 5px 0px 5px 0px;
+    margin: 5px 2.5px 5px 2.5px;
+}
+
+@media screen and (max-width: 640px) {
+    .statics-chart-item {
+        width: calc((100% - 18px) / 1);
+    }
+}
+
+@media screen and (min-width: 640px) and (max-width: 1080px) {
+    .statics-chart-item {
+        width: calc((100% - 18px) / 2);
+    }
+}
+
+@media screen and (min-width: 1080px) {
+    .statics-chart-item {
+        width: calc((100% - 18px) / 3);
+    }
 }

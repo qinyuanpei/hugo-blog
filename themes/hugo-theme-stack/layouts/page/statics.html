@@ -22,7 +22,7 @@ on-phone--column {{ if .Site.Params.widgets.enabled }}extended{{ else }}compact{
         {{ .Content | replaceRE "(<table>(?:.|\n)+?</table>)" $wrappedTable | safeHTML }}
     </section>
     <section>
-        <script src="https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
         <script src="/plugins/echarts-wordcloud.js"></script>
         <div id="container" class="statics-container">
             <div id="chart1" class="statics-chart-item"></div>
@@ -42,6 +42,16 @@ on-phone--column {{ if .Site.Params.widgets.enabled }}extended{{ else }}compact{
                         statics.handleYearlyChart('chart1', result);
                         statics.handleCategoryChart('chart2', result);
                         statics.handleTagsChart('chart3', result);
+                    });
+                })
+                .catch(function (err) {
+                    console.log('Fetch Error : %S', err);
+                })
+
+            fetch('/api/languages.json')
+                .then(function (res) {
+                    res.json().then(function (data) {
+                        statics.handleLanguagesChart('chart4', data);
                     });
                 })
                 .catch(function (err) {

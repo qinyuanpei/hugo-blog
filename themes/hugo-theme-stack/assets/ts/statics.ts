@@ -167,7 +167,7 @@ function handleTagsChart (el, data) {
     chart.setOption(option);
 }
 
-function handleLanguageChart (el, data) {
+function handleLanguagesChart (el, data) {
     var chart = echarts.init(document.getElementById(el));
     var totalAmount = Object.keys(data)
         .map(function (x) {
@@ -180,7 +180,7 @@ function handleLanguageChart (el, data) {
     var indicators = [];
     for (let lang of Object.keys(data)) {
         indicators.push({ text: lang, max: 100 })
-        var score = (data[lang] / totalAmount + 0.35).toFixed(2) * 100;
+        var score = Math.round((data[lang] / totalAmount + 0.32).toFixed(2) * 100);
         scores.push(score);
     }
     option = {
@@ -285,10 +285,15 @@ function handleShanbayChart (el, data) {
     chart.setOption(option);
 }
 
+function handleDoubanChart (el, data) {
+    
+}
+
 window.statics = {
     handleData,
     handleYearlyChart,
     handleCategoryChart,
-    handleTagsChart
+    handleTagsChart,
+    handleLanguagesChart
 }
 

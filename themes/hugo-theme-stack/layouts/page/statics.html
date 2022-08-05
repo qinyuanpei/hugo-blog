@@ -32,7 +32,7 @@ on-phone--column {{ if .Site.Params.widgets.enabled }}extended{{ else }}compact{
             <div id="chart3" class="statics-chart-item"></div>
             <div id="chart4" class="statics-chart-item" data-chart="{{ jsonify $.Site.Data.languages }}"></div>
             {{- $booksStatics := $.Site.Data.douban.books.statics -}}
-            {{- $moviesStatics := jsonify $.Site.Data.douban.movies.statics -}}
+            {{- $moviesStatics := $.Site.Data.douban.movies.statics -}}
             {{- $doubanStatics := dict "books" $booksStatics "movies" $moviesStatics -}}
             <div id="chart5" class="statics-chart-item" data-chart="{{ jsonify  $doubanStatics }}"></div>
         </div>

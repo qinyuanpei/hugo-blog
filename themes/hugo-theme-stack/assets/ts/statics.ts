@@ -1,4 +1,4 @@
-function handleData (posts) {
+function handleData(posts) {
     var tags = {};
     var yearly = {};
     var categories = {};
@@ -38,7 +38,7 @@ function handleData (posts) {
     };
 }
 
-function handleYearlyChart (el, data) {
+function handleYearlyChart(el, data) {
     var chart = echarts.init(document.getElementById(el));
     var option = {
         title: {
@@ -63,7 +63,7 @@ function handleYearlyChart (el, data) {
     chart.setOption(option);
 }
 
-function handleCategoryChart (el, data) {
+function handleCategoryChart(el, data) {
     var chart = echarts.init(document.getElementById(el));
     chart.on("click", function (param) {
         if (typeof param.seriesIndex == 'undefined') {
@@ -107,7 +107,7 @@ function handleCategoryChart (el, data) {
     chart.setOption(option);
 }
 
-function handleTagsChart (el, data) {
+function handleTagsChart(el, data) {
     var maskImage = new Image();
     var chart = echarts.init(document.getElementById(el));
     chart.on('click', function (param) {
@@ -167,7 +167,7 @@ function handleTagsChart (el, data) {
     chart.setOption(option);
 }
 
-function handleLanguagesChart (el, data) {
+function handleLanguagesChart(el, data) {
     var chart = echarts.init(document.getElementById(el));
     var totalAmount = Object.keys(data)
         .map(function (x) {
@@ -217,7 +217,7 @@ function handleLanguagesChart (el, data) {
     chart.setOption(option);
 }
 
-function handleLeetCodeChart (el, data) {
+function handleLeetCodeChart(el, data) {
     var chart = echarts.init(document.getElementById(el));
     var seriesData = []
     for (var key in data.categories) {
@@ -253,7 +253,7 @@ function handleLeetCodeChart (el, data) {
     chart.setOption(option);
 }
 
-function handleShanbayChart (el, data) {
+function handleShanbayChart(el, data) {
     var chart = echarts.init(document.getElementById(el));
     var seriesData = []
     seriesData.push({
@@ -285,8 +285,85 @@ function handleShanbayChart (el, data) {
     chart.setOption(option);
 }
 
-function handleDoubanChart (el, data) {
-    
+function handleDoubanChart(el, data) {
+    var chart = echarts.init(document.getElementById(el));
+    var total = []
+    for(let i = 0; i < data.books.length; i++) {
+        total.push(data.books[i] + data.movies[i])
+    }
+    var option = {
+        title: {
+            text: '书影音统计',
+            x: 'center'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                crossStyle: {
+                    color: '#999'
+                }
+            }
+        },
+        xAxis: [
+            {
+                type: 'category',
+                data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+                axisLabel: {
+                    formatter: '{value}月'
+                },
+                axisPointer: {
+                    type: 'shadow'
+                }
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: '数量',
+                min: 0,
+                max: 15,
+                interval: 5,
+                axisLabel: {
+                    formatter: '{value}'
+                }
+            }
+        ],
+        series: [
+            {
+                name: '读书',
+                type: 'bar',
+                tooltip: {
+                    valueFormatter: function (value) {
+                        return value + ' 本';
+                    }
+                },
+                data: data.books
+            },
+            {
+                name: '观影',
+                type: 'bar',
+                tooltip: {
+                    valueFormatter: function (value) {
+                        return value + ' 部';
+                    }
+                },
+                data: data.movies
+            },
+            {
+                name: '合计',
+                type: 'line',
+                tooltip: {
+                    valueFormatter: function (value) {
+                        return value + ' 个';
+                    }
+                },
+                data: total
+            }
+        ]
+    };
+
+    chart.setOption(option);
 }
 
 window.statics = {
@@ -294,6 +371,7 @@ window.statics = {
     handleYearlyChart,
     handleCategoryChart,
     handleTagsChart,
-    handleLanguagesChart
+    handleLanguagesChart,
+    handleDoubanChart,
 }
 

@@ -24,11 +24,14 @@ on-phone--column {{ if .Site.Params.widgets.enabled }}extended{{ else }}compact{
     <section>
         <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
         <script src="/plugins/echarts-wordcloud.js"></script>
+        <input type="hidden" id="douban-books" value="{{ jsonify $.Site.Data.douban.books.statics }}" />
+        <input type="hidden" id="douban-movies" value="{{ jsonify $.Site.Data.douban.movies.statics }}" />
         <div id="container" class="statics-container">
             <div id="chart1" class="statics-chart-item"></div>
             <div id="chart2" class="statics-chart-item"></div>
             <div id="chart3" class="statics-chart-item"></div>
             <div id="chart4" class="statics-chart-item"></div>
+            <div id="chart5" class="statics-chart-item"></div>
         </div>
         {{- $opts := dict "minify" hugo.IsProduction -}}
         {{- $staticsScript := resources.Get "ts/statics.ts" | js.Build $opts -}}
@@ -57,6 +60,11 @@ on-phone--column {{ if .Site.Params.widgets.enabled }}extended{{ else }}compact{
                 .catch(function (err) {
                     console.log('Fetch Error : %S', err);
                 })
+
+            let booksStatics = JSON.parse(document.getElementById('douban-books').value);
+            let moviesStatics = JSON.parse(document.getElementById('douban-movies').value);
+            let data = { books: booksStatics, movies: moviesStatics }
+            statics.handleDoubanChart('chart5', data)
         </script>
     </section>
 </article>

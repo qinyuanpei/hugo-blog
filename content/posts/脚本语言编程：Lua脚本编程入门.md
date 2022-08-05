@@ -1,4 +1,4 @@
----
+﻿---
 abbrlink: 1940333895
 categories:
 - 读书笔记
@@ -120,7 +120,7 @@ end
   
 # Lua 与 C/C++交互
 Lua 与 C/C++交互主要通过 Lua 提供的 C API 来完成，其核心是 Lua 堆栈，一个简单的 C++代码调用 Lua 脚本的示例代码如下：
-```lua
+```c
 #include <iostream>
 
 using namespace std;

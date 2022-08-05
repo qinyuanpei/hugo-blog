@@ -56,6 +56,6 @@ def analyseLanguages(posts):
 posts = listPosts('./content/posts')
 languages = analyseLanguages(posts)
 with io.open('languages.json','wt',encoding='utf-8') as f:
-    f.write(json.dumps(languages))
+    f.write(str(json.dumps(languages)))
 
 

@@ -1,4 +1,5 @@
 ﻿import os
+import io
 import json
 
 # 列举所有博客
@@ -54,7 +55,7 @@ def analyseLanguages(posts):
 
 posts = listPosts('./content/posts')
 languages = analyseLanguages(posts)
-with open('languages.json','wt',encoding='utf-8') as f:
+with io.open('languages.json','wt',encoding='utf-8') as f:
     f.write(json.dumps(languages))
 
 

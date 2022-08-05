@@ -1,5 +1,6 @@
 ﻿import os
 import json
+import sys
 
 # 列举所有博客
 def listPosts(rootPath):
@@ -52,9 +53,13 @@ def analyseLanguages(posts):
     languages = sorted(languages.items(), key=lambda d:d[1], reverse = True)
     return dict(languages[:6])
 
-posts = listPosts('./content/posts')
-languages = analyseLanguages(posts)
-with open('languages.json','wt',encoding='utf-8') as f:
-    f.write(str(json.dumps(languages)))
+if __name__ == '__main__':
+    input = sys.argv[1]
+    output = sys.argv[2]
+    posts = listPosts(input)
+    languages = analyseLanguages(posts)
+    with open(output,'wt',encoding='utf-8') as f:
+        print(f'{output} created.')
+        f.write(str(json.dumps(languages)))
 
 

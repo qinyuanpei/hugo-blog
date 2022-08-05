@@ -30,41 +30,36 @@ on-phone--column {{ if .Site.Params.widgets.enabled }}extended{{ else }}compact{
             <div id="chart1" class="statics-chart-item"></div>
             <div id="chart2" class="statics-chart-item"></div>
             <div id="chart3" class="statics-chart-item"></div>
-            <div id="chart4" class="statics-chart-item"></div>
-            <div id="chart5" class="statics-chart-item"></div>
+            <div id="chart4" class="statics-chart-item" data-chart="{{ jsonify $.Site.Data.languages }}"></div>
+            {{- $booksStatics := $.Site.Data.douban.books.statics -}}
+            {{- $moviesStatics := jsonify $.Site.Data.douban.movies.statics -}}
+            {{- $doubanStatics := dict "books" $booksStatics "movies" $moviesStatics -}}
+            <div id="chart5" class="statics-chart-item" data-chart="{{ jsonify  $doubanStatics }}"></div>
         </div>
         {{- $opts := dict "minify" hugo.IsProduction -}}
         {{- $staticsScript := resources.Get "ts/statics.ts" | js.Build $opts -}}
         <script type="text/javascript" src="{{ $staticsScript.RelPermalink }}"></script>
         <script>
             var statics = window.statics
-            fetch('/search/index.json')
+            fetch('/api/posts-chart.json')
                 .then(function (res) {
                     res.json().then(function (data) {
-                        var result = statics.handleData(data);
-                        statics.handleYearlyChart('chart1', result);
-                        statics.handleCategoryChart('chart2', result);
-                        statics.handleTagsChart('chart3', result);
+                        document.getElementById('chart1').setAttribute('data-chart', JSON.stringify(data.yearly))
+                        document.getElementById('chart2').setAttribute('data-chart', JSON.stringify(data.categories))
+                        document.getElementById('chart3').setAttribute('data-chart', JSON.stringify(data.tags))
+   
+                        statics.handleYearlyChart('chart1');
+                        statics.handleCategoryChart('chart2');
+                        statics.handleTagsChart('chart3');
                     });
                 })
                 .catch(function (err) {
                     console.log('Fetch Error : %S', err);
                 })
 
-            fetch('/api/languages.json')
-                .then(function (res) {
-                    res.json().then(function (data) {
-                        statics.handleLanguagesChart('chart4', data);
-                    });
-                })
-                .catch(function (err) {
-                    console.log('Fetch Error : %S', err);
-                })
+            statics.handleLanguagesChart('chart4');
 
-            let booksStatics = JSON.parse(document.getElementById('douban-books').value);
-            let moviesStatics = JSON.parse(document.getElementById('douban-movies').value);
-            let data = { books: booksStatics, movies: moviesStatics }
-            statics.handleDoubanChart('chart5', data)
+            statics.handleDoubanChart('chart5')
         </script>
     </section>
 </article>

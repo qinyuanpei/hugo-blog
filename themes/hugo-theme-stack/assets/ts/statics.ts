@@ -1,45 +1,7 @@
-function handleData(posts) {
-    var tags = {};
-    var yearly = {};
-    var categories = {};
-    for (let post of posts) {
-        //统计不同年份
-        var post_date = new Date(post.date);
-        var post_year = post_date.getFullYear().toString();
-        if (post_year in yearly) {
-            yearly[post_year] = yearly[post_year] + 1;
-        } else {
-            yearly[post_year] = 1;
-        }
-        //统计不同分类
-        for (let category of post.categories) {
-            if (post.categories.length > 1) {
-                console.log(post.title)
-            }
-            if (categories[category]) {
-                categories[category] = categories[category] + 1;
-            } else {
-                categories[category] = 1;
-            }
-        }
-        //统计标签
-        for (let tag of post.tags) {
-            if (tags[tag]) {
-                tags[tag] = tags[tag] + 1;
-            } else {
-                tags[tag] = 1;
-            }
-        }
-    }
-    return {
-        yearly: yearly,
-        categories: categories,
-        tags: tags
-    };
-}
-
 function handleYearlyChart(el, data) {
-    var chart = echarts.init(document.getElementById(el));
+    var dom = document.getElementById(el);
+    var data = JSON.parse(dom.getAttribute('data-chart'))
+    var chart = echarts.init(dom);
     var option = {
         title: {
             text: '文章统计',
@@ -47,24 +9,26 @@ function handleYearlyChart(el, data) {
         },
         tooltip: {},
         xAxis: {
-            data: Object.keys(data.yearly)
+            data: Object.keys(data)
         },
         yAxis: {},
         series: [{
             name: '数量',
             type: 'bar',
-            data: Object.values(data.yearly)
+            data: Object.values(data)
         }, {
             name: '数量',
             type: 'line',
-            data: Object.values(data.yearly)
+            data: Object.values(data)
         }]
     };
     chart.setOption(option);
 }
 
 function handleCategoryChart(el, data) {
-    var chart = echarts.init(document.getElementById(el));
+    var dom = document.getElementById(el);
+    var data = JSON.parse(dom.getAttribute('data-chart'))
+    var chart = echarts.init(dom);
     chart.on("click", function (param) {
         if (typeof param.seriesIndex == 'undefined') {
             return;
@@ -74,10 +38,10 @@ function handleCategoryChart(el, data) {
         }
     });
     var seriesData = []
-    for (var key in data.categories) {
+    for (var key in data) {
         seriesData.push({
             name: key,
-            value: data.categories[key]
+            value: data[key]
         });
     }
     var option = {
@@ -107,9 +71,11 @@ function handleCategoryChart(el, data) {
     chart.setOption(option);
 }
 
-function handleTagsChart(el, data) {
+function handleTagsChart(el) {
+    var dom = document.getElementById(el);
+    var data = JSON.parse(dom.getAttribute('data-chart'))
     var maskImage = new Image();
-    var chart = echarts.init(document.getElementById(el));
+    var chart = echarts.init(dom);
     chart.on('click', function (param) {
         if (typeof param.seriesIndex == 'undefined') {
             return;
@@ -119,10 +85,10 @@ function handleTagsChart(el, data) {
         }
     });
     var seriesData = [];
-    for (var key in data.tags) {
+    for (var key in data) {
         seriesData.push({
             name: key,
-            value: data.tags[key]
+            value: data[key]
         });
     }
     var option = {
@@ -167,8 +133,10 @@ function handleTagsChart(el, data) {
     chart.setOption(option);
 }
 
-function handleLanguagesChart(el, data) {
-    var chart = echarts.init(document.getElementById(el));
+function handleLanguagesChart(el) {
+    var dom = document.getElementById(el);
+    var data = JSON.parse(dom.getAttribute('data-chart'));
+    var chart = echarts.init(dom);
     var totalAmount = Object.keys(data)
         .map(function (x) {
             return data[x]
@@ -285,11 +253,13 @@ function handleShanbayChart(el, data) {
     chart.setOption(option);
 }
 
-function handleDoubanChart(el, data) {
-    var chart = echarts.init(document.getElementById(el));
+function handleDoubanChart(el) {
+    var dom = document.getElementById(el);
+    var data = JSON.parse(dom.getAttribute('data-chart'))
+    var chart = echarts.init(dom);
     var total = []
     for(let i = 0; i < data.books.length; i++) {
-        total.push(data.books[i] + data.movies[i])
+        total.push(Number(data.books[i]) + Number(data.movies[i]))
     }
     var option = {
         title: {
@@ -367,7 +337,6 @@ function handleDoubanChart(el, data) {
 }
 
 window.statics = {
-    handleData,
     handleYearlyChart,
     handleCategoryChart,
     handleTagsChart,

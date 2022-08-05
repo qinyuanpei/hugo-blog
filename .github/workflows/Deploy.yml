@@ -38,6 +38,7 @@ jobs:
         run: |
           sudo sh ./before-build.sh
           hugo --minify
+          sudo sh ./after-build.sh
           sudo mkdir -p /home/runner/work/artifacts/blog.yuanpei.me
           sudo cp -r /home/runner/work/hugo-blog/hugo-blog/public/* /home/runner/work/artifacts/blog.yuanpei.me
 

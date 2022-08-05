@@ -1,5 +1,3 @@
 cp ./.python/languages.py ./languages.py
-python ./languages.py
-mkdir -p ./static/api/
-mv ./languages.json ./static/api/languages.json
+python ./languages.py  ./content/posts ./themes/hugo-theme-stack/data/languages.json
 rm -f ./languages.py

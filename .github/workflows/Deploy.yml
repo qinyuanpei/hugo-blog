@@ -20,10 +20,11 @@ jobs:
           extended: true
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.7"
           architecture: "x64"
+        run: sudo sh ./before-build.sh
 
       - name: Setup Dependency
         run: |
@@ -33,7 +34,6 @@ jobs:
 
       - name: Build Site
         run: |
-          sudo sh ./before-build.sh
           hugo --minify
           sudo mkdir -p /home/runner/work/artifacts/blog.yuanpei.me
           sudo cp -r /home/runner/work/hugo-blog/hugo-blog/public/* /home/runner/work/artifacts/blog.yuanpei.me

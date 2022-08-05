@@ -27,9 +27,7 @@ jobs:
 
       - name: Setup Dependency
         run: |
-          sudo apt-get remove python2.7
           sudo apt-get remove --auto-remove python2.7
-          sudo apt-get purge python2.7 or sudo apt-get purge --auto-remove python2.7
           python -m pip install pip -U
           python -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
           python -m pip config set install.trusted-host mirrors.aliyun.com

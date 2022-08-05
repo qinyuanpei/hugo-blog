@@ -4,5 +4,4 @@ slug: "works"
 layout: "works"
 outputs:
     - html
-    - json
 ---

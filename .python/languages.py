@@ -22,7 +22,7 @@ def analyseLanguages(posts):
     languages = {}
     for post in posts:
         try:
-            fi = open(post,'rt',encoding='utf-8')
+            fi = io.open(post,'rt',encoding='utf-8')
             text = list(map(lambda x:x.strip().replace('\n','').replace('\t',''), fi.readlines()))
             matches = list(filter(lambda x:x.startswith('```') and len(x) > 3, text))
             if len(matches) > 0:

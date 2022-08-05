@@ -40,13 +40,13 @@ def analyseLanguages(posts):
                     if language.lower() == "yaml" or language.lower() == "yml":
                         language = language.upper()
                     if language in ['shell','json','csharp','lua','yaml','yml','plain']:
-                        print('{post} maybe need a check for code blocks.'.format(post=post))
+                        print(f'{post} maybe need a check for code blocks.')
                     if language in languages.keys():
                         languages[language] = languages[language] + 1
                     else:
                         languages[language] = 1
         except Exception as ex:
-            print('{post} maybe need a check for encoding.'.format(post=post))
+            print(f'{post} maybe need a check for encoding.')
 
     #排序后取前5种语言输出        
     languages = sorted(languages.items(), key=lambda d:d[1], reverse = True)

@@ -9,6 +9,9 @@ def listPosts(rootPath):
     children = os.listdir(rootPath)
     for child in children:
         filePath = os.path.join(rootPath,child)
+        fileExt = os.path.splitext(filePath)[-1]
+        if (not fileExt == '.md'):
+            continue
         if os.path.isfile(filePath):
             posts.append(filePath)
         else:

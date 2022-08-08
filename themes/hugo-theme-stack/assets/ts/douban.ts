@@ -39,11 +39,13 @@ class DoubanCard {
                             director: data.director[0].data[0].name
                         };
                     } else {
+                        let desc = data.summary
+                        desc = desc.replace(/</?.+?>/g, '')
                         model = {
                             title: data.title,
                             link: 'https://book.douban.com/subject/' + this.subjectId,
                             cover: data.images.medium,
-                            desc: data.summary.replace('<p>','').replace('</p>',''),
+                            desc: desc,
                             star: Math.floor(parseFloat(data.rating.average)),
                             vote: data.rating.average,
                             date: data.pubdate,

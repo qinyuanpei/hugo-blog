@@ -168,6 +168,11 @@
 @media (max-width:550px) {
     .post-preview {
         width: 95%;
+        height: 120px;
+    }
+
+    .post-preview--meta {
+        padding: 15px;
     }
 
     .post-preview--excerpt {
@@ -176,6 +181,10 @@
 
     .post-preview--middle {
         line-height: 28px;
+    }
+
+    .post-preview--image {
+        height: 120px !important;
     }
 }
 

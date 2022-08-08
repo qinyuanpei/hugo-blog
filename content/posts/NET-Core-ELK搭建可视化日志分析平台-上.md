@@ -16,11 +16,11 @@ Hi，各位朋友，大家好！欢迎大家关注我的博客，我的博客地
 
 # 什么是 ELK
 
-当接触到一个新的事物的时候，我们最好是从它的概念开始入手。那么，什么是 ELK 呢？ELK，是`Elastaicsearch`、`Logstash`和`Kibana`三款软件的简称。其中，`Elastaicsearch`是一个开源的全文搜索引擎。如果你没有听说过它，那至少应该听说过`Lucene`这个开源搜索引擎。事实上，`Elastaicsearch`是`Lucene`的封装，它提供了`REST` API 的操作接口 。而`Logstash`则是一个开源的数据收集引擎，具有实时的管道，它可以动态地将不同的数据源的数据统一起来。最后，`Kibana`是一个日志可视化分析的平台，它提供了一系列日志分析的 Web 接口，可以使用它对日志进行高效地搜索、分析和可视化操作。至此，我们可以给 ELK 一个简单的定义：
+当接触到一个新的事物的时候，我们最好是从它的概念开始入手。那么，什么是 ELK 呢？ELK，是 `Elastaicsearch` 、 `Logstash` 和 `Kibana` 三款软件的简称。其中，`Elastaicsearch` 是一个开源的全文搜索引擎。如果你没有听说过它，那至少应该听说过 `Lucene` 这个开源搜索引擎。事实上，`Elastaicsearch` 是 `Lucene` 的封装，它提供了 `REST` API 的操作接口 。而 `Logstash` 则是一个开源的数据收集引擎，具有实时的管道，它可以动态地将不同的数据源的数据统一起来。最后，`Kibana` 是一个日志可视化分析的平台，它提供了一系列日志分析的 Web 接口，可以使用它对日志进行高效地搜索、分析和可视化操作。至此，我们可以给 ELK 一个简单的定义：
 
 > ELK 是一个集日志收集、搜索、日志聚合和日志分析于一身的完整解决方案。
 
-下面这张图，展示了`Elastaicsearch`、`Logstash`和`Kibana`三款软件间的协作关系。可以注意到，`Logstash`负责从应用服务器收集日志。我们知道，现在的应用程序都是跨端应用，程序可能运行在 PC、移动端、H5、小程序等等各种各样的终端上，而`Logstash`则可以将这些不同的日志信息通过管道转换为统一的数据接口。这些日志将被存储到`Elasticsearch`中。我们提到`Elastaicsearch`是一个开源的全文搜索引擎，故而它在数据查询上相对传统的数据库有着更好的优势，并且`Elasticsearch`可以根据需要搭建单机或者集群。最终，`Kibana`从`Elasticsearch`中查询数据并绘制可视化图表，并展示在浏览器中。在最新的 ELK 架构中，新增了`FireBeat`这个软件，它是它是一个轻量级的日志收集处理工具(Agent)，适合于在各个服务器上搜集日志后传输给`Logstash`。
+下面这张图，展示了 `Elastaicsearch` 、 `Logstash` 和 `Kibana` 三款软件间的协作关系。可以注意到，`Logstash` 负责从应用服务器收集日志。我们知道，现在的应用程序都是跨端应用，程序可能运行在 PC、移动端、H5、小程序等等各种各样的终端上，而 `Logstash` 则可以将这些不同的日志信息通过管道转换为统一的数据接口。这些日志将被存储到 `Elasticsearch` 中。我们提到 `Elastaicsearch` 是一个开源的全文搜索引擎，故而它在数据查询上相对传统的数据库有着更好的优势，并且 `Elasticsearch` 可以根据需要搭建单机或者集群。最终，`Kibana` 从 `Elasticsearch` 中查询数据并绘制可视化图表，并展示在浏览器中。在最新的 ELK 架构中，新增了`FireBeat`这个软件，它是它是一个轻量级的日志收集处理工具(Agent)，适合于在各个服务器上搜集日志后传输给 `Logstash`。
 
 ![ELK-01.png](https://i.loli.net/2020/02/15/mbJRXGo56YA9jQP.png)
 
@@ -40,7 +40,7 @@ docker pull sebp/elk
 docker run -p 5601:5601 -p 9200:9200 -p 5044:5044 --name elk sebp/elk 
 ```
 
-通常情况下，完成这两个步骤以后，我们就完成了 ELK 安装。此时，我们可以在浏览器中输入地址：`http//localhost:9200`，这是`Elasticsearch`的默认端口。如果浏览器中返回了了类似下面的信息，则表示 ELK 安装成功。这里是博主获得的关于`Elasticseach`的信息：
+通常情况下，完成这两个步骤以后，我们就完成了 ELK 安装。此时，我们可以在浏览器中输入地址：`http//localhost:9200`，这是 `Elasticsearch` 的默认端口。如果浏览器中返回了了类似下面的信息，则表示 ELK 安装成功。这里是博主获得的关于 `Elasticseach` 的信息：
 
 ```json
 {
@@ -61,7 +61,7 @@ docker run -p 5601:5601 -p 9200:9200 -p 5044:5044 --name elk sebp/elk
   "tagline" : "You Know, for Search"
 }
 ```
-接下来，我们继续在浏览器中输入地址：`http://localhost:5601/app/kibana`。显然，这是`Kibana`的默认地址，至此**ELK**的“庐山真面目”**终于揭晓，首次安装完**ELK，`Kibana`的界面应该试类似下面这样：
+接下来，我们继续在浏览器中输入地址：`http://localhost:5601/app/kibana`。显然，这是 `Kibana` 的默认地址，至此 `ELK` 的 “庐山真面目” 终于揭晓，首次安装完 ELK，`Kibana` 的界面应该试类似下面这样：
 
 ![ELK的庐山真面目](https://i.loli.net/2020/02/15/uOQSCUxfWYManK6.png)
 
@@ -69,13 +69,13 @@ docker run -p 5601:5601 -p 9200:9200 -p 5044:5044 --name elk sebp/elk
 
 ![ELK示例 - Global Flight Dashboard](https://i.loli.net/2020/02/15/j6xFzedsPf7y9gL.png)
 
-这样，我们就完成**ELK**环境的快速搭建。下面，按照惯例，我们将实现一个“**Hello World**”级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息。为了让这个示例尽可能地简单一点，我们选择了直接向`Elasticsearch`写入日志的方式，这里选择的日志库是[Serilog](https://serilog.net/)。
+这样，我们就完成 **ELK** 环境的快速搭建。下面，按照惯例，我们将实现一个 “**Hello World**” 级别的实例，即：通过 ELK 来收集一个 ASP .NET Core 应用的日志信息。为了让这个示例尽可能地简单一点，我们选择了直接向`Elasticsearch` 写入日志的方式，这里选择的日志库是 [Serilog](https://serilog.net/) 。
 
 # Hello ELK
 
-本文所用的例子已发布到[Github](https://github.com/qinyuanpei/DynamicWebApi/tree/master/DynamicWebApi.Core)。首先，我们准备一个 ASP.NET Core 的项目，MVC 或者 Web API 都可以。接下来，在项目中引入三个依赖项：`Serilog`、`Serilog.Extensions.Logging`和`Serilog.Sinks.ElasticSearch`。对于前两个，如果大家用过`Log4Net`或者`NLog`应该会感到非常熟悉啦，这一点不在赘述。而第三个，从名字就可以看出来这是冲着`Elasticsearch`来的，因为这是这个系列的第一篇文章，所以，我们直接写`Elasticsearch`即可。`Logstash`管道相关的内容，是一个非常复杂的东西，我们会在下一篇文章中单独来讲。
+本文所用的例子已发布到[Github](https://github.com/qinyuanpei/DynamicWebApi/tree/master/DynamicWebApi.Core)。首先，我们准备一个 ASP.NET Core 的项目，MVC 或者 Web API 都可以。接下来，在项目中引入三个依赖项：`Serilog`、`Serilog.Extensions.Logging` 和 `Serilog.Sinks.ElasticSearch`。对于前两个，如果大家用过 `Log4Net` 或者 `NLog` 应该会感到非常熟悉啦，这一点不在赘述。而第三个，从名字就可以看出来这是冲着 `Elasticsearch` 来的，因为这是这个系列的第一篇文章，所以，我们直接写 `Elasticsearch` 即可。`Logstash` 管道相关的内容，是一个非常复杂的东西，我们会在下一篇文章中单独来讲。
 
-接下来，主要是`Serilog`在 ASP.NET Core 中的配置。首先是`Startup`类，在构造函数中初始化`Serilog`：
+接下来，主要是`Serilog`在 ASP.NET Core 中的配置。首先是 `Startup` 类，在构造函数中初始化 `Serilog` ：
 
 ```csharp
 public Startup(IConfiguration configuration)
@@ -94,9 +94,9 @@ public Startup(IConfiguration configuration)
 }
 
 ```
-还记得`http://localhost:9200`这个地址是什么吗？不错，这是`Elasticsearch`的默认地址，所以，这部分代码主要的作用就是告诉`Elasticsearch`，接下来的日志信息都写到`Elasticsearch`中。为了让日志的信息更丰富一点，我们这里设置最小的日志事件级别为`Verbose`。
+还记得 `http://localhost:9200` 这个地址是什么吗？不错，这是 `Elasticsearch` 的默认地址，所以，这部分代码主要的作用就是告诉 `Elasticsearch` ，接下来的日志信息都写到 `Elasticsearch` 中。为了让日志的信息更丰富一点，我们这里设置最小的日志事件级别为 `Verbose` 。
 
-接下来，在`ConfigureServices()`方法中注册 ILogger 实例：
+接下来，在 `ConfigureServices()` 方法中注册 ILogger 实例：
 ```csharp
 services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 ```
@@ -112,11 +112,11 @@ public double Add(double n1, double n2)
  return n1 + n2;
 }
 ```
-至此，ELK 在 ASP.NET Core 中的集成已经全部结束，这意味着我们所有的日志都会写入到 ELK 中。那么，要到那里去找这些日志信息呢？且听博主娓娓道来。我们在`Kibana`中点击左侧导航栏最底下的设置按钮，然后再点击右侧的`Create index pattern`按钮创建一个索引。什么叫做索引呢？在`Elasticsearch`中索引相当于一张"表"，而这个“表”中的一条行记录则被称为`Document`，如图：
+至此，ELK 在 ASP.NET Core 中的集成已经全部结束，这意味着我们所有的日志都会写入到 ELK 中。那么，要到那里去找这些日志信息呢？且听博主娓娓道来。我们在 `Kibana` 中点击左侧导航栏最底下的设置按钮，然后再点击右侧的 `Create index pattern` 按钮创建一个索引。什么叫做索引呢？在 `Elasticsearch` 中索引相当于一张"表"，而这个“表”中的一条行记录则被称为 `Document`，如图：
 
 ![为Kibana创建索引1](https://i.loli.net/2020/02/15/fywAlQcH45mId1F.png)
 
-创建索引的时候，会发现列表中列出了目前`Elasticsearch`中可用的数据。以博主为例，这里的`logstash-2020.02.15`就是本文中的 ASP.NET Core 应用产生的日志信息。在这里，我们可以通过一个模糊匹配来匹配同种类型的数据。通常这里需要我们选择一个过滤字段，我们选择时间戳即可：
+创建索引的时候，会发现列表中列出了目前`Elasticsearch`中可用的数据。以博主为例，这里的 `logstash-2020.02.15` 就是本文中的 ASP.NET Core 应用产生的日志信息。在这里，我们可以通过一个模糊匹配来匹配同种类型的数据。通常这里需要我们选择一个过滤字段，我们选择时间戳即可：
 
 ![为Kibana创建索引2](https://i.loli.net/2020/02/15/8fD1EabSUV7OeZM.png)
 
@@ -124,7 +124,7 @@ public double Add(double n1, double n2)
 
 ![在Kibana中查看当前日志信息](https://i.loli.net/2020/02/15/m5jufkQW4qEiZAJ.png)
 
-下面是博主自己制作的一个简单的可视化看板，果然很长时间没有再用过`Kibana`，我都快忘记了要怎么做一个折线图。这实在是一篇迟到的博客，我早该在 2019 年的时候就完成这个系列的，这要命的拖延症啊，虽然没有新冠病毒恐怖，可终究不是什么好习惯！
+下面是博主自己制作的一个简单的可视化看板，果然很长时间没有再用过 `Kibana` ，我都快忘记了要怎么做一个折线图。这实在是一篇迟到的博客，我早该在 2019 年的时候就完成这个系列的，这要命的拖延症啊，虽然没有新冠病毒恐怖，可终究不是什么好习惯！
 
 ![一个简单的可视化看板](https://i.loli.net/2020/02/15/me7v2LBIOCUfM5a.png)
 

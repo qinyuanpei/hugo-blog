@@ -1,7 +1,6 @@
 ﻿{{ $id := (.Get "id") }}
 {{ $type := (.Get "type") }}
-
-{{ $url := (printf "https://api.wmdb.tv/movie/api?id=%s" $id) }}
+{{ $url := cond (eq $type "movie") (printf "https://api.wmdb.tv/movie/api?id=%s" $id) (printf "https://douban.edui.fun/v2/book/id/%s" $id)}}
 {{- $opts := dict "minify" hugo.IsProduction -}}
 {{- $doubanScript := resources.Get "ts/douban.ts" | js.Build $opts -}}
 <script type="text/javascript" src="{{ $doubanScript.RelPermalink }}"></script>

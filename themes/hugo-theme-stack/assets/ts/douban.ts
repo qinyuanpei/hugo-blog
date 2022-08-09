@@ -40,7 +40,8 @@ class DoubanCard {
                         };
                     } else {
                         let desc = data.summary
-                        desc = desc.replace(/</?.+?>/g, '')
+                        desc = desc.replaceAll('<p>', '')
+                        desc = desc.replaceAll('</p>', '')
                         model = {
                             title: data.title,
                             link: 'https://book.douban.com/subject/' + this.subjectId,
@@ -50,8 +51,7 @@ class DoubanCard {
                             vote: data.rating.average,
                             date: data.pubdate,
                             author: data.author.join(',')
-                        };
-
+                        }
                     }
 
                     localStorage.setItem(this.subjectId, JSON.stringify(model));

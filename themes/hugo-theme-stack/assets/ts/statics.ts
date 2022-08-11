@@ -11,7 +11,13 @@ function handleYearlyChart(el, data) {
         xAxis: {
             data: Object.keys(data)
         },
-        yAxis: {},
+        yAxis: {
+            type: 'value',
+            name: '数量',
+            min: 0,
+            max: 35,
+            interval: 5,
+        },
         series: [{
             name: '数量',
             type: 'bar',
@@ -246,9 +252,10 @@ function handleShanbayChart(el) {
         },
         yAxis: [{
             type: 'value',
+            name: '时间',
             min: 0,
             max: 35,
-            interval: 5
+            interval: 5,
         }],
         series: seriesData
     };
@@ -260,7 +267,7 @@ function handleDoubanChart(el) {
     var data = JSON.parse(dom.getAttribute('data-chart'))
     var chart = echarts.init(dom);
     var total = []
-    for(let i = 0; i < data.books.length; i++) {
+    for (let i = 0; i < data.books.length; i++) {
         total.push(Number(data.books[i]) + Number(data.movies[i]))
     }
     var option = {

@@ -35,6 +35,7 @@ on-phone--column {{ if .Site.Params.widgets.enabled }}extended{{ else }}compact{
             {{- $moviesStatics := $.Site.Data.douban.movies.statics -}}
             {{- $doubanStatics := dict "books" $booksStatics "movies" $moviesStatics -}}
             <div id="chart5" class="statics-chart-item" data-chart="{{ jsonify  $doubanStatics }}"></div>
+            <div id="chart6" class="statics-chart-item" data-chart="{{ jsonify  $.Site.Data.shanbay }}"></div>
         </div>
         {{- $opts := dict "minify" hugo.IsProduction -}}
         {{- $staticsScript := resources.Get "ts/statics.ts" | js.Build $opts -}}
@@ -58,8 +59,8 @@ on-phone--column {{ if .Site.Params.widgets.enabled }}extended{{ else }}compact{
                 })
 
             statics.handleLanguagesChart('chart4');
-
-            statics.handleDoubanChart('chart5')
+            statics.handleDoubanChart('chart5');
+            statics.handleShanbayChart('chart6');
         </script>
     </section>
 </article>

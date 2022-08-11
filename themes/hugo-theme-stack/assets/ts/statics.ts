@@ -221,8 +221,10 @@ function handleLeetCodeChart(el, data) {
     chart.setOption(option);
 }
 
-function handleShanbayChart(el, data) {
-    var chart = echarts.init(document.getElementById(el));
+function handleShanbayChart(el) {
+    var dom = document.getElementById(el);
+    var data = JSON.parse(dom.getAttribute('data-chart'));
+    var chart = echarts.init(dom);
     var seriesData = []
     seriesData.push({
         name: "学习时长",
@@ -342,5 +344,6 @@ window.statics = {
     handleTagsChart,
     handleLanguagesChart,
     handleDoubanChart,
+    handleShanbayChart
 }
 

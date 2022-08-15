@@ -45,6 +45,7 @@ def run(days, output):
     
     begin = calculateDate(days)
     checkins = list(filter(lambda x:datetime.datetime.strptime(x['checkin_date'] ,'%Y-%m-%d') > begin, checkins))
+    checkins = sorted(checkins, key=lambda x: datetime.datetime.strptime(x['checkin_date'] ,'%Y-%m-%d'), reverse=False)
     if len(checkins) > 0:
         with open(output,'wt',encoding='utf-8') as f:
             print(f'{output} created.')

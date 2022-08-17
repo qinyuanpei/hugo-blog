@@ -16,7 +16,7 @@ image: /posts/NET-Core-ELK搭建可视化日志分析平台-下/logs-g459bb0417_
 
 # 从 Logstash 到 Filebeat
 
-当初准备写这个系列的时候，ELK 还是经典的 `Elastaicsearch` 、 `Logstash` 和 `Kibana` 组合，如下图所示，`Logstash` 从各种不同的数据源收集数据，通过内置的管道对输入的数据进行加工。最终，这些数据会被存储到 `Elastaicsearch` 中供 `Kibana` 完成数据可视化。 即使放到三年后的今天来看，这张图依然是非常经典的一幅图。为什么这么说呢？因为自此以后，可视化日志分析平台的搭建，基本都是围绕这三个方面展开，甚至 `Logstash` 的继任者 `Filebeat`、`Fluentd`、`Fluen-Bit` 等等无一不沿用了 `Logstash` 的这套管道设计，足可见其对后来者的影响之深远。不过，作为先驱出现的 `Logstash`，其本身是采用 `Java` 语言开发的，其插件则是采用 `Ruby` 语言开发的，特别是第一点，一直让 `Logstash` 在性能问题上遭人垢病。在实际使用中，你常常需要在每一台服务器上安装 `Logstash` ，这意味着它在 CPU 和内存上的占用会比较高。
+当初准备写这个系列的时候，ELK 还是经典的 `Elastaicsearch` 、 `Logstash` 和 `Kibana` 组合，如下图所示，`Logstash` 从各种不同的数据源收集数据，通过内置的管道对输入的数据进行加工。最终，这些数据会被存储到 `Elastaicsearch` 中供 `Kibana` 完成数据可视化。 即使放到三年后的今天来看，这张图依然是非常经典的一幅图。为什么这么说呢？因为自此以后，可视化日志分析平台的搭建，基本都是围绕这三个方面展开，甚至 `Logstash` 的继任者 `Filebeat`、`Fluentd`、`Fluent-Bit` 等等无一不沿用了 `Logstash` 的这套管道设计，足可见其对后来者的影响之深远。不过，作为先驱出现的 `Logstash`，其本身是采用 `Java` 语言开发的，其插件则是采用 `Ruby` 语言开发的，特别是第一点，一直让 `Logstash` 在性能问题上遭人垢病。在实际使用中，你常常需要在每一台服务器上安装 `Logstash` ，这意味着它在 CPU 和内存上的占用会比较高。
 
 ![经典的 ELK 全家桶组合](/posts/NET-Core-ELK搭建可视化日志分析平台-下/Logstash-Pipeline.drawio.png)
 
@@ -282,7 +282,7 @@ service:
     Include_Tag_Key On
 ```
 
-简单来说，`Fluent-Bit` 会接收经由 `Docker` 转发的日志，我们再将其输出到 `Elasticsearch` 中，这种情况下我们不用关心应用的日志存储在什么地方，只要是输出到控制台的日，志我们转发到 `Fluent-Bit` 即可，显而易见，这是一种容器级别的日志收集方案。以前用 `Logstash` 和 `Filebeat` 的时候，我曾纠结过这个这个问题，而直到此时此刻，我才真正找到答案。所以，这是否说明，时间和地点更重要，如果晚一点遇见某个人，你是不是会做得稍微好一点？
+简单来说，`Fluent-Bit` 会接收经由 `Docker` 转发的日志，我们再将其输出到 `Elasticsearch` 中，这种情况下我们不用关心应用的日志存储在什么地方，只要是输出到控制台的日志，我们转发到 `Fluent-Bit` 即可，显而易见，这是一种容器级别的日志收集方案。以前用 `Logstash` 和 `Filebeat` 的时候，我曾纠结过这个这个问题，而直到此时此刻，我才真正找到答案。所以，这是否说明，时间和地点更重要，如果晚一点遇见某个人，你是不是会做得稍微好一点？
 
 ![Fluent-Bit 日志收集 - Forward 模式 - 采集应用日志](/posts/NET-Core-ELK搭建可视化日志分析平台-下/efk-fluent-bit-logging-forward-logs.png)
 

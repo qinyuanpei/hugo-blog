@@ -248,7 +248,10 @@ function handleShanbayChart(el) {
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: data.map(x => x.checkin_date)
+            data: data.map(x => {
+                let date = new Date(x.checkin_date)
+                return `${date.getMonth() + 1}-${date.getDate()}`
+            })
         },
         yAxis: [{
             type: 'value',

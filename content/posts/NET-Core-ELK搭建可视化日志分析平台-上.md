@@ -10,6 +10,7 @@ tags:
 - 日志
 - 监控
 title: .NET Core + ELK 搭建可视化日志分析平台(上)
+image: /posts/NET-Core-ELK搭建可视化日志分析平台-上/lighthouse-gd3af11c39_1280.jpg
 ---
 
 Hi，各位朋友，大家好！欢迎大家关注我的博客，我的博客地址是: [https://blog.yuanpei.me](https://blog.yuanpei.me)。今天是远程办公以来的第一个周末，虽然公司计划在远程两周后恢复正常办公，可面对着每天都有人离开的疫情，深知这一切都不会那么容易。窗外的阳光透过玻璃照射进屋子，这一切都昭示着春天的脚步渐渐近了。可春天来了，有的人却没有再回来。那些在 2019 年结束时许下的美好期待、豪言壮语，在这样一场灾难面前，终究是如此的无力而苍白。可不管怎么样，生活还是要继续，在这些无法出门的日子里，在这样一个印象深刻的春节长假里，除了做好**勤洗手**、**多通风**、**戴口罩**这些防疫保护措施以外，博主还是希望大家能够抽空学习，通过知识来充实这“枯燥"的生活。所以，从今天开始，我将为大家带来 **.NET Core + ELK 搭建可视化日志分析平台** 系列文章，希望大家喜欢。
@@ -73,30 +74,26 @@ docker run -p 5601:5601 -p 9200:9200 -p 5044:5044 --name elk sebp/elk
 
 # Hello ELK
 
-本文所用的例子已发布到[Github](https://github.com/qinyuanpei/DynamicWebApi/tree/master/DynamicWebApi.Core)。首先，我们准备一个 ASP.NET Core 的项目，MVC 或者 Web API 都可以。接下来，在项目中引入三个依赖项：`Serilog`、`Serilog.Extensions.Logging` 和 `Serilog.Sinks.ElasticSearch`。对于前两个，如果大家用过 `Log4Net` 或者 `NLog` 应该会感到非常熟悉啦，这一点不在赘述。而第三个，从名字就可以看出来这是冲着 `Elasticsearch` 来的，因为这是这个系列的第一篇文章，所以，我们直接写 `Elasticsearch` 即可。`Logstash` 管道相关的内容，是一个非常复杂的东西，我们会在下一篇文章中单独来讲。
-
-接下来，主要是`Serilog`在 ASP.NET Core 中的配置。首先是 `Startup` 类，在构造函数中初始化 `Serilog` ：
+本文所用的例子已发布到[Github](https://github.com/qinyuanpei/DynamicWebApi/tree/master/DynamicWebApi.Core)。首先，我们准备一个 ASP.NET Core 的项目，MVC 或者 Web API 都可以。接下来，在项目中引入三个依赖项：`Serilog`、`Serilog.Extensions.Logging` 和 `Serilog.Sinks.ElasticSearch`。对于前两个，如果大家用过 `Log4Net` 或者 `NLog` 应该会感到非常熟悉啦，这一点不在赘述。而第三个，从名字就可以看出来这是冲着 `Elasticsearch` 来的，因为这是这个系列的第一篇文章，所以，我们直接写 `Elasticsearch` 即可。`Logstash` 管道相关的内容，是一个非常复杂的东西，我们会在下一篇文章中单独来讲。接下来，主要是`Serilog`在 ASP.NET Core 中的配置。首先是 `Startup` 类，在构造函数中初始化 `Serilog` ：
 
 ```csharp
 public Startup(IConfiguration configuration)
 {
- Log.Logger = new LoggerConfiguration()
-  .Enrich.FromLogContext()
-  .MinimumLevel.Debug()
-  .WriteTo.Elasticsearch(
-  new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
-  {
-   MinimumLogEventLevel = LogEventLevel.Verbose,
-   AutoRegisterTemplate = true
-  })
-  .CreateLogger();
- Configuration = configuration;
+  Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .MinimumLevel.Debug()
+    .WriteTo.Elasticsearch(
+      new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+      {
+      MinimumLogEventLevel = LogEventLevel.Verbose,
+      AutoRegisterTemplate = true
+    })
+    .CreateLogger();
+  Configuration = configuration;
 }
 
 ```
-还记得 `http://localhost:9200` 这个地址是什么吗？不错，这是 `Elasticsearch` 的默认地址，所以，这部分代码主要的作用就是告诉 `Elasticsearch` ，接下来的日志信息都写到 `Elasticsearch` 中。为了让日志的信息更丰富一点，我们这里设置最小的日志事件级别为 `Verbose` 。
-
-接下来，在 `ConfigureServices()` 方法中注册 ILogger 实例：
+还记得 `http://localhost:9200` 这个地址是什么吗？不错，这是 `Elasticsearch` 的默认地址，所以，这部分代码主要的作用就是告诉 `Elasticsearch` ，接下来的日志信息都写到 `Elasticsearch` 中。为了让日志的信息更丰富一点，我们这里设置最小的日志事件级别为 `Verbose` 。接下来，在 `ConfigureServices()` 方法中注册 ILogger 实例：
 ```csharp
 services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 ```
@@ -108,8 +105,8 @@ private readonly ILogger _logger = Log.Logger;
 [HttpGet]
 public double Add(double n1, double n2)
 {
- _logger.Information($"Invoke {typeof(CoreCalculatorService).Name}/Add: {n1},{n2}");
- return n1 + n2;
+  _logger.Information($"Invoke {typeof(CoreCalculatorService).Name}/Add: {n1},{n2}");
+  return n1 + n2;
 }
 ```
 至此，ELK 在 ASP.NET Core 中的集成已经全部结束，这意味着我们所有的日志都会写入到 ELK 中。那么，要到那里去找这些日志信息呢？且听博主娓娓道来。我们在 `Kibana` 中点击左侧导航栏最底下的设置按钮，然后再点击右侧的 `Create index pattern` 按钮创建一个索引。什么叫做索引呢？在 `Elasticsearch` 中索引相当于一张"表"，而这个“表”中的一条行记录则被称为 `Document`，如图：
@@ -129,4 +126,4 @@ public double Add(double n1, double n2)
 ![一个简单的可视化看板](https://i.loli.net/2020/02/15/me7v2LBIOCUfM5a.png)
 
 # 本文小结
-这篇博客是这个系列的第一篇，是一篇珊珊来迟的博客，因为博主早在 2019 年就开始着手学习 ELK。考虑最新公司有使用 ELK 的打算，而因疫情又让博主有充足的时间，所以，博主决定把 ELK 相关的内容花点时间梳理出来。ELK 是一个集日志收集、搜索、日志聚合和日志分析于一身的完整解决方案。博主计划在接下来的篇幅中介绍`Logstash`/`FireBeat`管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客。以上就是这篇博客的全部内容啦，晚安！
+这篇博客是这个系列的第一篇，是一篇珊珊来迟的博客，因为博主早在 2019 年就开始着手学习 ELK。考虑最新公司有使用 ELK 的打算，而因疫情又让博主有充足的时间，所以，博主决定把 ELK 相关的内容花点时间梳理出来。ELK 是一个集日志收集、搜索、日志聚合和日志分析于一身的完整解决方案。博主计划在接下来的篇幅中介绍 Logstash 和 FileeBeat 管道配置、Docker 容器内的日志收集、以及自定义日志组件开发这些话题，希望大家继续关注我的博客。以上就是这篇博客的全部内容啦，晚安！

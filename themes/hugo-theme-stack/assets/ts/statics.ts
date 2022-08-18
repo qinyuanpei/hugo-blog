@@ -257,7 +257,7 @@ function handleShanbayChart(el) {
             type: 'value',
             name: '时间',
             min: 0,
-            max: 35,
+            max: 40,
             interval: 5,
         }],
         series: seriesData

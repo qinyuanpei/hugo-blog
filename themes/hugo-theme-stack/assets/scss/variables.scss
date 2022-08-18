@@ -115,7 +115,7 @@ $defaultTagColors: #fff, #fff, #fff, #fff, #fff;
     --article-font-size: 1.6rem;
 
     @include respond(md) {
-        --article-font-size: 1.65rem; 
+        --article-font-size: 1.6rem; 
     }
 
     --article-line-height: 1.85;

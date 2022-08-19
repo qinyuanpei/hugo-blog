@@ -15,8 +15,8 @@ function handleYearlyChart(el, data) {
             type: 'value',
             name: '数量',
             min: 0,
-            max: 35,
-            interval: 5,
+            max: 55,
+            interval: 10,
         },
         series: [{
             name: '数量',

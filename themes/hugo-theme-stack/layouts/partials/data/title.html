@@ -12,7 +12,7 @@
 
     {{ if .Paginator.HasPrev }}
         <!-- Paginated. Append page number to title -->
-        {{ $title = printf "%s - %s" .Paginator $siteTitle }}
+        {{ $title = printf "%s | %s" .Paginator $siteTitle }}
     {{ else }}
         {{ $title = $siteTitle}}
     {{ end }}
@@ -24,15 +24,22 @@
     {{ $pag := .Paginate ($notHidden) }}
 
     <!-- {TAXONOMY_TYPE}: {TAXONOMY_TERM} -->
-    {{ $title = slice (title .Data.Singular) ": " $title }}
+    {{ printf "%#v" .Data.Singular }}
+    {{ $termTitle := (title .Data.Singular) }}
+    {{ $termTitle = T $termTitle }}
+    {{ $title = slice $termTitle ": " $title }}
 
     {{ if .Paginator.HasPrev }}
         <!-- Add page number-->
-        {{ $title = $title | append " - " .Paginator }}
+        {{ $title = $title | append " | " .Paginator }}
     {{ end }} 
 
-    {{ $title = $title | append " - " $siteTitle }}
+    {{ $title = $title | append " | " $siteTitle }}
     {{ $title = delimit $title "" }}
-{{- end -}}
+{{- else -}} 
+    <!-- {title} | {siteTitle} -->
+    {{ $title = slice $title " | "  $siteTitle }}
+    {{ $title = delimit $title "" }}
+{{ end }}
 
 {{ return $title }}

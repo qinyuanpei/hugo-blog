@@ -249,8 +249,12 @@ function handleShanbayChart(el) {
             type: 'category',
             boundaryGap: false,
             data: data.map(x => {
-                let date = new Date(x.checkin_date)
-                return `${date.getMonth() + 1}-${date.getDate()}`
+                let checkin_date = new Date(x.checkin_date)
+                let month = (checkin_date.getMonth() + 1)
+                let monthVal = month < 10 ? `0${month}` : month.toString()
+                let date = checkin_date.getDate()
+                let dateVal = date < 10 ? `0${date}` : date.toString()
+                return `${monthVal}-${dateVal}`
             })
         },
         yAxis: [{

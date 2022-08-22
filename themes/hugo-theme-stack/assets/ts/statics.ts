@@ -1,4 +1,4 @@
-function handleYearlyChart(el, data) {
+﻿function handleYearlyChart(el, data) {
     var dom = document.getElementById(el);
     var data = JSON.parse(dom.getAttribute('data-chart'))
     var chart = echarts.init(dom);
@@ -308,7 +308,7 @@ function handleDoubanChart(el) {
                 type: 'value',
                 name: '数量',
                 min: 0,
-                max: 15,
+                max: 20,
                 interval: 5,
                 axisLabel: {
                     formatter: '{value}'

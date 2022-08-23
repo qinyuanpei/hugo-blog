@@ -87,7 +87,7 @@ function handleTagsChart(el) {
             return;
         }
         if (param.type == 'click') {
-            location.href = '/tags/' + encodeURI(param.data.name);
+            location.href = '/tags/' + encodeURI(param.data.name.toLowerCase());
         }
     });
     var seriesData = [];

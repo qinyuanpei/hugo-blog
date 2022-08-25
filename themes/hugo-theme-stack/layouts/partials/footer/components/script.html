@@ -6,7 +6,7 @@
 {{ $jsdelivr := .Site.Params.jsdelivr }}
 
 {{- $HugoVersion := print "v" .Site.Hugo.Version -}}
-{{- $GitCommitHash := slicestr (readFile "VERSION.txt") 0 6 -}}
+{{- $GitCommitHash := slicestr (readFile "VERSION.txt") 0 7 -}}
 
 {{ if and $jsdelivr $jsdelivr.enable (ne .Page.Site.IsServer true) }}
 <script type="text/javascript" src="//{{ $jsdelivr.baseUrl }}/gh/{{ $jsdelivr.gh_user }}/{{ $jsdelivr.gh_repo }}@master{{ $script.RelPermalink }}" defer></script>

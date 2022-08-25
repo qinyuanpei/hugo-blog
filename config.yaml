@@ -22,6 +22,7 @@ summaryLength: 120
 disablePathToLower: false
 
 enableGitInfo: true
+enableEmoji: true
 
 permalinks:
     post: /posts/:slug/

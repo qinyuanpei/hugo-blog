@@ -48,8 +48,10 @@ links:
     description: 酷壳
     website: https://coolshell.cn/
     image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-
-
+  - title: 程序员的喵
+    description: 程序员的喵
+    website: https://catcoding.me/
+    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 comments: false
 ---
 

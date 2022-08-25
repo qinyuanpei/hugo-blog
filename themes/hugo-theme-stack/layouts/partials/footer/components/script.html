@@ -4,6 +4,10 @@
 {{- $script := resources.Get "ts/main.ts" | js.Build $opts -}}
 
 {{ $jsdelivr := .Site.Params.jsdelivr }}
+
+{{- $HugoVersion := print "v" .Site.Hugo.Version -}}
+{{- $GitCommitHash := slicestr (readFile "VERSION.txt") 0 6 -}}
+
 {{ if and $jsdelivr $jsdelivr.enable (ne .Page.Site.IsServer true) }}
 <script type="text/javascript" src="//{{ $jsdelivr.baseUrl }}/gh/{{ $jsdelivr.gh_user }}/{{ $jsdelivr.gh_repo }}@master{{ $script.RelPermalink }}" defer></script>
 {{ else }}
@@ -14,4 +18,15 @@
     {{/* Place your custom script in HUGO_SITE_FOLDER/assets/ts/custom.ts */}}
     {{- $customScript := . | js.Build $opts -}}
     <script type="text/javascript" src="{{ $customScript.RelPermalink }}" defer></script>
+{{- end -}}
+
+{{- with resources.Get "ts/badge.ts" -}}
+    {{- $badgeScript := . | js.Build $opts -}}
+    <script type="text/javascript" src="{{ $badgeScript.RelPermalink }}"></script>
+    <script type="text/javascript">
+        let createBadge = window.createBadge;
+        createBadge('Git', '{{ $GitCommitHash }}', '#35495e', '#ffc107');
+        createBadge('Hugo', '{{ $HugoVersion }}', '#35495e', '#41b883');
+        
+    </script>
 {{- end -}}

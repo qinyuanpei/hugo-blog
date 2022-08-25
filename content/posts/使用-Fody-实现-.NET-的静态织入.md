@@ -10,6 +10,7 @@ tags:
 - AOP
 - 静态编织
 title: 使用 Fody 实现 .NET 的静态编织
+image: /posts/使用-Fody-实现-.NET-的静态织入/weaving-loom-g2d21b4b53_1280.jpg
 ---
 
 {{<meting server="netease" type="song" id="28244941">}}

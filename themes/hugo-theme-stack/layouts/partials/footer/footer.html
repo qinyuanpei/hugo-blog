@@ -17,8 +17,13 @@
         {{- $Generator := `<a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a>` -}}
         {{- $Theme := printf `<b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="%s">Stack</a></b>` $ThemeVersion -}}
         {{- $DesignedBy := `<a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>` -}}
+        {{- $Version := print "v" .Site.Hugo.Version }}
+        {{- $TotalWords := partialCached "footer/components/total-words" . -}}
+        {{- $TotalPosts := partialCached "footer/components/total-posts" . -}}
 
-        {{ T "footer.builtWith" (dict "Generator" $Generator) | safeHTML }} <br />
-        {{ T "footer.designedBy" (dict "Theme" $Theme "DesignedBy" $DesignedBy) | safeHTML }}
+        {{ T "footer.builtWith" (dict "Generator" $Generator "Version" $Version) | safeHTML }} <br />
+        {{ T "footer.designedBy" (dict "Theme" $Theme "DesignedBy" $DesignedBy) | safeHTML }} <br />
+        {{ T "footer.totalAmount" (dict "TotalWords" $TotalWords "TotalPosts" $TotalPosts) | safeHTML }} <br />
+        
     </section>
 </footer>

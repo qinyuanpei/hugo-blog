@@ -66,6 +66,11 @@ search:
     resultTitle:
         other: "#PAGES_COUNT 个结果 （用时 #TIME_SECONDS 秒）"
 
+footer:
+    totalAmount:
+        other: 已创作 {{ .TotalPosts }} 篇文章，共计 {{ .TotalWords }} 字
+        
+
 taxonomy:
     categories:
         other: 分类

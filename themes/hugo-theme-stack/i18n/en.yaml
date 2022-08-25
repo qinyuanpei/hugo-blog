@@ -1,4 +1,4 @@
-toggleMenu:
+﻿toggleMenu:
     other: Toggle Menu
 
 darkMode:
@@ -63,7 +63,7 @@ search:
 
 footer:
     builtWith:
-        other: Built with {{ .Generator }}
+        other: Built with {{ .Generator }} {{ .Version }}
 
     designedBy:
         other: Theme {{ .Theme }} designed by {{ .DesignedBy }}

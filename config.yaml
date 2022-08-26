@@ -73,7 +73,7 @@ params:
 
     comments:
         enabled: true
-        provider: valine
+        provider: waline
 
         disqusjs:
             shortname:
@@ -102,23 +102,23 @@ params:
 
         # Waline client configuration see: https://waline.js.org/en/reference/client.html
         waline:
-            serverURL:
-            lang:
-            visitor:
+            serverURL: https://waline-comments-server-gm44e4456-qinyuanpei.vercel.app/
+            lang: zh
+            visitor: false
             avatar:
             emoji:
                 - https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo
             requiredMeta:
                 - name
-                - email
+                - mail
                 - url
-            placeholder:
             locale:
                 admin: Admin
+                placeholder: 云中谁寄锦书来，雁字回时，月满西楼。
         
         valine: 
-            appId:  JbHqRp2eMrTgIwYpfERH0g79-gzGzoHsz
-            appKey: VsiKvLuiBGvJL1XrAfv7siY2
+            appId:  4hmEJLBgTdEitaOuly42c8AV-MdYXbMMI
+            appKey: DU5CvWt7ED1P3ewdHnxhHFYt
             notify: true # Mail notify
             verify: true # Verify code
             avatar: mm # Gravatar style : mm/identicon/monsterid/wavatar/retro/hide

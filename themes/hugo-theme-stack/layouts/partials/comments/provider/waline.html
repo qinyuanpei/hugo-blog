@@ -12,21 +12,17 @@
     }
 </style>
 
-{{- with .Site.Params.comments.waline -}}
-{{- $config := dict "el" "#waline" "dark" `html[data-scheme="dark"]` -}}
-{{- $replaceKeys := dict "serverurl" "serverURL" "requiredmeta" "requiredMeta" "wordlimit" "wordLimit" "pagesize" "pageSize" "avatarcdn" "avatarCDN" "avatarforce" "avatarForce" -}}
+{{ with .Site.Params.comments.waline }}
+    <script>
+        /// Waline client configuration see: https://waline.js.org/en/reference/client.html
+        var waline = new Waline({
+            el: '#waline',
+            serverURL: '{{ .serverURL }}',
+            lang: '{{ .lang }}',
+            dark: 'auto',
+            requiredMeta: ['nick','mail','url'],
+        });
 
-{{- range $key, $val := . -}}
-    {{- if $val -}}  
-        {{- $replaceKey := index $replaceKeys $key -}}
-        {{- $k := default $key $replaceKey -}}
-
-        {{- $config = merge $config (dict $k $val) -}}
-    {{- end -}}
-{{- end -}}
-
-<script>
-    /// Waline client configuration see: https://waline.js.org/en/reference/client.html
-    new Waline({{ $config | jsonify | safeJS }});
-</script>
-{{- end -}}
+        waline.locale.placeholder = '{{ .locale.placeholder }}';
+    </script>
+{{ end }}

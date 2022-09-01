@@ -102,7 +102,7 @@ params:
 
         # Waline client configuration see: https://waline.js.org/en/reference/client.html
         waline:
-            serverURL: https://waline-comments-server-gm44e4456-qinyuanpei.vercel.app/
+            serverURL: waline-comments-server-49tyq3dl9-qinyuanpei.vercel.app
             lang: zh
             visitor: false
             avatar:

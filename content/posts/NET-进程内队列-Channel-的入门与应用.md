@@ -129,7 +129,7 @@ while (await channel.Reader.WaitToReadAsync())
 }
 ```
 
-也许，你对这个话题意犹未尽，可我不得不非常遗憾的告诉你，这就是 `Channel` 最为核心的用法了。怎么样，是不是感觉非常简单？这的确符合微软一贯的作风，即：让一个复杂的东西变得简单好用。关于 `Channel` 更多的细节，这里不再赘述，大家可以去阅读官方文档。我发誓，MSDN 和 [MDN](https://developer.mozilla.org/en-US/) 是我见过写的最好的文档。 
+也许，你对这个话题意犹未尽，可我不得不非常遗憾的告诉你，这就是 `Channel` 最为核心的用法了。怎么样，是不是感觉非常简单？这的确符合微软一贯的作风，即：让一个复杂的东西变得简单好用。关于 `Channel` 更多的细节，这里不再赘述，大家可以去阅读官方文档。我发誓，MSDN 和 [MDN](https://developer.mozilla.org/en-US/) 是我见过写得最好的文档。 
 
 # Channel 应用
 

@@ -55,9 +55,9 @@ public abstract class Entity : IEntity
     
     // 移除事件
     public void RemoveDomainEvent(IDomainEvent eventItem)
-	{
-	    _domainEvents?.Remove(eventItem);
-	}
+    {
+        _domainEvents?.Remove(eventItem);
+    }
     
     // 清除事件
     public void ClearDomainEvents()

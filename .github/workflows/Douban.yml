@@ -20,14 +20,14 @@ jobs:
       with:
         id: 60029335
         type: movie
-        format: json
+        format: csv
         dir: ./themes/hugo-theme-stack/data/
     - name: Sync Books
       uses: lizheming/doumark-action@master
       with:
         id: 60029335
         type: book
-        format: json
+        format: csv
         dir: ./themes/hugo-theme-stack/data/
     - name: Auto Commit
       uses: EndBug/add-and-commit@v8

@@ -19,20 +19,20 @@ jobs:
     - name: Sync Movies
       uses: lizheming/doumark-action@master
       with:
-        id: qinyuanpei
+        id: 60029335
         type: movie
         format: json
         dir: ./data/douban
 
-    - name: book
+    - name: Sync Books
       uses: lizheming/doumark-action@master
       with:
-        id: qinyuanpei
+        id: 60029335
         type: book
         format: json
         dir: ./data/douban
   
-    - name: Commit
+    - name: Auto Commit
       uses: EndBug/add-and-commit@v8
       with:
         message: 'chore: update douban data'

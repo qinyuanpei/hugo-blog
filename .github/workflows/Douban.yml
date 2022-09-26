@@ -1,4 +1,4 @@
-name: douban
+name: Douban
 on: 
   # schedule:
   # - cron: "0 0,0,12,23 * * *"
@@ -15,22 +15,21 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Sync Movies
-      uses: lizheming/doumark-action@master
-      with:
-        id: 60029335
-        type: movie
-        format: json
-        dir: ./themes/hugo-theme-stack/data/
-    - name: Sync Books
-      uses: lizheming/doumark-action@master
-      with:
-        id: 60029335
-        type: book
-        format: json
-        dir: ./themes/hugo-theme-stack/data/
-    - name: Auto Commit
-      uses: EndBug/add-and-commit@v8
-      with:
-        message: 'Update Douban Data'
-        add: ./themes/hugo-theme-stack/data/
+    - name: Run Generator
+      run: |
+          sudo mkdir -p /home/runner/work/
+          cd /home/runner/work/
+          sudo git clone https://github.com/qinyuanpei/douban-generator.git 
+          cd /home/runner/work/douban-generator
+          sudo python -m pip install pip -U
+          sudo python -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
+          sudo python -m pip config set install.trusted-host mirrors.aliyun.com
+          sudo python -m pip install -r requirements.txt 
+          python movies-generator.py 60029335
+          python books-generator.py 60029335
+          python games-generator.py 60029335
+    # - name: Auto Commit
+    #   uses: EndBug/add-and-commit@v8
+    #   with:
+    #     message: 'Update Douban Data'
+    #     add: ./themes/hugo-theme-stack/data/

@@ -15,12 +15,20 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.7"
+        architecture: "x64"
     - name: Run Generator
       run: |
           sudo mkdir -p /home/runner/work/
           cd /home/runner/work/
           sudo git clone https://github.com/qinyuanpei/douban-generator.git 
           cd /home/runner/work/douban-generator
+          sudo rm -rf /usr/bin/python
+          sudo ln -s /usr/bin/python3  /usr/bin/python
+          sudo python --version
           sudo python -m pip install pip -U
           sudo python -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
           sudo python -m pip config set install.trusted-host mirrors.aliyun.com

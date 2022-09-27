@@ -33,6 +33,7 @@ jobs:
           python -m pip install pip -U
           python -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
           python -m pip config set install.trusted-host mirrors.aliyun.com
+          python -m pip install --default-timeout=50000 -r requirements.txt
 
       - name: Build Site
         run: |

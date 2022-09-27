@@ -5,4 +5,5 @@ rm -f ./prefill-posts-data.py
 
 cp ./.python/readme.py ./readme.py
 python ./readme.py
+cp ./README.md ./public/README.md
 rm -f ./readme.py

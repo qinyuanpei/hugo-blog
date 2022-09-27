@@ -1,12 +1,12 @@
 #! python3
 import re
 import json
-import pytz
+from pytz import timezone
 import datetime
 from itertools import groupby
 
 # 时区定义
-tz = pytz.timezone('Asia/Shanghai')
+tz = timezone('Asia/Shanghai')
 
 # 文档实体结构定义
 class Post:

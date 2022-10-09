@@ -16,7 +16,7 @@ lastmod: '2020-10-09'
 * 职业：(**伪**)全栈攻城狮、Yaml/Markdown工程师、刺客信条历史/物理学家
 * 方向：**数据分析**、**微服务**、**Web**
 * 技术：**.NET**、**Python**、**JavaScript**
-* 日常：读书(**人文/历史/诗词/**)、写作(**技术/生活**)、电影(**日剧/科普/纪录片**)、烹饪、~洞箫~
+* 日常：读书(**人文/历史/诗词/**)、写作(**技术/生活**)、电影(**日剧/科普/纪录片**)、烹饪、~洞箫~、刺客信条
 
 近期规划：
 
@@ -39,4 +39,4 @@ lastmod: '2020-10-09'
 
 {{<meting server="netease" type="song" id="1472178723">}}
 
-本博客使用 [Hugo](https://www.gohugo.org/) 驱动，在 [Github Pages](https://pages.github.com) 与 [Vercel](https://vercel.com/) 双线部署，由 [Travis CI](https://travis-ci.org/) 和 [Github Actions](https://github.com/actions/starter-workflows) 提供持续集成服务，由 [不蒜子](http://busuanzi.ibruce.info/) 和 [LeanCloud](https://leancloud.cn/) 提供访客统计服务，由 [Valine](https://valine.js.org/) 提供评论服务，由 [jsDelivr](https://www.jsdelivr.com/) 提供 CDN加速服务。如需订阅本博客，可以通过 [RSS](https://blog.yuanpei.me/atom.xml) 或者在 [Github](https://github.com/) 上 Watch [本项目](https://github.com/qinyuanpei/qinyuanpei.github.io)，如需联系本人，请在博客中留言(**注意留下你的邮箱**) 或者发送邮件至：qinyuanpei@163.com
+本博客使用 [Hugo](https://www.gohugo.org/) 驱动，在 [Github Pages](https://pages.github.com) 与 [Vercel](https://vercel.com/) 双线部署，由 [Travis CI](https://travis-ci.org/) 和 [Github Actions](https://github.com/actions/starter-workflows) 提供持续集成服务，由 [不蒜子](http://busuanzi.ibruce.info/) 和 [LeanCloud](https://leancloud.cn/) 提供访客统计服务，由 [Waline](https://waline.js.org/) 提供评论服务，由 [jsDelivr](https://www.jsdelivr.com/) 提供 CDN 加速服务。如需订阅本博客，可以通过 [RSS](https://blog.yuanpei.me/atom.xml) 或者在 [Github](https://github.com/) 上 Watch [本项目](https://github.com/qinyuanpei/hugo-blog)，如需联系本人，请在博客中留言(**注意留下你的邮箱**) 或者 发送邮件至：qinyuanpei#163.com(**请自行将#替换为@**)。

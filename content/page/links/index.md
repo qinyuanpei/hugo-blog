@@ -52,6 +52,11 @@ links:
     description: 程序员的喵
     website: https://catcoding.me/
     image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  - title: Simon's Blog
+    description: Simon的自留地
+    website: https://song.al/
+    image: https://i.typlog.com/japan/8347850273_382761.jpg?x-oss-process=style/ss
+
 comments: false
 ---
 

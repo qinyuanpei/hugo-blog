@@ -56,6 +56,10 @@ links:
     description: Simon的自留地
     website: https://song.al/
     image: https://i.typlog.com/japan/8347850273_382761.jpg?x-oss-process=style/ss
+  - title: Klimafreundlicher Kochen
+    description: 气候友好型烹饪
+    website: https://www.klimafreundlicher-kochen.de
+    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 
 comments: false
 ---

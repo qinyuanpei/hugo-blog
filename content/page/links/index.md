@@ -60,7 +60,10 @@ links:
     description: 气候友好型烹饪
     website: https://www.klimafreundlicher-kochen.de
     image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-
+  - title: Randy's Blog
+    description: Randy's Blog
+    website: https://lutaonan.com/
+    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 comments: false
 ---
 

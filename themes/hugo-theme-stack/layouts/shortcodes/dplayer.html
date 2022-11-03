@@ -1,0 +1,11 @@
+{{ $url := (.Get "url") }}
+<div id="dplayer" data-url="{{ $url }} "></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.27.0/DPlayer.min.js"></script>
+<script type="javascript">
+    let dp = new DPlayer({
+    container: document.getElementById('dplayer'),
+    video: {
+        url: document.getElementById('dplayer').dataset.url,
+    },
+});
+</script>

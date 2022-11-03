@@ -129,7 +129,7 @@ def detect_color(image, color):
 
 这里，我们先对图片做了一次高斯模糊、然后将其转换为 HSV 格式，经过侵蚀以后传给 `inRange()`函数，这样我们就得到了所有符合这个区间范围的点。接下来，单单找到颜色还不行，我们还需要根据这些点得到一个轮廓，此时，`findContours()`函数再次登场，为了让使用者更直观地找到对应的颜色区域，我们这里使用下面的方法将其“画”出来：
 
-```
+```python
 # 标记颜色区域
 def draw_color_area(image, contours):
     max, index = 0, -1

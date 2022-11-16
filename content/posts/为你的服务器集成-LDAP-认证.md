@@ -28,7 +28,7 @@ image: /posts/为你的服务器集成-LDAP-认证/fantasy-ga56af2520_1280.jpg
 
 ![运行在 Windows Server 上的 AD](/posts/为你的服务器集成-LDAP-认证/AD_On_Windows_Server.png)
 
-这里博主想说的是，一旦企业通过 AD Domain 或者说 [Active Directory](https://learn.microsoft.com/zh-cn/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) 来管理用户，就自然而然地牵扯出域登录或者域账号登录的问题。这类围绕 AD Domain 或者说域的问题，我们都可以考虑使用 LDAP 认证或者 [Kerberos](https://web.mit.edu/Kerberos/) 认证，特别是后者，主流的软件如 Kafka、Zookeeper、MySQL 等等均支持这一协议，它可以实现在登录本地账户后，免登录打开一个网站的效果。可想而知，这是一个对企业而言具有诱惑力的特性，一个账号打通所有基础设施。当然，我承认 Kerberos 这个协议是非常复杂的，绝非三言两语可以厘清其中的千丝万缕，所以，我们今天只是聊聊 LDAP 认证这个话题。
+这里博主想说的是，一旦企业通过 AD Domain 或者说 [Active Directory](https://learn.microsoft.com/zh-cn/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) 来管理用户，就自然而然地牵扯出域登录或者域账号登录的问题。这类围绕 AD Domain 或者说域的问题，我们都可以考虑使用 LDAP 认证或者 [Kerberos](https://web.mit.edu/Kerberos/) 认证，特别是后者，主流的软件如 Kafka、Zookeeper、MySQL 等等均支持这一协议，它可以实现在登录本地账户后，免登录打开一个网站的效果。可想而知，这是一个对企业而言极具诱惑力的特性，一个账号打通所有基础设施。当然，我承认 Kerberos 这个协议是非常复杂的，绝非三言两语可以厘清其中的千丝万缕，所以，我们今天只是聊聊 LDAP 认证这个话题。
 
 ![通过 LDAP Browser 访问 AD](/posts/为你的服务器集成-LDAP-认证/LDAP_Browser.png)
 

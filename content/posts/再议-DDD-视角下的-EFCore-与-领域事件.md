@@ -196,7 +196,7 @@ public interface IEventHandler<TEventData> : IEventHandler
 
 # 且将新火试新茶
 
-OK，到目前为止，我们基本上讲清楚了整个方案的运作机制，其实，早在两年前，博主就曾使用过类似的技术来实现 [数据库审计](https://blog.yuanpei.me/posts/1289244227/)，彼时彼刻，我对于 `DDD` 和 `领域事件`，更多的是一种浅尝辄止的态度，甚至在上家公司工作时的核心冲突，是源于它有大量的数据同步的需求，我们需要一种更优雅的方式来“通知”数据的变更，而不是在代码里到处“埋点”，所以，从某种意义上来讲，今时今日与那年那月是如此的似曾相识，我还是想找到一种方法来规避这些“埋点”。诚然，重写 `DbContext` 的 `SaveChnages()` 方法是一种方案，不过，自从 `EntityFramework`支持 [https://github.com/dotnet/efcore/pull/21862](SaveChanges Events) 特性以后，我们又有了一种新的选择。
+OK，到目前为止，我们基本上讲清楚了整个方案的运作机制，其实，早在两年前，博主就曾使用过类似的技术来实现 [数据库审计](https://blog.yuanpei.me/posts/1289244227/)，彼时彼刻，我对于 `DDD` 和 `领域事件`，更多的是一种浅尝辄止的态度，甚至在上家公司工作时的核心冲突，是源于它有大量的数据同步的需求，我们需要一种更优雅的方式来“通知”数据的变更，而不是在代码里到处“埋点”，所以，从某种意义上来讲，今时今日与那年那月是如此的似曾相识，我还是想找到一种方法来规避这些“埋点”。诚然，重写 `DbContext` 的 `SaveChnages()` 方法是一种方案，不过，自从 `EntityFramework` 支持 [SaveChanges Events](https://github.com/dotnet/efcore/pull/21862) 特性以后，我们又有了一种新的选择。
 
 ```csharp
 public event EventHandler<SavingChangesEventArgs> SavingChanges;

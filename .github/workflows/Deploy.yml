@@ -36,21 +36,12 @@ jobs:
           python -m pip install --default-timeout=50000 -r requirements.txt
 
       - name: Build Site
-        env:
-          GH_REPO: github.com/qinyuanpei/hugo-blog.git
         run: |
-          git checkout -b cicd
           sudo sh ./before-build.sh
           hugo --minify
           sudo sh ./after-build.sh
           sudo mkdir -p /home/runner/work/artifacts/blog.yuanpei.me
           sudo cp -r /home/runner/work/hugo-blog/hugo-blog/public/* /home/runner/work/artifacts/blog.yuanpei.me
-          sudo rm -rf /home/runner/work/hugo-blog/hugo-blog/public/*
-          git config user.name "qinyuanpei"
-          git config user.email "qinyuanpei@163.com"
-          sudo git add ./
-          git commit -m "Automaticly Update by CI/CD."
-          git push --tags --force --quiet "https://${{ secrets.CI_TOKEN }}@$GH_REPO" cicd:blog
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v1

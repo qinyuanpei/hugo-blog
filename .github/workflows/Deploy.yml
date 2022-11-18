@@ -45,12 +45,6 @@ jobs:
           sudo sh ./after-build.sh
           sudo mkdir -p /home/runner/work/artifacts/blog.yuanpei.me
           sudo cp -r /home/runner/work/hugo-blog/hugo-blog/public/* /home/runner/work/artifacts/blog.yuanpei.me
-          sudo rm -rf /home/runner/work/hugo-blog/hugo-blog/public/*
-          git config user.name "qinyuanpei"
-          git config user.email "qinyuanpei@163.com"
-          sudo git add ./
-          git commit -m "Automaticly Update README.md for repository."
-          git push --tags --force --quiet "https://${{ secrets.CI_TOKEN }}@$GH_REPO" cicd:blog
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v1

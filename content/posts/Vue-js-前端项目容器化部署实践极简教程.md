@@ -20,7 +20,7 @@ image: /posts/Vue-js-前端项目容器化部署实践极简教程/cover.jpg
 
 首先，我们来编写 `Dockerfile`，这里采用的是多阶段构建的做法，第一个阶段，即 `build`，主要是利用 [node.js](https://nodejs.org/en/) 基础镜像来实现前端项目的发布，所以，你可以看到 `package.json`、`npm install` 以及考虑到国情的 `cnpm install` 这些前端项目中喜闻乐见的东西，安装完依赖以后我们通过 `npm run build` 来完成打包，这取决于你项目中实际使用的脚本或者命令，如果你不喜欢 `npm`，你同样可以用 `yarn` 来编写这些指令，只要你喜欢就好。做人嘛，最重要的是开心！
 
-```dockfile
+```dockerfile
 # build
 FROM node:lts-alpine as build
 WORKDIR /app
@@ -40,7 +40,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 OK，第二个阶段，即 `deploy`，前端发布出来的产物是无法直接在浏览器里打开的，这一点你平时用 [Vue.js](https://vuejs.org/) 的脚手架的话应该会注意到。所以，此时我们需要一个静态文件服务器来托管这些产物，这些产物通常会被放到 `dist` 目录，因此，在这一阶段主要就是把这个目录里的内容拷贝到 [Nginx](https://nginx.org/en/) 下面，这里我们用的是 `wwwroot`。当然，如果你还怀念曾经的 LAMP 組合，同样可以替换为 [Apache](https://apache.org/)。我们在这个世界的一切努力，无非是为了比别人多一种选择，甚至有时候你完全没有选择。可是在计算机的世界里，你可以尽情地去创造，而这则是我的选择，从我高中在班级电脑上写出第一个 Visual Basic 程序开始，我庆幸能一直坚持这份热爱到现在。
 
-```conf
+```nginx
 worker_processes 1;
 
 events {
@@ -103,7 +103,7 @@ openssl ca -in server.csr -out server.crt -cert ca.crt -keyfile ca.key
 
 此时，我们会得到服务器端证书文件 `server.crt` 以及密钥文件 `server.key`，我们将其配置到 `Nginx` 中即可，下面是修改后的 `Nginx` 配置文件：
 
-```conf
+```nginx
 worker_processes 1;
 
 events {

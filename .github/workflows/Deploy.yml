@@ -49,6 +49,7 @@ jobs:
           git config user.email "qinyuanpei@163.com"
           sudo git add ./
           git commit -m "Automaticly Update README.md for repository."
+          git status 
           git push --tags --force --quiet "https://${{ secrets.CI_TOKEN }}@$GH_REPO" blog:blog
 
       - name: Upload Artifacts

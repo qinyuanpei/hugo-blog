@@ -1,11 +1,19 @@
-本文档由脚本自动生成，最后更新时间：2022-09-27 10:01:25，最后部署版本：[cc02667](https://github.com/qinyuanpei/hugo-blog/commit/cc02667bfdba92c6758ced5685bad7719174562f
+本文档由脚本自动生成，最后更新时间：2022-11-18 14:25:27，最后部署版本：[a21b0e1](https://github.com/qinyuanpei/hugo-blog/commit/a21b0e16779038f049514eeca8d42cb81e05c745
 )
 
 如果想订阅我的博客，请使用 Github 的 Watch 功能，**请不要 fork 此项目**
 
-Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 239 篇，请继续努力！
+Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 247 篇，请继续努力！
 
-# 2022 年，共 17 篇
+# 2022 年，共 25 篇
+* 2022-11-15 - [为你的服务器集成 LDAP 认证](https://blog.yuanpei.me/posts/integrate-ldap-authentication-for-your-server/)
+* 2022-11-11 - [似花还似非花](https://blog.yuanpei.me/posts/like-flowers-not-flowers/)
+* 2022-11-01 - [视频是不能 P 的系列：使用 Dlib 实现人脸识别](https://blog.yuanpei.me/posts/dlib-face-recognition-with-machine-learning/)
+* 2022-10-15 - [浅议分布式链路追踪与日志的整合](https://blog.yuanpei.me/posts/integration-of-distributed-tracing-system-and-logging-system/)
+* 2022-10-10 - [关于 Git 大文件上传这件小事](https://blog.yuanpei.me/posts/a-story-of-git-large-file-storage/)
+* 2022-09-15 - [.NET 进程内队列 Channel 的入门与应用](https://blog.yuanpei.me/posts/getting-started-with-the-.net-in-process-queue-channel/)
+* 2022-08-23 - [使用 Fody 实现 .NET 的静态编织](https://blog.yuanpei.me/posts/implement-static-weaving-of-dot-net-via-fody/)
+* 2022-08-07 - [.NET Core + ELK 搭建可视化日志分析平台(下)](https://blog.yuanpei.me/posts/3687594959/)
 * 2022-08-02 - [聊一聊前端图片懒加载背后的故事](https://blog.yuanpei.me/posts/the-story-behind-the-lazy-loading-of-front-end-pictures/)
 * 2022-07-16 - [杂感·七月寄望](https://blog.yuanpei.me/posts/miscellaneous-feelings-of-july/)
 * 2022-07-12 - [支持外部链接跳转的 Vue Router 扩展实现](https://blog.yuanpei.me/posts/implementation-of-vue-router-extension-that-supports-external-link/)
@@ -16,13 +24,13 @@ Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 239 篇，请继续努�
 * 2022-05-03 - [再见，人间四月天](https://blog.yuanpei.me/posts/say-good-bye-to-april/)
 * 2022-05-01 - [Python 图像风格化迁移助力画家梦想](https://blog.yuanpei.me/posts/a-introduction-to-stylized-migration-of-python/)
 * 2022-04-15 - [在 Vue.js 中使用 Mock.js 实现接口模拟](https://blog.yuanpei.me/posts/interface-mock-implemention-using-mock.js-in-vue.js/)
-* 2022-04-07 - [利用 ASP.NET Core 中的标头传播实现分布式链路跟踪](https://blog.yuanpei.me/posts/asp-net-core-using-headerpropagation-for-distributed-tracking/)
+* 2022-04-07 - [利用 ASP.NET Core 中的标头传播实现分布式链路追踪](https://blog.yuanpei.me/posts/asp-net-core-using-headerpropagation-for-distributed-tracking/)
 * 2022-03-29 - [读《一个叫欧维的男人决定去死》](https://blog.yuanpei.me/posts/a-man-called-ove/)
 * 2022-03-20 - [利用 gRPC 实现文件的上传与下载](https://blog.yuanpei.me/posts/use-grpc-to-realize-file-upload-and-download/)
 * 2022-03-07 - [七种武器：延迟队列的原理和实现总结](https://blog.yuanpei.me/posts/summary-of-the-principle-and-implementation-of-delay-queue/)
 * 2022-02-18 - [gRPC 流式传输极简入门指南](https://blog.yuanpei.me/posts/grpc-streaming-transmission-minimalist-guide/)
 * 2022-02-03 - [烟波梦影，从天国王朝到刺客信条](https://blog.yuanpei.me/posts/861688878/)
-* 2022-01-14 - [Envoy 集成 Jaeger 实现分布式链路跟踪](https://blog.yuanpei.me/posts/768684858/)
+* 2022-01-14 - [Envoy 集成 Jaeger 实现分布式链路追踪](https://blog.yuanpei.me/posts/768684858/)
 # 2021 年，共 42 篇
 * 2021-12-28 - [浅议非典型 Web 应用场景下的身份认证](https://blog.yuanpei.me/posts/2478147871/)
 * 2021-12-10 - [gRPC 借助 Any 类型实现接口的泛化调用](https://blog.yuanpei.me/posts/2617947988/)
@@ -227,9 +235,9 @@ Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 239 篇，请继续努�
 * 2015-06-11 - [Unity3D 游戏开发之快速打造流行的关卡系统](https://blog.yuanpei.me/posts/1424645834/)
 * 2015-06-11 - [Unity3D 游戏开发之路：一周工作总结](https://blog.yuanpei.me/posts/719322223/)
 * 2015-05-16 - [毕业就像指尖流沙](https://blog.yuanpei.me/posts/3461518355/)
-* 2015-04-19 - [Unity3D游戏开发之MMD For Unity插件研究](https://blog.yuanpei.me/posts/4088452183/)
+* 2015-04-19 - [Unity3D 游戏开发之 MMD For Unity 插件研究](https://blog.yuanpei.me/posts/4088452183/)
 * 2015-04-17 - [在 Sublime Text3 下安装 Package Control](https://blog.yuanpei.me/posts/570137885/)
-* 2015-04-16 - [在Windows下使用Visual Studio编译Lua5.3](https://blog.yuanpei.me/posts/3642630198/)
+* 2015-04-16 - [在 Windows 下使用 Visual Studio 编译 Lua 5.3](https://blog.yuanpei.me/posts/3642630198/)
 * 2015-04-08 - [贝塞尔曲线学习笔记](https://blog.yuanpei.me/posts/2186770732/)
 * 2015-04-03 - [Unity3D 游戏开发之使用 disunity 提取 Unity3D 游戏资源](https://blog.yuanpei.me/posts/1082185388/)
 * 2015-04-02 - [Unity3D 游戏开发之反编译 AssetBundle 提取游戏资源](https://blog.yuanpei.me/posts/2799263488/)

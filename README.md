@@ -1,11 +1,13 @@
-本文档由脚本自动生成，最后更新时间：2022-11-18 14:25:27，最后部署版本：[a21b0e1](https://github.com/qinyuanpei/hugo-blog/commit/a21b0e16779038f049514eeca8d42cb81e05c745
+本文档由脚本自动生成，最后更新时间：2022-12-02 17:28:01，最后部署版本：[6462103](https://github.com/qinyuanpei/hugo-blog/commit/6462103394fb49bf10bd7e4e81865f1a76f7c64e
 )
 
 如果想订阅我的博客，请使用 Github 的 Watch 功能，**请不要 fork 此项目**
 
-Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 247 篇，请继续努力！
+Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 249 篇，请继续努力！
 
-# 2022 年，共 25 篇
+# 2022 年，共 27 篇
+* 2022-12-01 - [关于 Docker 容器配置信息的渐进式思考](https://blog.yuanpei.me/posts/progressive-thinking-about-docker-container-configuration-information/)
+* 2022-11-24 - [在 Docker 容器内集成 Crontab 定时任务](https://blog.yuanpei.me/posts/integrate-crontab-scheduled-tasks-inside-docker-containers/)
 * 2022-11-15 - [为你的服务器集成 LDAP 认证](https://blog.yuanpei.me/posts/integrate-ldap-authentication-for-your-server/)
 * 2022-11-11 - [似花还似非花](https://blog.yuanpei.me/posts/like-flowers-not-flowers/)
 * 2022-11-01 - [视频是不能 P 的系列：使用 Dlib 实现人脸识别](https://blog.yuanpei.me/posts/dlib-face-recognition-with-machine-learning/)

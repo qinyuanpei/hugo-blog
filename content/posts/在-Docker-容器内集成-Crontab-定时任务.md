@@ -147,6 +147,39 @@ echo [$(date)] 'Hello' > /proc/1/fd/1
 
 ![重定向输出到容器日志](/posts/在-Docker-容器内集成-Crontab-定时任务/crontab-logs-in-docker.png)
 
+# Crontab 环境变量
+
+如果你希望在定时任务脚本中引用环境变量，例如：
+
+```bash
+echo [$(date)] 'request a new ticket for HTTP/'$NEXTCLOUD_SERVER_NAME'@'$DOMAIN_SERVER_NAME > /proc/1/fd/1
+kinit -kt /etc/apache2/krb-container.keytab HTTP/$NEXTCLOUD_SERVER_NAME@$DOMAIN_SERVER_NAME
+```
+此时，你会注意到容器输出的日志中，这些环境变量的值都是缺失的，虽然这些环境变量确实存在：
+
+![定时任务中引用环境变量-A](/posts/在-Docker-容器内集成-Crontab-定时任务/crontab-env-01.png)
+
+如果你求助于搜索引擎，大概虑会得到下面的答案：
+ 
+```bash 
+#!/bin/sh
+. /etc/profile
+. ~/.bash_profile
+```
+事实上，这个方案在主机环境下没有问题。如果是在容器环境下，建议使用下面的方案：
+
+```bash
+env >> /etc/default/locale
+```
+
+此时，就可以达成我们预期的效果：
+
+![定时任务中引用环境变量-B](/posts/在-Docker-容器内集成-Crontab-定时任务/crontab-env-02.png)
+
+
+
+
+
 # 参考链接
 
 * [如何在 Docker 中执行 Crontab](https://cloud.tencent.com/developer/article/1451664)

@@ -1,0 +1,25 @@
+{
+  "name": "hugo-blog",
+  "version": "1.0.0",
+  "description": "本文档由脚本自动生成，最后更新时间：2022-12-02 17:28:01，最后部署版本：[6462103](https://github.com/qinyuanpei/hugo-blog/commit/6462103394fb49bf10bd7e4e81865f1a76f7c64e\r )",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qinyuanpei/hugo-blog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qinyuanpei/hugo-blog/issues"
+  },
+  "homepage": "https://github.com/qinyuanpei/hugo-blog#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-shell": "^0.8.0",
+    "workbox-build": "^6.5.4"
+  }
+}

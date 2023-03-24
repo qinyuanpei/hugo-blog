@@ -1,10 +1,13 @@
-本文档由脚本自动生成，最后更新时间：2022-12-02 17:28:01，最后部署版本：[6462103](https://github.com/qinyuanpei/hugo-blog/commit/6462103394fb49bf10bd7e4e81865f1a76f7c64e
+本文档由脚本自动生成，最后更新时间：2023-03-24 15:38:00，最后部署版本：[6501b6a](https://github.com/qinyuanpei/hugo-blog/commit/6501b6a970c0dee5e9ebd644aa7abd63de7f54f4
 )
 
 如果想订阅我的博客，请使用 Github 的 Watch 功能，**请不要 fork 此项目**
 
-Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 249 篇，请继续努力！
+Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 251 篇，请继续努力！
 
+# 2023 年，共 2 篇
+* 2023-03-20 - [小爱音箱集成 ChatGPT 的不完全教程](https://blog.yuanpei.me/posts/the-xiaoai-speaker-integrates-an-incomplete-tutorial-on-chatgpt/)
+* 2023-02-18 - [程序员视角下的三体世界随想](https://blog.yuanpei.me/posts/random-thoughts-of-three-body-world-as-programmers/)
 # 2022 年，共 27 篇
 * 2022-12-01 - [关于 Docker 容器配置信息的渐进式思考](https://blog.yuanpei.me/posts/progressive-thinking-about-docker-container-configuration-information/)
 * 2022-11-24 - [在 Docker 容器内集成 Crontab 定时任务](https://blog.yuanpei.me/posts/integrate-crontab-scheduled-tasks-inside-docker-containers/)

@@ -1,0 +1,4 @@
+[submodule "cuttontail/themes/blowfish"]
+	path = cuttontail/themes/blowfish
+	url = https://github.com/nunocoracao/blowfish.git
+	branch = main

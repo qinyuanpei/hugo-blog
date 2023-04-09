@@ -8,7 +8,7 @@ slug: Exploration-Of-Font-Size-Adaptation-Scheme-Under-GDI+
 tags:
 - 图形学
 - GDI+
-- 字体
+- 数学
 - 打印
 title: GDI+下字体大小自适应方案初探
 toc: true

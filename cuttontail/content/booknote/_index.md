@@ -1,6 +1,0 @@
----
-title: Book Note
-description: 
----
-
----

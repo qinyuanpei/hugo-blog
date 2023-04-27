@@ -26,7 +26,7 @@ image: /posts/视频是不能-P-的系列-Milvus-实现海量人脸快速检索/
 
 # Milvus 向量数据库
 
-正如我们所看到的，AIGC 改变了我们对这个世界的编程方式，即从 DSL/GPL 逐步地转向自然语言。在 OpenAI 的 GPT4 以及百度的文心一言中，我们会注意到这些大语言模型(LLM)开始支持图片。也许，以后还会支持音频、视频、文件……等等不同的形式，而这其实就是我们经常听到“**多模态**”的概念。可以预见的是，未来会有更多的非结构化数据加入其中，传统的关系型数据库将不再适合 AI 时代。譬如，最为典型的“以图搜图”功能，统的模糊查询已经无法满足复杂的匹配需求。从这个角度来说，向量数据库将会是未来 AI 应用不可或缺的基础设施，就像此刻的关系型数据库对于 CRUD 一样重要。目前，向量数据库主要有 Facebook 的 [Faiss](https://faiss.ai/)、[Pinecone](https://docs.pinecone.io/docs/openai)、Vespa、国内创业公司 Zilliz 的 [Milvus](https://milvus.io/)，以及京东的 [Varch](https://vearch.readthedocs.io/zh_CN/latest/) 等等，笔者这里以 Milvus 为例来展示向量数据库的核心功能——相似度检索。
+正如我们所看到的，AIGC 改变了我们对这个世界的编程方式，即从 DSL/GPL 逐步地转向自然语言。在 OpenAI 的 GPT4 以及百度的文心一言中，我们会注意到这些大语言模型(LLM)开始支持图片。也许，以后还会支持音频、视频、文件……等等不同的形式，而这其实就是我们经常听到“**多模态**”的概念。可以预见的是，未来会有更多的非结构化数据加入其中，传统的关系型数据库将不再适合 AI 时代。譬如，最为典型的“以图搜图”功能，传统的模糊查询已经无法满足复杂的匹配需求。从这个角度来说，向量数据库将会是未来 AI 应用不可或缺的基础设施，就像此刻的关系型数据库对于 CRUD 一样重要。目前，向量数据库主要有 Facebook 的 [Faiss](https://faiss.ai/)、[Pinecone](https://docs.pinecone.io/docs/openai)、Vespa、国内创业公司 Zilliz 的 [Milvus](https://milvus.io/)，以及京东的 [Varch](https://vearch.readthedocs.io/zh_CN/latest/) 等等，笔者这里以 Milvus 为例来展示向量数据库的核心功能——相似度检索。
 
 ## Milvus 的安装与使用
 

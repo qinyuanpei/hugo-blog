@@ -64,6 +64,10 @@ links:
     description: Randy's Blog
     website: https://lutaonan.com/
     image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  - title: Song`s Blog
+    description: 个人技术博客
+    website: https://songxwn.com/
+    image: https://songxwn.com/images/favicon.png
 comments: false
 ---
 

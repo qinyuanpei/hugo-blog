@@ -38,6 +38,7 @@ jobs:
 
       - name: Build Site
         run: |
+          python -m pip install tinify
           sudo sh ./before-build.sh
           hugo --minify
           sudo sh ./after-build.sh

@@ -4,6 +4,5 @@ requests==2.22.0
 setuptools
 pyyaml
 lxml==4.2.4
-tinify
 
 

@@ -40,6 +40,8 @@ def analyseLanguages(posts):
                         language = 'Shell'
                     if language.lower() == "yaml" or language.lower() == "yml":
                         language = language.upper()
+                    if language.lower() == 'json':
+                        language = language.upper()
                     if language in ['shell','json','csharp','lua','yaml','yml','plain']:
                         print(f'{post} maybe need a check for code blocks.')
                     if language in languages.keys():

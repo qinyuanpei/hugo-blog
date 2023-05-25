@@ -10,6 +10,8 @@
 <section>
     {{ $doubanMovies := $.Site.Data.douban.movies }}
     <div class="hexo-douban-container">
+        <div class="hexo-douban-cover" style="background-image: url('/hugo-douban/images/movies.jpg');">
+        </div>
         <div class="hexo-douban-tabs">
             <a class="hexo-douban-tab" id="hexo-douban-tab1" href="javascript:;" rel="external">在看({{ len
                 $doubanMovies.watching }})</a>

@@ -6,6 +6,22 @@
     padding: var(--card-padding);
 }
 
+.hexo-douban-cover {
+    height: 250px; 
+    width: 100%;
+    background-size: cover;
+    backdrop-filter: blur(2.5px);
+    filter:blur(2.5px);
+    transition: backdrop-filter 0.3s ease-in-out;
+    transition: filter 0.3s ease-in-out;
+}
+
+.hexo-douban-cover:hover {
+    backdrop-filter: none;
+    filter:none;
+    cursor: pointer;
+}
+
 .hexo-douban-tabs {
     margin-bottom: 15px;
     margin-top: 15px;

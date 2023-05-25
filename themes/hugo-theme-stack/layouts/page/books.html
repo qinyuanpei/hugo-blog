@@ -10,6 +10,8 @@
 <section>
     {{ $doubanBooks := $.Site.Data.douban.books }}
     <div class="hexo-douban-container">
+        <div class="hexo-douban-cover" style="background-image: url('/hugo-douban/images/books.jpg');">
+        </div>
         <div class="hexo-douban-tabs">
             <a class="hexo-douban-tab" id="hexo-douban-tab1" href="javascript:;" rel="external">
                 在读({{ len $doubanBooks.reading }})

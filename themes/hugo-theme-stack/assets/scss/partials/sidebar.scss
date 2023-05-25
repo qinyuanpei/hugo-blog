@@ -158,3 +158,9 @@
         display: none;
     }
 }
+
+@media screen and (max-width:480px){
+    .right-sidebar {
+      display:none;
+     }
+   }

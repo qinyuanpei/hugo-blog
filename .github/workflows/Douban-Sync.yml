@@ -15,7 +15,7 @@ jobs:
     - name: movie
       uses: lizheming/doumark-action@master
       with:
-        id: lizheming
+        id: 60029335
         type: movie
         format: csv
         dir: ./data/douban
@@ -23,7 +23,7 @@ jobs:
     - name: music
       uses: lizheming/doumark-action@master
       with:
-        id: lizheming
+        id: 60029335
         type: music
         format: csv
         dir: ./data/douban

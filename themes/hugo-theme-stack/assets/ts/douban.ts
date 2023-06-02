@@ -3,7 +3,7 @@ class DoubanCard {
     private subjectId: string;
     private requestUrl: string;
     private requestType: string;
-    private localData: string;
+    private localData: object;
 
     constructor(ele: HTMLElement, subjectId: string, requestUrl: string, requestType: string, data: string) {
         this.ele = ele;
@@ -11,15 +11,21 @@ class DoubanCard {
         this.requestUrl = requestUrl;
         this.requestType = requestType;
         this.localData = data ? JSON.parse(data): null
-        console.log(this.localData)
-
-        const model = this.fetchData();
-        if (this.requestType == 'movie') {
-            this.renderMovie(model);
+        if (!this.localData) {
+            const model = this.fetchData();
+            if (this.requestType == 'movie') {
+                this.renderMovie(model);
+            } else {
+                this.renderBook(model);
+            }
         } else {
-            this.renderBook(model);
+            const localModel = this.convert(this.localData, this.requestType);
+            if (this.requestType == 'movie') {
+                this.renderMovie(localModel);
+            } else {
+                this.renderBook(localModel);
+            }
         }
-
     }
 
     private fetchData() {
@@ -116,8 +122,35 @@ class DoubanCard {
         `
         this.ele.insertAdjacentHTML('afterend', html)
     }
+
+    private convert(data: any, type) {
+        if (type == 'movie')  {
+            return {
+                title: data.subject.title,
+                link: data.sharing_url,
+                cover: data.subject.pic.normal,
+                desc: data.subject.intro.substring(0,120) + '...',
+                star: data.rating.star_count,
+                vote: data.subject.rating.value,
+                genre: data.subject.genres.join(','),
+                date: data.subject.pubdate[0],
+                director: data.subject.directors[0].name
+            };
+        } else {
+            return  {
+                title: data.subject.title,
+                link: data.sharing_url,
+                cover: data.subject.pic.normal,
+                desc: data.subject.intro.substring(0,120) + '...',
+                star: data.rating.star_count,
+                vote: data.subject.rating.value,
+                date: data.subject.pubdate[0],
+                author: data.subject.author[0]
+            };
+        }
+    }
 }
 
-window.DoubanCard = function (ele, subjectId, requestUrl, requestType) {
-    return new DoubanCard(ele, subjectId, requestUrl, requestType);
+window.DoubanCard = function (ele, subjectId, requestUrl, requestType, localData) {
+    return new DoubanCard(ele, subjectId, requestUrl, requestType, localData);
 }

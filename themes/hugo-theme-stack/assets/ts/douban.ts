@@ -130,7 +130,7 @@ class DoubanCard {
                 link: data.subject.url,
                 cover: data.subject.pic.normal,
                 desc: data.subject.intro.substring(0,120) + '...',
-                star: data.rating.star_count,
+                star: data.subject.rating.star_count,
                 vote: data.subject.rating.value,
                 genre: data.subject.genres.join(','),
                 date: data.subject.pubdate[0],
@@ -142,7 +142,7 @@ class DoubanCard {
                 link: data.subject.url,
                 cover: data.subject.pic.normal,
                 desc: data.subject.intro.substring(0,120) + '...',
-                star: data.rating.star_count,
+                star: data.subject.rating.star_count,
                 vote: data.subject.rating.value,
                 date: data.subject.pubdate[0],
                 author: data.subject.author[0]

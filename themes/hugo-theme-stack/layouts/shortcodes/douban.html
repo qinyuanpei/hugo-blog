@@ -8,7 +8,8 @@
 {{ if eq $type "book" }}
     {{ $books := $.Site.Data.doubanSync.book }}
     {{ range $book := $books }}
-    {{ $bid := (string (index $book "id")) }}
+    {{ $subject := (index $book "subject") }}
+    {{ $bid := (string (index $subject "id")) }}
     {{ if eq $bid  $id }}
         {{ $localData := $book | jsonify }}
         {{ $.Scratch.Set "localData" $localData }}
@@ -19,7 +20,8 @@
 {{ if eq $type "movie" }}
     {{ $movies := $.Site.Data.doubanSync.movie }}
     {{ range $movie := $movies }}
-    {{ $bid := (string (index $movie "id")) }}
+    {{ $subject := (index $movie "subject") }}
+    {{ $bid := (string (index $subject "id")) }}
     {{ if eq $bid  $id }}
         {{ $localData := $movie | jsonify }}
         {{ $.Scratch.Set "localData" $localData }}

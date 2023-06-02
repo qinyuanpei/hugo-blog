@@ -127,7 +127,7 @@ class DoubanCard {
         if (type == 'movie')  {
             return {
                 title: data.subject.title,
-                link: data.sharing_url,
+                link: data.subject.url,
                 cover: data.subject.pic.normal,
                 desc: data.subject.intro.substring(0,120) + '...',
                 star: data.rating.star_count,
@@ -139,7 +139,7 @@ class DoubanCard {
         } else {
             return  {
                 title: data.subject.title,
-                link: data.sharing_url,
+                link: data.subject.url,
                 cover: data.subject.pic.normal,
                 desc: data.subject.intro.substring(0,120) + '...',
                 star: data.rating.star_count,

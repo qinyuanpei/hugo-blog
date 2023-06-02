@@ -3,12 +3,15 @@ class DoubanCard {
     private subjectId: string;
     private requestUrl: string;
     private requestType: string;
+    private localData: string;
 
-    constructor(ele: HTMLElement, subjectId: string, requestUrl: string, requestType: string) {
+    constructor(ele: HTMLElement, subjectId: string, requestUrl: string, requestType: string, data: string) {
         this.ele = ele;
         this.subjectId = subjectId;
         this.requestUrl = requestUrl;
         this.requestType = requestType;
+        this.localData = data ? JSON.parse(data): null
+        console.log(this.localData)
 
         const model = this.fetchData();
         if (this.requestType == 'movie') {

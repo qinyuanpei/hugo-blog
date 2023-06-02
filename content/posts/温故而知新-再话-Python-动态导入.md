@@ -41,7 +41,7 @@ engine = ASREngineFactory.create(config, ASREngineProvider.PaddleSpeech)
 
 这里，其实有一段小插曲，博主最近开始尝试使用 `virtualenv` 来管理不同的 Python 版本，这样做的好处是，我只需要在不同的工作场所拉取代码、激活环境，就可以享受到完全一样的开发环境。当然，这一切都只是理论上的，实际使用下来的感受是，它并不能完全抹平环境上的差异。譬如，当我试图在个人电脑上安装 [PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech) 和 [Rasa](https://rasa.com/docs/rasa/) 这两个库时，依然免不了遇到各种错误，即使是在同一个 Python 环境下。
 
-{{<douban type="book" id="10439392">}}
+{{<douban type="book" id="3693292242">}}
 
 此时，你会发现一个非常尴尬的问题，即使我不使用 [PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech) 来作为 Jarvis 的语音识别引擎，它依然无法正常工作，原因是我环境中没有安装 PaddleSpeech，我不得不注释掉项目中所有和 PaddleSpeech 有关的代码，而这一切的根源其实是，我们在代码中使用了静态导入的方式，如下图所示：
 

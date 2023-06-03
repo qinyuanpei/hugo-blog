@@ -55,7 +55,7 @@ import whisper
 ```
 我相信，这个代码在通常情况下是没有任何问题的，可凡事都有例外，有没有一种可能，我们可以像使用 `C#` 里的 `#if DEBUG`、`#if NET40` 等预处理指令一样，让它按照不同的条件去导入不同的模块呢？比如，当我使用 Whisper 时，我希望它只导入 `whisper` 模块，而当我使用 PaddleSpeech 时，我希望它只导入 `paddlespeech.cli.asr.infer` 模块下的 `ASRExecutor` 类。换言之，我希望实现两个目的，**其一是按需导入，只导入需要的模块。其二是延迟导入，使用的时候再导入**。
 
-
+![延时摄影技术纪录下的星空](/posts/温故而知新-再话-Python-动态导入/street-7090791_1280.jpg)
 
 好了，既然一切问题的根源是静态导入，那么，我们的思路就是将其调整为动态导入，此时，我们需要祭出大杀器 `importlib`，这里以 `baidu-aip` 这个包为例：
 
@@ -79,3 +79,14 @@ from aip import AipSpeech
 ```
 
 现在，当我需要使用某一个语音识别引擎时，我只需要给 `ASREngineFactory` 传入一个类型，它将会在创建实例的时候动态导入对应的模块。这样，即使我没有安装 `PaddleSpeech`，它丝毫不影响我使用 `baidu-aip` 或者 `openai-whisper` 这两个库，这样听起来更合理一点，不是吗？
+
+```python
+import sys
+
+plugins = ['plugin1', 'plugin2', 'plugin3']
+for plugin in plugins:
+    __import__(plugin)
+    sys.modules[plugin].run()
+
+```
+除了这种方式以外，对于此前博主讨论过的插件化问题，我们还可以使用 `__import__`方式，它同样可以实现类似的效果。如图所示，假设我们有三个插件 `plugin1`、`plugin2`、`plugin3`，它们各自拥有一个叫做 `run()` 的方法，此时，我们可以通过 `__import__` 这个内置的函数来动态地导入插件。按照 Python 模块的缓存机制，每个模块只会被导入一次。首先，它会去检查 `sys.modules` 中是否存在该模块，只有当该模块不存在的时候，它才会去检索和导入该模块。因此，我们可以从  `sys.modules` 调用该模块的  `run()` 方法。当然，这个方案最大的问题是，需要手动处理模块名称字符串，特别是当你为插件引入模块或者是包的概念的时候。

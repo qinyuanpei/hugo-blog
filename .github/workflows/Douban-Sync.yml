@@ -18,7 +18,7 @@ jobs:
         id: 60029335
         type: movie
         format: json
-        dir: ./data/douban-sync
+        dir: ./data/doubanSync
 
     - name: book
       uses: lizheming/doumark-action@master
@@ -26,10 +26,10 @@ jobs:
         id: 60029335
         type: book
         format: json
-        dir: ./data/douban-sync
+        dir: ./data/doubanSync
   
     - name: Commit
       uses: EndBug/add-and-commit@v8
       with:
-        message: 'chore: update douban data'
-        add: './data/douban-sync'
+        message: 'Update Douban Data By Github Action'
+        add: './data/doubanSync'

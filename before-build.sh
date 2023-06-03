@@ -9,5 +9,6 @@ rm -f ./shanbay.py
 git rev-parse HEAD > VERSION.txt
 
 cp ./.python/process-image.py ./process-image.py
-python ./process-image.py  IAl6s3ekmONUVMEqWZdIp1nV2ItJLyPC ./content/
+python ./process-image.py  B8DTNBm5r9dL30YVw3KwgXcCjFFWtvSd ./content/
 rm -f ./process-image.py
+

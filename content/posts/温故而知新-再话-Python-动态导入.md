@@ -16,7 +16,7 @@ image: /posts/温故而知新-再话-Python-动态导入/pedro-lopes-PcoZLIoLAOM
 ---
 多年前，我曾写过一篇关于 Python 动态导入的[文章](/posts/1960676615/)，当时想要解决的问题是，如何通过动态导入 `Python` 脚本来实现插件机制，即整个应用程序由主程序和插件两部分组成，主程序通过 `importlib` 模块中的 `import_module` 方法动态地导入一个 `Python` 脚本，最终通过 `getattr`、`setattr` 等方法实现反射调用。时过境迁，代码还是那些代码，江湖故人早已不知所踪。我向来都是一个喜欢怀旧的人，我怀念的是那些遗忘在寒江孤影里的江湖故人，我怀念的是那些湮灭在时光尘埃里的代码片段。或许，在屏幕前的你看来，一个每天都在经历着“**更新换代**”的技术人员，更应该对这一切的消逝习以为常。可正如这世界上的风、沙、星辰等流动的事物一样，无论我们愿意与否，时间总会在不经意间将那些熟悉而珍贵的东西一一带走，不放弃对过去的回忆和珍视，这便是我在世事变幻的洪流中追求的安宁与平静。正所谓“**温故而知新**”，今天我想要怀旧的话题是 Python 里的动态导入。
 
-{{<meting server="netease" type="song" id="10439392">}}
+{{<meting server="netease" type="song" id="34200623">}}
 
 众所周知，这段时间我一直在开发基于 ChatGPT 的人工智能管家 Jarvis，在整个探索过程中，类似语音识别、语音合成这些领域，博主先后考察了微软、百度、腾讯...这些大厂的方案，这可以说是非常符合我作为 Python “调包侠” 的人设啦！以语音识别为例，最终，你可能会得到类似下面这样的代码：
 
@@ -41,7 +41,7 @@ engine = ASREngineFactory.create(config, ASREngineProvider.PaddleSpeech)
 
 这里，其实有一段小插曲，博主最近开始尝试使用 `virtualenv` 来管理不同的 Python 版本，这样做的好处是，我只需要在不同的工作场所拉取代码、激活环境，就可以享受到完全一样的开发环境。当然，这一切都只是理论上的，实际使用下来的感受是，它并不能完全抹平环境上的差异。譬如，当我试图在个人电脑上安装 [PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech) 和 [Rasa](https://rasa.com/docs/rasa/) 这两个库时，依然免不了遇到各种错误，即使是在同一个 Python 环境下。
 
-{{<douban type="book" id="3693292242">}}
+{{<douban type="book" id="10439392">}}
 
 此时，你会发现一个非常尴尬的问题，即使我不使用 [PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech) 来作为 Jarvis 的语音识别引擎，它依然无法正常工作，原因是我环境中没有安装 PaddleSpeech，我不得不注释掉项目中所有和 PaddleSpeech 有关的代码，而这一切的根源其实是，我们在代码中使用了静态导入的方式，如下图所示：
 

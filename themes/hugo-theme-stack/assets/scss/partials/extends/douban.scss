@@ -89,6 +89,11 @@
 
 .hexo-douban-comments {
     font-size: 12px;
+    max-height: 75px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
 }
 
 .hexo-douban-pagination {

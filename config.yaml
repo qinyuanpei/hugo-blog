@@ -213,7 +213,7 @@ params:
         enable: false
 
     jsdelivr:
-        enable: false
+        enable: true
         gh_user: qinyuanpei
         gh_repo: blog.yuanpei.me
         baseUrl: cdn.jsdelivr.net

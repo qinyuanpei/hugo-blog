@@ -1,0 +1,192 @@
+.LinkCard {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 390px;
+    min-height: 84px;
+    border-radius: 8px;
+    max-width: 100%;
+    overflow: hidden;
+    margin: 16px auto;
+    padding: 12px 12px 9px 12px;
+    background-color: #F6F6F6;
+}
+
+.LinkCard:hover {
+    text-decoration: none;
+    border: none !important;
+    color: inherit !important;
+}
+
+.LinkCard .LinkCard-contents {
+    display: block;
+    flex: 1 1 auto;
+    position: relative;
+}
+
+.LinkCard .LinkCard-contents .loading {
+    height: 14px;
+    background: #EBEBEB;
+    border-radius: 7px;
+}
+
+.LinkCard .LinkCard-contents.withTitle {
+    margin-bottom: 3px;
+}
+
+.LinkCard .LinkCard-title {
+    display: -webkit-box;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 2px;
+    color: #121212;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.LinkCard .LinkCard-title.two-line {
+    line-height: 20px;
+    display: -webkit-box;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.LinkCard .LinkCard-title.loading {
+    margin-bottom: 8px;
+    width: 80%;
+}
+
+.LinkCard .LinkCard-title.loading.withTitle {
+    margin-bottom: 6px;
+}
+
+.LinkCard .LinkCard-title.loadingTitle {
+    margin-bottom: 5px;
+}
+
+.LinkCard .LinkCard-excerpt {
+    display: -webkit-box;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    line-height: 18px;
+    color: #999999;
+    margin-bottom: 4px;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.LinkCard .LinkCard-excerpt .LinkCard-author {
+    color: #444444;
+}
+
+.LinkCard .LinkCard-desc {
+    display: -webkit-box;
+    font-size: 13px;
+    height: 18px;
+    line-height: 18px;
+    color: #999999;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.LinkCard .LinkCard-desc .LinkCard-tag,
+.LinkCard .LinkCard-desc .tag {
+    display: inline-block;
+    font-size: 11px;
+    margin-left: 8px;
+    padding: 0 4px;
+    border-radius: 3px;
+    background: rgba(211, 211, 211, 0.3);
+}
+
+.LinkCard .LinkCard-desc.loading {
+    width: 40%;
+}
+
+.LinkCard .LinkCard-desc svg {
+    margin-right: 2px;
+}
+
+.LinkCard .LinkCard-image {
+    -webkit-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    background-color: #EBEBEB;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: block;
+    width: 60px;
+    height: 60px;
+    margin-left: 20px;
+    object-fit: cover;
+    border-radius: inherit;
+    overflow: hidden;
+}
+
+.LinkCard .LinkCard-image.LinkCard-image--default {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    background-color: #EBEBEB;
+    color: #D3D3D3;
+}
+
+.LinkCard .LinkCard-image.LinkCard-image--default svg {
+    color: #999999;
+}
+
+.LinkCard .LinkCard-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.LinkCard .LinkCard-image .LinkCard-image--video {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    pointer-events: none;
+}
+
+.LinkCard .LinkCard-image .LinkCard-image--video svg {
+    color: #444444;
+}

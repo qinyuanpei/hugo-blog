@@ -12,7 +12,7 @@ tags:
 - 探索
 title: 基于 SVG 的图形交互方案实践
 toc: true
-image: /posts/基于-SVG-的图形交互方案实践/water-wave.jpg
+image: /posts/基于-SVG-的图形交互方案实践/Demo-02.jpg
 ---
 
 不知道从什么时候起，人们开始喜欢上数字大屏这种“**花里胡哨**”的东西，仿佛只要用上“**科技蓝**”这样神奇的色调，就可以让一家公司焕然一新，瞬间变得科技感满满。不管数字大屏的实际意义，是用来帮助企业监控和决策，还是为了方便领导参观和视察，抑或是为了向外界展示和宣传。总之，自从数字大屏诞生之后，它始终就没能摆脱其前任“**中国式报表**”那种大而全的宿命。追随着 [ECharts](https://echarts.apache.org/zh/index.html)、[Superset](https://superset.apache.org/)、[FineBI](https://www.finebi.com/)、[DataEase](https://github.com/dataease/dataease) 等数据可视化产品的身影一路走来，你会发现人们在追求“**花里胡哨**”这件事情上永无止境。如今的数据大屏，元素多(表格、视频、2D/2.5D/3D地图)、种类多(图表、报表、流程图)、媒介多(PC、平板、电视、LED)，主打的就是一个眼花缭乱。

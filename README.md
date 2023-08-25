@@ -1,11 +1,18 @@
-本文档由脚本自动生成，最后更新时间：2023-03-24 15:38:00，最后部署版本：[6501b6a](https://github.com/qinyuanpei/hugo-blog/commit/6501b6a970c0dee5e9ebd644aa7abd63de7f54f4
+本文档由脚本自动生成，最后更新时间：2023-08-25 09:06:47，最后部署版本：[831a9f5](https://github.com/qinyuanpei/hugo-blog/commit/831a9f581e3caf81c345c11e60f2f4d4ec9c2d94
 )
 
 如果想订阅我的博客，请使用 Github 的 Watch 功能，**请不要 fork 此项目**
 
-Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 251 篇，请继续努力！
+Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 258 篇，请继续努力！
 
-# 2023 年，共 2 篇
+# 2023 年，共 9 篇
+* 2023-08-20 - [基于 SVG 的图形交互方案实践](https://blog.yuanpei.me/posts/practice-of-svg-based-graphic-interaction-solution/)
+* 2023-07-15 - [前端视频播放技术概览](https://blog.yuanpei.me/posts/overview-of-front-end-video-playback-technology/)
+* 2023-06-10 - [你好，千寻小姐](https://blog.yuanpei.me/posts/call-me-chihiro/)
+* 2023-05-29 - [温故而知新，再话 Python 动态导入](https://blog.yuanpei.me/posts/discussing-dynamic-import-in-python-again/)
+* 2023-05-12 - [后 GPT 时代，NLP 不存在了？](https://blog.yuanpei.me/posts/in-the-post-gpt-era-nlp-no-longer-exists/)
+* 2023-04-24 - [视频是不能 P 的系列：使用 Milvus 实现海量人脸快速检索](https://blog.yuanpei.me/posts/use-milvus-to-quickly-retrieve-massive-faces/)
+* 2023-04-05 - [GDI+下字体大小自适应方案初探](https://blog.yuanpei.me/posts/exploration-of-font-size-adaptation-scheme-under-gdi+/)
 * 2023-03-20 - [小爱音箱集成 ChatGPT 的不完全教程](https://blog.yuanpei.me/posts/the-xiaoai-speaker-integrates-an-incomplete-tutorial-on-chatgpt/)
 * 2023-02-18 - [程序员视角下的三体世界随想](https://blog.yuanpei.me/posts/random-thoughts-of-three-body-world-as-programmers/)
 # 2022 年，共 27 篇

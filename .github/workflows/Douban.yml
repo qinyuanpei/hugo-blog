@@ -22,9 +22,6 @@ jobs:
         architecture: "x64"
     - name: Run Generator
       run: |
-          # sudo apt-get install python3-lxml
-          sudo apt-get install libxml2-dev libxslt-dev
-          sudo apt-get build-dep python3-lxml
           sudo mkdir -p /home/runner/work/
           cd /home/runner/work/
           sudo git clone https://github.com/qinyuanpei/douban-generator.git 
@@ -35,7 +32,7 @@ jobs:
           sudo python -m pip install pip -U
           sudo python -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
           sudo python -m pip config set install.trusted-host mirrors.aliyun.com
-
+          STATIC_DEPS=true pip install lxml
           sudo python -m pip install -r requirements.txt 
           python movies-generator.py 60029335
           python books-generator.py 60029335

@@ -21,7 +21,7 @@ jobs:
       with:
         id: 60029335
         type: movie
-        format: csv
+        format: json
         dir: ./data/doubanSync
 
     - name: book
@@ -29,7 +29,7 @@ jobs:
       with:
         id: 60029335
         type: book
-        format: csv
+        format: json
         dir: ./data/doubanSync
   
     - name: Commit

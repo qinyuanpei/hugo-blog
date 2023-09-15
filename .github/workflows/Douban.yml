@@ -10,7 +10,7 @@ on:
 
 jobs:
   douban:
-    name: Syna Douban Data
+    name: Sync Douban Data
     runs-on: ubuntu-latest
     steps:
     - name: Checkout

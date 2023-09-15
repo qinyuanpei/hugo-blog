@@ -23,7 +23,7 @@ jobs:
     - name: Run Generator
       run: |
           # sudo apt-get install python3-lxml
-          sudo apt-get install libxml2-dev libxslt-dev python-dev
+          sudo apt-get install libxml2-dev libxslt-dev
           sudo apt-get build-dep python3-lxml
           sudo mkdir -p /home/runner/work/
           cd /home/runner/work/

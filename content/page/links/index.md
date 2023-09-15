@@ -68,6 +68,11 @@ links:
     description: 个人技术博客
     website: https://songxwn.com/
     image: https://songxwn.com/images/favicon.png
+  - title: Song`s Blog
+    description: 个人技术博客
+    website: https://leonfong.me
+    image: https://leonfong.me/_next/image?url=https%3A%2F%2Fleonfong.me%2Favatar.jpg&w=256&q=75
+  https://leonfong.me/posts/electron-download
 comments: false
 ---
 

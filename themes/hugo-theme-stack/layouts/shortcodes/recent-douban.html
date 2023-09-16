@@ -19,7 +19,7 @@
 {{ $doubanBooks := $.Site.Data.douban.books }}
 <h1><a class="more" href="{{ $more }}">{{ $title }}</a></h1>
 <div class="recent-items">
-    {{ range first $limit $doubanBooks.readed }}
+    {{ range first $limit $doubanBooks.reading }}
     <div class="recent-item">
         <img src="{{ .image }}" alt="{{ .title }}">
         <div class="title" title="{{ .title }}"><a href="{{ .alt }}">{{ .title }}</a></div>

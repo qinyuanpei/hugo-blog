@@ -1,0 +1,77 @@
+﻿{{ $type := (.Get "type") }}
+{{ $title := (.Get "title") }}
+{{ $more := (.Get "more" ) }}
+{{ $limit := (.Get "limit") }}
+
+{{ if eq $type "movie" }}
+{{ $doubanMovies := $.Site.Data.douban.movies }}
+<h1><a class="more" href="{{ $more }}">{{ $title }}</a></h1>
+<div class="recent-items">
+    {{ range first $limit $doubanMovies.watched }}
+    <div class="recent-item">
+        <img src="{{ .image }}" alt="{{ .title }}">
+        <div class="title" title="{{ .title }}"><a href="{{ .alt }}">{{ .title }}</a></div>
+    </div>
+    {{ end }}
+</div>
+{{ end }}
+{{ if eq $type "book" }}
+{{ $doubanBooks := $.Site.Data.douban.books }}
+<h1><a class="more" href="{{ $more }}">{{ $title }}</a></h1>
+<div class="recent-items">
+    {{ range first $limit $doubanBooks.readed }}
+    <div class="recent-item">
+        <img src="{{ .image }}" alt="{{ .title }}">
+        <div class="title" title="{{ .title }}"><a href="{{ .alt }}">{{ .title }}</a></div>
+    </div>
+    {{ end }}
+</div>
+{{ end }}
+
+<style>
+    .more {
+        padding: 0 2.5rem 0 .5rem;
+        background: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSdibGFjaycgdmlld0JveD0nMCAwIDEwMjQgMTAyNCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB3aWR0aD0nMjAnIGhlaWdodD0nMjAnPjxwYXRoIGQ9J001NTcuMjI3IDM0Ni4wMjdMNjE3LjYgNDA2LjRhMjk4LjY2NyAyOTguNjY3IDAgMCAxIDAgNDIyLjRsLTE1LjEwNCAxNS4wNjFhMjk4LjY2NyAyOTguNjY3IDAgMCAxLTQyMi40LTQyMi40bDYwLjM3MyA2MC4zNzRBMjEzLjMzMyAyMTMuMzMzIDAgMSAwIDU0Mi4xNjUgNzgzLjUzbDE1LjEwNC0xNS4xMDRhMjEzLjMzMyAyMTMuMzMzIDAgMCAwIDAtMzAxLjY1NEw0OTYuODk2IDQwNi40bDYwLjM3My02MC4zM3pNODQzLjg2IDYwMi40OTZsLTYwLjMzLTYwLjMzYTIxMy4zMzMgMjEzLjMzMyAwIDEgMC0zMDEuNjk2LTMwMS42OTdsLTE1LjEwNCAxNS4xMDRhMjEzLjMzMyAyMTMuMzMzIDAgMCAwIDAgMzAxLjY1NGw2MC4zNzMgNjAuMzczLTYwLjM3MyA2MC4zM0w0MDYuNCA2MTcuNmEyOTguNjY3IDI5OC42NjcgMCAwIDEgMC00MjIuNGwxNS4xMDQtMTUuMDYxYTI5OC42NjcgMjk4LjY2NyAwIDAgMSA0MjIuNCA0MjIuNHonLz48L3N2Zz4=) no-repeat right center;
+    }
+
+    .recent-items {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .recent-item {
+        flex-basis: 20%;
+        margin-bottom: 7.5px;
+        margin-right: 7.5px;
+        text-align: center;
+    }
+
+    .recent-item img {
+        max-height: 200px;
+        min-height: 200px;
+        max-width: 120px;
+        min-width: 120px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+
+    .recent-item .title {
+        height: 15px;
+        margin-top: 5px;
+        line-height: 15px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 120px;
+    }
+
+    .recent-item h3 {
+        margin-top: 10px;
+    }
+
+    .recent-item p {
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+    }
+</style>

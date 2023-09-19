@@ -32,7 +32,8 @@ jobs:
           sudo python -m pip install pip -U
           sudo python -m pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
           sudo python -m pip config set install.trusted-host mirrors.aliyun.com
-          STATIC_DEPS=true pip install lxml
+          STATIC_DEPS=true pip install lxml 
+          sudo python -m pip install requests
           sudo python -m pip install -r requirements.txt 
           python movies-generator.py 60029335
           python books-generator.py 60029335

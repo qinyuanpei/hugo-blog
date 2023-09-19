@@ -35,9 +35,9 @@ jobs:
           STATIC_DEPS=true pip install lxml 
           sudo python -m pip install requests
           sudo python -m pip install -r requirements.txt 
-          python movies-generator.py 60029335
-          python books-generator.py 60029335
-          python games-generator.py 60029335
+          sudo python movies-generator.py 60029335
+          sudo python books-generator.py 60029335
+          sudo python games-generator.py 60029335
     # - name: Auto Commit
     #   uses: EndBug/add-and-commit@v8
     #   with:

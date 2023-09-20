@@ -27,9 +27,13 @@ lastmod: '2020-10-09'
 * 消息队列(**Kafka**)
 * FakeRPC
 
+{{<recent-douban type="book" limit="4" more="/books" title="最近在读">}}
+
 {{<recent-douban type="movie" limit="4" more="/movies" title="最近在看">}}
 
-{{<recent-douban type="book" limit="4" more="/books" title="最近在读">}}
+{{<recent-netease id="47002864" limit="5" more="/musics" title="最近在听">}}
+
+
 
 更多的页面：
 * [读书](/books/) / [听歌](/musics/) / [观影](/movies/) / [友链](/links/) / [统计](/statics)

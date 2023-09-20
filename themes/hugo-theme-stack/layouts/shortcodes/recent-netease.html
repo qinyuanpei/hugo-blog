@@ -1,0 +1,63 @@
+﻿{{ $id := (.Get "id") }}
+{{ $more := (.Get "more" ) }}
+{{ $limit := (.Get "limit") }}
+{{ $title := (.Get "title")}}
+
+{{ $url := "https://listen.yuanpei.me/rest" }}
+{{ $query := (querify "id" $id "number" $limit "show_percent" "1" "cache" "1") }}
+{{ $data := getJSON (printf "%s?%s" $url $query) }}
+{{ if eq $more "" }}
+<h1>{{ $title }}</h1>
+{{ else }}
+<h1><a class="more" href="{{ $more }}">{{ $title }}</a></h1>
+{{ end }}
+<div class="song-list">
+    {{ range $data.recentPlayed }}
+    <div class="song">
+        <a title="{{ .name }}" href="{{ .url }}">
+            <img src="{{  .cover_url }}" alt="{{ .name }}">
+        </a>
+        <div class="song-info">
+            <div class="song-title" title="{{ .name }}">
+                <a href="{{ .url }}">{{ .name }}</a>
+            </div>
+        </div>
+    </div>
+    {{ end }}
+</div>
+<style>
+    .more {
+        padding: 0 2.5rem 0 .5rem;
+        background: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSdibGFjaycgdmlld0JveD0nMCAwIDEwMjQgMTAyNCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB3aWR0aD0nMjAnIGhlaWdodD0nMjAnPjxwYXRoIGQ9J001NTcuMjI3IDM0Ni4wMjdMNjE3LjYgNDA2LjRhMjk4LjY2NyAyOTguNjY3IDAgMCAxIDAgNDIyLjRsLTE1LjEwNCAxNS4wNjFhMjk4LjY2NyAyOTguNjY3IDAgMCAxLTQyMi40LTQyMi40bDYwLjM3MyA2MC4zNzRBMjEzLjMzMyAyMTMuMzMzIDAgMSAwIDU0Mi4xNjUgNzgzLjUzbDE1LjEwNC0xNS4xMDRhMjEzLjMzMyAyMTMuMzMzIDAgMCAwIDAtMzAxLjY1NEw0OTYuODk2IDQwNi40bDYwLjM3My02MC4zM3pNODQzLjg2IDYwMi40OTZsLTYwLjMzLTYwLjMzYTIxMy4zMzMgMjEzLjMzMyAwIDEgMC0zMDEuNjk2LTMwMS42OTdsLTE1LjEwNCAxNS4xMDRhMjEzLjMzMyAyMTMuMzMzIDAgMCAwIDAgMzAxLjY1NGw2MC4zNzMgNjAuMzczLTYwLjM3MyA2MC4zM0w0MDYuNCA2MTcuNmEyOTguNjY3IDI5OC42NjcgMCAwIDEgMC00MjIuNGwxNS4xMDQtMTUuMDYxYTI5OC42NjcgMjk4LjY2NyAwIDAgMSA0MjIuNCA0MjIuNHonLz48L3N2Zz4=) no-repeat right center;
+    }
+
+    .song-list {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .song {
+        width: 100px;
+        margin: 10px;
+        text-align: center;
+    }
+
+    .song img {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+    }
+
+    .song-info {
+        width: 100%;
+    }
+
+    .song-title,
+    .song-artist {
+        /* padding: 0 2.5rem 0 .5rem; */
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 100px;
+    }
+</style>

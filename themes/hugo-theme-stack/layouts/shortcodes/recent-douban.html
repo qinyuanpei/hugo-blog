@@ -9,8 +9,12 @@
 <div class="recent-items">
     {{ range first $limit $doubanMovies.watched }}
     <div class="recent-item">
-        <img src="{{ .image }}" alt="{{ .title }}">
-        <div class="title" title="{{ .title }}"><a href="{{ .alt }}">{{ .title }}</a></div>
+        <a href="{{ .alt }}" title="{{ .title }}">
+            <img src="{{ .image }}" alt="{{ .title }}">
+        </a>
+        <div class="title" title="{{ .title }}">
+            <a href="{{ .alt }}">{{ .title }}</a>
+        </div>
     </div>
     {{ end }}
 </div>
@@ -21,8 +25,12 @@
 <div class="recent-items">
     {{ range first $limit $doubanBooks.reading }}
     <div class="recent-item">
-        <img src="{{ .image }}" alt="{{ .title }}">
-        <div class="title" title="{{ .title }}"><a href="{{ .alt }}">{{ .title }}</a></div>
+        <a href="{{ .alt }}" title="{{ .title }}">
+            <img src="{{ .image }}" alt="{{ .title }}">
+        </a>
+        <div class="title" title="{{ .title }}">
+            <a href="{{ .alt }}">{{ .title }}</a>
+        </div>
     </div>
     {{ end }}
 </div>

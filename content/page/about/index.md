@@ -31,7 +31,7 @@ lastmod: '2020-10-09'
 
 {{<recent-douban type="movie" limit="4" more="/movies" title="最近在看">}}
 
-{{<recent-netease id="47002864" limit="5" more="/musics" title="最近在听">}}
+{{<recent-netease id="47002864" limit="4" more="/musics" title="最近在听">}}
 
 
 

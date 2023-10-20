@@ -1,11 +1,12 @@
-本文档由脚本自动生成，最后更新时间：2023-09-16 11:00:30，最后部署版本：[8dba522](https://github.com/qinyuanpei/hugo-blog/commit/8dba522fa42479be042cf6097093c632c57ccbc3
+本文档由脚本自动生成，最后更新时间：2023-10-20 11:00:28，最后部署版本：[a290154](https://github.com/qinyuanpei/hugo-blog/commit/a2901541d442e4e566a8591e78211a86a27d834b
 )
 
 如果想订阅我的博客，请使用 Github 的 Watch 功能，**请不要 fork 此项目**
 
-Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 258 篇，请继续努力！
+Hi, Payne. 从 2014-12-30 至今，你撰写博客共计 259 篇，请继续努力！
 
-# 2023 年，共 9 篇
+# 2023 年，共 10 篇
+* 2023-10-18 - [C# 使用 LibUsbDotNet 实现 USB 设备检测](https://blog.yuanpei.me/posts/csharp-uses-libusbdotnet-to-implement-usb-device-detection/)
 * 2023-08-20 - [基于 SVG 的图形交互方案实践](https://blog.yuanpei.me/posts/practice-of-svg-based-graphic-interaction-solution/)
 * 2023-07-15 - [前端视频播放技术概览](https://blog.yuanpei.me/posts/overview-of-front-end-video-playback-technology/)
 * 2023-06-10 - [你好，千寻小姐](https://blog.yuanpei.me/posts/call-me-chihiro/)

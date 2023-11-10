@@ -7,7 +7,17 @@
             text: '文章统计',
             x: 'center'
         },
-        tooltip: {},
+        tooltip: {
+            trigger: 'axis',
+            formatter(params) {
+                debugger
+                var relVal = params[0].name + '年'
+                const color = params[0].color
+                const marker = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`
+                relVal += '<br/>' + `${marker} ${params[0].seriesName}: ${params[0].value}篇`
+                return relVal
+              }
+        },
         xAxis: {
             data: Object.keys(data)
         },
@@ -57,7 +67,7 @@ function handleCategoryChart(el, data) {
         },
         tooltip: {
             trigger: 'item',
-            formatter: "{a} <br/>{b} : {c} ({d}%)"
+            formatter: "{a} <br/>{b} : {c} 篇({d}%)"
         },
         series: [{
             name: '分类',
@@ -289,7 +299,22 @@ function handleDoubanChart(el) {
                 crossStyle: {
                     color: '#999'
                 }
-            }
+            },
+            formatter(params) {
+                  var relVal = params[0].name + '月'
+                  for (var i = 0, l = params.length; i < l; i++) {
+                    const color = params[i].color
+                    const marker = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`
+                    let unit = '个'
+                    if (params[i].seriesName == '读书') {
+                        unit = '本'
+                    } else if (params[i].seriesName == '观影') {
+                        unit = '部'
+                    }
+                    relVal += '<br/>' + `${marker} ${params[i].seriesName}: ${params[i].value}${unit}`
+                  }
+                  return relVal
+                }
         },
         xAxis: [
             {

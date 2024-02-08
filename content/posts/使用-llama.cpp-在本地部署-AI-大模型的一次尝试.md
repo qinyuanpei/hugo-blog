@@ -214,6 +214,9 @@ Step-2：以命令行交互的方式运行模型:
 ```bash
 ./perplexity -m models/Qwen-1_8B-Chat/ggml-model-q5_k_m.gguf -f wikitext-2-raw/wiki.test.raw
 ```
+下面是 Qwen-1_8B-Chat 的评估结果：
+
+![Qwen-1_8B-Chat 评估结果](/posts/使用-llama.cpp-在本地部署-AI-大模型的一次尝试/llama-perplexity.png)
 
 # 对接 ChatGPT-Next-Web
 

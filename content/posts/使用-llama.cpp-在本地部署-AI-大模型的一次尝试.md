@@ -220,7 +220,7 @@ Step-2：以命令行交互的方式运行模型:
 
 # 对接 ChatGPT-Next-Web
 
-除了以上面这种命令行交互的方式运行模型，我们还可以使用下面的命令在本地运行一个 OpenAI 服务：
+除了以上面这种命令行交互的方式运行模型，我们还可以使用下面的[命令](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)在本地运行一个 OpenAI 服务：
 
 ```bash
 ./server -m models/Qwen-1_8B-Chat/ggml-model-q5_k_m.gguf -c 2048

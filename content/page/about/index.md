@@ -27,11 +27,11 @@ lastmod: '2020-10-09'
 * 消息队列(**Kafka**)
 * FakeRPC
 
-{{<recent-douban type="book" limit="4" more="/books" title="最近在读">}}
+{{<recent-douban type="book" limit="4" more="/books" title="最近读过">}}
 
-{{<recent-douban type="movie" limit="4" more="/movies" title="最近在看">}}
+{{<recent-douban type="movie" limit="4" more="/movies" title="最近看过">}}
 
-{{<recent-netease id="47002864" limit="4" more="/musics" title="最近在听">}}
+{{<recent-netease id="47002864" limit="4" more="/musics" title="最近听过">}}
 
 
 

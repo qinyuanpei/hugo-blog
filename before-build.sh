@@ -12,3 +12,5 @@ cp ./.python/process-image.py ./process-image.py
 python ./process-image.py  B8DTNBm5r9dL30YVw3KwgXcCjFFWtvSd ./content/
 rm -f ./process-image.py
 
+python ./.python/netease-music.py
+

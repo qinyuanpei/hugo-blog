@@ -19,17 +19,17 @@ jobs:
     - name: notion_movie
       uses: lizheming/doumark-action@master
       with:
-        id: lizheming
+        id: 60029335
         type: movie
         format: notion
-        dir: douban
+        dir: a30a1c79e62a4d33bb10ee8ec5dd4588
         notion_token: ${{ secrets.notion_token }}
         
     - name: notion_book
       uses: lizheming/doumark-action@master
       with:
-        id: lizheming
-        type: bool
+        id: 60029335
+        type: book
         format: notion
-        dir: douban
+        dir: a30a1c79e62a4d33bb10ee8ec5dd4588
         notion_token: ${{ secrets.notion_token }}

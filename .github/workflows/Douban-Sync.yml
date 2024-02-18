@@ -33,3 +33,19 @@ jobs:
         format: notion
         dir: 20512657dba644609ddab57a3cf594ff
         notion_token: ${{ secrets.notion_token }}
+
+    - name: Sync Movies To Local
+      uses: lizheming/doumark-action@master
+      with:
+        id: 60029335
+        type: movie
+        format: json
+        dir: ./data/doubanSync
+
+    - name: Sync Books To Local
+      uses: lizheming/doumark-action@master
+      with:
+        id: 60029335
+        type: book
+        format: json
+        dir: ./data/doubanSync

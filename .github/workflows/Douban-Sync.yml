@@ -16,7 +16,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: notion_movie
+    - name: Sync Movies To Notion
       uses: lizheming/doumark-action@master
       with:
         id: 60029335
@@ -25,7 +25,7 @@ jobs:
         dir: f6f7cff6860045d9917215b09ab72029
         notion_token: ${{ secrets.notion_token }}
         
-    - name: notion_book
+    - name: Sync Books To Notion
       uses: lizheming/doumark-action@master
       with:
         id: 60029335

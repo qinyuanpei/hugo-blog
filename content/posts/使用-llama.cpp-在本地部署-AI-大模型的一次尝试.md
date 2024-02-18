@@ -57,7 +57,7 @@ git clone https://github.com/ggerganov/llama.cpp
 
 ```bash
 cd d:\
-cd cd projects/llama.cpp
+cd projects/llama.cpp
 ```
 
 至此，我们就进入了 llama.cpp 的源代码目录，还记得在准备工作阶段，我们提到过的 OpenBLAS 及其 CPU 加速功能吗？如果你不需要 CPU 加速功能，那么，你可以直接输入 `make` 命令，否则你需要输入 `make LLAMA_OPENBLAS=1`。博主这里选择的是后者，没有 GPU 当然要精打细算地过日子，你说对不对？

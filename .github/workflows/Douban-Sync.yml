@@ -34,7 +34,7 @@ jobs:
         dir: 20512657dba644609ddab57a3cf594ff
         notion_token: ${{ secrets.notion_token }}
 
-    - name: Clean Load Data
+    - name: Clean Local Data
       run: rm -rf ./data/doubanSync/
 
     - name: Sync Movies To Local

@@ -22,7 +22,7 @@ jobs:
         id: 60029335
         type: movie
         format: notion
-        dir: a30a1c79e62a4d33bb10ee8ec5dd4588
+        dir: 7702f4b77ef14e9583fdb64d0705447c
         notion_token: ${{ secrets.notion_token }}
         
     - name: notion_book
@@ -31,5 +31,5 @@ jobs:
         id: 60029335
         type: book
         format: notion
-        dir: a30a1c79e62a4d33bb10ee8ec5dd4588
+        dir: 7702f4b77ef14e9583fdb64d0705447c
         notion_token: ${{ secrets.notion_token }}

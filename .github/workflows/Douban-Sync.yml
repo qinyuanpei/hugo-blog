@@ -40,7 +40,7 @@ jobs:
         id: 60029335
         type: movie
         format: json
-        dir: ./data/doubanSync
+        dir: ./data/doubanSync/
 
     - name: Sync Books To Local
       uses: lizheming/doumark-action@master
@@ -48,7 +48,7 @@ jobs:
         id: 60029335
         type: book
         format: json
-        dir: ./data/doubanSync
+        dir: ./data/doubanSync/
 
     - name: Commit
       uses: EndBug/add-and-commit@v9

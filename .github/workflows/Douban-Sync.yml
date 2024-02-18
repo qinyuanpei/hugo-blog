@@ -16,24 +16,20 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: movie
+    - name: notion_movie
       uses: lizheming/doumark-action@master
       with:
-        id: 60029335
+        id: lizheming
         type: movie
-        format: json
-        dir: ./data/doubanSync
-
-    - name: book
+        format: notion
+        dir: douban
+        notion_token: ${{ secrets.notion_token }}
+        
+    - name: notion_book
       uses: lizheming/doumark-action@master
       with:
-        id: 60029335
-        type: book
-        format: json
-        dir: ./data/doubanSync
-  
-    - name: Commit
-      uses: EndBug/add-and-commit@v8
-      with:
-        message: 'Update Douban Data By Github Action'
-        add: './data/doubanSync'
+        id: lizheming
+        type: bool
+        format: notion
+        dir: douban
+        notion_token: ${{ secrets.notion_token }}

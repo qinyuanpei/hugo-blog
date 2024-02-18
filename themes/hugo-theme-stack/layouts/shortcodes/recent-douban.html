@@ -4,32 +4,34 @@
 {{ $limit := (.Get "limit") }}
 
 {{ if eq $type "movie" }}
-{{ $doubanMovies := $.Site.Data.douban.movies }}
+{{ $doubanMovies := $.Site.Data.doubanSync.movie }}
 <h1><a class="more" href="{{ $more }}">{{ $title }}</a></h1>
 <div class="recent-items">
-    {{ range first $limit $doubanMovies.watched }}
+    {{ range first $limit $doubanMovies }}
+    {{ $subject := .subject }}
     <div class="recent-item">
-        <a href="{{ .alt }}" title="{{ .title }}">
-            <img src="{{ .image }}" alt="{{ .title }}">
+        <a href="{{ $subject.url }}" title="{{ $subject.title }}">
+            <img src="{{ $subject.cover_url }}" alt="{{ $subject.title }}">
         </a>
-        <div class="title" title="{{ .title }}">
-            <a href="{{ .alt }}">{{ .title }}</a>
+        <div class="title" title="{{ $subject.title }}">
+            <a href="{{ $subject.url }}">{{ $subject.title }}</a>
         </div>
     </div>
     {{ end }}
 </div>
 {{ end }}
 {{ if eq $type "book" }}
-{{ $doubanBooks := $.Site.Data.douban.books }}
+{{ $doubanBooks := $.Site.Data.doubanSync.book }}
 <h1><a class="more" href="{{ $more }}">{{ $title }}</a></h1>
 <div class="recent-items">
-    {{ range first $limit $doubanBooks.reading }}
+    {{ range first $limit $doubanBooks }}
+    {{ $subject := .subject }}
     <div class="recent-item">
-        <a href="{{ .alt }}" title="{{ .title }}">
-            <img src="{{ .image }}" alt="{{ .title }}">
+        <a href="{{ $subject.url }}" title="{{ $subject.title }}">
+            <img src="{{ $subject.cover_url }}" alt="{{ $subject.title }}">
         </a>
-        <div class="title" title="{{ .title }}">
-            <a href="{{ .alt }}">{{ .title }}</a>
+        <div class="title" title="{{ $subject.title }}">
+            <a href="{{ $subject.url }}">{{ $subject.title }}</a>
         </div>
     </div>
     {{ end }}

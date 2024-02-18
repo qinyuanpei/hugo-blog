@@ -10,7 +10,7 @@ on:
 
 jobs:
   douban:
-    name: Douban mark data sync
+    name: Sync Douban
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -33,6 +33,9 @@ jobs:
         format: notion
         dir: 20512657dba644609ddab57a3cf594ff
         notion_token: ${{ secrets.notion_token }}
+
+    - name: Clean Load Data
+      run: rm -rf ./data/doubanSync/
 
     - name: Sync Movies To Local
       uses: lizheming/doumark-action@master

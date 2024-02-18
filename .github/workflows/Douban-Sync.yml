@@ -49,3 +49,9 @@ jobs:
         type: book
         format: json
         dir: ./data/doubanSync
+
+    - name: Commit
+      uses: EndBug/add-and-commit@v8
+      with:
+        message: 'chore: update douban data'
+        add: './data/douban-sync'

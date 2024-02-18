@@ -51,7 +51,7 @@ jobs:
         dir: ./data/doubanSync
 
     - name: Commit
-      uses: EndBug/add-and-commit@v8
+      uses: EndBug/add-and-commit@v9
       with:
         message: 'chore: update douban data'
         add: './data/douban-sync/*'

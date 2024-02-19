@@ -14,3 +14,7 @@ rm -f ./process-image.py
 
 python ./.python/netease-music.py
 
+cp ./.python/douban-statics.py ./douban-statics.py
+python ./douban-statics.py
+rm -f ./douban-statics.py
+

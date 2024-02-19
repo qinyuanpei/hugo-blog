@@ -3,17 +3,18 @@ categories:
 - 编程语言
 copyright: true
 date: 2022-06-07 15:49:47
-description: ''
+description: 这篇文章讨论了ASP.NET Core集成测试的重要性，从单元测试和Mock的角度出发，探讨了在现实软件世界中“万物皆可模拟”的理想与挑战。介绍了使用Moq进行模拟测试的方法，并引出了集成测试的必要性和TestServer的作用。详细讨论了如何使用TestServer进行API、中间件、HttpContext和gRPC的测试，并介绍了通过WebApplicationFactory实现更优雅集成测试的方法，结合xUnit的IClassFixture解决测试类中共享数据的初始化和销毁问题。最后分享了作者对写作计划和技术实践的心得体会。
+image: /posts/不得不说的-ASP.NET-Core-集成测试/cover.jpg
 slug: I-Have-To-Say-ASP.NET-Core-Integration-Testing
 tags:
 - Moq
 - 单元测试
 - 集成测试
 - TestServer
-title: 不得不说的 ASP.NET Core 集成测试 
+title: 不得不说的 ASP.NET Core 集成测试
 toc: true
-image: /posts/不得不说的-ASP.NET-Core-集成测试/cover.jpg
 ---
+
 一直打算写一篇关于 [ASP.NET Core 集成测试](https://docs.microsoft.com/zh-cn/aspnet/core/test/integration-tests?view=aspnetcore-6.0) 的文章，因为一旦说起单元测试这个话题，多多少少会牵动我内心深处的理想主义色彩，虽然如今已然是程序员职业生涯的第七年，可在我看来依然有太多东西在原地打转。这一路跌跌撞撞地走过来，在不同的公司里，见识到了形态各异的研发流程，接触到了貌合神离的敏捷思想，阅读过了风格迥异的框架/架构。当时间节点来到 2022 年，惊觉 `.NET` 诞生业已 20 周年，虽然技术一直在不断向前发展，可我个人感觉，我们并没有在工程化上取得多少感人的进步，譬如单元测试、需求管理，这些听起来丝毫不影响写代码的方方面面。回首往昔，有坚持写单元测试的公司，有从来不写单元测试的公司，有因为业务或者人力扩张而放弃写单元测试的公司，俨然是软件研发领域的众生相。作为程序员，每天除了和各种 `Bug` 斗智斗勇以外，接触最多的当属测试或者叫做 `QA`，所以，今天这篇博客，我们一起来聊聊 `ASP.NET Core` 里的集成测试。
 
 # Moq：万物皆可模拟吗

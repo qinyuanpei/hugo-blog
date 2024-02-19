@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 1670305415
 categories:
 - 读书笔记
 date: 2015-12-25 12:29:20
-description: ''
+description: 最近开始学习Shader语言，Unity3D中的Shader编写基于Cg语言和HLSL语言，两者相似性较高，具有互通性。Shader编写可参考ShaderLab，是对Cg的封装。Shader结构包括Properties、SubShaders和Fallback部分。其中Properties定义属性，SubShaders包含Pass通道，Fallback处理无法运行的情况。SubShader中使用Tags标签控制渲染，Pass通道设定渲染对象的几何体。渲染设置包括材质、光照、深度测试等设置，纹理设置指定纹理及混合模式。Fallback用于处理不支持Shader的情况。Shader语法主要针对Cg代码，包括CGPROGRAM和ENDCG。Unity3D中有三种着色器类型：固定功能着色器、表面着色器和顶点&片段着色器。
 slug: 1670305415
 tags:
 - Shader

@@ -1,10 +1,10 @@
----
+﻿---
 abbrlink: 2488769283
 categories:
 - 编程语言
 copyright: true
 date: 2020-04-02 10:26:53
-description: ''
+description: 在这篇博客中，讨论了.NET平台下声明式RESTful客户端WebApiClient的动态路由实现与使用。介绍了WebApiClient的简单调用流程以及遇到的问题，提出了三种解决思路：使用[Uri]参数、使用{foobar}片段参数以及使用服务发现。作者展示了通过服务发现获取可用地址来动态调用服务的示例，并提到了WebApiClient的作者提供的服务发现扩展。
 slug: 2488769283
 tags:
 - RESTful

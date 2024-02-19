@@ -1,2 +1,2 @@
-{{- $readedBooks := $.Site.Data.douban.books.readed -}}
+{{- $readedBooks := $.Site.Data.doubanSync.book -}}
 {{- jsonify $readedBooks -}}

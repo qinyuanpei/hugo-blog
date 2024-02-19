@@ -1,2 +1,2 @@
-{{- $watchedMovies := $.Site.Data.douban.movies.watched -}}
+{{- $watchedMovies := $.Site.Data.doubanSync.movie -}}
 {{- jsonify $watchedMovies -}}

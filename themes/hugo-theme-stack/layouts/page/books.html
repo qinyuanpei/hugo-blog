@@ -8,36 +8,15 @@
 </header>
 
 <section>
-    {{ $doubanBooks := $.Site.Data.douban.books }}
+    {{ $doubanBooks := $.Site.Data.doubanSync.book }}
     <div class="hexo-douban-container">
         <div class="hexo-douban-cover" style="background-image: url('/hugo-douban/images/books.jpg');">
         </div>
-        <div class="hexo-douban-tabs">
-            <a class="hexo-douban-tab" id="hexo-douban-tab1" href="javascript:;" rel="external">
-                在读({{ len $doubanBooks.reading }})
-            </a>
-            <a class="hexo-douban-tab" id="hexo-douban-tab2" href="javascript:;" rel="external">
-                想读({{ len $doubanBooks.wishing }})
-            </a>
-            <a class="hexo-douban-tab" id="hexo-douban-tab3" href="javascript:;" rel="external">
-                已读({{ len $doubanBooks.readed }})
-        </div>
+        <div class="hexo-douban-tabs"></div>
         <div>
             <div>
-                <div id="hexo-douban-item1">
-                    {{ range $doubanBooks.reading }}
-                    {{ partial "douban/book/bookReading" . }}
-                    {{ end }}
-                    {{ partial "douban/pagination" }}
-                </div>
-                <div id="hexo-douban-item2">
-                    {{ range $doubanBooks.wishing }}
-                    {{ partial "douban/book/bookWish" . }}
-                    {{ end }}
-                    {{ partial "douban/pagination"}}
-                </div>
                 <div id="hexo-douban-item3">
-                    {{ range $doubanBooks.readed }}
+                    {{ range $doubanBooks }}
                     {{ partial "douban/book/bookRead" . }}
                     {{ end }}
                     {{ partial "douban/pagination"}}

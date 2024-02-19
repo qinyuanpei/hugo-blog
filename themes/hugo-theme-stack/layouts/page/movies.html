@@ -8,34 +8,16 @@
 </header>
 
 <section>
-    {{ $doubanMovies := $.Site.Data.douban.movies }}
+    {{ $doubanMovies := $.Site.Data.doubanSync.movie }}
     <div class="hexo-douban-container">
         <div class="hexo-douban-cover" style="background-image: url('/hugo-douban/images/movies.jpg');">
         </div>
         <div class="hexo-douban-tabs">
-            <a class="hexo-douban-tab" id="hexo-douban-tab1" href="javascript:;" rel="external">在看({{ len
-                $doubanMovies.watching }})</a>
-            <a class="hexo-douban-tab" id="hexo-douban-tab2" href="javascript:;" rel="external">想看({{ len
-                $doubanMovies.wishing }})</a>
-            <a class="hexo-douban-tab" id="hexo-douban-tab3" href="javascript:;" rel="external">已看({{ len
-                $doubanMovies.watched }})</a>
         </div>
         <div>
             <div>
-                <div id="hexo-douban-item1">
-                    {{ range $doubanMovies.watching }}
-                    {{ partial "douban/movie/movieWatching" . }}
-                    {{ end }}
-                    {{ partial "douban/pagination" }}
-                </div>
-                <div id="hexo-douban-item2">
-                    {{ range $doubanMovies.wishing }}
-                    {{ partial "douban/movie/movieWish" . }}
-                    {{ end }}
-                    {{ partial "douban/pagination"}}
-                </div>
                 <div id="hexo-douban-item3">
-                    {{ range $doubanMovies.watched }}
+                    {{ range $doubanMovies }}
                     {{ partial "douban/movie/movieWatched" . }}
                     {{ end }}
                     {{ partial "douban/pagination"}}

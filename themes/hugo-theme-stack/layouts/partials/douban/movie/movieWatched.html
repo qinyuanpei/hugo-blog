@@ -1,11 +1,16 @@
 <div class="hexo-douban-item">
-    <div class="hexo-douban-picture"><img src="/hugo-douban/images/douban-loading.gif" data-src="{{ .image }}" referrerPolicy="no-referrer" /></div>
+    {{ $subject := .subject }}
+    <div class="hexo-douban-picture"><img src="/hugo-douban/images/douban-loading.gif" data-src="{{ $subject.cover_url }}" referrerPolicy="no-referrer" /></div>
     <div class="hexo-douban-info">
-        <div class="hexo-douban-title">
-            <a target="_blank" href="{{ .alt }}">{{ .title }}</a>
-        </div>
-        <div class="hexo-douban-meta">{{ .date }} / {{ .tags }} / {{ .recommend }} </div>
-        <div class="hexo-douban-comments"> {{ .comment }}</div>
+        <div class="hexo-douban-title"><a target="_blank" href="{{ $subject.url }}"> {{ $subject.title }}</a></div>
+        <div class="hexo-douban-meta">{{ $subject.card_subtitle }}</div>
+        {{ if gt (len .tags) 0 }}
+        <div class="hexo-douban-meta">{{ .create_time }} / {{ .tags }}</div>
+        {{ else }}
+        <div class="hexo-douban-meta">{{ .create_time }}</div>
+        {{ end }}
+        <div class="hexo-douban-comments">{{ .comment }}</div>
     </div>
 </div>
+
 

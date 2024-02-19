@@ -3,7 +3,10 @@ categories:
 - 前端开发
 copyright: true
 date: 2022-05-17 13:30:47
-description: ''
+description: 本文介绍了在「微雨燕双飞」的一天中，作者接到朋友询问前端容器化部署问题的电话。作者分享了使用 Docker 容器化部署前端项目的实践教程，以
+  Vue.js 为例。通过编写 Dockerfile 实现多阶段构建，包括使用 node.js 构建前端项目和部署到 Nginx 静态文件服务器等步骤。另外，还提及了
+  Nginx 的配置以及使用 OpenSSL 创建证书的过程。最后，作者鼓励读者根据教程进一步完善部署，并展望了未来将撰写关于 ASP.NET Core 测试的文章。
+image: /posts/Vue-js-前端项目容器化部署实践极简教程/cover.jpg
 slug: A-Simplified-Tutorial-On-Containerized-Deployment-Of-Front-End-Projects-For-Vue
 tags:
 - 容器
@@ -12,8 +15,8 @@ tags:
 - Envoy
 title: Vue.js 前端项目容器化部署实践极简教程
 toc: true
-image: /posts/Vue-js-前端项目容器化部署实践极简教程/cover.jpg
 ---
+
 大概一周前，在某个「微雨燕双飞」的下午，我正穿梭于熙熙攘攘的车流人海当中，而被雨水濯洗过的天空略显灰白，傍晚亮起的路灯恍惚中有种朝阳初升的错觉，内心更是涌现出一种「一蓑烟雨任平生」的豁达，我还没来得及给这场内心戏添油加醋，兴哥的电话突然打断了我的思绪。一番攀谈交心，我了解到，他想问的是前端容器化部署的相关问题。虽然，靠着兴哥的睿智、果敢，他第二天就想明白了整个事情的来龙去脉；但是，这完全不影响我水一篇博客出来。所以，今天这篇文章，我们来聊聊前端项目的容器化部署，并提供一个极简的实践教程，这里以 `Vue.js` 为例，希望对大家有所启发。
 
 ![你说，这像太阳吗？](/posts/Vue-js-前端项目容器化部署实践极简教程/light-like-a-sun.jpg)

@@ -1,9 +1,12 @@
----
+﻿---
 abbrlink: 4159187524
 categories:
 - 编程语言
 date: 2019-04-22 22:13:36
-description: ''
+description: Win10的Linux子系统(WSL)让在Windows系统中使用Linux成为可能，避免了双系统的麻烦。探讨在WSL中使用Docker时遇到的问题，包括无法连接Docker守护进程、需要安装Docker
+  for Windows、设置DOCKER_HOST地址、解决终端关闭后连接中断等。提到分区挂载的区别，WSL中路径更符合Linux习惯，而Docker for
+  Windows则更符合Windows习惯。建议修改WSL配置文件以处理分区挂载相关问题。总结体验，逐渐将Linux工作迁移到WSL上，避免双系统维护带来的分散精力。未来将分享.NET
+  Core下的日志分析平台构建内容。
 slug: 4159187524
 tags:
 - WSL

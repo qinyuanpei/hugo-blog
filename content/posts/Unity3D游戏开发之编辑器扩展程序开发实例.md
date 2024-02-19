@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 70687890
 categories:
 - 游戏开发
 date: 2015-03-31 00:53:22
-description: ''
+description: 本文介绍了如何在Unity3D中为编辑器开发扩展程序。通过讨论扩展程序的概念和重要性，以及在Unity3D中常用的命名空间和类，如EditorGUI、EditorGUILayout和EditorWindow。具体通过三个案例展示了如何快速修改贴图类型、动态生成Prefab以及快速为Sprite设置图集tag。每个案例都提供了相应的代码示例和操作步骤，帮助读者学习Unity3D编辑器开发扩展程序的技术。
 slug: 70687890
 tags:
 - Unity3D

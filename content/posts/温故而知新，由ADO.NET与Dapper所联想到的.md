@@ -1,10 +1,14 @@
----
+﻿---
 abbrlink: 2621074915
 categories:
 - 编程语言
 copyright: true
 date: 2020-12-30 12:49:47
-description: ''
+description: 这篇文章讨论了在维护一个"遗产项目"时遇到的困难，其中数据持久化层完全由 ADO.NET 手工构建，导致大量使用 DataTable 进行数据操作，与习惯使用
+  Entity Framework 的开发者产生不适。作者提到了 ADO.NET 的核心组件，介绍了 DbConnection、DbCommand、DbDataReader、DbDataAdapter、DataTable
+  和 DataSet 的作用。讨论了使用 ADO.NET 访问数据库的常用方法和设计理念。然后作者提到了希望改进这种情况，类似于 Dapper 的实现，引入了一个简化版的
+  DynamicRow 类来实现类似 DapperRow 的效果。最后，作者介绍了如何通过扩展方法实现类似 Dapper 的 Query 和 Execute 方法，以及简化版的参数化查询。整体文章展示了作者对
+  ADO.NET、Dapper 和 Dynamic 的思考，并提出了自己的改进方案。
 slug: 2621074915
 tags:
 - ADO.NET

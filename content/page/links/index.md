@@ -72,6 +72,11 @@ links:
     description: Leon Fong
     website: https://leonfong.me
     image: https://leonfong.me/_next/image?url=https%3A%2F%2Fleonfong.me%2Favatar.jpg&w=256&q=75
+  - title: 印记
+    description: 君子可内敛不可懦弱，面不公可起而论之
+    website: https://yinji.org/archives.html
+    image: https://huhexian.s3.bitiful.net/2023/12/23/3b83cc067b2c3f1e45807dfdeb66e0c0.webp
+    
 comments: false
 ---
 

@@ -1,10 +1,12 @@
----
+﻿---
 abbrlink: 3670340170
 categories:
 - 编程语言
 copyright: true
 date: 2021-04-07 21:07:47
-description: ''
+description: 本文主要讨论了在使用ABP vNext和Ant Design Vue实现分页查询时的问题。通过介绍ABP vNext中的分页查询实现方式以及Ant
+  Design Vue中的STable组件的参数要求，作者展示了如何在前后端技术栈间进行上下文切换，并提供了参数转换层的代码示例来实现两者之间的无缝集成。最终，作者展示了如何封装前端服务层以及实现loadData方法，实现了ABP
+  vNext与Ant Design Vue的完美整合，提高了开发效率。整体内容涵盖了技术实现细节和开发经验分享。
 slug: 3670340170
 tags:
 - ABP

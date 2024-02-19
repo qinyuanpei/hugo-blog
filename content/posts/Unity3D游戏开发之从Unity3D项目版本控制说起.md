@@ -1,9 +1,10 @@
----
+﻿---
 abbrlink: 1320325685
 categories:
 - Unity3D
 date: 2015-07-02 09:35:42
-description: ''
+description: 在这篇文章中，作者介绍了在Unity3D游戏项目中进行版本控制的重要性和方法。作者指出团队合作时需要版本控制来避免代码冲突和确保项目稳定性。在Unity3D中，版本控制主要针对Assets和ProjectSetting文件夹，需要将项目设置为生成.Meta文件和将资源模式设置为Force
+  Text。作者提到了三种主要的版本控制方式：使用Asset Server、Github和SVN，并提供了相关链接和操作指南。最后强调了建立代码提交规范和流程控制规范的重要性。
 slug: 1320325685
 tags:
 - 版本控制

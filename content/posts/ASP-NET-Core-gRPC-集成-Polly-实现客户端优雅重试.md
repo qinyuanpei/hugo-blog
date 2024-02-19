@@ -1,10 +1,10 @@
----
+﻿---
 abbrlink: 2742255459
 categories:
 - 编程语言
 copyright: true
 date: 2021-06-07 15:19:11
-description: ''
+description: 在这篇博客中，作者探讨了在构建高可用微服务架构中的`gRPC`客户端重试方案。作者介绍了四种具体实现方式：基于`gRPC RetryPolicy`、基于`HttpClientFactory`、基于`gRPC拦截器`以及基于`CallInvoker`。其中，通过对`CallInvoker`的重写实现了灵活的重试策略，展示了一种更完美的解决方案。作者强调了在探索技术方案时，应先了解官方提供的标准方案，避免不必要的弯路。整体内容信息量丰富，分享了作者在探索重试方案过程中的思考和经验。
 slug: 2742255459
 tags:
 - gRPC

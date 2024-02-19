@@ -1,10 +1,13 @@
----
+﻿---
 abbrlink: 3411909634
 categories:
 - 编程语言
 copyright: true
 date: 2020-10-20 12:19:02
-description: ''
+description: 在这篇文章中，作者通过解读 HashSet 的源代码，介绍了 HashSet 去重的原理以及与 IEqualityComparer<T>
+  接口的关系。进一步讨论了在排序和去重操作中的接口应用，包括 IEquatable<T>、IComparable/IComparable<T> 和 IComparer<T>
+  接口的作用。通过对 HashSet、Dictionary 和去重操作的探讨，展示了这些数据结构和接口之间的联系，强调了在处理排序和去重时的重要性。整体上，文章通过解答一个关于
+  HashSet 的面试问题，深入探讨了涉及数据结构和接口的相关知识点，展示了技术知识体系中的连锁效应。
 slug: 3411909634
 tags:
 - HashSet

@@ -1,10 +1,12 @@
----
+﻿---
 abbrlink: 3619320289
 categories:
 - 编程语言
 copyright: true
 date: 2021-04-18 20:42:47
-description: ''
+description: ABP vNext 是一个开发效率非常高的解决方案，通过模块化和DDD设计思想，可快速构建专业项目。文章介绍了在ABP vNext中扩展实体和服务的技巧。对于实体扩展，可通过Extra
+  Properties或基于EF Core的表映射实现。对于服务扩展，可使用依赖注入替换接口实现。示例展示了如何扩展AppUser实体和替换默认用户查询服务。ABP
+  vNext提供了良好的范例，强调对修改关闭、对扩展开放的原则，以及依赖注入的重要性。整体内容包括实体和服务扩展技巧，解决数据库字段扩展和服务功能扩展的问题。
 slug: 3619320289
 tags:
 - ABP

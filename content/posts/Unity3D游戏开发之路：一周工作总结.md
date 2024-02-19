@@ -1,9 +1,10 @@
----
+﻿---
 abbrlink: 719322223
 categories:
 - 生活感悟
 date: 2015-06-11 08:02:45
-description: ''
+description: 秦元培分享了他在新工作中的经历和挑战，被委以重任在Unity3D项目中扮演主程角色。他讨论了在项目中遇到的问题，如跨域下载AssetBundle时的需添加crossdomain.xml文件、动态生成UI
+  Prefab被拉伸的问题以及AssetBundle的mainAsset问题。此外，他谈到了场景打包为AssetBundle时需要注意的问题，包括加载本地场景与从服务器加载场景的关卡列表冲突。他分享了自己的解决方案和实验结果，展示了对Unity3D开发中的技术挑战的思考和探索。
 slug: 719322223
 tags:
 - 游戏开发

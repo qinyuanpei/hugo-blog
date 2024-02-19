@@ -1,16 +1,19 @@
----
+﻿---
 categories:
 - 编程语言
 date: 2022-02-18 09:34:36
-description: ''
+description: 最近一直在研究 gRPC 的 ServerReflection，这是 gRPC 中提供的反射接口，对于动态调用 gRPC 接口非常有用。作者发现
+  ServerReflection API 使用了 gRPC 双向流的方式进行交互，类似于服务器推送技术如 WebSocket 和 Server-Sent Events。文章介绍了流式传输的概念，包括
+  HTTP/2 中的多路复用特性以及 gRPC 中的流式传输类型：客户端流、服务器端流和双向流。具体展示了这些流式传输类型在 gRPC 中的实现方式和对应的代码示例。最后，作者分享了对
+  gRPC 流式传输的兴趣和探索，强调了在工作中遇到的挑战和探索的乐趣。
+image: /posts/gRPC-流式传输极简入门指南/HTTP_1.1_vs_HTTP_2.0.png
+slug: GRPC-Streaming-Transmission-Minimalist-Guide
 tags:
 - gRPC
 - .NET
 - Streaming
 - 教程
 title: gRPC 流式传输极简入门指南
-slug: GRPC-Streaming-Transmission-Minimalist-Guide
-image: /posts/gRPC-流式传输极简入门指南/HTTP_1.1_vs_HTTP_2.0.png
 ---
 
 最近一直在研究 gRPC 的 [ServerReflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md)，顾名思义，这是 gRPC 里提供的反射接口，当你需要获取某个接口的描述信息，或者是希望动态调用 gRPC 的时候，这一切就会变得非常有用，如果你经常使用 [gRPC UI](https://github.com/fullstorydev/grpcui/) 这款工具来调试 gRPC 接口，那么，你一定会注意到一件事情，即它要求服务端必须支持 ServerReflection API，而这一点在 ASP.NET Core 中已经得到支持，对此感兴趣的朋友可以参考[官方文档](https://docs.microsoft.com/zh-cn/aspnet/core/grpc/test-tools?view=aspnetcore-6.0#set-up-grpc-reflection)。当然，这并不是我想表达的重点(我就知道)。重点是什么呢？在使用 ServerReflection API 的过程中，我发现它采用了 gRPC 双向流的方式来进行交互，在过去的日子里，我研究过诸如 [WebSocket](https://developer.mozilla.org/zh-CN/docs/Web/API/WebSocket)、[Server-Sent Events](https://developer.mozilla.org/zh-CN/docs/Web/API/Server-sent_events) 等等服务器推送的技术，我意识到这是一个非常接近的技术，所以，今天这篇文章，我们来一起聊聊 gRPC 中的流式传输。

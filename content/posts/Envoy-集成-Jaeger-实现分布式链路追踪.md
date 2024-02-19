@@ -1,10 +1,13 @@
----
+﻿---
 abbrlink: 768684858
 categories:
 - 编程语言
 copyright: true
 date: 2022-01-14 16:46:23
-description: ''
+description: 当将应用架构从单体系统迁移到微服务时，业务逻辑被拆分到不同服务中，导致微服务实际上是不同服务间的互相请求和调用。随着容器/虚拟化技术的发展，传统物理服务器被云服务器或虚拟资源取代，使得分布式环境中的运维和诊断变得复杂。主要的分布式追踪方向有Logging、Metrics和Tracing，其中Tracing涉及Envoy、Jaeger和.NET
+  Core的实现。分布式追踪系统基于Dapper论文，如Zipkin、Jeager、Skywalking、LightStep等系统，采用代码埋点、数据存储和查询展示三个步骤。OpenTracing规范定义了Trace由多个Span组成，而每个Span包含多个Tag。Envoy通过Zipkin或Jeager支持外部追踪服务，实现分布式追踪。通过Envoy的Gateway模式实现请求追踪，结合ASP.NET
+  Core和Jeager实现示例，展示服务调用链的追踪和分析。
+image: /posts/Envoy-集成-Jaeger-实现分布式链路追踪/Jaeger-Span-Model.png
 slug: 768684858
 tags:
 - Envoy
@@ -12,7 +15,6 @@ tags:
 - Tracing
 title: Envoy 集成 Jaeger 实现分布式链路追踪
 toc: true
-image: /posts/Envoy-集成-Jaeger-实现分布式链路追踪/Jaeger-Span-Model.png
 ---
 
 当我们的应用架构，从单体系统演变为微服务时，一个永远不可能回避的现实是，业务逻辑会被拆分到不同的服务中。因此，微服务实际就是不同服务间的互相请求和调用。更重要的是，随着容器/虚拟化技术的发展，传统的物理服务器开始淡出我们的视野，软件被大量地部署在云服务器或者虚拟资源上。在这种情况下，分布式环境中的运维和诊断变得越来越复杂。如果按照功能来划分，目前主要有 Logging、Metrics 和 Tracing 三个方向，如下图所示，可以注意到，这三个方向上彼此都有交叉、重叠的部分。在我过去的博客里，我分享过关于 [ELK](/posts/3687594958) 和 [Prometheus](/posts/1519021197) 的内容，可以粗略地认为，这是对 Logging 和 Metrics 这两个方向的涉猎。所以，这篇文章我想和大家分享是 Tracing，即分布式追踪，本文会结合 Envoy、Jaeger 以及 .NET Core 来实现一个分布式链路追踪的案例，希望能带给大家一点 Amazing 的东西。

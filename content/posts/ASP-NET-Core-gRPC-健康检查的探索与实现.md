@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 1657075397
 categories:
 - 编程语言
 date: 2021-06-01 11:37:36
-description: ''
+description: 本文探索了gRPC服务健康检查的两种实现方式：基于IHostedService和Timer的轮询方案以及基于Consul的服务注册、服务发现、健康检查方案。对于Consul方法，还涉及到客户端负载均衡的原理和实现。此外，还介绍了gRPC客户端负载均衡和gRPC接口测试工具grpcurl和grpcui的使用方法。文章总结了这些内容并鼓励读者参与讨论。
 slug: 1657075397
 tags:
 - gRPC

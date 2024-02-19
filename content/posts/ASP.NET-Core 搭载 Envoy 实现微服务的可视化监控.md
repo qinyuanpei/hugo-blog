@@ -1,10 +1,10 @@
----
+﻿---
 abbrlink: 1519021197
 categories:
 - 编程语言
 copyright: true
 date: 2021-07-10 14:41:24
-description: ''
+description: 本文介绍了如何利用Envoy、Prometheus和Grafana对微服务进行可视化监控。在Envoy的早期版本中，通常通过statsd来采集信息，而在最新版本中，Envoy可以直接输出Prometheus需要的数据格式。使用PromQL查询语言在Grafana中制作自定义图表，可以根据业务场景定制仪表板，并在Prometheus中定义告警规则。这种监控方案适用于集群化环境，帮助监控基础设施和及时发现问题。整体内容涵盖了监控方案的搭建步骤和关键概念，为读者提供了详细指导。
 slug: 1519021197
 tags:
 - 微服务

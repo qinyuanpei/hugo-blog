@@ -1,9 +1,11 @@
----
+﻿---
 abbrlink: 2527231326
 categories:
 - Unity3D
 date: 2015-11-21 14:47:26
-description: ''
+description: 本文介绍了在Unity3D中使用C++编写插件的两种方法：C++ CLR和C++ Native。C++ CLR是托管的C++代码，允许C#调用，适用于Unity3D建立在Mono上的情况；C++
+  Native则是传统的C++动态链接库，通过DllImport在C#中调用非托管的C++代码。详细展示了如何创建项目、编写代码并在Unity3D中调用这些插件的方法，提供了C++
+  CLR和C++ Native的实现示例和最终程序运行效果。
 slug: 2527231326
 tags:
 - Unity3D

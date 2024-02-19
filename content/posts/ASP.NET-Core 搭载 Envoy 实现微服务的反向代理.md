@@ -1,10 +1,11 @@
----
+﻿---
 abbrlink: 3599307335
 categories:
 - 编程语言
 copyright: true
 date: 2021-07-01 22:49:47
-description: ''
+description: 本文介绍了作者对Envoy的学习历程和实践经验。Envoy是一个专为原生云应用设计的开源边缘和服务代理，在大型现代服务导向架构中担任L7代理和通讯总线的角色。文章详细介绍了Envoy的架构、配置文件结构，以及如何通过Docker-Compose实现服务编排来搭建反向代理网关。通过对Listeners、Clusters以及管理Admin等部分的配置，作者展示了如何实现基于Envoy的反向代理功能。文章还提及了与Nginx和Ocelot的比较，以及对Envoy特性的探讨。整体内容涵盖了对Envoy基本概念的介绍和实际操作，为读者提供了一份关于ASP.NET
+  Core搭载Envoy实现微服务反向代理的指南。
 slug: 3599307335
 tags:
 - Envoy

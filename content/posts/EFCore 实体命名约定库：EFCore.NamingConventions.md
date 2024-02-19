@@ -1,10 +1,10 @@
----
+﻿---
 abbrlink: 3219639636
 categories:
 - 数据存储
 copyright: true
 date: 2021-06-17 16:37:11
-description: ''
+description: 在软件开发中，数据库是一个重要话题，有不同的流派，一些人支持手写SQL，另一些喜欢ORM。介绍了EFCore.NamingConventions库，可在EFCore中指定实体命名约束规则，简化属性与数据库表字段映射，提高团队效率。示例展示了使用SnakeCaseNamingConvention生成数据库表字段，强调约定大于配置的重要性。团队应记录数据库规范，以避免配置混乱或新人不了解约定。这个库有利于标准化命名，提高开发效率。
 slug: 3219639636
 tags:
 - EF

@@ -4,7 +4,8 @@ categories:
 - 编程语言
 copyright: true
 date: 2021-08-14 22:13:32
-description: ''
+description: 本文介绍了在团队内推广`Docker Compose`时遇到的容器启动顺序、健康检查和网络模式等问题。针对容器启动顺序，讨论了使用`depends_on`的局限性，并介绍了通过等待目标服务准备就绪的方式来控制容器启动顺序。在健康检查方面，提及了`HEALTHCHECK`选项的运用以及自定义健康检查脚本的使用。对于容器的网络模式，列举了主机、网桥、无网络和容器模式的特点，以及如何在`Docker-Compose`中自定义网络。文章还总结了使用`wait-for-it`和结合`HEALTHCHECK`与`depends_on`来解决容器启动顺序问题的方法，以及对网络模式的选择建议。
+image: https://i.loli.net/2021/08/15/fplPBvICiEOYsKR.jpg
 slug: 172025911
 tags:
 - Docker
@@ -13,7 +14,6 @@ tags:
 - 云原生
 title: 你不可不知的容器编排进阶技巧
 toc: true
-image: https://i.loli.net/2021/08/15/fplPBvICiEOYsKR.jpg
 ---
 
 在团队内推广`Docker Compose`有段时间啦，值得庆幸的是，最终落地效果还不错，因为说到底，大家都不大喜欢，那一长串复杂而枯燥的命令行参数。对我而言，最为重要的一点，团队内使用的技术变得更加透明化、标准化，因为每个微服务的配置信息都写在`docker-compose.yml`文件中，任何人都可以快速地构建出一套可用的服务，而不是每次都要去找具体的某一个人。我想说，这其实是一个信息流如何在团队内流动的问题。也许，我们有文档或者`Wiki`，可新人能不能快速融入其中，这才是检验信息流是否流动的唯一标准。就这样，团队从刀耕火种的`Docker`时代，进入到使用服务编排的`Docker Compose`时代。接下来，能否进入`K8S`甚至是云原生的时代，我终究不得而知。今天我想聊聊，在使用`Docker Compose`的过程中，我们遇到的诸如容器的**启动顺序**、**网络模式**、**健康检查**这类问题，我有一点`Docker Compose`的进阶使用技巧想和大家分享。

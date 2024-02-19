@@ -1,9 +1,12 @@
----
+﻿---
 abbrlink: 2167892202
 categories:
 - 编程语言
 date: 2021-06-20 21:37:36
-description: ''
+description: 在构建以 gRPC 为核心的微服务架构过程中，涉及到了 gRPC 的过滤器、健康检查、重试等内容。随着现代前端框架如React、Angular和Vue的兴起，以及前后端分离的趋势，将
+  gRPC 与前端打通成为一个复杂问题。文章介绍了四种打通 gRPC 和前端的方式：gRPC-Web、gRPC-Gateway、封装 Web API和编写中间件。其中，gRPC-Web提供了通过命令行工具生成强类型客户端代码的方案，而gRPC-Gateway则是将RESTful
+  JSON API转换为gRPC服务的方案。另外，封装 Web API和编写中间件也是解决这一问题的方案。文章最后强调了通过编写中间件的方式，将 gRPC 服务转化为
+  Web API 的思路，并提供了相关的代码示例。
 slug: 2167892202
 tags:
 - gRPC

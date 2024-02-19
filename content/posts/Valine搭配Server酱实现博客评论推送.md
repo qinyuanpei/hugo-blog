@@ -1,9 +1,11 @@
----
+﻿---
 abbrlink: 369095810
 categories:
 - 独立博客
 date: 2019-11-06 18:15:14
-description: ''
+description: Valine 是一个基于 LeanCloud 的评论系统，作为多说等评论系统的替代品，其简洁大方的界面和数据安全性受到博客作者们的欢迎。为了实现评论推送功能，作者结合
+  Valine 和 Server 酱，利用 LeanCloud 的 Hooks 在评论写入后调用 Server 酱接口实现消息推送到微信。采用 Nodejs 编写的代码示例展示了如何实现评论推送功能。作者认为这种方案能满足日常需求，展示了评论推送到手机的效果，并分享了
+  Serverless 部署的便利之处。最后强调了敏捷开发的重要性，提倡基础设施的完善和自动化测试、部署能力。
 slug: 369095810
 tags:
 - Valine

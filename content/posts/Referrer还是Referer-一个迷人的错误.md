@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 2015300310
 categories:
 - 编程语言
 date: 2019-12-04 17:22:33
-description: ''
+description: 本文讲述了作者因拼写错误而怀疑人生的经历，探讨了"Referer"和"Referrer"两个单词的历史来源和区别。文章回顾了HTTP协议中的"Referer"拼写错误的起源，以及后续在HTTP/1.1中的修正说明，介绍了"Referrer-Policy"头部的含义和用途。作者分享了对这个错误拼写的疑惑和困惑，强调在后端应用使用"Referer"，在前端应用使用"Referrer"，并谈及了这种历史错误可能持续存在的可能性。文章以作者的经历为线索，探讨了这一历史错误的迷人之处。
 slug: 2015300310
 tags:
 - HTTP

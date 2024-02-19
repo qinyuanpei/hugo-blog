@@ -1,10 +1,12 @@
----
+﻿---
 abbrlink: 731808750
 categories:
 - 编程语言
 copyright: true
 date: 2021-07-25 09:41:24
-description: ''
+description: 在构建基于 gRPC 的微服务架构中，Envoy 对 gRPC 的支持使得可以通过转码实现对 gRPC 服务的调用，从而将其暴露为外部通信接口。为确保接口安全性，通过
+  Keycloak 搭建 JWT 身份认证功能，使得 Envoy 可以利用 JWKS 对接口调用方进行身份认证。文章介绍了 JWT 和 JWKS 的概念，以及如何利用它们实现容器级别的认证服务，在
+  Envoy 中配置了 JWT 认证过滤器，并说明了如何通过 Keycloak 获取 JWKS 进行 JWT 令牌验证，最终实现了一个通用的认证网关。
 slug: 731808750
 tags:
 - 微服务

@@ -4,7 +4,11 @@ categories:
 - 编程语言
 copyright: true
 date: 2021-08-08 22:49:47
-description: ''
+description: 在构建以 gRPC 为核心的微服务架构中，作者介绍了通过 Envoy 的 gRPC-JSON Transcoder 功能实现将 gRPC
+  服务代理成 JSON API 的方案。通过配置 Envoy 过滤器实现 JSON 和 Protobuf 的转换，需要生成服务描述文件，然后配置 Envoy，即可像调用
+  JSON API 一样调用 gRPC。这种方案已在作者所在公司全面采用，通过 Docker-Compose 编排多个微服务，并通过 Envoy 统一入口。最终实现了
+  gRPC 与 Web 的无缝对接，为消费 gRPC 服务提供便利。
+image: https://grpc.io/img/landing-2.svg
 slug: 3942175942
 tags:
 - Envoy
@@ -13,7 +17,6 @@ tags:
 - RESTful
 title: ASP.NET Core 搭载 Envoy 实现 gRPC 服务代理
 toc: true
-image: https://grpc.io/img/landing-2.svg
 ---
 
 在构建以 gRPC 为核心的微服务架构的过程中，博主曾经写过一篇名为 [ASP.NET Core gRPC 打通前端世界的尝试](https://blog.yuanpei.me/posts/2167892202/) 的文章，主要是希望打通 gRPC 和 前端这样两个异次元世界，因为无论我们构建出怎样高大上的微服务架构，最终落地的时候，我们还是要面对当下前后端分离的浪潮。所以，在那篇文章中，博主向大家介绍过 gRPC-Web 、gRPC-Gateway 、封装 API 、[编写中间件](https://github.com/qinyuanpei/Grpc.Gateway) 这样四种方案。我个人当时更喜欢编写中间件这种方案，甚至后来博主进一步实现了 gRPC 的 “扫描” 功能。

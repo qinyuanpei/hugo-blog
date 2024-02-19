@@ -3,5 +3,6 @@ pytz==2017.3
 requests==2.22.0
 setuptools
 pyyaml
+python-frontmatter
 
 

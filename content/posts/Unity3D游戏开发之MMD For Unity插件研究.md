@@ -3,7 +3,7 @@ abbrlink: 4088452183
 categories:
 - 单机游戏
 date: 2015-04-19 23:31:30
-description: ''
+description: MMD是由樋口优开发的3D动画制作软件，最初旨在让VOCALOID角色模型跳舞，后演变出MikuMikuVoice。尽管开发停止，但MMD仍受欢迎，常见于动漫、游戏领域。制作MMD需要技术，包括建模、绑骨、动作制作等步骤。文章介绍了使用Unity3D插件MMD4Unity将PMD模型与VMD动作文件结合的过程，展示了最终效果。作者分享了在使用插件过程中遇到的问题，如模型转换、贴图对应等。
 slug: 4088452183
 tags:
 - Unity3D

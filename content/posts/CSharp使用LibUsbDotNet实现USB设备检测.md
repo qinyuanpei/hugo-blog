@@ -3,7 +3,8 @@ categories:
 - 编程语言
 copyright: true
 date: 2023-10-18 12:30:47
-description: ''
+description: 本文讨论了工作中围绕硬件展开的问题，以及尝试解决"简单"问题的经历。作者分享了在程序中集成某厂商硬件时遇到的挑战，并介绍了使用WMI和LibUsbDotNet库来检测和处理USB设备的方法。描述了如何通过硬件ID（VID和PID）判断USB设备连接状态，并展示了通过WMI监听USB设备插入和拔出事件的实现。最终强调了编程的本质是不断照顾程序中的问题，以及对代码中的冗余部分进行反思。
+image: /posts/CSharp使用LibUsbDotNet实现USB设备检测/immo-wegmann-HtsVneqf5Fg-unsplash.jpg
 slug: CSharp-Uses-LibUsbDotNet-To-Implement-USB-Device-Detection
 tags:
 - 硬件
@@ -12,7 +13,6 @@ tags:
 - LibUsbDotNet
 title: C# 使用 LibUsbDotNet 实现 USB 设备检测
 toc: true
-image: /posts/CSharp使用LibUsbDotNet实现USB设备检测/immo-wegmann-HtsVneqf5Fg-unsplash.jpg
 ---
 
 国庆节回来后的工作内容，基本都在围绕着各种各样的硬件展开，这无疑让本就漫长的 “**七天班**” ，更加平添了三分枯燥，我甚至在不知不觉中学会了，如何给打印机装上不同尺寸的纸张。华为的 **Mate 60** 发布以后，人群中此起彼伏地传出 “**遥遥领先**” 的声音，大概人类总是热衷于评价那些不甚了解的事物。这个现象到了工作中就会变成，总有某些人觉得某件事情特别简单。其实。一切你认为“**简单**”的东西，背后一定有无数的人们上下求索、苦心孤诣，就像计算机从早期的埃尼阿克(**ENIAC**)发展到今天的智能手机，你能使用它并不代表它就“**简单**”，人还是应该对为止的领域保持敬畏和谦逊。回到这篇文章，今天我想和大家聊一聊，我为了解决那些“**简单**”的问题而做出的尝试。本期的故事主角是我们最熟悉不过的 USB 设备，有道是 “**千古兴亡多少事**”，且听我娓娓道来。

@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 1071063696
 categories:
 - 编程语言
 date: 2019-07-04 08:56:28
-description: ''
+description: Payne在博客中分享了对XML与JSON在数据交换中的使用背景与困扰，探讨了HTTP异步化方案中的实际场景与解决方法。他介绍了Hangfire作为Quartz的替代品的使用方法和可扩展性，展示了通过HTTP调用的HttpJob的实现方式，以及如何使用Hangfire进行任务调度和记录日志。整体内容围绕着异步化处理、后台任务系统的应用与扩展展开，为读者提供了一些实践参考和技术思路。
 slug: 1071063696
 tags:
 - .NET Core

@@ -1,9 +1,11 @@
----
+﻿---
 abbrlink: 1700650235
 categories:
 - 编程语言
 date: 2016-06-11 15:01:35
-description: ''
+description: 本文介绍了如何在自己的 Web 服务器上实现 GET 和 POST 请求。GET 请求通过 URL 传递参数，而 POST 请求则将参数放在消息体中，相比
+  GET 请求更安全且无参数长度限制。实现过程包括解析请求报文中的参数，针对不同请求类型做相应处理。提供了代码示例展示如何在服务器端处理 GET 和 POST 请求，以及在
+  Unity 客户端使用 WWW 类发送 GET 和 POST 请求。最后展示了一个简单实例并给出了运行结果。
 slug: 1700650235
 tags:
 - HTTP

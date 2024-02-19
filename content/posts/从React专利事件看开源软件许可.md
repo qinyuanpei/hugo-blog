@@ -3,7 +3,7 @@ abbrlink: 1166840790
 categories:
 - 生活感悟
 date: 2017-09-20 23:06:45
-description: ''
+description: Payne在其博客中讨论了React专利事件引发的开源软件许可和商业化之间的平衡问题。他回顾了React专利事件的发展历程，指出了主流开源软件许可证（如GPL、BSD、MIT、MPL、Apache和LGPL）的特点。他认为React专利事件受到关注的原因在于专利许可的不对等性和对开源社区的负面影响。最终，Facebook宣布将React的开源协议修改为MIT，引发了社区的一次胜利。Payne鼓励人们在选择开源软件许可证时找到商业化和开源之间的平衡点，并强调了技术的不断变化和努力打好基础的重要性。
 slug: 1166840790
 tags:
 - 前端

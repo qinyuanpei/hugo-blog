@@ -3,7 +3,8 @@ categories:
 - 编程语言
 copyright: true
 date: 2022-11-15 12:49:47
-description: ''
+description: 这篇文章介绍了作者在企业级应用项目中接触到的面向企业和用户的项目区别，重点讨论了为什么需要LDAP认证以及如何在Nginx和Apache服务器上集成LDAP认证。在具体操作中，展示了如何在Nginx中安装nginx-auth-ldap模块以及在Apache中使用mod-authnz-ldap模块实现LDAP认证，并简要介绍了在后端实现Basic认证的流程。文章最后总结了Nginx和Apache在LDAP认证方面的不同之处，并对企业级应用的认证方案提出了讨论。
+image: /posts/为你的服务器集成-LDAP-认证/fantasy-ga56af2520_1280.jpg
 slug: Integrate-LDAP-Authentication-For-Your-Server
 tags:
 - Apache
@@ -12,7 +13,6 @@ tags:
 - 认证
 title: 为你的服务器集成 LDAP 认证
 toc: true
-image: /posts/为你的服务器集成-LDAP-认证/fantasy-ga56af2520_1280.jpg
 ---
 
 回顾我这些年的工作经历，面向企业(2B)和面向用户(2C)的项目都曾接触过。我个人觉得，面向企业的项目更注重业务，参与决策的人数多、周期长，目的是为企业提供生产经营价值，如缩减成本、提升效率等等，而面向用户的项目更注重体验，参与决策的人数少、周期短，目的是为消费者提供更多的使用价值，本质上是为了圈揽用户和抢夺流量。我在参与这些项目的过程中发现，企业级应用的研发更注重与第三方软件如 SAP、金蝶、用友、ERP 等等的整合，因此，类似单点登录、数据同步这样的需求非常普遍。每当这个时候，我就不由地想起一位前辈。

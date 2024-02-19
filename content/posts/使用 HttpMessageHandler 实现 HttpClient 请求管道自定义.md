@@ -1,10 +1,10 @@
----
+﻿---
 abbrlink: 2070070822
 categories:
 - 编程语言
 copyright: true
 date: 2021-04-28 20:25:47
-description: ''
+description: 博客园上介绍了利用 HttpMessageHandler 实现 Http 请求模拟的方案，探讨了HttpMessageHandler在Http请求管道中的作用和实现方式。讨论了HttpMessageHandler与DelegatingHandler的区别，以及如何自定义请求管道并展示了日志记录、请求重试和接口模拟的应用。通过示例展示了如何使用HttpMessageHandler实现这些功能，最后总结了HttpMessageHandler在扩展性、认证头处理等方面的应用。整体内容深入浅出地介绍了HttpMessageHandler的功能和实践。
 slug: 2070070822
 tags:
 - HttpClient

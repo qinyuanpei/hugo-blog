@@ -2,7 +2,9 @@
 categories:
 - 编程语言
 date: 2022-08-23 12:52:10
-description: ''
+description: 本文介绍了在项目中使用 `OnMethodBoundaryAspect` 基类记录方法日志的经历，以及澄清了之前对项目使用的是 PostSharp
+  的误解。讨论了面向切面编程（AOP）中的静态编织和动态代理，以及在.NET中使用Fody进行静态编织的实践。展示了使用Fody插件实现静态织入功能的过程，包括编写插件、修改IL代码等细节。通过自定义插件HelloWorld.Fody展示了静态编织的原理和效果。最后总结了静态编织的重要性以及通过IL代码操作插件的实现方式。整体内容涵盖了AOP、Fody插件、IL代码修改等方面的知识。
+image: /posts/使用-Fody-实现-.NET-的静态织入/weaving-loom-g2d21b4b53_1280.jpg
 slug: Implement-Static-Weaving-Of-Dot-NET-Via-Fody
 tags:
 - Fody
@@ -10,7 +12,6 @@ tags:
 - AOP
 - 静态编织
 title: 使用 Fody 实现 .NET 的静态编织
-image: /posts/使用-Fody-实现-.NET-的静态织入/weaving-loom-g2d21b4b53_1280.jpg
 ---
 
 {{<meting server="netease" type="song" id="28244941">}}

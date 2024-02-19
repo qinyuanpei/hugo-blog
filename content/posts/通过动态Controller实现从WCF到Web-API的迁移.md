@@ -1,9 +1,12 @@
----
+﻿---
 abbrlink: 4236649
 categories:
 - 编程语言
 date: 2019-06-08 13:48:41
-description: ''
+description: 这篇文章介绍了如何通过 Castle 的动态代理来实现将 WCF 接口迁移到 Web API 上的过程。通过组合类和接口，借助 Castle
+  的 Dynamic Proxy 实现动态生成 Controller，替换默认组件以实现 WCF 接口通过 Web API 访问。文章还涵盖了 ASP.NET MVC
+  的原理、自定义组件的实现、容器注册替换、HTTP 动词支持和接口返回值优化等内容。最后提到了在 ASP.NET Core 中的 POCOController 特性，使得将任意类作为
+  Controller 更加简单。文章内容详实，为实现 WCF 到 Web API 的迁移提供了指导和思路。
 slug: 4236649
 tags:
 - RESTful

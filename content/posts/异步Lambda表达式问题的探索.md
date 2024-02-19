@@ -1,9 +1,10 @@
----
+﻿---
 abbrlink: 187480982
 categories:
 - 编程语言
 date: 2017-04-15 21:10:47
-description: ''
+description: Payne在博客中讨论了.NET中异步Lambda表达式的问题，强调架构设计应由一线开发人员提炼和抽象，指出异步方法在ICommand接口中的历史遗留问题。他还探讨了异步编程中的异常处理机制，指出使用async
+  void容易导致未处理异常终止程序。最后总结指出异步委托在IL层面无差别，建议使用Func而非Action来生成异步方法，对待async void应注意异常处理，强调处理各种异常的必要性。
 slug: 187480982
 tags:
 - Lambda

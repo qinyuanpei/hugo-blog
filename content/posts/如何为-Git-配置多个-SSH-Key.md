@@ -3,7 +3,10 @@ categories:
 - 编程语言
 copyright: true
 date: 2024-01-30 12:30:47
-description: ''
+description: 电视剧《繁花》中的情节展示了汪小姐和宝总之间的关系，以“排骨是排骨，年糕是年糕”来表达分道扬镳后的境况。文章讨论了人们需要亲密关系和界限感，类比工作与生活的关系。针对程序员如何为
+  Git 配置多个 SSH Key，介绍了生成 SSH Key、配置文件和添加公钥的步骤，以及在不同平台上验证和使用的方法，最后提及了在 SourceTree 中配置多个
+  SSH Key 可能带来的身份混淆问题和解决建议。
+image: /posts/如何为-Git-配置多个-SSH-Key/GIT-Branch-and-its-Operations.png
 slug: How-To-Configure-Multiple-SSH-Keys-For-Git
 tags:
 - Git
@@ -12,7 +15,6 @@ tags:
 - Bash
 title: 如何为 Git 配置多个 SSH Key
 toc: true
-image: /posts/如何为-Git-配置多个-SSH-Key/GIT-Branch-and-its-Operations.png
 ---
 
 在电视剧《繁花》里有这样一个情节，汪小姐和宝总在一起时喜欢吃排骨年糕，后来两人分道扬镳，汪小姐用 **“从此想，排骨是排骨，年糕是年糕”** 这句对白来概括两个人的关系。不得不说，这句伤感中带着点文艺的台词，在受到剧粉及书迷追捧的同时，更是戳中了无数吃货的心。排骨年糕好不好吃，我不晓得。我唯一知道的事情是，人们需要亲密关系，可人们同样需要界限和距离感，排骨和年糕，就像是工作和生活，当我们意识到 **“工作是工作，生活是生活”** 的时候，或许我们就能达到真正的 **“Work-Life Balance”**。那么，对于程序员来说，工作和生活的界限在哪里呢？我想，这一切或许可以从为 Git 配置多个 SSH Key 说起。

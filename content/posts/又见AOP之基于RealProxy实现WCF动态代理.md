@@ -1,9 +1,10 @@
----
+﻿---
 abbrlink: 2954591764
 categories:
 - 编程语言
 date: 2019-05-10 16:27:50
-description: ''
+description: 最近在研究如何同步数据在Mongodb和ElasticSearch之间，发现历史遗留问题涉及WCF动态代理的实现。通过RealProxy实现WCF动态代理可以解决手写代理类的问题，同时介绍了Castle.DynamicProxy的应用，以及迁移到.NET
+  Core的思路。动态代理通过AOP的方式隐藏了底层细节，实现了调用者无需关心ChannelFactory等细节，简化了WCF服务调用的过程。通过动态代理，实现了一次编写，多处运行的目的，提高了代码复用性和可维护性。
 slug: 2954591764
 tags:
 - AOP

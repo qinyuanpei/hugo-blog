@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 3568552646
 categories:
 - 编程语言
 date: 2016-11-18 20:23:44
-description: ''
+description: 最近微软推出了 Visual Studio For Mac，展示了微软技术栈向开源和跨平台发展的努力。文章介绍了在Linux下使用Mono和VSCode构建轻量级IDE的过程，展示了在VSCode中编译和调试代码的步骤。由于Mono-Debug插件不支持Windows平台，作者转向Linux平台，并成功在VSCode中运行C#程序。文章强调了在不同平台的探索中不设限，展望了未来研究VSCode调试技巧和.NETCore相关内容的计划。
 slug: 3568552646
 tags:
 - Mono

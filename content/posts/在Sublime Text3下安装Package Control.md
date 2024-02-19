@@ -4,7 +4,9 @@ categories:
 - 开发工具
 comment: true
 date: 2015-04-17 12:54:41
-description: ''
+description: Sublime Text是一款优秀的代码编辑器，具有强大的扩展性，支持通过插件扩展功能。安装Package Control是扩展功能的关键，而在Sublime
+  Text2和Sublime Text3中安装Package Control的方式有所不同。在Sublime Text2中可通过控制台输入特定代码完成，而在Sublime
+  Text3中则需要使用更新后的代码。当自动安装出现问题时，也可手动下载安装Package Control。通过这些步骤，用户可以轻松在Sublime Text中享受更多功能。
 slug: 570137885
 tags:
 - Sublime

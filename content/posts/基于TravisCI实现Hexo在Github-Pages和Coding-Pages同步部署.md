@@ -1,9 +1,10 @@
----
+﻿---
 abbrlink: 1113828794
 categories:
 - 独立博客
 date: 2018-02-27 10:45:04
-description: ''
+description: Payne在博客中分享了如何通过Travis CI实现Hexo在Github和Coding的同步部署，介绍了Coding Pages作为备份镜像的重要性，以及使用Token授权Travis
+  CI向Coding推送内容的方法。探讨了三种思路解决同步部署的问题，最终通过设置Token并修改.travis.yml文件，成功实现在两个平台的自动化部署。文章提供了详细配置和展示链接，鼓励读者尝试，展示了Coding上的提交历史和博客镜像链接。
 slug: 1113828794
 tags:
 - CI

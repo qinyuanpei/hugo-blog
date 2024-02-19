@@ -1,10 +1,11 @@
----
+﻿---
 categories:
 - 编程语言
 copyright: true
 date: 2022-11-24 12:30:47
-description: ''
-slug:  Integrate-Crontab-Scheduled-Tasks-Inside-Docker-Containers
+description: 本文介绍了在Linux中使用Crontab执行定时任务的基础知识，包括Crontab文件的格式和示例，以及如何通过编写脚本和设置Crontab定时任务来解决Kerberos票据过期的问题。作者还分享了在Docker容器内集成Crontab定时任务的方法，包括如何编辑Crontab文件、查看定时任务日志、处理环境变量等技巧。最后，提供了相关链接供进一步学习参考。
+image: /posts/在-Docker-容器内集成-Crontab-定时任务/russian-gd53d0982f_1280.jpg
+slug: Integrate-Crontab-Scheduled-Tasks-Inside-Docker-Containers
 tags:
 - 容器
 - Linux
@@ -12,7 +13,6 @@ tags:
 - Bash
 title: 在 Docker 容器内集成 Crontab 定时任务
 toc: true
-image: /posts/在-Docker-容器内集成-Crontab-定时任务/russian-gd53d0982f_1280.jpg
 ---
 
 有时候，我们需要在容器内执行某种定时任务。譬如，`Kerberos` 客户端从 `KDC` 中获取到的 `TGT` 默认有效期为 10 个小时，一旦这个票据失效，我们将无法使用单点登录功能。此时，我们就需要一个定时任务来定时刷新票据。此前，博主为大家介绍过 [Quartz](https://www.quartz-scheduler.net/) 和 [Hangfire](https://www.hangfire.io/overview.html) 这样的定时任务系统，而对于 Linux 来说，其内置的 [crontab](https://linuxhandbook.com/crontab/) 是比以上两种方案更加轻量级的一种方案，它可以定时地去执行 `Linux` 中的命令或者是脚本。对应到 `Kerberos` 的这个例子里面，从 KDC 申请一个新的票据，我们只需要使用 `kinit` 这个命令即可。因此，在今天这篇博客里，我想和大家分享一下，如何在 Docker 容器内集成 Crontab 定时任务，姑且算是在探索 Kerberos 过程中的无心插柳，Kerberos 认证这个话题博主还需要再消化一下，请大家拭目以待，哈哈！
@@ -186,8 +186,3 @@ env >> /etc/default/locale
 * [How to Setup Rsyslog Server on Debian 11 (Bullseye)](https://www.linuxtechi.com/setup-rsyslog-server-on-debian/)
 * [Understanding Crontab in Linux With Examples](https://linuxhandbook.com/crontab/)
 * [What Is Cron Job](https://www.javatpoint.com/what-is-cron-job)
-
-
-
-
-

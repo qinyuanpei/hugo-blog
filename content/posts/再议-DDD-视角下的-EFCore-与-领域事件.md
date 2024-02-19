@@ -3,7 +3,9 @@ categories:
 - 编程语言
 copyright: true
 date: 2022-05-28 16:37:47
-description: ''
+description: 在这篇文章中，作者分享了在工作中使用事件/消息驱动业务的经历和思考。作者回顾了过去在实现数据库审计、数据同步等问题时的经历，并逐步接触了领域驱动设计（DDD）中的领域事件概念。文章重点讨论了如何通过在实体类中添加领域事件属性，并在DbContext的SaveChanges方法中分发事件来实现延迟执行消息发布的方案。作者还探讨了使用EntityFramework的SaveChanges
+  Events特性和拦截器来处理领域事件的方法。最后，作者分享了对软件开发和业务模式的反思，以及对DDD在当前业务中的适用性的疑问。文章涵盖了事件驱动业务模式、DDD理念、数据库审计、消息队列等内容，展现了作者在技术实践和思考中的成长与思考。
+image: /posts/再议-DDD-视角下的-EFCore-与-领域事件/Domain-Model-Ordering-MicroService.png
 slug: Review-EFCore-And-Domain-Events-From-DDD-Perspective
 tags:
 - DDD
@@ -12,8 +14,8 @@ tags:
 - Kafka
 title: 再议 DDD 视角下的 EFCore 与 领域事件
 toc: true
-image: /posts/再议-DDD-视角下的-EFCore-与-领域事件/Domain-Model-Ordering-MicroService.png
 ---
+
 在上家公司工作的时候，我们有部分业务是采用事件/消息驱动的形式。虽然，当时博主还没能用上诸如 `Kafka`、`RabbitMQ` 这样的消息中间件，可数据库 + `Quartz` 这样一个堪称“简陋”的组合，完全不影响博主对事件/消息驱动这种思想的启蒙。后来，在实现[数据库审计](/posts/1289244227/)、[数据同步](/posts/580694660/) 等问题的时候，更是从实践层面上加深了这一印象。再后来，博主陆陆续续地接触了 [DDD](https://www.jdon.com/ddd.html)，其中 [领域事件](https://www.jdon.com/event.html) 的概念，第一次让博主意识到，原来事件可以和聚合根产生某种联系。退一步讲，即使你没有接触过 `DDD`，你只要听说过 [MediatR](https://github.com/jbogard/MediatR) 或者 [CQRS](https://docs.microsoft.com/zh-cn/azure/architecture/patterns/cqrs)，相信你立马就能明白我在说什么。最近的一次 Code Review，这个问题再次浮出水面，一个人在面对过去的时候，会非常容易生出物是人非的感慨，代码和人类最大的区别就在于，代码可以永远以某种永恒的形式存在，就像很多年后我打开高中时候用 Visual Basic 编写的程序，它依然可以像我第一次看见它一样运行。所以，一直在变化的大抵是我，无非是人类更擅长自我说服，它让你相信你一直“不忘初心”。因此，今天我想再聊聊 `DDD` 视角下的 `EFCore` 与 领域事件。
 
 # 似曾相识燕归来

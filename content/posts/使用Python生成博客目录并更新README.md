@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 1329254441
 categories:
 - 独立博客
 date: 2018-02-23 09:32:45
-description: ''
+description: Payne欢迎读者关注他的博客，他介绍了如何利用TravisCI进行持续集成服务，简化博客更新部署流程。他想为博客生成目录并自动更新README文件，以提供良好的文档导航。通过解析hexo-generator-json-content插件生成的content.json文件，他用Python编写了脚本来提取文章信息并生成Markdown文件。最终，他调整了博客更新流程，手动执行Python脚本生成README.md文件，并更新了TravisCI的脚本文件。他讨论了将Python脚本执行过程合并到hexo生成步骤中的可能性，并提出了两种方案，倾向于通过Locals变量生成Markdown文档。最后，他分享了相关脚本的GitHub链接。
 slug: 1329254441
 tags:
 - Python

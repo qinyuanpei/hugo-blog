@@ -1,10 +1,11 @@
----
+﻿---
 abbrlink: 118272597
 categories:
 - 编程语言
 copyright: true
 date: 2020-05-08 12:27:11
-description: ''
+description: Lambda表达式和LINQ在.NET开发中扮演重要角色，Lambda是匿名委托的变种，而LINQ则封装了Lambda。介绍了System.Linq.Dynamic.Core库，使用Dynamic
+  Linq实现动态查询条件。展示了通过ParseLambda方法将字符串转换为委托，以及通过表达式树构建Lambda表达式的方法。讨论了通过SearchParameters实现灵活查询条件，结合ORM操作数据。最后强调了表达式树和Lambda表达式本质相同，最终都转化为Predict<T>委托。整体内容围绕动态创建Lambda表达式展开，实际解决了查询问题。
 slug: 118272597
 tags:
 - Linq

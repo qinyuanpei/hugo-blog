@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 3291578070
 categories:
 - 编程语言
 date: 2018-03-21 19:35:40
-description: ''
+description: 最近在学习一个项目代码，发现项目整体难度中等，涉及完整的前后端流程，发现一些有趣的设计，如采用严谨的错误码、OAuth和JWT实现API资源访问控制以及在JavaScript中使用修饰器特性记录日志等。作者决定通过Unity框架简化应用程序的异常处理和日志记录流程，避免项目中滥用异常处理和重复代码的现象。讨论了Unity框架与AOP，介绍了Unity中的三种拦截器及其应用场景，展示了如何实现LogHandler和ExceptionHandler组件，以及如何使用这些组件。最后，强调了使用AOP机制对项目的影响和依赖注入的重要性。
 slug: 3291578070
 tags:
 - AOP

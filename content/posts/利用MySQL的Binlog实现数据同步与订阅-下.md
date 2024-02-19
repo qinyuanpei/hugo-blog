@@ -1,10 +1,12 @@
----
+﻿---
 abbrlink: 3424138425
 categories:
 - 数据存储
 copyright: true
 date: 2020-07-31 12:01:14
-description: ''
+description: 这篇博客总结了关于利用MySQL的Binlog实现数据同步与订阅的过程。通过Python-Mysql-Replication项目读取Binlog并解析，然后将其发布到EventBus中，在.NET
+  Core中提供Web API接口实现发布功能。针对不同事件编写对应的EventHandler来订阅这些Binlog，实现事件驱动。介绍了自定义序列化器解决JSON序列化问题，以及注册EventHandler和EventBus的步骤。最终实现了数据同步与订阅的想法，展示了Python读取Binlog、.NET
+  Core消费Binlog和RabbitMQ Dashboard的效果。整个过程中，通过Binlog和EventBus实现了事件系统的统一调度，简化了事件处理流程，提高系统接口的吞吐性能。
 slug: 3424138425
 tags:
 - Binlog

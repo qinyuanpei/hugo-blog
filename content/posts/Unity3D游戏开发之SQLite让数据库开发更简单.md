@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 582264328
 categories:
 - 游戏开发
 date: 2015-07-09 09:47:06
-description: ''
+description: 本文介绍了在Unity3D游戏开发中使用SQLite数据库的相关内容。SQLite是一款轻型的关系型数据库管理系统，适用于嵌入式设备和各种编程语言。文章详细介绍了SQLite的特性、选择原因，以及在Unity3D中使用SQLite的方法和示例代码。同时分享了一个SQLite辅助类SQLiteHelper.cs的代码，实现了数据库和数据表的创建以及基本操作。最后提供了不同平台上数据库存储路径的相关信息。
 slug: 582264328
 tags:
 - Unity3D

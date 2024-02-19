@@ -1,9 +1,12 @@
----
+﻿---
 abbrlink: 2799263488
 categories:
 - 游戏开发
 date: 2015-04-02 20:37:52
-description: ''
+description: 本文介绍了如何通过反编译 Unity3D 的 AssetBundle 来提取游戏资源，并强调了保护游戏资源的重要性。AssetBundle
+  是 Unity3D 中用于资源打包和动态加载的解决方法，有助于减少游戏容量。作者以《轩辕剑 6 外传穹之扉》和《新仙剑 OL》为例，探讨了 AssetBundle
+  的应用和注意事项，包括打包和加载 AssetBundle 的方法以及通过反编译观察游戏资源。最后总结了在使用 AssetBundle 时应注意的几点：打包多个资源到一个
+  AssetBundle 中、分割预制件、动态加载场景等。文章强调了细致研究 AssetBundle 打包的重要性。
 slug: 2799263488
 tags:
 - Unity3D

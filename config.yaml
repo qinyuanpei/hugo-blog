@@ -57,6 +57,7 @@ params:
         toc: true
         readingTime: true
         sharejs: false
+        showSummary: false
         reward: 
             enabled: true
             providers:

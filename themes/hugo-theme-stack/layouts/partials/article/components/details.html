@@ -14,11 +14,13 @@
             {{- .Title -}}
         </a>
     </h2>
-
+    
+    {{ if .Site.Params.article.showSummary }}
     {{ with .Params.description }}
     <h3 class="article-subtitle">
         {{ . }}
     </h3>
+    {{ end }}
     {{ end }}
 
     {{ if or (not .Date.IsZero) (.Site.Params.article.readingTime) }}

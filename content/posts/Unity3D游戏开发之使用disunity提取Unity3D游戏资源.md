@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 1082185388
 categories:
 - 单机游戏
 date: 2015-04-03 13:29:18
-description: ''
+description: 秦元培介绍了使用 disunity 工具提取 Unity3D 游戏素材的流程。准备工作包括安装 disunity、Unity3D、Blender或3DsMax以及Java环境。通过编译disunity和使用各种命令如dump、extract等，可以提取模型和贴图文件。示例中提取了《新仙剑OL》和《雨血前传:蜃楼》的素材，展示了提取模型、贴图以及解析assets文件的过程。总结指出不同游戏资源配置不同，建议从resources.assets文件入手，同时强调获取游戏数据配置方案对素材提取有帮助，提及动态加载资源最好用配置表管理，以及修改本地AssetBundle文件可实现游戏数据更改。
 slug: 1082185388
 tags:
 - 穹之扉

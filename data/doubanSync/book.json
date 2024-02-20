@@ -1,5 +1,95 @@
 [
 	{
+		"comment": "在表达感受/愤怒、请求帮助、区分观察和评论……这几个方面比较认同，可惜主流的情商文化，基本都在琢磨怎么让别人舒服，要求一个人情绪稳定，泰山崩于前而色不变，而从来不会主张合理地表达愤怒，本质上依然是约束自我的某种方法论。",
+		"rating": {
+			"count": 1,
+			"max": 5,
+			"star_count": 4,
+			"value": 4
+		},
+		"sharing_text": "我的评分：★★★★ 在表达感受/愤怒、请求帮助、区分观察和评论……这几个方面比较认同，可惜主流的情商文化，基本都在琢磨怎么让别人舒服，要求一个人情绪稳定，泰山崩于前而色不变，而从来不会主张合理地表达愤怒，本质上依然是约束自我的某种方法论。 https://book.douban.com/subject/3533221/ 来自@豆瓣App",
+		"sharing_url": "https://www.douban.com/doubanapp/dispatch?uri=/subject/3533221/interest/4099253007",
+		"tags": [],
+		"charts": [],
+		"platforms": [],
+		"vote_count": 0,
+		"create_time": "2024-02-20 08:08:23",
+		"status": "done",
+		"id": 4099253007,
+		"is_private": false,
+		"subject": {
+			"rating": {
+				"count": 66784,
+				"max": 10,
+				"star_count": 4,
+				"value": 8.4
+			},
+			"controversy_reason": "",
+			"pubdate": [
+				"2009-1"
+			],
+			"pic": {
+				"large": "https://img3.doubanio.com/view/subject/l/public/s29710777.jpg",
+				"normal": "https://qnmob3.doubanio.com/view/subject/m/public/s29710777.jpg?imageView2/2/q/80/w/200/h/300/format/jpg/sharpen/1"
+			},
+			"honor_infos": [
+				{
+					"kind": "book",
+					"uri": "douban://douban.com/subject_collection/ECCAKJ37I?type=rank&category=book&rank_type=topn_book",
+					"rank": 9,
+					"title": "豆瓣热门心理图书TOP10"
+				}
+			],
+			"other_versions_count": 12,
+			"is_show": false,
+			"vendor_icons": [],
+			"card_subtitle": "[美] 马歇尔·卢森堡 / 2009 / 华夏出版社",
+			"book_subtitle": "",
+			"id": "3533221",
+			"author": [
+				"[美] 马歇尔·卢森堡"
+			],
+			"is_released": true,
+			"vendor_original_price": "",
+			"color_scheme": {
+				"is_dark": true,
+				"primary_color_light": "a5242b",
+				"_base_color": [
+					0.9913978494623655,
+					0.7788944723618091,
+					0.7803921568627451
+				],
+				"secondary_color": "f9f4f5",
+				"_avg_color": [
+					0.9897959183673469,
+					0.28823529411764703,
+					0.6666666666666666
+				],
+				"primary_color_dark": "7f1c21"
+			},
+			"type": "book",
+			"cover_url": "https://dou.img.lithub.cc/book/3533221.jpg",
+			"min_sale_price": null,
+			"press": [
+				"华夏出版社"
+			],
+			"pages": [
+				"190"
+			],
+			"sharing_url": "https://book.douban.com/subject/3533221/",
+			"url": "https://book.douban.com/subject/3533221/",
+			"title": "非暴力沟通",
+			"uri": "douban://douban.com/book/3533221",
+			"subtype": "book",
+			"intro": "作为一个遵纪守法的好人，也许我们从来没有想过和“暴力”扯上关系。不过如果稍微留意一下现实生活中的谈话方式，并且用心体会各种谈话方式给我们的不同感受，我们一定会发现，有些话的确伤人！言语上的指责、嘲讽、否定、说教以及任意打断、拒不回应、随意出口的评价和结论给我们带来的情感和精神上的创伤，甚至比肉体的伤害更加令人痛苦。这些无心或有意的语言暴力让人与人变得冷漠、隔阂、敌视",
+			"buy_more_uri": "",
+			"null_rating_reason": "",
+			"article_intros": [],
+			"vendor_sale_price": "",
+			"has_ebook": false
+		}
+	},
+	{
 		"comment": "比《圆圈的正义》要晦涩、严肃一点",
 		"rating": {
 			"count": 1,
@@ -19,7 +109,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 1356,
+				"count": 1367,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.6
@@ -113,7 +203,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 183969,
+				"count": 184021,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.7
@@ -208,8 +298,8 @@
 			"rating": {
 				"count": 44,
 				"max": 10,
-				"star_count": 4,
-				"value": 7.8
+				"star_count": 3.5,
+				"value": 7.4
 			},
 			"controversy_reason": "",
 			"pubdate": [],
@@ -460,7 +550,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 750,
+				"count": 751,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.3
@@ -898,7 +988,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 5970,
+				"count": 5974,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.7
@@ -1328,7 +1418,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 4449,
+				"count": 4450,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -1500,7 +1590,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 2913,
+				"count": 2915,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.8
@@ -1593,7 +1683,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 24376,
+				"count": 24390,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -1688,7 +1778,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 7679,
+				"count": 7680,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.5
@@ -1864,7 +1954,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 7684,
+				"count": 7689,
 				"max": 10,
 				"star_count": 4,
 				"value": 8
@@ -1951,7 +2041,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 19381,
+				"count": 19389,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.1
@@ -2036,7 +2126,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 37586,
+				"count": 37600,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9
@@ -2485,7 +2575,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 16050,
+				"count": 16051,
 				"max": 10,
 				"star_count": 3.5,
 				"value": 7.2
@@ -2570,7 +2660,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 75676,
+				"count": 75723,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -2751,7 +2841,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 89973,
+				"count": 89992,
 				"max": 10,
 				"star_count": 4,
 				"value": 8
@@ -3002,7 +3092,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 12811,
+				"count": 12812,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.6
@@ -3087,7 +3177,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 19571,
+				"count": 19573,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.2
@@ -3174,7 +3264,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 1349,
+				"count": 1350,
 				"max": 10,
 				"star_count": 3.5,
 				"value": 7.3
@@ -3349,7 +3439,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 18588,
+				"count": 18590,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -3715,7 +3805,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 1346,
+				"count": 1347,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.9
@@ -3810,7 +3900,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 2804,
+				"count": 2805,
 				"max": 10,
 				"star_count": 4,
 				"value": 8
@@ -4085,7 +4175,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 791,
+				"count": 792,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.4
@@ -4354,7 +4444,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 9108,
+				"count": 9109,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.7
@@ -4543,7 +4633,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 3157,
+				"count": 3158,
 				"max": 10,
 				"star_count": 3,
 				"value": 6.1
@@ -5012,7 +5102,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 2038,
+				"count": 2039,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.1
@@ -5132,7 +5222,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 57124,
+				"count": 57126,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -5422,7 +5512,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 1236,
+				"count": 1237,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.2
@@ -5710,7 +5800,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 7994,
+				"count": 7995,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.2
@@ -6361,7 +6451,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 123393,
+				"count": 123402,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.6
@@ -7216,7 +7306,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 13180,
+				"count": 13181,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9
@@ -7306,7 +7396,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 20659,
+				"count": 20660,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.7
@@ -7412,7 +7502,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 21797,
+				"count": 21799,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -7602,7 +7692,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 3358,
+				"count": 3359,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.5
@@ -7698,7 +7788,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 32481,
+				"count": 32490,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.7
@@ -7795,7 +7885,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 54364,
+				"count": 54370,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.3
@@ -8451,7 +8541,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 18002,
+				"count": 18003,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.8
@@ -8555,7 +8645,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 16133,
+				"count": 16136,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.6
@@ -8947,7 +9037,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 39783,
+				"count": 39785,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.3
@@ -9410,7 +9500,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 106422,
+				"count": 106431,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.7
@@ -9502,7 +9592,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 5905,
+				"count": 5906,
 				"max": 10,
 				"star_count": 4,
 				"value": 8
@@ -9787,7 +9877,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 29348,
+				"count": 29351,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.5
@@ -9890,7 +9980,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 25323,
+				"count": 25329,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.5
@@ -10342,7 +10432,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 120728,
+				"count": 120737,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.5
@@ -10889,7 +10979,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 58696,
+				"count": 58713,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -11258,7 +11348,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 49925,
+				"count": 49932,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9
@@ -11714,7 +11804,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 504912,
+				"count": 504925,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -11808,7 +11898,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 142659,
+				"count": 142663,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.5
@@ -12523,7 +12613,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 33466,
+				"count": 33468,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9
@@ -12710,7 +12800,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 123999,
+				"count": 124001,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.5
@@ -12895,7 +12985,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 10538,
+				"count": 10539,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.8
@@ -12988,7 +13078,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 10610,
+				"count": 10611,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.3
@@ -13084,7 +13174,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 467278,
+				"count": 467343,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.2
@@ -13269,7 +13359,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 790203,
+				"count": 790238,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -13452,7 +13542,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 20414,
+				"count": 20415,
 				"max": 10,
 				"star_count": 4,
 				"value": 8
@@ -13719,7 +13809,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 197406,
+				"count": 197425,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -13984,7 +14074,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 30635,
+				"count": 30637,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -14174,7 +14264,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 749988,
+				"count": 750050,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -14444,7 +14534,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 78645,
+				"count": 78649,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.1
@@ -14541,10 +14631,10 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 60671,
+				"count": 60676,
 				"max": 10,
 				"star_count": 4.5,
-				"value": 8.8
+				"value": 8.7
 			},
 			"controversy_reason": "",
 			"pubdate": [
@@ -14639,7 +14729,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 54853,
+				"count": 54857,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9
@@ -14732,7 +14822,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 48770,
+				"count": 48775,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.8
@@ -14823,7 +14913,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 118626,
+				"count": 118631,
 				"max": 10,
 				"star_count": 3.5,
 				"value": 6.9

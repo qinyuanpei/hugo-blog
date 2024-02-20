@@ -1,5 +1,5 @@
 {{ $image := partialCached "helper/image" (dict "Context" .context "Type" .Type) .context.RelPermalink .Type }}
-<article class="{{ if $image.exists }}has-image{{ end }}">
+<article class="has-image">
     <a href="{{ .context.RelPermalink }}">
         
         {{ if $image.exists }}
@@ -27,6 +27,10 @@
                 {{ else }}
                     <img src="{{ $image.permalink }}" loading="lazy" data-key="{{ .context.Slug }}" data-hash="{{ $image.permalink }}"/>
                 {{ end }}
+            </div>
+        {{ else }}
+            <div class="article-image">
+                <img src="https://source.unsplash.com/800x0?c={{ .context.Slug }}&sky,dark" loading="lazy" data-key="{{ .context.Slug }}" data-hash="{{ $image.permalink }}"/>
             </div>
         {{ end }}
 

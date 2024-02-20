@@ -1,10 +1,10 @@
----
+﻿---
 abbrlink: 3148958651
 categories:
 - 数据分析
 copyright: true
 date: 2021-01-19 22:35:47
-description: ''
+description: 博主感受到了面对年轻"后浪"压力的危机感，提及IT行业35岁门槛，称赞年轻技术大佬[Catcher Wong](https://www.cnblogs.com/catcher1994)的技术实力。讨论了"不正经"博主Kimol君通过标题党和评论互刷等手段获取流量的问题，提到评论风格和团队作弊行为。另外，探讨了年轻人不讲"武德"的现象，介绍了使用Selenium和Python刷CSDN点赞、收藏等操作的技术实现方法。最后，分享了Python数据挖掘专栏和技术驱动的浏览器操作配置方法。
 slug: 3148958651
 tags:
 - 爬虫

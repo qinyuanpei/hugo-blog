@@ -1,9 +1,10 @@
----
+﻿---
 abbrlink: 3677280829
 categories:
 - 读书笔记
 date: 2019-05-28 12:00:53
-description: ''
+description: 设计优美的 Web API需要易于使用、便于更改、健壮性好、不怕公开。REST有两层含义，一是符合Fielding的REST架构风格，二是使用符合RPC风格的XML或JSON+HTTP接口的系统。端点的基本设计包括短小便于输入的URI、易读的URI、大小写统一的URI等。HTTP方法包括GET、POST、PUT、DELETE、PATCH。查询参数和路径的使用区别在于唯一资源放在路径中，可忽略参数放在查询参数中。RESTful设计级别包括使用HTTP、引入资源概念、HTTP动词、HATEOAS。指定数据格式可通过查询参数、扩展名或Accept头部字段。用户可通过GraphQL决定响应内容，状态码表示错误信息，缓存需符合HTTP协议规范。API版本控制可以嵌入版本号或查询字符串中加入版本信息，也可通过媒体类型指定版本。API安全需使用HTTPS，避免XSS/XSRF注入漏洞，返回正确数据格式，使用安全相关首部，采用KVS实现访问限制。最后，提供API文档可使用API
+  Blueprint、API Console或Apigee，并提供SDK。
 slug: 3677280829
 tags:
 - Web API

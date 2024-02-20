@@ -4,7 +4,8 @@ categories:
 - 编程语言
 copyright: true
 date: 2021-11-16 11:48:41
-description: ''
+description: 本文介绍了Redis主从复制的概念及实战应用。主从复制可提供数据冗余、故障恢复、负载均衡和高可用等好处。Redis的主从复制可分为全量复制和部分复制，通过Docker-Compose搭建了一主两从的复制方案。文章强调了实践的重要性，指出在实际应用中可能会遇到延迟、数据过期、故障切换等问题，需要进一步探索和总结。
+image: /posts/分布式丛林探险系列之-Redis-主从复制模式/CAP-Theory.png
 slug: 1748863652
 tags:
 - 分布式
@@ -12,7 +13,6 @@ tags:
 - 主从复制
 title: 分布式丛林探险系列之 Redis 主从复制模式
 toc: true
-image: /posts/分布式丛林探险系列之-Redis-主从复制模式/CAP-Theory.png
 ---
 
 如果说，单体架构系统是坐在家里悠闲地喝着下午茶，那么，毫无疑问，分布式系统将会是一场永远充满惊喜的丛林冒险。从踏上这条旅程的那一刻起，此间种种都被打上分布式的烙印，譬如分布式锁、分布式事务、分布式存储、分布式配置等等，这些词汇拆开来看，“似曾相识燕归来”，每一个我都认识，而一旦放到分布式的场景中，一切就突然变得陌生起来，从过去的经典三层架构、到时下流行的微服务、再到更为前沿的服务网格，一路跌跌撞撞地走过来，大概只有眼花缭乱和目不暇接了。前段时间在做 [FakeRpc](https://github.com/qinyuanpei/FakeRpc)，这是一个基于 ASP.NET Core 的轻量级 RPC 框架，其间接触了 [ZooKeeper](http://zookeeper.apache.org/)、[Nacos](https://nacos.io/zh-cn/)，后来工作中又接触到了 [Kafka](http://kafka.apache.org/)、[Saga](https://docs.microsoft.com/zh-cn/azure/architecture/reference-architectures/saga/saga)，虽然这些都是不同领域里的分布式解决方案，但是我隐隐觉得它们之间有某种内在的联系，就像所有的分布式系统都存在选举 Leader 的协调算法一样。于是，“喜新厌旧”的双子座，决定新开一个专栏，既然分布式系统是一场永远充满惊喜的丛林冒险，那么，这个专栏就叫做 「分布式丛林冒险系列」好了。一切该从哪里开始呢？我想，还是从 Redis 开始，今天这篇文章，我们来聊一聊 Redis 里的主从复制。

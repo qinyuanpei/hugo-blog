@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 815861661
 categories:
 - 开发工具
 date: 2018-05-20 14:00:03
-description: ''
+description: Payne在他的博客中讨论了在Linux平台上部署ASP.NET项目的问题。他介绍了选择使用Jexus来实现ASP.NET在Linux平台的部署的背景和原因，以及Jexus的特点和配置方法。此外，Payne还讨论了如何将工作转移到Docker容器中，并提供了通过Dockerfile构建网站镜像的步骤。最后，他总结了文章的主要内容，并提及了技术选型的复杂性和对Jexus性能等方面的考量，强调了技术决策的多方面影响。
 slug: 815861661
 tags:
 - Jexus

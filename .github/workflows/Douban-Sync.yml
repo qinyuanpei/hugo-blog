@@ -2,7 +2,7 @@
 name: Douban
 on: 
   schedule:
-    - cron: "* 8 * * *"
+    - cron: "* * 12 * *"
   push:
     branches:
       - blog

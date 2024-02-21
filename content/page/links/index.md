@@ -76,7 +76,25 @@ links:
     description: 君子可内敛不可懦弱，面不公可起而论之
     website: https://yinji.org/archives.html
     image: https://huhexian.s3.bitiful.net/2023/12/23/3b83cc067b2c3f1e45807dfdeb66e0c0.webp
-    
+  - title: 九十九封信
+    description: 为你而写，为你而行
+    website: https://blog.99xin.me/
+    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  - title: To the Lighthouse
+    description: ..A Touch and yet not a touch
+    website: https://blog.99xin.me/
+    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png   
+  - title: 查令十字街 84 号
+    description: 查令十字街 84 号
+    website: https://javis.me/blog/
+    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png 
+  - title: 非礼勿言
+    description: 非礼勿言
+    website: https://feiliwuyan.com/
+    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png  
+  
+
+
 comments: false
 ---
 

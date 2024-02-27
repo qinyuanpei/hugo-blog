@@ -1,9 +1,10 @@
----
+﻿---
 abbrlink: 2734896333
 categories:
 - 编程语言
 date: 2017-03-05 14:01:39
-description: ''
+description: 本文介绍了作者在开发 HTTP 服务器系列中的第六篇文章，讨论了如何为Web服务器增加HTTPS支持。HTTPS是基于安全的HTTP协议，通过SSL加密和身份验证提供数据传输安全。讨论了苹果和Google推广HTTPS的原因，以及HTTPS协议的工作原理和区别。文章重点在于如何使用.NET中的SSL
+  API创建和加载证书，并通过SSL对Socket通信消息进行加密。作者提到需要从CA机构购买证书，并给出了相关代码示例。文章列出了一些参考文章和配置HTTPS服务的指南。
 slug: 2734896333
 tags:
 - HTTP

@@ -1,4 +1,8 @@
-﻿﻿---
+﻿---
+description: 在这篇文章中，作者介绍了SDL游戏开发中基本图形的绘制方法。讨论了使用SDL_LoadBMP()、SDL_CreateTextureFromSurface()和SDL_RenderCopy()这三个方法实现基本图形绘制的过程，重点解释了裁剪图形的概念和在SDL中的应用。文章还展示了如何在SDL中绘制背景图片和在窗口中心绘制美少女的示例代码，并提到了解决卡顿问题的方法。最后，留下了关于透明背景和下一篇文章内容的引入。
+---
+
+﻿---
 slug: 3789971938
 abbrlink: 3789971938
 categories:

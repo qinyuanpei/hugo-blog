@@ -3,7 +3,8 @@ categories:
 - 编程语言
 copyright: true
 date: 2024-02-04 12:30:47
-description: ''
+description: 2023年被誉为AIGC元年，随着技术浪潮，人们开始对人工智能的发展产生担忧。文章介绍了使用llama.cpp在本地部署AI大模型的过程，包括编译、量化和模型下载。通过对不同模型的体验，展示了其运行效果和评估。最后，将ChatGPT-Next-Web与llama.cpp结合，展示了本地部署AI大模型的潜力。整体讲述了私有化部署AI大模型的重要性和实践过程。
+image: /posts/使用-llama.cpp-在本地部署-AI-大模型的一次尝试/cover.png
 slug: An-Attempt-To-Deploy-A-Large-AI-Model-Locally-Using-llama.cpp
 tags:
 - llama.cpp
@@ -12,8 +13,8 @@ tags:
 - LLaMA
 title: 使用 llama.cpp 在本地部署 AI 大模型的一次尝试
 toc: true
-image: /posts/使用-llama.cpp-在本地部署-AI-大模型的一次尝试/cover.png
 ---
+
 对于刚刚落下帷幕的2023年，人们曾经给予其高度评价——AIGC元年。随着 ChatGPT 的火爆出圈，大语言模型、AI 生成内容、多模态、提示词、量化...等等名词开始相继频频出现在人们的视野当中，而在这场足以引发第四次工业革命的技术浪潮里，人们对于人工智能的态度，正从一开始的惊喜慢慢地变成担忧。因为 AI 在生成文字、代码、图像、音频和视频等方面的能力越来越强大，强大到需要 **“冷门歌手”** 孙燕姿亲自发文[回应](http://www.makemusic.sg/new-blog/wodeai)，强大到连山姆·奥特曼都被 OpenAI 解雇。在经历过 OpenAI 套壳、New Bing、GitHub Copilot 以及各式 AI 应用、各类大语言模型的持续轰炸后，我们终于迎来了人工智能的 **“安卓时刻”**，即除了 ChatGPT、Gemini 等专有模型以外，我们现在有更多的开源大模型可以选择。可这难免会让我们感到困惑，人工智能的尽头到底是什么呢？2013年的时候，我以为未来属于提示词工程(**Prompt Engineering**)，可后来好像是 RAG 以及 GPTs 更受欢迎？
 
 # 从哪里开始

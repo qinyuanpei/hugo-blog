@@ -1,4 +1,8 @@
-﻿﻿---
+﻿---
+description: 本文介绍了在.NET Core中使用POCOController的应用，通过ControllerFeatureProvider和IApplicationModelConvention实现了将普通类识别为Controller并修改全局路由规则。讨论了集成Swagger和WebApiClient来解决API文档和调用问题，强调了维护API资产和在线文档的重要性。最后提到了更优雅的调用方式和对微服务设计中常见问题的思考。整体内容展示了动态Controller的实现思路和相关技术应用。
+---
+
+﻿---
 slug: 116795088
 abbrlink: 116795088
 categories:

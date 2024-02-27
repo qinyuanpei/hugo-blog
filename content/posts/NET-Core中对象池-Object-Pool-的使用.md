@@ -1,4 +1,9 @@
-﻿﻿---
+﻿---
+description: 在.NET Core中，对象池(Object Pool)是一种软件设计思路，用于提供对象的可复用性能力，通过借和还来重复使用对象，节省频繁创建对象的性能开销。对象池在游戏设计和数据库连接池中有广泛应用。微软提供了.NET
+  Core中的对象池实现，包括ObjectPool、ObjectPoolProvider和IPooledObjectPolicy。通过示例代码展示了如何使用ObjectPool，在高并发场景中有效管理TCP连接，以解决RabbitMQ连接数不足的问题。通过实现IPooledObjectPolicy<T>可以自定义对象池策略。最终介绍了如何实现Channel“池”来管理TCP连接，在使用EventBus时重复使用Channel，提高系统性能。
+---
+
+﻿---
 toc: true
 title: .NET Core 中对象池(Object Pool)的使用
 categories:

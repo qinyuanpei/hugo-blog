@@ -1,4 +1,11 @@
-﻿﻿---
+﻿---
+description: 在这篇文章中，作者介绍了 EasyAR 的重大版本更新v1.10，开始了一个新的教程系列。文章围绕使用 Unity3D 4.6.4 版本构建一个
+  ImageTarget 实例展开讨论。作者解释了 EasyAR SDK 的结构，并详细介绍了常用标准接口，如 ARBuilder、ImageTargetBehaviour、VideoPlayerBaseBehaviour
+  等。在构建第一个 ImageTarget 项目的过程中，作者指导了 EasyAR 的初始化和制作 ImageTarget 的步骤，包括编写脚本、隐藏和显示模型、创建识别图和
+  Marker 等。最后作者提到了关键步骤，如填写应用程序密钥、AppID、安装运行库和配置 Android 版本等。文章配有截图展示。
+---
+
+﻿---
 slug: 3736599391
 abbrlink: 3736599391
 categories:

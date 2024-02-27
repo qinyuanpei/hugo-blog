@@ -1,4 +1,8 @@
-﻿﻿---
+﻿---
+description: EasyAR 尝鲜系列教程介绍了如何在Unity中实现视频播放功能，主要通过VideoPlayerBehaviour类来支持视频播放。作者提到了视频播放器组件的设置参数以及如何在ImageTarget下添加VideoPlayerBehaviour的子物体来实现VideoTarget。此外，作者还展示了一个自定义的VideoTargetBaseBehaviour类，通过动态创建视频组件来增强ImageTarget，使得制作识别图时更专注且方便。教程中提到了对32位操作系统下视频播放的兼容性问题，并给出了相关代码示例和配置步骤。
+---
+
+﻿---
 slug: 316230277
 abbrlink: 316230277
 categories:

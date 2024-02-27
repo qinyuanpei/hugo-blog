@@ -1,4 +1,10 @@
-﻿﻿---
+﻿---
+description: 本文讨论了在使用 Dapper.Contrib 操作 Oracle 数据库时遇到的 ORA-XXXXX 错误，根本原因在于 Dapper.Contrib
+  未实现 OracleSqlAdapter，这与对自增 ID 的支持导致的 SQL 标准差异有关。文章指出不同数据库对自增 ID 实现方式不同，Oracle 需要序列，增加了维护工作量，且
+  Dapper.Contrib 底层设计不合理，缺乏扩展接口，违反开闭原则。作者提出了解决方法，包括自定义OracleSqlAdapter和扩展方法，以适配Oracle环境下的Dapper.Contrib使用。
+---
+
+﻿---
 toc: true
 title: Dapper.Contrib 在 Oracle 环境下引发 ORA-00928 异常问题的解决
 categories:

@@ -36,7 +36,7 @@ lastmod: '2020-10-09'
 
 
 # 更多的页面：
-* [读书](/books/) / [听歌](/musics/) / [观影](/movies/) / [友链](/links/) / [统计](/statics)
+* [读书](/books/) / [听歌](/musics/) / [观影](/movies/) / [友链](/links/) / [统计](/statics) / [博客助手](https://share.fastgpt.in/chat/share?shareId=rrpn95r7p7x0mc50fvofkgfn)
 
 
 # 更大的世界：

@@ -3,7 +3,7 @@ categories:
 - 编程语言
 copyright: true
 date: 2023-10-18 12:30:47
-description: 本文讨论了工作中围绕硬件展开的问题，以及尝试解决"简单"问题的经历。作者分享了在程序中集成某厂商硬件时遇到的挑战，并介绍了使用WMI和LibUsbDotNet库来检测和处理USB设备的方法。描述了如何通过硬件ID（VID和PID）判断USB设备连接状态，并展示了通过WMI监听USB设备插入和拔出事件的实现。最终强调了编程的本质是不断照顾程序中的问题，以及对代码中的冗余部分进行反思。
+description: 本文讨论了工作中围绕硬件展开的问题，以及尝试解决"简单"问题的经历。作者分享了在程序中集成某厂商硬件时遇到的挑战，并介绍了使用 WMI 和 LibUsbDotNet 库来检测和处理 USB 设备的方法。描述了如何通过硬件 ID 判断 USB 设备连接状态，并展示了通过 WMI 监听 USB 设备插入和拔出事件的实现。最终强调了编程的本质是不断照顾程序中的问题，以及对代码中的冗余部分进行反思。
 image: /posts/CSharp使用LibUsbDotNet实现USB设备检测/immo-wegmann-HtsVneqf5Fg-unsplash.jpg
 slug: CSharp-Uses-LibUsbDotNet-To-Implement-USB-Device-Detection
 tags:

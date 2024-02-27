@@ -1,4 +1,10 @@
-﻿﻿---
+﻿---
+description: 本文介绍了如何使用.NET Core和ELK搭建可视化日志分析平台。ELK是Elasticsearch、Logstash和Kibana的简称，分别用于全文搜索、数据收集和日志可视化分析。安装ELK推荐使用Docker方式，配置Elasticsearch地址后可将日志写入其中。示例展示了在ASP.NET
+  Core项目中集成Serilog，将日志信息写入Elasticsearch，然后通过Kibana进行可视化分析。作者计划在接下来的篇幅中介绍Logstash和FileBeat管道配置等内容。整体内容涵盖ELK的基本概念、安装过程和在ASP.NET
+  Core中的应用。
+---
+
+﻿---
 slug: 3687594958
 abbrlink: 3687594958
 categories:

@@ -1,9 +1,11 @@
----
+﻿---
 abbrlink: 3637847962
 categories:
 - 编程语言
 date: 2016-06-11 15:01:35
-description: ''
+description: 秦元培在博客中介绍了RESTful API的概念和原则，指出REST是一种基于网络的设计风格，旨在正确使用Web标准。他对WebService、SOAP、WSDL等概念进行了讨论，强调REST是一种统一的Web
+  API设计风格。文章还提到了如何构建REST风格的API，包括URL结构、API版本管理、使用名词而非动词等最佳实践。最后，秦元培表示虽然他的服务器目前只支持GET和POST，要实现完整的RESTful
+  API需要更多探索，但鼓励大家关注他的项目[HttpServer](https://github.com/qinyuanpei/HttpServer)。
 slug: 3637847962
 tags:
 - HTTP

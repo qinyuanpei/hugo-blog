@@ -1,9 +1,9 @@
----
+﻿---
 abbrlink: 3603924376
 categories:
 - 编程语言
 date: 2016-06-11 15:01:35
-description: ''
+description: 秦元培在博客中分享了关于HTTP服务器开发的系列文章，强调了从头开始构建Web服务器的乐趣和重要性，提到了HTTP协议的基本原理和无状态特性，以及如何利用TcpListener/TcpClient和HttpListener实现HTTP服务器的两种不同方法。他指出了在设计HTTP服务器时需要考虑保持状态的问题，并介绍了Cookie的应用。最后表示这些内容只是开发HTTP服务器的延伸，鼓励读者进一步探索。
 slug: 3603924376
 tags:
 - HTTP

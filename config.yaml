@@ -228,7 +228,9 @@ params:
               content: c50FGqYOSh
             - provider: google
               content: 8AqkWAh0QNZqCYB2oKA5yIrqEA3sgxUvglVmtWkuU0s
-
+    
+    chatBot:
+        enable: true
 ### Custom menu
 ### See https://docs.stack.jimmycai.com/configuration/custom-menu.html
 ### To remove about, archive and search page menu item, remove `menu` field from their FrontMatter

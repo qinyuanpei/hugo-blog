@@ -1,10 +1,11 @@
----
+﻿---
 abbrlink: 3672690776
 categories:
 - 编程语言
 copyright: true
 date: 2020-11-01 12:19:02
-description: ''
+description: 本文介绍了如何使用JetBrains的性能分析工具dotTrace和内存分析工具dotMemory来排查程序性能问题。通过示例程序演示了如何使用这两款工具进行性能分析和内存分析，并介绍了如何通过Dump文件对生产环境中的内存进行诊断。文章还提到了.NET
+  Core的命令行工具dotnet-dump和dotnet-gcdump，用于内存分析。最后，作者分享了个人经历中对性能优化工具的体验，并提到了MiniProfiler用于代码层面的性能分析。文章强调了程序性能优化的重要性和细节调优的必要性。
 slug: 3672690776
 tags:
 - dotTrace

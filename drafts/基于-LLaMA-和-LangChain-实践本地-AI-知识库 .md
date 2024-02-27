@@ -29,7 +29,7 @@ image: /posts/基于-LLaMA-和-LangChain-实践本地-AI-知识库/cover.png
 
 由此，我们就可以得出一个结论，目前 AI 应用落地主要还是围绕大模型微调(**Fine Tuning**)、提示词工程(**Prompt Engineering**) 以及知识增强展开，并且 GPTs 里依然有提示词参与，两者并不冲突。考虑到，大模型微调这条线存在一定的门槛，我们暂且将其放在一旁。此时，提示词工程和知识增强就成为了 AI 应用落地的关键。知识增强，专业术语为**检索增强生成**，即：**Retrieval-Augmented Generation**，**RAG**，其基本思路就是将大语言模型和知识库结合起来，通过外挂知识库的方式来增强大模型的生成能力。比如微软的 New Bing 是 GPT-4 + 搜索引擎的方案，而更一般的方案则是 LLM + 向量数据库的思路，下图展示了 RAG 运作的基本原理：
 
-![](/posts/基于-LLaMA-和-LangChain-实践本地-AI-知识库/LangChain-Flow.drawio.png)
+![RAG 运作的基本原理](/posts/基于-LLaMA-和-LangChain-实践本地-AI-知识库/LangChain-Flow.drawio.png)
 
 
 

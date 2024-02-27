@@ -1,10 +1,4 @@
 ﻿---
-description: 本文介绍了如何使用.NET Core和ELK搭建可视化日志分析平台。ELK是Elasticsearch、Logstash和Kibana的简称，分别用于全文搜索、数据收集和日志可视化分析。安装ELK推荐使用Docker方式，配置Elasticsearch地址后可将日志写入其中。示例展示了在ASP.NET
-  Core项目中集成Serilog，将日志信息写入Elasticsearch，然后通过Kibana进行可视化分析。作者计划在接下来的篇幅中介绍Logstash和FileBeat管道配置等内容。整体内容涵盖ELK的基本概念、安装过程和在ASP.NET
-  Core中的应用。
----
-
-﻿---
 slug: 3687594958
 abbrlink: 3687594958
 categories:
@@ -17,6 +11,7 @@ tags:
 - 监控
 title: .NET Core + ELK 搭建可视化日志分析平台(上)
 image: /posts/NET-Core-ELK搭建可视化日志分析平台-上/lighthouse-gd3af11c39_1280.jpg
+description: 本文介绍了如何使用.NET Core和ELK搭建可视化日志分析平台。ELK是Elasticsearch、Logstash和Kibana的简称，分别用于全文搜索、数据收集和日志可视化分析。安装ELK推荐使用Docker方式，配置Elasticsearch地址后可将日志写入其中。示例展示了在ASP.NET Core项目中集成Serilog，将日志信息写入Elasticsearch，然后通过Kibana进行可视化分析。作者计划在接下来的篇幅中介绍Logstash和FileBeat管道配置等内容。整体内容涵盖ELK的基本概念、安装过程和在ASP.NET Core中的应用。
 ---
 
 Hi，各位朋友，大家好！欢迎大家关注我的博客，我的博客地址是: [https://blog.yuanpei.me](https://blog.yuanpei.me)。今天是远程办公以来的第一个周末，虽然公司计划在远程两周后恢复正常办公，可面对着每天都有人离开的疫情，深知这一切都不会那么容易。窗外的阳光透过玻璃照射进屋子，这一切都昭示着春天的脚步渐渐近了。可春天来了，有的人却没有再回来。那些在 2019 年结束时许下的美好期待、豪言壮语，在这样一场灾难面前，终究是如此的无力而苍白。可不管怎么样，生活还是要继续，在这些无法出门的日子里，在这样一个印象深刻的春节长假里，除了做好**勤洗手**、**多通风**、**戴口罩**这些防疫保护措施以外，博主还是希望大家能够抽空学习，通过知识来充实这“枯燥"的生活。所以，从今天开始，我将为大家带来 **.NET Core + ELK 搭建可视化日志分析平台** 系列文章，希望大家喜欢。

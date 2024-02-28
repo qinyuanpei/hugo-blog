@@ -15,7 +15,7 @@ title: 基于 LLaMA 和 LangChain 实践本地 AI 知识库
 toc: true
 ---
 
-有时候，我难免不由地感慨，真实的人类世界，本就是一个巨大的娱乐圈，即使是在英雄辈出的 IT 行业。数日前，Google 对外正式发布了 Gemini 1.5 Pro，一个建立在 Transformer 和 MoE 架构上的多模态模型。可惜，这个被 Google 寄予厚望的产品并未激起多少水花，因为 OpenAI 在同一天发布了 Sora，一个支持从文字生成视频的模型，可谓是一时风光无二。有人说，OpenAI 站在 Google 的肩膀上，用 Google 的技术疯狂刷屏。此中曲直，远非我等外人所能预也。我们唯一能确定的事情是，通用人工智能，即：AGI（**Artificial General Intelligence**）的实现，正在以肉眼可见的速度被缩短，以前在科幻电影中看到的种种场景，或许会比我们想象中来得更快一些。不过，等待 AGI 来临前的黑夜注定是漫长而孤寂的。在此期间，我们继续来探索 AI 应用落地的最佳实践，即：在成功部署本地 AI 大模型后，如何通过外挂知识库的方式为其 “**注入**” 新的知识。
+有时候，我难免不由地感慨，真实的人类世界，本就是一个巨大的娱乐圈，即使是在英雄辈出的 IT 行业。数日前，Google 正式对外发布了 Gemini 1.5 Pro，一个建立在 Transformer 和 MoE 架构上的多模态模型。可惜，这个被 Google 寄予厚望的产品并未激起多少水花，因为就在同一天 OpenAI 发布了 Sora，一个支持从文字生成视频的模型，可谓是一时风光无二。有人说，OpenAI 站在 Google 的肩膀上，用 Google 的技术疯狂刷屏。此中曲直，远非我等外人所能预也。我们唯一能确定的事情是，通用人工智能，即：AGI（**Artificial General Intelligence**）的实现，正在以肉眼可见的速度被缩短，以前在科幻电影中看到的种种场景，或许会比我们想象中来得更快一些。不过，等待 AGI 来临前的黑夜注定是漫长而孤寂的。在此期间，我们继续来探索 AI 应用落地的最佳实践，即：在成功部署本地 AI 大模型后，如何通过外挂知识库的方式为其 “**注入**” 新的知识。
 
 # 从 RAG & GPTs 开始
 
@@ -84,7 +84,7 @@ loader = DirectoryLoader("./posts/", glob="*.md", loader_cls=TextLoader, loader_
 
 ## Splitter
 
-调用 Loader 的 load() 方法，返回的是一组 Document 的集合。此时，我们可以将这些 Document 交给 [TextSplitter](https://python.langchain.com/docs/modules/data_connection/document_transformers/) 来进行分本内容的分割，因为我们最终需要对文本块做向量化处理：
+调用 Loader 的 load() 方法，返回的是一组 Document 的集合。此时，我们可以将这些 Document 交给 [TextSplitter](https://python.langchain.com/docs/modules/data_connection/document_transformers/) 来对分本内容的分割，因为我们最终需要对文本块做向量化处理：
 
 ```python
 from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
@@ -238,7 +238,7 @@ query = prompt.format(question=question, name="ChatGPT", context=context)
 
 ## LangChain 中的 Chain 
 
-在 LangChain 的诸多概念中，Chain 或许是最抽象、最重要的哪一个，因为它就像一个管道一样，可以讲我们这篇文章中提到的各种组件串联起来。譬如， `LLMChain` 可以将一个LLM 和 Prompt 串联起来，`RetrievalQA` 可以配合 LLM 和知识库实现简单的 Q&A，`ConversationalRetrievalChain` 可以配合 LLM、知识库和聊天历史实现对话式检索。起初，我对于 `RetrievalQA` 这个类是极其厌恶的，因为它不论是看起来还是用起来，都像极了一个 Chain，可它就偏偏不是一个 Chain。真是奇哉怪也！
+在 LangChain 的诸多概念中，Chain 或许是最抽象、最重要的哪一个，因为它就像一个管道一样，可以讲我们这篇文章中提到的各种组件串联起来。譬如， `LLMChain` 可以将一个LLM 和 Prompt 串联起来，`RetrievalQA` 可以配合 LLM 和知识库实现简单的 Q&A，`ConversationalRetrievalChain` 可以配合 LLM、知识库和聊天历史实现对话式检索。起初，我对于 `RetrievalQA` 这个类是极其排斥和反感的，因为它不论是看起来还是用起来，都像极了一个 Chain，可它就偏偏不是一个 Chain，真是奇哉怪也！
 
 ```python
 from langchain.chains import LLMChain
@@ -317,13 +317,14 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 query = prompt.format(question=question, name="ChatGPT", context=context)
 
-# 同步调用方式
+# 方式一： 同步调用
 result = chain.invoke(query)
-# 流式调用方式
+
+# 方式二： 流式调用
 result = chain.stream(query)
 ```
 
-如下图所示，在经过反反复复地调试和优化以后，我们可以针对博客中地内容进行提问，并且程序会返回与问题相关的文档信息，这个结果整体而言还是挺不错的。当然，距离 FastGPT 这种相对完善的产品还是挺遥远的，使用 CPU 进行推理的 llama.cpp 使用下来除了速度慢以外，还会出现缓存 `kv cache` 不足的问题。庆幸的是，在折腾 LangChain 的过程中，逐渐理解了 RAG 以及 LangChain 的整体思路。在 LangChain 的 [官方文档](https://python.langchain.com/docs/expression_language/cookbook/) 中，官方提供了使用 LangChain 落地 AI 应用的示例，这篇文章主要参考了 [RAG](https://python.langchain.com/docs/expression_language/cookbook/retrieval) 这一篇，大家可以特别关注一下。
+如下图所示，在经过反复地调试和优化以后，我们可以针对博客中的内容进行提问，并且程序会返回与问题相关的文档信息，这个结果整体而言还是挺不错的。当然，距离 FastGPT 这种相对完善的产品还是挺遥远的，使用 CPU 进行推理的 llama.cpp 除了生成速度慢以外，还会出现缓存 `kv cache` 不足的问题。庆幸的是，在折腾 LangChain 的过程中，逐渐理解了 RAG 以及 LangChain 的整体思路。在 LangChain 的 [官方文档](https://python.langchain.com/docs/expression_language/cookbook/) 中，官方提供了使用 LangChain 落地 AI 应用的示例，这篇文章主要参考了 [RAG](https://python.langchain.com/docs/expression_language/cookbook/retrieval) 这一篇，大家可以特别关注一下。
 
 ![本地 AI 知识库运行结果展示](/posts/基于-LLaMA-和-LangChain-实践本地-AI-知识库/LlmChain_Chat_Output.png)
 

@@ -331,5 +331,4 @@ result = chain.stream(query)
 LangChain 除了概念多以外，API 变动非常频繁，经常出现破坏性的变更，而且官方现在主要在推 LangChain Expression Language(LCEL)，所以，网络上的资料经常都是过期的，建议大家有时间还是去看纯英文的官方文档。当然，大家有兴趣的话，可以考虑下 LangChain 的替代品，譬如 [AutoChain](https://github.com/Forethought-Technologies/AutoChain) 和 [Embedchain](https://github.com/embedchain/embedchain)，它们的 API 毫无疑问都比 LangChain 简单，实际使用情况，只有靠各位自己去体验啦，哈哈！
 
 # 本文小结
-
-本文讨论了人工智能领域的最新发展，主要围绕着基于 Transformer 和 MoE 架构的多模态模型 Gemini 1.5 Pro，以及 OpenAI 推出的支持从文字生成视频的模型 Sora。文章提到通用人工智能（AGI）的实现正在加速，指出 AI 应用落地的主要实践围绕大模型微调、提示词工程和知识增强展开。在介绍 LangChain 中的知识库构建过程中，涉及 Loader、Splitter、Embeddings 和 VectorStore 等步骤。此外，还讨论了 RAG 和 GPTs 在实践中的应用，以及 LangChain 中的 Chain 概念，以及如何将其与大语言模型和知识库结合以实现 Q&A 和 对话式检索。文章最后呼吁关注 LangChain 的最新发展和替代品 AutoChain、Embedchain。
+在探索 AI 的过程中，一个令人难过的事实是，创作这篇大约1.5万字的文章，博主先后花了一周左右的时间来做实验，然后花了两天的时间来形成文字，而在将这些博客内容 “**投喂**” 给 AI 以后，它可以在几分钟内理解并归纳出这篇文章的核心内容。我承认，一篇文章的作者和读者在某种程度上是不对等的，就像我此刻在屏幕前敲下的这些文字，对于你来说不过是指尖轻点。当我看到手机上永远都划不完的视频的时候，我更加困惑 AIGC 到底会将我们带向何处？这个世界的信息和噪音明明都多到爆炸了，为什么我们还要去通过 AI 生成更多的信息呢？这个想法一旦投射到现实生活，你就会发现，明明商品和房子都足够多了，可我们还是生活在一个内卷的世界里。想到这一点，我对于 AI 的期盼就不再是想让它帮我生成什么，而是它可以帮我更好的理解这个注定走向熵增的世界。本文完！

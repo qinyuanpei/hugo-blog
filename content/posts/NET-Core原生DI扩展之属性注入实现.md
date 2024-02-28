@@ -1,8 +1,5 @@
 ﻿---
 description: 本文介绍了在.NET Core原生DI中实现属性注入的方法。讨论了属性注入的优缺点，提出通过实现自定义的AutowiredServiceProvider和AutowiredServiceProviderFactory来支持属性注入。详细讨论了装饰器模式在这一过程中的应用，以及替换默认ServiceProvider的方法。最后，展示了如何在Controller中实现属性注入，并解决非Controller层使用时的问题。整体方案存在一些问题，如依赖关系模糊和部分解耦困难，但在可控的小范围内使用可以考虑。
----
-
-﻿---
 toc: true
 title: .NET Core 原生 DI 扩展之属性注入实现
 categories:

@@ -3,9 +3,6 @@ description: Unity3D 场景编辑器扩展开发涉及对 Editor、EditorWindow�
   等类的运用。通过基于 Editor 的扩展方式，可以针对脚本实现在 Inspector 中显示布局和在 Scene 视图进行可视化编辑。示例中创建了一个扩展的
   Transform 组件，展示了如何利用可序列化对象和 Editor 类的属性和方法来实现自定义编辑器功能。另外，还介绍了如何创建一个 NPC 寻路节点编辑工具，通过
   Handles 和 Event 类在场景中绘制和编辑寻路节点。
----
-
-﻿---
 slug: 3019914405
 abbrlink: 3019914405
 categories:

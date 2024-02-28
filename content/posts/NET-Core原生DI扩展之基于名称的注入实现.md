@@ -1,8 +1,5 @@
 ﻿---
 description: 本文介绍了在.NET Core中基于名称的依赖注入的实现方式。首先讨论了.NET Core原生DI的局限性，推荐了Autofac等第三方IoC容器，然后以一个接口对应多种实现的场景为例，展示了如何使用基于名称的注入来解决注册多个实现时的混淆问题。通过实现INamedServiceProvider和相关Builder类，最终实现了基于名称的依赖注入。这种解决方案避免了多实现冲突的问题，提供了更灵活的服务获取方式。
----
-
-﻿---
 toc: true
 title: .NET Core 原生 DI 扩展之基于名称的注入实现
 categories:

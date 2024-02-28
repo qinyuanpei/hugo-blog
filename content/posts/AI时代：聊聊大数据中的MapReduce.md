@@ -1,8 +1,5 @@
 ﻿---
 description: AI时代中的大数据处理中，MapReduce起源于Google的处理大规模数据的需求，通过函数式编程中的map()和reduce()函数实现并行计算。Google早期的GFS和MapReduce论文直接影响了Hadoop等大数据框架的发展。MapReduce的重要性在于提供了处理海量数据的高性能并行计算模型，成为大数据处理的工业标准。函数式编程中的map()和reduce()函数与MapReduce的思想一致。在C#中的PLINQ也提供了类似MapReduce的并行计算模型。整篇文章围绕MapReduce的起源、原理、函数式编程以及在C#中的应用展开讨论，以及对AI时代和大数据处理的一些思考。
----
-
-﻿---
 slug: 2911923212
 abbrlink: 2911923212
 categories:

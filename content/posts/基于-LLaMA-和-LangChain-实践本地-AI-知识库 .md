@@ -5,7 +5,7 @@ copyright: true
 date: 2024-02-25 10:30:47
 description: 本文讨论了人工智能领域的最新发展，主要围绕着基于 Transformer 和 MoE 架构的多模态模型 Gemini 1.5 Pro，以及 OpenAI 推出的支持从文字生成视频的模型 Sora。文章提到通用人工智能（AGI）的实现正在加速，指出 AI 应用落地的主要实践围绕大模型微调、提示词工程和知识增强展开。在介绍 LangChain 中的知识库构建过程中，涉及 Loader、Splitter、Embeddings 和 VectorStore 等步骤。此外，还讨论了 RAG 和 GPTs 在实践中的应用，以及 LangChain 中的 Chain 概念，以及如何将其与大语言模型和知识库结合以实现 Q&A 和 对话式检索。文章最后呼吁关注 LangChain 的最新发展和替代品 AutoChain、Embedchain。
 image: /posts/基于-LLaMA-和-LangChain-实践本地-AI-知识库/cover.png
-slug: Practice-Local-AI-Knowledg-Base-Based-On-LLaMA-And-LangChain -
+slug: Practice-Local-AI-Knowledg-Base-Based-On-LLaMA-And-LangChain
 tags:
 - LLaMA
 - LangChain

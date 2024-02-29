@@ -36,11 +36,13 @@ lastmod: '2020-10-09'
 
 
 # 更多的页面：
-* [读书](/books/) / [听歌](/musics/) / [观影](/movies/) / [友链](/links/) / [统计](/statics) / [博客助手](https://share.fastgpt.in/chat/share?shareId=rrpn95r7p7x0mc50fvofkgfn)
-
+* [读书](/books/) / [听歌](/musics/) / [观影](/movies/) / [友链](/links/) / [统计](/statics) 
 
 # 更大的世界：
 * [微博](https://weibo.com/1278609231/profile) / [知乎](https://www.zhihu.com/people/qinyuanpei) / [豆瓣](https://www.douban.com/people/60029335/)
+
+# 更多的工具：
+* [博客助手](https://share.fastgpt.in/chat/share?shareId=rrpn95r7p7x0mc50fvofkgfn)
 
 
 # 关于博客

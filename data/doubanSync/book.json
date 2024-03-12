@@ -200,7 +200,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 17699,
+				"count": 17700,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.6
@@ -2054,7 +2054,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 24997,
+				"count": 24998,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -8815,7 +8815,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 4198,
+				"count": 4199,
 				"max": 10,
 				"star_count": 3.5,
 				"value": 7.3
@@ -11709,7 +11709,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 50259,
+				"count": 50260,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9
@@ -12165,7 +12165,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 505218,
+				"count": 505219,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -13462,9 +13462,7 @@
 			],
 			"other_versions_count": 54,
 			"is_show": false,
-			"vendor_icons": [
-				"https://img1.doubanio.com/f/frodo/f6f620132e6d8a02d171f03114bbe2339aa8af97/pics/vendors/logo_doubanread@2x.png"
-			],
+			"vendor_icons": [],
 			"card_subtitle": "太宰治 / 2010.1 / 万卷出版公司",
 			"book_subtitle": "",
 			"id": "4259314",
@@ -13508,7 +13506,7 @@
 			"null_rating_reason": "",
 			"article_intros": [],
 			"vendor_sale_price": "",
-			"has_ebook": true
+			"has_ebook": false
 		}
 	},
 	{
@@ -14625,7 +14623,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 751739,
+				"count": 751740,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1

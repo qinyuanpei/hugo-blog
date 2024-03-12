@@ -297,7 +297,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 31883,
+				"count": 31884,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.2
@@ -574,7 +574,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 185450,
+				"count": 185451,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.7
@@ -13470,7 +13470,9 @@
 			],
 			"other_versions_count": 54,
 			"is_show": false,
-			"vendor_icons": [],
+			"vendor_icons": [
+				"https://img1.doubanio.com/f/frodo/f6f620132e6d8a02d171f03114bbe2339aa8af97/pics/vendors/logo_doubanread@2x.png"
+			],
 			"card_subtitle": "太宰治 / 2010.1 / 万卷出版公司",
 			"book_subtitle": "",
 			"id": "4259314",
@@ -13514,7 +13516,7 @@
 			"null_rating_reason": "",
 			"article_intros": [],
 			"vendor_sale_price": "",
-			"has_ebook": false
+			"has_ebook": true
 		}
 	},
 	{
@@ -13541,7 +13543,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 469562,
+				"count": 469563,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.2

@@ -480,7 +480,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 1690,
+				"count": 1691,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.5
@@ -574,7 +574,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 185445,
+				"count": 185446,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.7
@@ -2775,7 +2775,7 @@
 				"count": 454,
 				"max": 10,
 				"star_count": 4,
-				"value": 8
+				"value": 7.9
 			},
 			"controversy_reason": "",
 			"pubdate": [
@@ -3031,7 +3031,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 76890,
+				"count": 76894,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -3054,10 +3054,7 @@
 			],
 			"other_versions_count": 2,
 			"is_show": false,
-			"vendor_icons": [
-				"https://img1.doubanio.com/f/frodo/161387ce451872cbf51fcb288cd5ffd1dcd89705/pics/vendors/logo_dedao@2x.png",
-				"https://img1.doubanio.com/f/frodo/f6f620132e6d8a02d171f03114bbe2339aa8af97/pics/vendors/logo_doubanread@2x.png"
-			],
+			"vendor_icons": [],
 			"card_subtitle": "兰小欢 / 2021 / 上海人民出版社",
 			"book_subtitle": "中国政府与经济发展",
 			"id": "35546622",
@@ -3101,7 +3098,7 @@
 			"null_rating_reason": "",
 			"article_intros": [],
 			"vendor_sale_price": "",
-			"has_ebook": true
+			"has_ebook": false
 		}
 	},
 	{
@@ -3728,7 +3725,7 @@
 				"count": 553,
 				"max": 10,
 				"star_count": 3,
-				"value": 6.1
+				"value": 6.2
 			},
 			"controversy_reason": "",
 			"pubdate": [
@@ -3810,7 +3807,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 18780,
+				"count": 18782,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -4814,7 +4811,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 9232,
+				"count": 9233,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.7
@@ -5101,7 +5098,7 @@
 				"count": 531,
 				"max": 10,
 				"star_count": 3.5,
-				"value": 7.2
+				"value": 7.1
 			},
 			"controversy_reason": "",
 			"pubdate": [
@@ -5592,7 +5589,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 57291,
+				"count": 57292,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -7300,7 +7297,7 @@
 				"count": 1272,
 				"max": 10,
 				"star_count": 4,
-				"value": 7.7
+				"value": 7.8
 			},
 			"controversy_reason": "",
 			"pubdate": [
@@ -7766,7 +7763,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 20726,
+				"count": 20727,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.7
@@ -8161,7 +8158,7 @@
 				"count": 32705,
 				"max": 10,
 				"star_count": 4,
-				"value": 7.7
+				"value": 7.6
 			},
 			"controversy_reason": "",
 			"pubdate": [
@@ -9776,7 +9773,7 @@
 				"count": 5324,
 				"max": 10,
 				"star_count": 4,
-				"value": 8
+				"value": 7.9
 			},
 			"controversy_reason": "",
 			"pubdate": [
@@ -10817,12 +10814,7 @@
 			"honor_infos": [],
 			"other_versions_count": 1,
 			"is_show": false,
-			"vendor_icons": [
-				"https://img2.doubanio.com/f/frodo/6bd2847c065ab16da2b96d1660ea25c4ea017cb9/pics/vendors/logo_xmly.png",
-				"https://img2.doubanio.com/f/frodo/eeb8f37f5296ae1fbb944718bd5d6880d24aab5c/pics/vendors/migu_book_logo.png",
-				"https://img1.doubanio.com/f/frodo/161387ce451872cbf51fcb288cd5ffd1dcd89705/pics/vendors/logo_dedao@2x.png",
-				"https://img1.doubanio.com/f/frodo/f6f620132e6d8a02d171f03114bbe2339aa8af97/pics/vendors/logo_doubanread@2x.png"
-			],
+			"vendor_icons": [],
 			"card_subtitle": "蔡崇达 / 2014 / 天津人民出版社",
 			"book_subtitle": "",
 			"id": "26278687",
@@ -10866,7 +10858,7 @@
 			"null_rating_reason": "",
 			"article_intros": [],
 			"vendor_sale_price": "",
-			"has_ebook": true
+			"has_ebook": false
 		}
 	},
 	{
@@ -11348,7 +11340,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 59155,
+				"count": 59156,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -12270,7 +12262,7 @@
 				"count": 142818,
 				"max": 10,
 				"star_count": 4,
-				"value": 7.5
+				"value": 7.6
 			},
 			"controversy_reason": "",
 			"pubdate": [
@@ -13543,7 +13535,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 469555,
+				"count": 469559,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.2
@@ -13728,7 +13720,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 791514,
+				"count": 791516,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -14443,7 +14435,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 30771,
+				"count": 30772,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -14633,7 +14625,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 751735,
+				"count": 751738,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -15000,7 +14992,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 60812,
+				"count": 60813,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.7

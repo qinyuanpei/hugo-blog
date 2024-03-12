@@ -390,7 +390,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 67021,
+				"count": 67022,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.4
@@ -574,7 +574,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 185448,
+				"count": 185449,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.7
@@ -3031,7 +3031,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 76895,
+				"count": 76896,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -3054,7 +3054,10 @@
 			],
 			"other_versions_count": 2,
 			"is_show": false,
-			"vendor_icons": [],
+			"vendor_icons": [
+				"https://img1.doubanio.com/f/frodo/161387ce451872cbf51fcb288cd5ffd1dcd89705/pics/vendors/logo_dedao@2x.png",
+				"https://img1.doubanio.com/f/frodo/f6f620132e6d8a02d171f03114bbe2339aa8af97/pics/vendors/logo_doubanread@2x.png"
+			],
 			"card_subtitle": "兰小欢 / 2021 / 上海人民出版社",
 			"book_subtitle": "中国政府与经济发展",
 			"id": "35546622",
@@ -3098,7 +3101,7 @@
 			"null_rating_reason": "",
 			"article_intros": [],
 			"vendor_sale_price": "",
-			"has_ebook": false
+			"has_ebook": true
 		}
 	},
 	{
@@ -10814,7 +10817,12 @@
 			"honor_infos": [],
 			"other_versions_count": 1,
 			"is_show": false,
-			"vendor_icons": [],
+			"vendor_icons": [
+				"https://img2.doubanio.com/f/frodo/6bd2847c065ab16da2b96d1660ea25c4ea017cb9/pics/vendors/logo_xmly.png",
+				"https://img2.doubanio.com/f/frodo/eeb8f37f5296ae1fbb944718bd5d6880d24aab5c/pics/vendors/migu_book_logo.png",
+				"https://img1.doubanio.com/f/frodo/161387ce451872cbf51fcb288cd5ffd1dcd89705/pics/vendors/logo_dedao@2x.png",
+				"https://img1.doubanio.com/f/frodo/f6f620132e6d8a02d171f03114bbe2339aa8af97/pics/vendors/logo_doubanread@2x.png"
+			],
 			"card_subtitle": "蔡崇达 / 2014 / 天津人民出版社",
 			"book_subtitle": "",
 			"id": "26278687",
@@ -10858,7 +10866,7 @@
 			"null_rating_reason": "",
 			"article_intros": [],
 			"vendor_sale_price": "",
-			"has_ebook": false
+			"has_ebook": true
 		}
 	},
 	{
@@ -11340,7 +11348,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 59156,
+				"count": 59157,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -13718,7 +13726,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 791516,
+				"count": 791517,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -14168,7 +14176,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 198031,
+				"count": 198030,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1

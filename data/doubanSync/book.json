@@ -390,7 +390,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 67017,
+				"count": 67018,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.4
@@ -574,7 +574,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 185429,
+				"count": 185430,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.7
@@ -1007,7 +1007,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 1694,
+				"count": 1695,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.9
@@ -2149,7 +2149,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 7809,
+				"count": 7810,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.5
@@ -2412,7 +2412,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 19638,
+				"count": 19639,
 				"max": 10,
 				"star_count": 4,
 				"value": 8.1
@@ -3031,7 +3031,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 76872,
+				"count": 76875,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
@@ -4270,7 +4270,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 2862,
+				"count": 2863,
 				"max": 10,
 				"star_count": 4,
 				"value": 8
@@ -5592,7 +5592,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 57287,
+				"count": 57288,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -10349,7 +10349,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 25468,
+				"count": 25469,
 				"max": 10,
 				"star_count": 4,
 				"value": 7.5
@@ -11006,7 +11006,9 @@
 			"honor_infos": [],
 			"other_versions_count": 19,
 			"is_show": false,
-			"vendor_icons": [],
+			"vendor_icons": [
+				"https://img1.doubanio.com/f/frodo/f6f620132e6d8a02d171f03114bbe2339aa8af97/pics/vendors/logo_doubanread@2x.png"
+			],
 			"card_subtitle": "[美] 史蒂芬·列维特 [美] 史蒂芬·都伯纳 / 2016 / 中信出版社",
 			"book_subtitle": "拥有清晰思维的艺术",
 			"id": "26865149",
@@ -11051,7 +11053,7 @@
 			"null_rating_reason": "",
 			"article_intros": [],
 			"vendor_sale_price": "",
-			"has_ebook": false
+			"has_ebook": true
 		}
 	},
 	{
@@ -11271,7 +11273,8 @@
 			"vendor_icons": [
 				"https://img2.doubanio.com/f/frodo/6bd2847c065ab16da2b96d1660ea25c4ea017cb9/pics/vendors/logo_xmly.png",
 				"https://img2.doubanio.com/f/frodo/eeb8f37f5296ae1fbb944718bd5d6880d24aab5c/pics/vendors/migu_book_logo.png",
-				"https://img1.doubanio.com/f/frodo/161387ce451872cbf51fcb288cd5ffd1dcd89705/pics/vendors/logo_dedao@2x.png"
+				"https://img1.doubanio.com/f/frodo/161387ce451872cbf51fcb288cd5ffd1dcd89705/pics/vendors/logo_dedao@2x.png",
+				"https://img1.doubanio.com/f/frodo/f6f620132e6d8a02d171f03114bbe2339aa8af97/pics/vendors/logo_doubanread@2x.png"
 			],
 			"card_subtitle": "[美] 戴维·W.比安奇 / 2018 / 中信出版社",
 			"book_subtitle": "",
@@ -11714,7 +11717,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 50257,
+				"count": 50258,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9
@@ -12093,7 +12096,8 @@
 			"is_show": false,
 			"vendor_icons": [
 				"https://img2.doubanio.com/f/frodo/eeb8f37f5296ae1fbb944718bd5d6880d24aab5c/pics/vendors/migu_book_logo.png",
-				"https://img1.doubanio.com/f/frodo/161387ce451872cbf51fcb288cd5ffd1dcd89705/pics/vendors/logo_dedao@2x.png"
+				"https://img1.doubanio.com/f/frodo/161387ce451872cbf51fcb288cd5ffd1dcd89705/pics/vendors/logo_dedao@2x.png",
+				"https://img1.doubanio.com/f/frodo/f6f620132e6d8a02d171f03114bbe2339aa8af97/pics/vendors/logo_doubanread@2x.png"
 			],
 			"card_subtitle": "马伯庸 / 2015 / 北京联合出版公司",
 			"book_subtitle": "",
@@ -13539,7 +13543,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 469522,
+				"count": 469523,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.2
@@ -14627,7 +14631,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 751710,
+				"count": 751711,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1

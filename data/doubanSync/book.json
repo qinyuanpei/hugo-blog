@@ -480,7 +480,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 1684,
+				"count": 1685,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.5
@@ -2497,7 +2497,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 38143,
+				"count": 38144,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9
@@ -3212,7 +3212,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 90544,
+				"count": 90545,
 				"max": 10,
 				"star_count": 4,
 				"value": 8
@@ -5592,7 +5592,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 57288,
+				"count": 57289,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -13728,7 +13728,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 791494,
+				"count": 791495,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 8.9
@@ -14558,7 +14558,9 @@
 			"honor_infos": [],
 			"other_versions_count": 9,
 			"is_show": false,
-			"vendor_icons": [],
+			"vendor_icons": [
+				"https://img1.doubanio.com/f/frodo/f6f620132e6d8a02d171f03114bbe2339aa8af97/pics/vendors/logo_doubanread@2x.png"
+			],
 			"card_subtitle": "余秋雨 / 2013 / 长江文艺出版社",
 			"book_subtitle": "",
 			"id": "21321802",
@@ -14602,7 +14604,7 @@
 			"null_rating_reason": "",
 			"article_intros": [],
 			"vendor_sale_price": "",
-			"has_ebook": false
+			"has_ebook": true
 		}
 	},
 	{
@@ -14631,7 +14633,7 @@
 		"is_private": false,
 		"subject": {
 			"rating": {
-				"count": 751711,
+				"count": 751712,
 				"max": 10,
 				"star_count": 4.5,
 				"value": 9.1
